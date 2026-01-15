@@ -1,0 +1,1085 @@
+source_district,dest_district,source_year,dest_year,filter_state
+24 - Parganas,Twenty Four Parganas,1961,1971,West Bengal
+24 - Parganas,Twenty Four Parganas,1961,1971,West Bengal
+Barddhaman,Pashchim Barddhaman,2011,2024,West Bengal
+Barddhaman,Purba Barddhaman,2011,2024,West Bengal
+Burdwan,Barddhaman,1971,1981,West Bengal
+Burdwan,Barddhaman,1971,1981,West Bengal
+Burdwan,Barddhaman,1971,1981,West Bengal
+Calcutta,Kolkata,1991,2001,West Bengal
+Cooch Behar,Koch Bihar,1971,1981,West Bengal
+Darjeeling,Darjiling,1971,1981,West Bengal
+Darjeeling,Darjiling,1971,1981,West Bengal
+Darjiling,Kalimpong,2011,2024,West Bengal
+Hooghly,Hugli,1971,1981,West Bengal
+Howrah,Haora,1971,1981,West Bengal
+Jalpaiguri,Alipurduar,2011,2024,West Bengal
+Malda,Maldah,1971,1981,West Bengal
+Medinipur,Paschim Medinipur,2001,2011,West Bengal
+Medinipur,Purba Medinipur,2001,2011,West Bengal
+Medinipur,Paschim Medinipur,2001,2011,West Bengal
+Midnapore,Medinipur,1971,1981,West Bengal
+Midnapore,Medinipur,1971,1981,West Bengal
+Midnapore,Medinipur,1971,1981,West Bengal
+Midnapur,Midnapore,1951,1961,West Bengal
+Midnapur,Midnapore,1951,1961,West Bengal
+Midnapur,Midnapore,1951,1961,West Bengal
+Paschim Medinipur,Jhargram,2011,2024,West Bengal
+Purulia,Puruliya,1971,1981,West Bengal
+Twenty Four Parganas,North Twenty Four Parganas,1981,1991,West Bengal
+Twenty Four Parganas,South Twenty Four Parganas,1981,1991,West Bengal
+West Dinajpur,Uttar Dinajpur,1991,2001,West Bengal
+West Dinajpur,Dakshin Dinajpur,1991,2001,West Bengal
+Almora,Pithoragarh,1951,1961,Uttarakhand
+Almora,Pithoragarh,1951,1961,Uttarakhand
+Almora,Bageshwar,1991,2001,Uttarakhand
+Chamoli,Rudraprayag,1991,2001,Uttarakhand
+Dehra Dun,Dehradun,1991,2001,Uttarakhand
+Garhwal,Chamoli,1951,1961,Uttarakhand
+Garhwal,Chamoli,1951,1961,Uttarakhand
+Naini Tal,Nainital,1971,1981,Uttarakhand
+Naini Tal,Nainital,1971,1981,Uttarakhand
+Nainital,Udham Singh Nagar,1991,2001,Uttarakhand
+Pithoragarh,Champawat,1991,2001,Uttarakhand
+Saharanpur,Hardwar,1981,1991,Uttarakhand
+Tehri Garhwal,Uttar Kashi,1951,1961,Uttarakhand
+Uttar Kashi,Uttarkashi,1971,1981,Uttarakhand
+Uttar Kashi,Uttarkashi,1991,2001,Uttarakhand
+Uttarkashi,Uttar Kashi,1981,1991,Uttarakhand
+Agra,Firozabad,1981,1991,Uttar Pradesh
+Aligarh,Hathras,1991,2001,Uttar Pradesh
+Allahabad,Kaushambi,1991,2001,Uttar Pradesh
+Allahabad,Prayagraj,2011,2024,Uttar Pradesh
+Azamgarh,Mau,1981,1991,Uttar Pradesh
+Bahraich,Shrawasti,1991,2001,Uttar Pradesh
+Banares,Varanasi,1951,1961,Uttar Pradesh
+Banares,Varanasi,1951,1961,Uttar Pradesh
+Banares,Varanasi,1951,1961,Uttar Pradesh
+Banda,Chitrakoot,1991,2001,Uttar Pradesh
+Bara Banki,Barabanki,1991,2001,Uttar Pradesh
+Barabanki,Bara Banki,2001,2011,Uttar Pradesh
+Basti,Siddharthnagar,1981,1991,Uttar Pradesh
+Basti,Sant Kabir Nagar,1991,2001,Uttar Pradesh
+Budaun,Sambhal (Bhimnagar),2011,2024,Uttar Pradesh
+Bulandshahr,Ghaziabad,1971,1981,Uttar Pradesh
+Bulandshahr,Ghaziabad,1971,1981,Uttar Pradesh
+Bulandshahr,Gautam Buddha Nagar,1991,2001,Uttar Pradesh
+Deoria,Kushinagar,1991,2001,Uttar Pradesh
+Etah,Kanshiram Nagar,2001,2011,Uttar Pradesh
+Etawah,Auraiya,1991,2001,Uttar Pradesh
+Etawah,Etawah',1991,2001,Uttar Pradesh
+Etawah',Etawah,2001,2011,Uttar Pradesh
+Faizabad,Ambedkar Nagar,1991,2001,Uttar Pradesh
+Faizabad,Ayodhya,2011,2024,Uttar Pradesh
+Farrukhabad,Kannauj,1991,2001,Uttar Pradesh
+Ghaziabad,Gautam Buddha Nagar,1991,2001,Uttar Pradesh
+Ghaziabad,Hapur (Panchsheel Nagar),2011,2024,Uttar Pradesh
+Gonda,Balrampur,1991,2001,Uttar Pradesh
+Gorakhpur,Maharajganj,1981,1991,Uttar Pradesh
+Hamirpur,Mahoba,1991,2001,Uttar Pradesh
+Hathras,Mahamaya Nagar,2001,2011,Uttar Pradesh
+Jhansi,Lalitpur,1971,1981,Uttar Pradesh
+Jyotiba Phule Nagar,Amroha,2011,2024,Uttar Pradesh
+Kanpur,Kanpur Dehat,1981,1991,Uttar Pradesh
+Kanpur,Kanpur Nagar,1981,1991,Uttar Pradesh
+Kanshiram Nagar,Kasganj,2011,2024,Uttar Pradesh
+Mahamaya Nagar,Hathras,2011,2024,Uttar Pradesh
+Maharajganj,Mahrajganj,2001,2011,Uttar Pradesh
+Mainpuri,Firozabad,1981,1991,Uttar Pradesh
+Meerut,Ghaziabad,1971,1981,Uttar Pradesh
+Meerut,Ghaziabad,1971,1981,Uttar Pradesh
+Meerut,Baghpat,1991,2001,Uttar Pradesh
+Mirzapur,Sonbhadra,1981,1991,Uttar Pradesh
+Moradabad,Jyotiba Phule Nagar,1991,2001,Uttar Pradesh
+Moradabad,Sambhal (Bhimnagar),2011,2024,Uttar Pradesh
+Muzaffarnagar,Shamli (Prabuddhanagar),2011,2024,Uttar Pradesh
+Sant Ravidas Nagar,Sant Ravidas Nagar (Bhadohi),2001,2011,Uttar Pradesh
+Sant Ravidas Nagar (Bhadohi),Bhadohi,2011,2024,Uttar Pradesh
+Sultanpur,Amethi,2011,2024,Uttar Pradesh
+Varanasi,Chandauli,1991,2001,Uttar Pradesh
+Varanasi,Sant Ravidas Nagar,1991,2001,Uttar Pradesh
+North Tripura,Dhalai,1991,2001,Tripura
+North Tripura,Unakoti,2011,2024,Tripura
+South Tripura,Gomati,2011,2024,Tripura
+Tripura,West Tripura,1961,1971,Tripura
+Tripura,South Tripura,1961,1971,Tripura
+Tripura,North Tripura,1961,1971,Tripura
+Tripura,North Tripura,1961,1971,Tripura
+Tripura,South Tripura,1961,1971,Tripura
+Tripura,West Tripura,1961,1971,Tripura
+Tripura,West Tripura,1961,1971,Tripura
+Tripura,North Tripura,1961,1971,Tripura
+West Tripura,Khowai,2011,2024,Tripura
+West Tripura,Sipahijala,2011,2024,Tripura
+Adilabad,Kumuram Bheem,2011,2024,Telangana
+Adilabad,Mancherial,2011,2024,Telangana
+Adilabad,Nirmal,2011,2024,Telangana
+Hyderabad,Rangareddi,1971,1981,Telangana
+Hyderabad,Rangareddi,1971,1981,Telangana
+Hyderabad,Rangareddi,1971,1981,Telangana
+Karimnagar,Jagtial,2011,2024,Telangana
+Karimnagar,Peddapalli,2011,2024,Telangana
+Karimnagar,Rajanna Sircilla,2011,2024,Telangana
+Karimnagar,Jayashankar Bhupalpally,2011,2024,Telangana
+Karimnagar,Siddipet,2011,2024,Telangana
+Khammam,Mulugu,2011,2024,Telangana
+Khammam,Bhadradri Kothagudem,2011,2024,Telangana
+Khammam,Mahabubabad,2011,2024,Telangana
+Mahbubnagar,Jogulamba Gadwal,2011,2024,Telangana
+Mahbubnagar,Nagarkurnool,2011,2024,Telangana
+Mahbubnagar,Wanaparthy,2011,2024,Telangana
+Mahbubnagar,Narayanpet,2011,2024,Telangana
+Medak,Sangareddy,2011,2024,Telangana
+Medak,Siddipet,2011,2024,Telangana
+Nalgonda,Suryapet,2011,2024,Telangana
+Nalgonda,Yadadri Bhuvanagiri,2011,2024,Telangana
+Nalgonda,Jangaon,2011,2024,Telangana
+Nizamabad,Kamareddy,2011,2024,Telangana
+Rangareddi,Rangareddy,2001,2011,Telangana
+Rangareddi,Rangareddy,2001,2011,Telangana
+Rangareddi,Rangareddy,2001,2011,Telangana
+Rangareddy,Medchal–Malkajgiri,2011,2024,Telangana
+Rangareddy,Vikarabad,2011,2024,Telangana
+Warangal,Khammam,1951,1961,Telangana
+Warangal,Khammam,1951,1961,Telangana
+Warangal,Khammam,1951,1961,Telangana
+Warangal,Khammam,1951,1961,Telangana
+Warangal,Warangal Rural,2011,2024,Telangana
+Warangal,Warangal Urban (Hanamkonda),2011,2024,Telangana
+Warangal,Jayashankar Bhupalpally,2011,2024,Telangana
+Warangal,Mahabubabad,2011,2024,Telangana
+Warangal,Jangaon,2011,2024,Telangana
+Warangal,Mulugu,2011,2024,Telangana
+Chengalpattu,Chengalpattu MGR,1981,1991,Tamil Nadu
+Chengalpattu,Chengalpattu MGR,1981,1991,Tamil Nadu
+Chengalpattu,Chengalpattu MGR,1981,1991,Tamil Nadu
+Chengalpattu MGR,Thiruvallur,1991,2001,Tamil Nadu
+Chengalpattu MGR,Kancheepuram,1991,2001,Tamil Nadu
+Chengalpattu MGR,Kancheepuram,1991,2001,Tamil Nadu
+Chidambaranar,Toothukudi,1991,2001,Tamil Nadu
+Chingleput,Chengalpattu,1961,1971,Tamil Nadu
+Chingleput,Chengalpattu,1961,1971,Tamil Nadu
+Chingleput,Chengalpattu,1961,1971,Tamil Nadu
+Coimbatore,Periyar,1971,1981,Tamil Nadu
+Coimbatore,Periyar,1971,1981,Tamil Nadu
+Coimbatore,Tiruppur,2001,2011,Tamil Nadu
+Dharmapuri,Krishnagiri,2001,2011,Tamil Nadu
+Dindigul Anna,Dindigul,1991,2001,Tamil Nadu
+Erode,Tiruppur,2001,2011,Tamil Nadu
+Kamarajar,Virudhunagar,1991,2001,Tamil Nadu
+Kancheepuram,Chengalpattu,2011,2024,Tamil Nadu
+Kanyakumari,Kanniyakumari,1961,1971,Tamil Nadu
+Madras,Chennai,1991,2001,Tamil Nadu
+Madurai,Dindigul Anna,1981,1991,Tamil Nadu
+Madurai,Theni,1991,2001,Tamil Nadu
+Nagapattinam,Mayiladuthurai,2011,2024,Tamil Nadu
+Nilgiri,Nilgiris,1961,1971,Tamil Nadu
+Nilgiri,The Nilgiris,1991,2001,Tamil Nadu
+Nilgiris,Nilgiri,1951,1961,Tamil Nadu
+Nilgiris,Nilgiri,1971,1981,Tamil Nadu
+North Arcot,North Arcot Ambedkar,1981,1991,Tamil Nadu
+North Arcot,Tiruvannamalai Sambuvarayar,1981,1991,Tamil Nadu
+North Arcot,North Arcot Ambedkar,1981,1991,Tamil Nadu
+North Arcot,North Arcot Ambedkar,1981,1991,Tamil Nadu
+North Arcot Ambedkar,Vellore,1991,2001,Tamil Nadu
+North Arcot Ambedkar,Vellore,1991,2001,Tamil Nadu
+North Arcot Ambedkar,Vellore,1991,2001,Tamil Nadu
+Pasumpon Muthuramalinga Thevar,Sivaganga,1991,2001,Tamil Nadu
+Perambalur,Ariyalur,2001,2011,Tamil Nadu
+Periyar,Erode,1991,2001,Tamil Nadu
+Periyar,Erode,1991,2001,Tamil Nadu
+Ramanathapuram,Pasumpon Muthuramalinga Thevar,1981,1991,Tamil Nadu
+Ramanathapuram,Kamarajar,1981,1991,Tamil Nadu
+Salem,Dharmapuri,1961,1971,Tamil Nadu
+Salem,Dharmapuri,1961,1971,Tamil Nadu
+Salem,Namakkal,1991,2001,Tamil Nadu
+South Arcot,Viluppuram,1991,2001,Tamil Nadu
+South Arcot,Cuddalore,1991,2001,Tamil Nadu
+South Arcot,Viluppuram,1991,2001,Tamil Nadu
+Tanjore,Thanjavur,1951,1961,Tamil Nadu
+Tanjore,Thanjavur,1951,1961,Tamil Nadu
+Tanjore,Thanjavur,1951,1961,Tamil Nadu
+Tanjore,Thanjavur,1951,1961,Tamil Nadu
+Tanjore,Thanjavur,1951,1961,Tamil Nadu
+Thanjavur,Pudukkottai,1971,1981,Tamil Nadu
+Thanjavur,Nagapattinam,1991,2001,Tamil Nadu
+Thanjavur,Thiruvarur,1991,2001,Tamil Nadu
+Thanjavur,Nagapattinam,1991,2001,Tamil Nadu
+Tiruchchirappalli,Karur,1991,2001,Tamil Nadu
+Tiruchchirappalli,Perambalur,1991,2001,Tamil Nadu
+Tiruchchirappalli,Perambalur,1991,2001,Tamil Nadu
+Tiruchchirappalli,Tiruchirappalli,2001,2011,Tamil Nadu
+Tiruchirapalli,Tiruchchirappalli,1971,1981,Tamil Nadu
+Tiruchirapalli,Tiruchchirappalli,1971,1981,Tamil Nadu
+Tiruchirapalli,Tiruchchirappalli,1971,1981,Tamil Nadu
+Tiruchirapalli,Tiruchchirappalli,1971,1981,Tamil Nadu
+Tiruchirapalli,Pudukkottai,1971,1981,Tamil Nadu
+Tirunelveli,Chidambaranar,1981,1991,Tamil Nadu
+Tirunelveli,Tirunelveli Kattabomman,1981,1991,Tamil Nadu
+Tirunelveli,Tirunelveli Kattabomman,1981,1991,Tamil Nadu
+Tirunelveli,Tenkasi,2011,2024,Tamil Nadu
+Tirunelveli Kattabomman,Tirunelveli,1991,2001,Tamil Nadu
+Tirunelveli Kattabomman,Tirunelveli,1991,2001,Tamil Nadu
+Tiruvanamalai,Tiruvannamalai,2001,2011,Tamil Nadu
+Tiruvannamalai Sambuvarayar,Tiruvanamalai,1991,2001,Tamil Nadu
+Toothukudi,Thoothukkudi,2001,2011,Tamil Nadu
+Trivandrum,Kanyakumari,1951,1961,Tamil Nadu
+Vellore,Tirupattur,2011,2024,Tamil Nadu
+Vellore,Ranipet,2011,2024,Tamil Nadu
+Viluppuram,Kallakurichi,2011,2024,Tamil Nadu
+East,Gangtok,2011,2024,Sikkim
+East,Pakyong,2011,2024,Sikkim
+East District,East,1991,2001,Sikkim
+East District,East,1991,2001,Sikkim
+North,Mangan,2011,2024,Sikkim
+North District,North,1991,2001,Sikkim
+Sikkim,East District,1971,1981,Sikkim
+Sikkim,West District,1971,1981,Sikkim
+Sikkim,South District,1971,1981,Sikkim
+Sikkim,North District,1971,1981,Sikkim
+Sikkim,East District,1971,1981,Sikkim
+Sikkim,West District,1971,1981,Sikkim
+South,Namchi,2011,2024,Sikkim
+South District,South,1991,2001,Sikkim
+West,Gyalshing,2011,2024,Sikkim
+West,Soreng,2011,2024,Sikkim
+West District,West,1991,2001,Sikkim
+West District,West,1991,2001,Sikkim
+Bharatpur,Dhaulpur,1981,1991,Rajasthan
+Chitorgarh,Chittaurgarh,1961,1971,Rajasthan
+Chitorgarh,Chittaurgarh,1961,1971,Rajasthan
+Chittaurgarh,Pratapgarh,2001,2011,Rajasthan
+Chittorgarh,Chitorgarh,1951,1961,Rajasthan
+Chittorgarh,Chitorgarh,1951,1961,Rajasthan
+Ganganagar,Hanumangarh,1991,2001,Rajasthan
+Jaipur,Dausa,1991,2001,Rajasthan
+Jalore,Jalor,1951,1961,Rajasthan
+Jhunjhunu,Jhunjhunun,1961,1971,Rajasthan
+Kota,Baran,1991,2001,Rajasthan
+Kotah,Kota,1951,1961,Rajasthan
+Kotah,Kota,1951,1961,Rajasthan
+Sawai Madhopur,Karauli,1991,2001,Rajasthan
+Swai Madhopur,Sawai Madhopur,1951,1961,Rajasthan
+Swai Madhopur,Sawai Madhopur,1951,1961,Rajasthan
+Udaipur,Rajsamand,1991,2001,Rajasthan
+Amritsar,Tarn Taran,2001,2011,Punjab
+Barnala,Sangrur,1951,1961,Punjab
+Bathinda,Mansa,1991,2001,Punjab
+Bhatinda,Faridkot,1971,1981,Punjab
+Bhatinda,Faridkot,1971,1981,Punjab
+Bhatinda,Faridkot,1971,1981,Punjab
+Bhatinda,Bathinda,1971,1981,Punjab
+Bhatinda,Bathinda,1971,1981,Punjab
+Faridkot,Moga,1991,2001,Punjab
+Faridkot,Muktsar,1991,2001,Punjab
+Fatehgarh Sahib,Patiala,1951,1961,Punjab
+Ferozepur,Firozpur,1961,1971,Punjab
+Ferozepur,Firozpur,1961,1971,Punjab
+Ferozepur,Firozpur,1961,1971,Punjab
+Firozpur,Faridkot,1971,1981,Punjab
+Firozpur,Fazilka,2011,2024,Punjab
+Gurdaspur,Pathankot,2011,2024,Punjab
+Hoshiarpur,Ropar,1961,1971,Punjab
+Hoshiarpur,Ropar,1961,1971,Punjab
+Hoshiarpur,Nawanshahr,1991,2001,Punjab
+Jalandhar,Nawanshahr,1991,2001,Punjab
+Jullundur,Jalandhar,1971,1981,Punjab
+Jullundur,Jalandhar,1971,1981,Punjab
+Muktsar,Sri Muktsar Sahib,2011,2024,Punjab
+Nawanshahr,Shahid Bhagat Singh Nagar,2001,2011,Punjab
+Nawanshahr,Shahid Bhagat Singh Nagar,2001,2011,Punjab
+Patiala,Fatehgarh Sahib,1991,2001,Punjab
+Patiala,Sahibzada Ajit Singh Nagar,2001,2011,Punjab
+Ropar,Rupnagar,1971,1981,Punjab
+Ropar,Rupnagar,1971,1981,Punjab
+Rupnagar,Sahibzada Ajit Singh Nagar,2001,2011,Punjab
+Sangrur,Barnala,2001,2011,Punjab
+Sangrur,Malerkotla,2011,2024,Punjab
+Pondicherry,Puducherry,2001,2011,Puducherry
+Balangir,Sonapur,1991,2001,Odisha
+Balasore,Baleshwar,1971,1981,Odisha
+Balasore,Baleshwar,1971,1981,Odisha
+Baleshwar,Bhadrak,1991,2001,Odisha
+Baudh Khondmals,Phulabani,1971,1981,Odisha
+Baudh Khondmals,Phulabani,1971,1981,Odisha
+Bolangir,Balangir,1971,1981,Odisha
+Bolangir,Balangir,1971,1981,Odisha
+Cuttack,Kendrapara,1991,2001,Odisha
+Cuttack,Jagatsinghapur,1991,2001,Odisha
+Cuttack,Jajapur,1991,2001,Odisha
+Dhenkanal,Anugul,1991,2001,Odisha
+Ganjam,Gajapati,1991,2001,Odisha
+Kalahandi,Nuapada,1991,2001,Odisha
+Keonjhar,Kendujhar,1971,1981,Odisha
+Koraput,Rayagada,1991,2001,Odisha
+Koraput,Nabarangapur,1991,2001,Odisha
+Koraput,Malkangiri,1991,2001,Odisha
+Phulabani,Kandhamal,1991,2001,Odisha
+Phulabani,Baudh,1991,2001,Odisha
+Phulbani,Baudh Khondmals,1951,1961,Odisha
+Phulbani,Baudh Khondmals,1951,1961,Odisha
+Puri,Nayagarh,1991,2001,Odisha
+Puri,Khordha,1991,2001,Odisha
+Sambalpur,Bargarh,1991,2001,Odisha
+Sambalpur,Jharsuguda,1991,2001,Odisha
+Sambalpur,Debagarh,1991,2001,Odisha
+Sonapur,Subarnapur,2001,2011,Odisha
+Delhi,North West,1991,2001,NCT of Delhi
+Delhi,North,1991,2001,NCT of Delhi
+Delhi,North East,1991,2001,NCT of Delhi
+Delhi,East,1991,2001,NCT of Delhi
+Delhi,New Delhi,1991,2001,NCT of Delhi
+Delhi,Central,1991,2001,NCT of Delhi
+Delhi,West,1991,2001,NCT of Delhi
+Delhi,South West,1991,2001,NCT of Delhi
+Delhi,South,1991,2001,NCT of Delhi
+Dimapur,Chumoukedima,2011,2024,Nagaland
+Dimapur,Niuland,2011,2024,Nagaland
+Kohima,Phek,1971,1981,Nagaland
+Kohima,Dimapur,1991,2001,Nagaland
+Kohima,Dimapur,1991,2001,Nagaland
+Kohima,Dimapur,1991,2001,Nagaland
+Kohima,Peren,2001,2011,Nagaland
+Kohima,Tseminyü,2011,2024,Nagaland
+Mokokchung,Wokha,1971,1981,Nagaland
+Mokokchung,Zunheboto,1971,1981,Nagaland
+Naga Hills,Kohima,1951,1961,Nagaland
+Naga Hills,Kohima,1951,1961,Nagaland
+Naga Hills,Kohima,1951,1961,Nagaland
+Naga Hills,Kohima,1951,1961,Nagaland
+Naga Hills,Kohima,1951,1961,Nagaland
+Naga Hills,Kohima,1951,1961,Nagaland
+Naga Hills,Kohima,1951,1961,Nagaland
+Tuensang,Mokokchung,1951,1961,Nagaland
+Tuensang,Mokokchung,1951,1961,Nagaland
+Tuensang,Mokokchung,1951,1961,Nagaland
+Tuensang,Mon,1971,1981,Nagaland
+Tuensang,Longleng,2001,2011,Nagaland
+Tuensang,Kiphire,2001,2011,Nagaland
+Tuensang,Noklak,2011,2024,Nagaland
+Aizawl,Mamit,1991,2001,Mizoram
+Aizawl,Kolasib,1991,2001,Mizoram
+Aizawl,Champhai,1991,2001,Mizoram
+Aizawl,Serchhip,1991,2001,Mizoram
+Aizawl,Champhai,1991,2001,Mizoram
+Aizawl,Saitual,2011,2024,Mizoram
+Champhai,Khawzawl,2011,2024,Mizoram
+Chhimtuipui,Lawngtlai,1991,2001,Mizoram
+Chhimtuipui,Saiha,1991,2001,Mizoram
+Lunglei,Hnathial,2011,2024,Mizoram
+Lushai Hills,Mizo Hills,1951,1961,Mizoram
+Lushai Hills,Mizo Hills,1951,1961,Mizoram
+Lushai Hills,Mizo Hills,1951,1961,Mizoram
+Lushai Hills,Mizo Hills,1951,1961,Mizoram
+Lushai Hills,Mizo Hills,1951,1961,Mizoram
+Lushai Hills,Mizo Hills,1951,1961,Mizoram
+Lushai Hills,Mizo Hills,1951,1961,Mizoram
+Lushai Hills,Mizo Hills,1951,1961,Mizoram
+Lushai Hills,Mizo Hills,1951,1961,Mizoram
+Lushai Hills,Mizo Hills,1951,1961,Mizoram
+Lushai Hills,Mizo Hills,1951,1961,Mizoram
+Mizo Hills,Mizoram,1961,1971,Mizoram
+Mizo Hills,Mizoram,1961,1971,Mizoram
+Mizo Hills,Mizoram,1961,1971,Mizoram
+Mizo Hills,Mizoram,1961,1971,Mizoram
+Mizo Hills,Mizoram,1961,1971,Mizoram
+Mizo Hills,Mizoram,1961,1971,Mizoram
+Mizo Hills,Mizoram,1961,1971,Mizoram
+Mizo Hills,Mizoram,1961,1971,Mizoram
+Mizo Hills,Mizoram,1961,1971,Mizoram
+Mizo Hills,Mizoram,1961,1971,Mizoram
+Mizo Hills,Mizoram,1961,1971,Mizoram
+Mizoram,Aizawl,1971,1981,Mizoram
+Mizoram,Aizawl,1971,1981,Mizoram
+Mizoram,Aizawl,1971,1981,Mizoram
+Mizoram,Aizawl,1971,1981,Mizoram
+Mizoram,Aizawl,1971,1981,Mizoram
+Mizoram,Lunglei,1971,1981,Mizoram
+Mizoram,Chhimtuipui,1971,1981,Mizoram
+Mizoram,Chhimtuipui,1971,1981,Mizoram
+Mizoram,Aizawl,1971,1981,Mizoram
+Mizoram,Lunglei,1971,1981,Mizoram
+Mizoram,Aizawl,1971,1981,Mizoram
+East Garo Hills,North Garo Hills,2011,2024,Meghalaya
+East Khasi Hills,Ri Bhoi,1991,2001,Meghalaya
+Garo Hills,West Garo Hills,1971,1981,Meghalaya
+Garo Hills,East Garo Hills,1971,1981,Meghalaya
+Garo Hills,West Garo Hills,1971,1981,Meghalaya
+Garo Hills,East Garo Hills,1971,1981,Meghalaya
+Jaintia Hills,West Jaintia Hills,2011,2024,Meghalaya
+Jaintia Hills,East Jaintia Hills,2011,2024,Meghalaya
+United Khasi and Jaintia Hills,West Khasi Hills,1971,1981,Meghalaya
+United Khasi and Jaintia Hills,East Khasi Hills,1971,1981,Meghalaya
+United Khasi and Jaintia Hills,East Khasi Hills,1971,1981,Meghalaya
+United Khasi and Jaintia Hills,Jaintia Hills,1971,1981,Meghalaya
+United Khasi and Jaintia Hills,Jaintia Hills,1971,1981,Meghalaya
+United Khasi and Jaintia Hills,Jaintia Hills,1971,1981,Meghalaya
+United Khasi and Jaintia Hills,West Khasi Hills,1971,1981,Meghalaya
+United Khasi and Jaintia Hills,West Khasi Hills,1971,1981,Meghalaya
+West Garo Hills,South Garo Hills,1991,2001,Meghalaya
+West Khasi Hills,South West Khasi Hills,2011,2024,Meghalaya
+West Khasi Hills,Eastern West Khasi Hills,2011,2024,Meghalaya
+Chandel,Tengnoupal,2011,2024,Manipur
+Churachandpur,Pherzawl,2011,2024,Manipur
+Imphal,Imphal West,1991,2001,Manipur
+Imphal,Imphal East,1991,2001,Manipur
+Imphal,Imphal East,1991,2001,Manipur
+Imphal East,Jiribam,2011,2024,Manipur
+Manipur,Manipur North,1961,1971,Manipur
+Manipur,Manipur West,1961,1971,Manipur
+Manipur,Manipur South,1961,1971,Manipur
+Manipur,Manipur Central,1961,1971,Manipur
+Manipur,Manipur Central,1961,1971,Manipur
+Manipur,Manipur Central,1961,1971,Manipur
+Manipur,Manipur Central,1961,1971,Manipur
+Manipur,Manipur East,1961,1971,Manipur
+Manipur,Manipur Central,1961,1971,Manipur
+Manipur,Manipur Central,1961,1971,Manipur
+Manipur,Manipur Central,1961,1971,Manipur
+Manipur,Manipur East,1961,1971,Manipur
+Manipur,Manipur North,1961,1971,Manipur
+Manipur,Manipur West,1961,1971,Manipur
+Manipur,Manipur Central,1961,1971,Manipur
+Manipur,Manipur South,1961,1971,Manipur
+Manipur Central,Tengnoupal,1971,1981,Manipur
+Manipur Central,Tengnoupal,1971,1981,Manipur
+Manipur Central,Bishnupur,1981,1991,Manipur
+Manipur Central,Thoubal,1981,1991,Manipur
+Manipur Central,Imphal,1981,1991,Manipur
+Manipur Central,Imphal,1981,1991,Manipur
+Manipur Central,Imphal,1981,1991,Manipur
+Manipur Central,Thoubal,1981,1991,Manipur
+Manipur East,Ukhrul,1981,1991,Manipur
+Manipur East,Ukhrul,1981,1991,Manipur
+Manipur North,Senapati,1981,1991,Manipur
+Manipur North,Senapati,1981,1991,Manipur
+Manipur South,Churachandpur,1981,1991,Manipur
+Manipur South,Churachandpur,1981,1991,Manipur
+Manipur West,Tamenglong,1981,1991,Manipur
+Manipur West,Tamenglong,1981,1991,Manipur
+Senapati,Kangpokpi,2011,2024,Manipur
+Tamenglong,Noney,2011,2024,Manipur
+Tengnoupal,Chandel,1981,1991,Manipur
+Tengnoupal,Chandel,1981,1991,Manipur
+Thoubal,Kakching,2011,2024,Manipur
+Ukhrul,Kamjong,2011,2024,Manipur
+Ahmadnagar,Ahmednagar,1961,1971,Maharashtra
+Ahmednagar,Ahmadnagar,1951,1961,Maharashtra
+Ahmednagar,Ahmadnagar,1971,1981,Maharashtra
+Akola,Washim,1991,2001,Maharashtra
+Aurangabad,Jalna,1981,1991,Maharashtra
+Aurangabad,Sambhaji Nagar,2011,2024,Maharashtra
+Bhandara,Gondiya,1991,2001,Maharashtra
+Bhir,Bid,1971,1981,Maharashtra
+Buldana,Buldhana,1951,1961,Maharashtra
+Buldhana,Buldana,1971,1981,Maharashtra
+Chanda,Chandrapur,1961,1971,Maharashtra
+Chanda,Chandrapur,1961,1971,Maharashtra
+Chandrapur,Gadchiroli,1981,1991,Maharashtra
+Dhule,Nandurbar,1991,2001,Maharashtra
+Dhulia,Dhule,1971,1981,Maharashtra
+Dhulia,Dhule,1971,1981,Maharashtra
+East Khandesh,Jalgaon,1951,1961,Maharashtra
+Greater Bombay,Mumbai,1991,2001,Maharashtra
+Greater Bombay,Mumbai (Suburban),1991,2001,Maharashtra
+Kolaba,Raigarh,1971,1981,Maharashtra
+Mumbai (Suburban),Mumbai Suburban,2001,2011,Maharashtra
+Nasik,Nashik,1971,1981,Maharashtra
+Osmanabad,Latur,1981,1991,Maharashtra
+Osmanabad,Dharashiv,2011,2024,Maharashtra
+Parbhani,Hingoli,1991,2001,Maharashtra
+Poona,Pune,1971,1981,Maharashtra
+Ratnagiri,Sindhudurg,1981,1991,Maharashtra
+Satara North,Satara,1951,1961,Maharashtra
+Satara South,Sangli,1951,1961,Maharashtra
+Sholapur,Solapur,1971,1981,Maharashtra
+Thana,Thane,1971,1981,Maharashtra
+Thana,Thane,1971,1981,Maharashtra
+Thane,Palghar,2011,2024,Maharashtra
+West Khandesh,Dhulia,1951,1961,Maharashtra
+West Khandesh,Dhulia,1951,1961,Maharashtra
+Yeotmal,Yavatmal,1971,1981,Maharashtra
+Bhilsa,Vidisha,1951,1961,Madhya Pradesh
+Chhindwara,Seoni,1951,1961,Madhya Pradesh
+East Nimar,Khandwa,1961,1971,Madhya Pradesh
+East Nimar,Khandwa,1961,1971,Madhya Pradesh
+East Nimar,Khandwa (East Nimar),2001,2011,Madhya Pradesh
+East Nimar,Burhanpur,2001,2011,Madhya Pradesh
+Gird,Gwalior,1951,1961,Madhya Pradesh
+Goona,Guna,1951,1961,Madhya Pradesh
+Goona,Guna,1951,1961,Madhya Pradesh
+Guna,Ashoknagar,2001,2011,Madhya Pradesh
+Hoshangabad,Narsimhapur,1951,1961,Madhya Pradesh
+Hoshangabad,Harda,1991,2001,Madhya Pradesh
+Hoshangabad,Narmadapuram,2011,2024,Madhya Pradesh
+Jabalpur,Katni,1991,2001,Madhya Pradesh
+Jhabua,Alirajpur,2001,2011,Madhya Pradesh
+Khandwa,East Nimar,1971,1981,Madhya Pradesh
+Khandwa,East Nimar,1971,1981,Madhya Pradesh
+Khargone,West Nimar,1971,1981,Madhya Pradesh
+Khargone,West Nimar,1971,1981,Madhya Pradesh
+Mandla,Dindori,1991,2001,Madhya Pradesh
+Mandsaur,Neemuch,1991,2001,Madhya Pradesh
+Morena,Sheopur,1991,2001,Madhya Pradesh
+Nimar,West Nimar,1951,1961,Madhya Pradesh
+Nimar,West Nimar,1951,1961,Madhya Pradesh
+Nimar,East Nimar,1951,1961,Madhya Pradesh
+Nimar,East Nimar,1951,1961,Madhya Pradesh
+Sagar,Damoh,1951,1961,Madhya Pradesh
+Sehore,Bhopal,1971,1981,Madhya Pradesh
+Shahdol,Umaria,1991,2001,Madhya Pradesh
+Shahdol,Annupur,2001,2011,Madhya Pradesh
+Shajapur,Agar-Malwa,2011,2024,Madhya Pradesh
+Sidhi,Singrauli,2001,2011,Madhya Pradesh
+Tikamgarh,Niwari,2011,2024,Madhya Pradesh
+West Nimar,Khargone,1961,1971,Madhya Pradesh
+West Nimar,Khargone,1961,1971,Madhya Pradesh
+West Nimar,Barwani,1991,2001,Madhya Pradesh
+West Nimar,Khargone (West Nimar),2001,2011,Madhya Pradesh
+"Laccadive, Minicoy and Amindivi Islands",Lakshadweep,1971,1981,Lakshadweep
+Alleppey,Alappuzha,1981,1991,Kerala
+Alleppey,Pathanamthitta,1981,1991,Kerala
+Cannanore,Wayanad,1971,1981,Kerala
+Cannanore,Kannur,1981,1991,Kerala
+Cannanore,Kasargod,1981,1991,Kerala
+Ernakulam,Idukki,1971,1981,Kerala
+Idukki,Pathanamthitta,1981,1991,Kerala
+Kottayam,Ernakulam,1951,1961,Kerala
+Kottayam,Alleppey,1951,1961,Kerala
+Kottayam,Idukki,1971,1981,Kerala
+Kottayam,Idukki,1971,1981,Kerala
+Kozhikode,Malappuram,1961,1971,Kerala
+Kozhikode,Wayanad,1971,1981,Kerala
+Malabar,Cannanore,1951,1961,Kerala
+Malabar,Cannanore,1951,1961,Kerala
+Malabar,Cannanore,1951,1961,Kerala
+Malabar,Kozhikode,1951,1961,Kerala
+Malabar,Kozhikode,1951,1961,Kerala
+Malabar,Kozhikode,1951,1961,Kerala
+Malabar,Palghat,1951,1961,Kerala
+Malabar,Palghat,1951,1961,Kerala
+Palghat,Malappuram,1961,1971,Kerala
+Palghat,Palakkad,1981,1991,Kerala
+Quilon,Alleppey,1951,1961,Kerala
+Quilon,Pathanamthitta,1981,1991,Kerala
+Quilon,Kollam,1981,1991,Kerala
+Trichur,Ernakulam,1951,1961,Kerala
+Trichur,Thrissur,1981,1991,Kerala
+Trivandrum,Thiruvananthapuram,1981,1991,Kerala
+Bangalore,Bangalore Rural,1981,1991,Karnataka
+Bangalore,Bangalore Rural,1981,1991,Karnataka
+Bangalore Rural,Ramanagara,2001,2011,Karnataka
+Belgaum,Belgavi,2011,2024,Karnataka
+Bellary,Ballari,2011,2024,Karnataka
+Bellary,Vijayanagara,2011,2024,Karnataka
+Bijapur,Bagalkot,1991,2001,Karnataka
+Bijapur,Vijayapura,2011,2024,Karnataka
+Chikmagalur,Chikkamagaluru,2011,2024,Karnataka
+Chitaldrug,Chitradurga,1951,1961,Karnataka
+Chitaldrug,Chitradurga,1951,1961,Karnataka
+Chitradurga,Davanagere,1991,2001,Karnataka
+Coorg,Kodagu,1971,1981,Karnataka
+Dakshin Kannad,Dakshina Kannada,1981,1991,Karnataka
+Dakshin Kannad,Dakshina Kannada,1981,1991,Karnataka
+Dakshina Kannada,Udupi,1991,2001,Karnataka
+Dharwad,Gadag,1991,2001,Karnataka
+Dharwad,Haveri,1991,2001,Karnataka
+Dharwar,Dharwad,1971,1981,Karnataka
+Dharwar,Dharwad,1971,1981,Karnataka
+Dharwar,Dharwad,1971,1981,Karnataka
+Gulbarga,Yadgir,2001,2011,Karnataka
+Gulbarga,Kalaburagi,2011,2024,Karnataka
+Kanara,North Kanara,1951,1961,Karnataka
+Kolar,Chikkaballapura,2001,2011,Karnataka
+Mysore,Chamarajanagar,1991,2001,Karnataka
+Mysore,Mysuru,2011,2024,Karnataka
+North Kanara,Uttar Kannad,1971,1981,Karnataka
+Raichur,Koppal,1991,2001,Karnataka
+Ramanagara,Bengaluru South,2011,2024,Karnataka
+Shimoga,Shivamogga,2011,2024,Karnataka
+South Kanara,Dakshin Kannad,1971,1981,Karnataka
+South Kanara,Dakshin Kannad,1971,1981,Karnataka
+Tumkur,Tumakuru,2011,2024,Karnataka
+Uttar Kannad,Uttara Kannada,1981,1991,Karnataka
+Dhanbad,Bokaro,1991,2001,Jharkhand
+Dumka,Jamtara,2001,2011,Jharkhand
+Giridih,Bokaro,1991,2001,Jharkhand
+Gumla,Simdega,2001,2011,Jharkhand
+Hazaribag,Chatra,1991,2001,Jharkhand
+Hazaribag,Kodarma,1991,2001,Jharkhand
+Hazaribag,Hazaribagh,2001,2011,Jharkhand
+Hazaribag,Ramgarh,2001,2011,Jharkhand
+Hazaribagh,Hazaribag,1971,1981,Jharkhand
+Hazaribagh,Hazaribag,1971,1981,Jharkhand
+Hazaribagh,Hazaribag,1971,1981,Jharkhand
+Hazaribagh,Hazaribag,1971,1981,Jharkhand
+Hazaribagh,Giridih,1971,1981,Jharkhand
+Hazaribagh,Giridih,1971,1981,Jharkhand
+Pakaur,Pakur,2001,2011,Jharkhand
+Palamau,Palamu,1971,1981,Jharkhand
+Palamau,Palamu,1971,1981,Jharkhand
+Palamau,Palamu,1971,1981,Jharkhand
+Palamu,Garhwa,1991,2001,Jharkhand
+Palamu,Latehar,2001,2011,Jharkhand
+Pashchimi Singhbhum,Saraikela-kharsawan,2001,2011,Jharkhand
+Ranchi,Lohardaga,1981,1991,Jharkhand
+Ranchi,Gumla,1981,1991,Jharkhand
+Ranchi,Gumla,1981,1991,Jharkhand
+Ranchi,Khunti,2001,2011,Jharkhand
+Sahibganj,Pakaur,1991,2001,Jharkhand
+Santal Parganas,Santhal Pargana,1971,1981,Jharkhand
+Santal Parganas,Santhal Pargana,1971,1981,Jharkhand
+Santal Parganas,Santhal Pargana,1971,1981,Jharkhand
+Santal Parganas,Santhal Pargana,1971,1981,Jharkhand
+Santal Parganas,Santhal Pargana,1971,1981,Jharkhand
+Santal Parganas,Santhal Pargana,1971,1981,Jharkhand
+Santhal Pargana,Deoghar,1981,1991,Jharkhand
+Santhal Pargana,Godda,1981,1991,Jharkhand
+Santhal Pargana,Sahibganj,1981,1991,Jharkhand
+Santhal Pargana,Sahibganj,1981,1991,Jharkhand
+Santhal Pargana,Dumka,1981,1991,Jharkhand
+Santhal Pargana,Dumka,1981,1991,Jharkhand
+Singhbhum,Pashchimi Singhbhum,1981,1991,Jharkhand
+Singhbhum,Pashchimi Singhbhum,1981,1991,Jharkhand
+Singhbhum,Purbi Singhbhum,1981,1991,Jharkhand
+Anantnag,Kulgam,2001,2011,Jammu & Kashmir
+Baramula,Kupwara,1971,1981,Jammu & Kashmir
+Baramula,Bandipore,2001,2011,Jammu & Kashmir
+Baramula,Ganderbal,2001,2011,Jammu & Kashmir
+Baramulla,Baramula,1961,1971,Jammu & Kashmir
+Baramulla,Baramula,1961,1971,Jammu & Kashmir
+Baramulla,Baramula,1961,1971,Jammu & Kashmir
+Baramulla,Baramula,1961,1971,Jammu & Kashmir
+Doda,Ramban,2001,2011,Jammu & Kashmir
+Doda,Kishtwar,2001,2011,Jammu & Kashmir
+Jammu,Samba,2001,2011,Jammu & Kashmir
+Jammu and Kashmir,Baramulla,1951,1961,Jammu & Kashmir
+Jammu and Kashmir,Srinagar,1951,1961,Jammu & Kashmir
+Jammu and Kashmir,Ladakh,1951,1961,Jammu & Kashmir
+Jammu and Kashmir,Ladakh,1951,1961,Jammu & Kashmir
+Jammu and Kashmir,Poonch,1951,1961,Jammu & Kashmir
+Jammu and Kashmir,Poonch,1951,1961,Jammu & Kashmir
+Jammu and Kashmir,Kathua,1951,1961,Jammu & Kashmir
+Jammu and Kashmir,Baramulla,1951,1961,Jammu & Kashmir
+Jammu and Kashmir,Baramulla,1951,1961,Jammu & Kashmir
+Jammu and Kashmir,Srinagar,1951,1961,Jammu & Kashmir
+Jammu and Kashmir,Baramulla,1951,1961,Jammu & Kashmir
+Jammu and Kashmir,Srinagar,1951,1961,Jammu & Kashmir
+Jammu and Kashmir,Srinagar,1951,1961,Jammu & Kashmir
+Jammu and Kashmir,Anantnag,1951,1961,Jammu & Kashmir
+Jammu and Kashmir,Anantnag,1951,1961,Jammu & Kashmir
+Jammu and Kashmir,Srinagar,1951,1961,Jammu & Kashmir
+Jammu and Kashmir,Doda,1951,1961,Jammu & Kashmir
+Jammu and Kashmir,Doda,1951,1961,Jammu & Kashmir
+Jammu and Kashmir,Doda,1951,1961,Jammu & Kashmir
+Jammu and Kashmir,Udhampur,1951,1961,Jammu & Kashmir
+Jammu and Kashmir,Udhampur,1951,1961,Jammu & Kashmir
+Jammu and Kashmir,Jammu,1951,1961,Jammu & Kashmir
+Jammu and Kashmir,Jammu,1951,1961,Jammu & Kashmir
+Ladakh,Kargil,1971,1981,Jammu & Kashmir
+Ladakh,Leh (Ladakh),1991,2001,Jammu & Kashmir
+Poonch,Punch,1961,1971,Jammu & Kashmir
+Poonch,Rajauri,1961,1971,Jammu & Kashmir
+Pulwama,Shupiyan,2001,2011,Jammu & Kashmir
+Pulwama,Kulgam,2001,2011,Jammu & Kashmir
+Rajauri,Rajouri,2001,2011,Jammu & Kashmir
+Srinagar,Badgam,1971,1981,Jammu & Kashmir
+Srinagar,Pulwama,1971,1981,Jammu & Kashmir
+Srinagar,Pulwama,1971,1981,Jammu & Kashmir
+Srinagar,Pulwama,1971,1981,Jammu & Kashmir
+Udhampur,Reasi,2001,2011,Jammu & Kashmir
+Kangra,Lahaul and Spiti,1951,1961,Himachal Pradesh
+Kangra,Kulu,1961,1971,Himachal Pradesh
+Kangra,Hamirpur,1971,1981,Himachal Pradesh
+Kangra,Una,1971,1981,Himachal Pradesh
+Kohistan,Simla,1951,1961,Himachal Pradesh
+Kulu,Kullu,1971,1981,Himachal Pradesh
+Lahaul and Spiti,Lahul and Spiti,1961,1971,Himachal Pradesh
+Lahul and Spiti,Lahul & Spiti,2001,2011,Himachal Pradesh
+Mahasu,Kinnaur,1951,1961,Himachal Pradesh
+Mahasu,Solan,1971,1981,Himachal Pradesh
+Mahasu,Shimla,1971,1981,Himachal Pradesh
+Mahasu,Shimla,1971,1981,Himachal Pradesh
+Simla,Solan,1971,1981,Himachal Pradesh
+Sirmoor,Sirmur,1951,1961,Himachal Pradesh
+Sirmur,Sirmaur,1961,1971,Himachal Pradesh
+Ambala,Yamunanagar,1981,1991,Haryana
+Ambala,Panchkula,1991,2001,Haryana
+Bhiwani,Charkhi Dadri,2011,2024,Haryana
+Faridabad,Palwal,2001,2011,Haryana
+Gurgaon,Mahendragarh,1971,1981,Haryana
+Gurgaon,Faridabad,1971,1981,Haryana
+Gurgaon,Faridabad,1971,1981,Haryana
+Gurgaon,Mewat,2001,2011,Haryana
+Gurgaon,Gurugram,2011,2024,Haryana
+Hisar,Sirsa,1971,1981,Haryana
+Hisar,Bhiwani,1971,1981,Haryana
+Hisar,Bhiwani,1971,1981,Haryana
+Hisar,Fatehabad,1991,2001,Haryana
+Hissar,Hisar,1961,1971,Haryana
+Hissar,Hisar,1961,1971,Haryana
+Hissar,Hisar,1961,1971,Haryana
+Hissar,Hisar,1961,1971,Haryana
+Hissar,Hisar,1961,1971,Haryana
+Karnal,Kurukshetra,1971,1981,Haryana
+Karnal,Kurukshetra,1971,1981,Haryana
+Karnal,Panipat,1981,1991,Haryana
+Kurukshetra,Kaithal,1981,1991,Haryana
+Mahendragarh,Rewari,1981,1991,Haryana
+Mewat,Nuh,2011,2024,Haryana
+Mohindergarh,Mahendragarh,1951,1961,Haryana
+Mohindergarh,Mahendragarh,1951,1961,Haryana
+Rohtak,Karnal,1971,1981,Haryana
+Rohtak,Sonipat,1971,1981,Haryana
+Rohtak,Jhajjar,1991,2001,Haryana
+Sangrur,Jind,1961,1971,Haryana
+Ahmadabad,Botad,2011,2024,Gujarat
+Ahmedabad,Ahmadabad,1961,1971,Gujarat
+Ahmedabad,Gandhinagar,1961,1971,Gujarat
+Ahmedabad,Ahmadabad,1961,1971,Gujarat
+Banaskantha,Banas Kantha,1961,1971,Gujarat
+Baroda,Vadodara,1961,1971,Gujarat
+Baroda,Vadodara,1961,1971,Gujarat
+Bharuch,Narmada,1991,2001,Gujarat
+Bhavnagar,Botad,2011,2024,Gujarat
+Broach,Bharuch,1961,1971,Gujarat
+Broach,Bharuch,1961,1971,Gujarat
+Central Saurashtra,Rajkot,1951,1961,Gujarat
+Central Saurashtra,Rajkot,1951,1961,Gujarat
+Dangs,The Dangs,1961,1971,Gujarat
+Gohilwad,Bhavnagar,1951,1961,Gujarat
+Gohilwad,Bhavnagar,1951,1961,Gujarat
+Halar,Jamnagar,1951,1961,Gujarat
+Halar,Jamnagar,1951,1961,Gujarat
+Halar,Jamnagar,1951,1961,Gujarat
+Jamnagar,Devbhumi Dwarka,2011,2024,Gujarat
+Jamnagar,Morbi,2011,2024,Gujarat
+Junagadh,Porbandar,1991,2001,Gujarat
+Junagadh,Gir Somnath,2011,2024,Gujarat
+Kaira,Kheda,1961,1971,Gujarat
+Kaira,Kheda,1961,1971,Gujarat
+Kaira,Kheda,1961,1971,Gujarat
+Kheda,Anand,1991,2001,Gujarat
+Kheda,Mahisagar,2011,2024,Gujarat
+Kutch,Kachchh,1971,1981,Gujarat
+Mahesana,Patan,1991,2001,Gujarat
+Mehsana,Gandhinagar,1961,1971,Gujarat
+Mehsana,Mahesana,1961,1971,Gujarat
+Mehsana,Mahesana,1961,1971,Gujarat
+Panch Mahals,Panchmahals,1951,1961,Gujarat
+Panch Mahals,Panchmahals,1951,1961,Gujarat
+Panch Mahals,Panchmahals,1951,1961,Gujarat
+Panch Mahals,Dohad,1991,2001,Gujarat
+Panch Mahals,Mahisagar,2011,2024,Gujarat
+Panchmahals,Panch Mahals,1961,1971,Gujarat
+Panchmahals,Panch Mahals,1961,1971,Gujarat
+Panchmahals,Panch Mahals,1961,1971,Gujarat
+Rajkot,Morbi,2011,2024,Gujarat
+Sabar Kantha,Aravalli,2011,2024,Gujarat
+Sabarkantha,Sabar Kantha,1961,1971,Gujarat
+Sabarkantha,Sabar Kantha,1961,1971,Gujarat
+Sorath,Junagadh,1951,1961,Gujarat
+Sorath,Junagadh,1951,1961,Gujarat
+Sorath,Junagadh,1951,1961,Gujarat
+Surat,Valsad,1961,1971,Gujarat
+Surat,Valsad,1961,1971,Gujarat
+Surat,Tapi,2001,2011,Gujarat
+Surendranagar,Morbi,2011,2024,Gujarat
+Vadodara,Chhota Udepur,2011,2024,Gujarat
+Valsad,Navsari,1991,2001,Gujarat
+Zalawad,Surendranagar,1951,1961,Gujarat
+Zalawad,Surendranagar,1951,1961,Gujarat
+Goa,North Goa,1981,1991,Goa
+Goa,South Goa,1981,1991,Goa
+Delhi,North West,1991,2001,Delhi
+Delhi,South,1991,2001,Delhi
+Delhi,North East,1991,2001,Delhi
+Delhi,East,1991,2001,Delhi
+Delhi,South West,1991,2001,Delhi
+East,Shahdara,2011,2024,Delhi
+North East,Shahdara,2011,2024,Delhi
+North West,North,2011,2024,Delhi
+South,South East,2011,2024,Delhi
+South West,New Delhi,2011,2024,Delhi
+Dadra and Nagar Haveli,Dadra & Nagar Haveli,2001,2011,Dadara & Nagar Havelli
+Bastar,Kanker,1991,2001,Chhattisgarh
+Bastar,Dantewada,1991,2001,Chhattisgarh
+Bastar,Dantewada,1991,2001,Chhattisgarh
+Bastar,Dantewada,1991,2001,Chhattisgarh
+Bastar,Narayanpur,2001,2011,Chhattisgarh
+Bastar,Kondagaon,2011,2024,Chhattisgarh
+Bilaspur,Korba,1991,2001,Chhattisgarh
+Bilaspur,Janjgir-Champa,1991,2001,Chhattisgarh
+Bilaspur,Mungeli,2011,2024,Chhattisgarh
+Bilaspur,Gaurela-Pendra-Marwahi,2011,2024,Chhattisgarh
+Dakshin Bastar Dantewada,Sukma,2011,2024,Chhattisgarh
+Dantewada,Dakshin Bastar Dantewada,2001,2011,Chhattisgarh
+Dantewada,Bijapur,2001,2011,Chhattisgarh
+Dantewada,Dakshin Bastar Dantewada,2001,2011,Chhattisgarh
+Durg,Raj Nandgaon,1971,1981,Chhattisgarh
+Durg,Raj Nandgaon,1971,1981,Chhattisgarh
+Durg,Balod,2011,2024,Chhattisgarh
+Durg,Bemetara,2011,2024,Chhattisgarh
+Kanker,Uttar Bastar Kanker,2001,2011,Chhattisgarh
+Kawardha,Kabeerdham,2001,2011,Chhattisgarh
+Raigarh,Jashpur,1991,2001,Chhattisgarh
+Raipur,Mahasamund,1991,2001,Chhattisgarh
+Raipur,Dhamtari,1991,2001,Chhattisgarh
+Raipur,Baloda Bazar,2011,2024,Chhattisgarh
+Raipur,Gariyaband,2011,2024,Chhattisgarh
+Raj Nandgaon,Kawardha,1991,2001,Chhattisgarh
+Raj Nandgaon,Rajnandgaon,1991,2001,Chhattisgarh
+Surguja,Koriya,1991,2001,Chhattisgarh
+Surguja,Balrampur,2011,2024,Chhattisgarh
+Surguja,Surajpur,2011,2024,Chhattisgarh
+Ambala,Chandigarh,1961,1971,Chandigarh
+Bhagalpur,Banka,1991,2001,Bihar
+Bhojpur,Buxar,1991,2001,Bihar
+Champaran,Pashchim Champaran,1971,1981,Bihar
+Champaran,Purba Champaran,1971,1981,Bihar
+Darbhanga,Madhubani,1971,1981,Bihar
+Darbhanga,Samastipur,1971,1981,Bihar
+Gaya,Aurangabad,1971,1981,Bihar
+Gaya,Nawada,1971,1981,Bihar
+Gaya,Jehanabad,1981,1991,Bihar
+Gaya,Jehanabad,1981,1991,Bihar
+Jehanabad,Arwal,2001,2011,Bihar
+Monghyr,Begusarai,1971,1981,Bihar
+Monghyr,Munger,1971,1981,Bihar
+Monghyr,Munger,1971,1981,Bihar
+Monghyr,Munger,1971,1981,Bihar
+Monghyr,Munger,1971,1981,Bihar
+Monghyr,Munger,1971,1981,Bihar
+Munger,Khagaria,1981,1991,Bihar
+Munger,Lakhisarai,1991,2001,Bihar
+Munger,Sheikhpura,1991,2001,Bihar
+Munger,Jamui,1991,2001,Bihar
+Muzaffarpur,Sitamarhi,1971,1981,Bihar
+Muzaffarpur,Sitamarhi,1971,1981,Bihar
+Muzaffarpur,Vaishali,1971,1981,Bihar
+Nawada,Nawadah,1981,1991,Bihar
+Nawadah,Nawada,1991,2001,Bihar
+Patna,Nalanda,1971,1981,Bihar
+Purnea,Purnia,1971,1981,Bihar
+Purnea,Purnia,1971,1981,Bihar
+Purnea,Purnia,1971,1981,Bihar
+Purnea,Katihar,1971,1981,Bihar
+Purnia,Araria,1981,1991,Bihar
+Purnia,Kishanganj,1981,1991,Bihar
+Rohtas,Kaimur (Bhabua),1991,2001,Bihar
+Saharsa,Madhepura,1981,1991,Bihar
+Saharsa,Supaul,1991,2001,Bihar
+Saran,Gopalganj,1971,1981,Bihar
+Saran,Siwan,1971,1981,Bihar
+Shahabad,Bhojpur,1971,1981,Bihar
+Shahabad,Bhojpur,1971,1981,Bihar
+Shahabad,Rohtas,1971,1981,Bihar
+Shahabad,Rohtas,1971,1981,Bihar
+Sitamarhi,Sheohar,1991,2001,Bihar
+Baksa,Tamulpur,2011,2024,Assam
+Barpeta,Baksa,2001,2011,Assam
+Barpeta,Bajali,2011,2024,Assam
+Bongaigaon,Chirang,2001,2011,Assam
+Cachar,Karimganj,1981,1991,Assam
+Cachar,Hailakandi,1981,1991,Assam
+Darrang,Sonitpur,1981,1991,Assam
+Darrang,Sonitpur,1981,1991,Assam
+Darrang,Baksa,2001,2011,Assam
+Darrang,Udalguri,2001,2011,Assam
+Darrang,Baksa,2001,2011,Assam
+Dhubri,South Salmara-Mankachar,2011,2024,Assam
+Dhuburi,Dhubri,2001,2011,Assam
+Dhuburi,Dhubri,2001,2011,Assam
+Dibrugarh,Tinsukia,1981,1991,Assam
+Goalpara,Kokrajhar,1981,1991,Assam
+Goalpara,Kokrajhar,1981,1991,Assam
+Goalpara,Dhuburi,1981,1991,Assam
+Goalpara,Bongaigaon,1981,1991,Assam
+Goalpara,Bongaigaon,1981,1991,Assam
+Goalpara,Dhuburi,1981,1991,Assam
+Jorhat,Majuli,2011,2024,Assam
+Kamrup,Barpeta,1981,1991,Assam
+Kamrup,Nalbari,1981,1991,Assam
+Kamrup,Barpeta,1981,1991,Assam
+Kamrup,Nalbari,1981,1991,Assam
+Kamrup,Barpeta,1981,1991,Assam
+Kamrup,Kamrup Metropolitan,2001,2011,Assam
+Kamrup,Baksa,2001,2011,Assam
+Karbi Anglong,West Karbi Anglong,2011,2024,Assam
+Kokrajhar,Chirang,2001,2011,Assam
+Lakhimpur,Dibrugarh,1971,1981,Assam
+Lakhimpur,Dibrugarh,1971,1981,Assam
+Lakhimpur,Dhemaji,1981,1991,Assam
+Marigaon,Morigaon,2001,2011,Assam
+Mikir Hills,Karbi Anglong,1971,1981,Assam
+Mikir Hills,Karbi Anglong,1971,1981,Assam
+Nagaon,Marigaon,1981,1991,Assam
+Nagaon,Hojai,2011,2024,Assam
+Nalbari,Baksa,2001,2011,Assam
+North Cachar Hills,Dima Hasao,2001,2011,Assam
+Nowgong,Nagaon,1971,1981,Assam
+Nowgong,Nagaon,1971,1981,Assam
+Nowgong,Nagaon,1971,1981,Assam
+Sibsagar,Jorhat,1981,1991,Assam
+Sibsagar,Golaghat,1981,1991,Assam
+Sibsagar,Jorhat,1981,1991,Assam
+Sibsagar,Sivasagar,2001,2011,Assam
+Sibsagar,Sivasagar,2001,2011,Assam
+Sivasagar,Charaideo,2011,2024,Assam
+Sonitpur,Biswanath,2011,2024,Assam
+United Mikir and North Cachar Hills,Mikir Hills,1961,1971,Assam
+United Mikir and North Cachar Hills,North Cachar Hills,1961,1971,Assam
+United Mikir and North Cachar Hills,Mikir Hills,1961,1971,Assam
+Abor Hills,Siang Frontier Division,1951,1961,Arunachal Pradesh
+Abor Hills,Siang Frontier Division,1951,1961,Arunachal Pradesh
+Abor Hills,Siang Frontier Division,1951,1961,Arunachal Pradesh
+Abor Hills,Siang Frontier Division,1951,1961,Arunachal Pradesh
+Abor Hills,Siang Frontier Division,1951,1961,Arunachal Pradesh
+Abor Hills,Siang Frontier Division,1951,1961,Arunachal Pradesh
+Abor Hills,Siang Frontier Division,1951,1961,Arunachal Pradesh
+Abor Hills,Siang Frontier Division,1951,1961,Arunachal Pradesh
+Abor Hills,Siang Frontier Division,1951,1961,Arunachal Pradesh
+Abor Hills,Siang Frontier Division,1951,1961,Arunachal Pradesh
+Abor Hills,Siang Frontier Division,1951,1961,Arunachal Pradesh
+Balipara Frontier Tract,Kameng Frontier,1951,1961,Arunachal Pradesh
+Balipara Frontier Tract,Kameng Frontier,1951,1961,Arunachal Pradesh
+Balipara Frontier Tract,Kameng Frontier,1951,1961,Arunachal Pradesh
+Balipara Frontier Tract,Kameng Frontier,1951,1961,Arunachal Pradesh
+Balipara Frontier Tract,Subansiri Frontier,1951,1961,Arunachal Pradesh
+Balipara Frontier Tract,Subansiri Frontier,1951,1961,Arunachal Pradesh
+Balipara Frontier Tract,Subansiri Frontier,1951,1961,Arunachal Pradesh
+Balipara Frontier Tract,Subansiri Frontier,1951,1961,Arunachal Pradesh
+Balipara Frontier Tract,Subansiri Frontier,1951,1961,Arunachal Pradesh
+Balipara Frontier Tract,Subansiri Frontier,1951,1961,Arunachal Pradesh
+Balipara Frontier Tract,Subansiri Frontier,1951,1961,Arunachal Pradesh
+Dibang Valley,Lower Dibang Valley,2001,2011,Arunachal Pradesh
+East Kameng,Pakke-Kesang,2011,2024,Arunachal Pradesh
+East Siang,Upper Siang,1991,2001,Arunachal Pradesh
+East Siang,Siang,2011,2024,Arunachal Pradesh
+East Siang,Lower Siang,2011,2024,Arunachal Pradesh
+East Siang,Lepa - Rada,2011,2024,Arunachal Pradesh
+Kameng,West Kameng,1971,1981,Arunachal Pradesh
+Kameng,West Kameng,1971,1981,Arunachal Pradesh
+Kameng,East Kameng,1971,1981,Arunachal Pradesh
+Kameng,East Kameng,1971,1981,Arunachal Pradesh
+Kameng Frontier,Kameng,1961,1971,Arunachal Pradesh
+Kameng Frontier,Kameng,1961,1971,Arunachal Pradesh
+Kameng Frontier,Kameng,1961,1971,Arunachal Pradesh
+Kameng Frontier,Kameng,1961,1971,Arunachal Pradesh
+Kurung Kumey,Kra Daadi,2011,2024,Arunachal Pradesh
+Lohit,Anjaw,2001,2011,Arunachal Pradesh
+Lohit,Namsai,2011,2024,Arunachal Pradesh
+Lohit Frontier Division,Lohit,1961,1971,Arunachal Pradesh
+Lohit Frontier Division,Lohit,1961,1971,Arunachal Pradesh
+Lohit Frontier Division,Lohit,1961,1971,Arunachal Pradesh
+Lower Subansiri,Papum Pare,1991,2001,Arunachal Pradesh
+Lower Subansiri,Kurung Kumey,2001,2011,Arunachal Pradesh
+Lower Subansiri,Kurung Kumey,2001,2011,Arunachal Pradesh
+Lower Subansiri,Kamle,2011,2024,Arunachal Pradesh
+Mishmi Hills,Lohit Frontier Division,1951,1961,Arunachal Pradesh
+Mishmi Hills,Lohit Frontier Division,1951,1961,Arunachal Pradesh
+Mishmi Hills,Lohit Frontier Division,1951,1961,Arunachal Pradesh
+Siang,West Siang,1971,1981,Arunachal Pradesh
+Siang,West Siang,1971,1981,Arunachal Pradesh
+Siang,West Siang,1971,1981,Arunachal Pradesh
+Siang,West Siang,1971,1981,Arunachal Pradesh
+Siang,West Siang,1971,1981,Arunachal Pradesh
+Siang,West Siang,1971,1981,Arunachal Pradesh
+Siang,East Siang,1971,1981,Arunachal Pradesh
+Siang,East Siang,1971,1981,Arunachal Pradesh
+Siang,East Siang,1971,1981,Arunachal Pradesh
+Siang,East Siang,1971,1981,Arunachal Pradesh
+Siang,East Siang,1971,1981,Arunachal Pradesh
+Siang Frontier Division,Siang,1961,1971,Arunachal Pradesh
+Siang Frontier Division,Siang,1961,1971,Arunachal Pradesh
+Siang Frontier Division,Siang,1961,1971,Arunachal Pradesh
+Siang Frontier Division,Siang,1961,1971,Arunachal Pradesh
+Siang Frontier Division,Siang,1961,1971,Arunachal Pradesh
+Siang Frontier Division,Siang,1961,1971,Arunachal Pradesh
+Siang Frontier Division,Siang,1961,1971,Arunachal Pradesh
+Siang Frontier Division,Siang,1961,1971,Arunachal Pradesh
+Siang Frontier Division,Siang,1961,1971,Arunachal Pradesh
+Siang Frontier Division,Siang,1961,1971,Arunachal Pradesh
+Siang Frontier Division,Siang,1961,1971,Arunachal Pradesh
+Subansiri,Lower Subansiri,1971,1981,Arunachal Pradesh
+Subansiri,Upper Subansiri,1971,1981,Arunachal Pradesh
+Subansiri,Upper Subansiri,1971,1981,Arunachal Pradesh
+Subansiri,Lower Subansiri,1971,1981,Arunachal Pradesh
+Subansiri,Lower Subansiri,1971,1981,Arunachal Pradesh
+Subansiri,Lower Subansiri,1971,1981,Arunachal Pradesh
+Subansiri,Lower Subansiri,1971,1981,Arunachal Pradesh
+Subansiri Frontier,Subansiri,1961,1971,Arunachal Pradesh
+Subansiri Frontier,Subansiri,1961,1971,Arunachal Pradesh
+Subansiri Frontier,Subansiri,1961,1971,Arunachal Pradesh
+Subansiri Frontier,Subansiri,1961,1971,Arunachal Pradesh
+Subansiri Frontier,Subansiri,1961,1971,Arunachal Pradesh
+Subansiri Frontier,Subansiri,1961,1971,Arunachal Pradesh
+Subansiri Frontier,Subansiri,1961,1971,Arunachal Pradesh
+Tirap,Dibang Valley,1971,1981,Arunachal Pradesh
+Tirap,Dibang Valley,1971,1981,Arunachal Pradesh
+Tirap,Changlang,1981,1991,Arunachal Pradesh
+Tirap,Longding,2011,2024,Arunachal Pradesh
+Tirap Frontier Division,Tirap,1961,1971,Arunachal Pradesh
+Tirap Frontier Division,Tirap,1961,1971,Arunachal Pradesh
+Tirap Frontier Division,Tirap,1961,1971,Arunachal Pradesh
+Tirap Frontier Division,Tirap,1961,1971,Arunachal Pradesh
+Tirap Frontier Division,Tirap,1961,1971,Arunachal Pradesh
+Tirap Frontier Tract,Tirap Frontier Division,1951,1961,Arunachal Pradesh
+Tirap Frontier Tract,Tirap Frontier Division,1951,1961,Arunachal Pradesh
+Tirap Frontier Tract,Tirap Frontier Division,1951,1961,Arunachal Pradesh
+Tirap Frontier Tract,Tirap Frontier Division,1951,1961,Arunachal Pradesh
+Tirap Frontier Tract,Tirap Frontier Division,1951,1961,Arunachal Pradesh
+Upper Subansiri,Kamle,2011,2024,Arunachal Pradesh
+West Kameng,Tawang,1981,1991,Arunachal Pradesh
+West Siang,Siang,2011,2024,Arunachal Pradesh
+West Siang,Lower Siang,2011,2024,Arunachal Pradesh
+West Siang,Lepa - Rada,2011,2024,Arunachal Pradesh
+West Siang,Shi-Yomi,2011,2024,Arunachal Pradesh
+West Siang,Lower Siang,2011,2024,Arunachal Pradesh
+Anantapur,Sri Sathya Sai,2011,2024,Andhra Pradesh
+Chittoor,Annamayya,2011,2024,Andhra Pradesh
+Chittoor,Tirupati,2011,2024,Andhra Pradesh
+Cuddapah,Y.S.R.,2001,2011,Andhra Pradesh
+Cuddapah,Y.S.R.,2001,2011,Andhra Pradesh
+East Godavari,Alluri Sitharama Raju,2011,2024,Andhra Pradesh
+East Godavari,Dr. B. R. Ambedkar Konaseema,2011,2024,Andhra Pradesh
+East Godavari,Kakinada,2011,2024,Andhra Pradesh
+Guntur,Bapatla,2011,2024,Andhra Pradesh
+Guntur,Palnadu,2011,2024,Andhra Pradesh
+Krishna,NTR,2011,2024,Andhra Pradesh
+Kurnool,Nandyal,2011,2024,Andhra Pradesh
+Nellore,Prakasam,1971,1981,Andhra Pradesh
+Nellore,Sri Potti Sriramulu Nellore,2001,2011,Andhra Pradesh
+Nellore,Sri Potti Sriramulu Nellore,2001,2011,Andhra Pradesh
+Sri Potti Sriramulu Nellore,Tirupati,2011,2024,Andhra Pradesh
+Srikakulam,Vizianagaram,1971,1981,Andhra Pradesh
+Srikakulam,Vizianagaram,1971,1981,Andhra Pradesh
+Srikakulam,Parvathipuram Manyam,2011,2024,Andhra Pradesh
+Visakhapatnam,Vizianagaram,1971,1981,Andhra Pradesh
+Visakhapatnam,Vizianagaram,1971,1981,Andhra Pradesh
+Visakhapatnam,Vishakhapatnam,1971,1981,Andhra Pradesh
+Visakhapatnam,Vishakhapatnam,1971,1981,Andhra Pradesh
+Visakhapatnam,Vishakhapatnam,1971,1981,Andhra Pradesh
+Visakhapatnam,Alluri Sitharama Raju,2011,2024,Andhra Pradesh
+Visakhapatnam,Anakapalli,2011,2024,Andhra Pradesh
+Vishakhapatnam,Visakhapatnam,1981,1991,Andhra Pradesh
+Vishakhapatnam,Visakhapatnam,1981,1991,Andhra Pradesh
+Vishakhapatnam,Visakhapatnam,1981,1991,Andhra Pradesh
+Vizagapatnam,Visakhapatnam,1951,1961,Andhra Pradesh
+Vizagapatnam,Visakhapatnam,1951,1961,Andhra Pradesh
+Vizagapatnam,Visakhapatnam,1951,1961,Andhra Pradesh
+Vizagapatnam,Visakhapatnam,1951,1961,Andhra Pradesh
+Vizagapatnam,Visakhapatnam,1951,1961,Andhra Pradesh
+Vizianagaram,Parvathipuram Manyam,2011,2024,Andhra Pradesh
+Vizianagaram,Alluri Sitharama Raju,2011,2024,Andhra Pradesh
+West Godavari,Eluru,2011,2024,Andhra Pradesh
+Y.S.R.,Annamayya,2011,2024,Andhra Pradesh
+Andaman,Andamans,1981,1991,Andaman and Nicobar Islands
+Andaman,Andamans,1981,1991,Andaman and Nicobar Islands
+Andaman and Nicobar Islands,Nicobar,1971,1981,Andaman and Nicobar Islands
+Andaman and Nicobar Islands,Andaman,1971,1981,Andaman and Nicobar Islands
+Andaman and Nicobar Islands,Andaman,1971,1981,Andaman and Nicobar Islands
+Andamans,North & Middle Andaman,2001,2011,Andaman and Nicobar Islands
+Andamans,South Andaman,2001,2011,Andaman and Nicobar Islands
+Nicobar,Nicobars,1981,1991,Andaman and Nicobar Islands
+Nicobars,Nicobar,2001,2011,Andaman and Nicobar Islands
