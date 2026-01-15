@@ -1,0 +1,127 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 600px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Sri Sathya Sai", "label": "Sri Sathya Sai", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eSri Sathya Sai\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 2024\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Anantapur\u003c/div\u003e"}, {"color": "#1f77b4", "font": {"color": "#333333"}, "id": "Anantapur", "label": "Anantapur", "shape": "dot", "size": 25, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eAnantapur\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e Pre-existing or Unknown\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e -\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Annamayya", "label": "Annamayya", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eAnnamayya\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 2024\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Chittoor\u003c/div\u003e"}, {"color": "#1f77b4", "font": {"color": "#333333"}, "id": "Chittoor", "label": "Chittoor", "shape": "dot", "size": 25, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eChittoor\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e Pre-existing or Unknown\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e -\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Tirupati", "label": "Tirupati", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eTirupati\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 2024\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Chittoor\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Y.S.R.", "label": "Y.S.R.", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eY.S.R.\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 2011\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Cuddapah\u003c/div\u003e"}, {"color": "#1f77b4", "font": {"color": "#333333"}, "id": "Cuddapah", "label": "Cuddapah", "shape": "dot", "size": 25, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eCuddapah\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e Pre-existing or Unknown\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e -\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Alluri Sitharama Raju", "label": "Alluri Sitharama Raju", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eAlluri Sitharama Raju\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 2024\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e East Godavari\u003c/div\u003e"}, {"color": "#1f77b4", "font": {"color": "#333333"}, "id": "East Godavari", "label": "East Godavari", "shape": "dot", "size": 25, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eEast Godavari\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e Pre-existing or Unknown\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e -\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Dr. B. R. Ambedkar Konaseema", "label": "Dr. B. R. Ambedkar Konaseema", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eDr. B. R. Ambedkar Konaseema\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 2024\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e East Godavari\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Kakinada", "label": "Kakinada", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eKakinada\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 2024\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e East Godavari\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Bapatla", "label": "Bapatla", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eBapatla\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 2024\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Guntur\u003c/div\u003e"}, {"color": "#1f77b4", "font": {"color": "#333333"}, "id": "Guntur", "label": "Guntur", "shape": "dot", "size": 25, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eGuntur\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e Pre-existing or Unknown\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e -\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Palnadu", "label": "Palnadu", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003ePalnadu\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 2024\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Guntur\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "NTR", "label": "NTR", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eNTR\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 2024\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Krishna\u003c/div\u003e"}, {"color": "#1f77b4", "font": {"color": "#333333"}, "id": "Krishna", "label": "Krishna", "shape": "dot", "size": 25, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eKrishna\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e Pre-existing or Unknown\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e -\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Nandyal", "label": "Nandyal", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eNandyal\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 2024\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Kurnool\u003c/div\u003e"}, {"color": "#1f77b4", "font": {"color": "#333333"}, "id": "Kurnool", "label": "Kurnool", "shape": "dot", "size": 25, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eKurnool\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e Pre-existing or Unknown\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e -\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Prakasam", "label": "Prakasam", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003ePrakasam\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 1981\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Nellore\u003c/div\u003e"}, {"color": "#1f77b4", "font": {"color": "#333333"}, "id": "Nellore", "label": "Nellore", "shape": "dot", "size": 25, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eNellore\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e Pre-existing or Unknown\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e -\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Sri Potti Sriramulu Nellore", "label": "Sri Potti Sriramulu Nellore", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eSri Potti Sriramulu Nellore\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 2011\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Nellore\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Vizianagaram", "label": "Vizianagaram", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eVizianagaram\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 1981\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Srikakulam\u003c/div\u003e"}, {"color": "#1f77b4", "font": {"color": "#333333"}, "id": "Srikakulam", "label": "Srikakulam", "shape": "dot", "size": 25, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eSrikakulam\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e Pre-existing or Unknown\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e -\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Parvathipuram Manyam", "label": "Parvathipuram Manyam", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eParvathipuram Manyam\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 2024\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Srikakulam\u003c/div\u003e"}, {"color": "#1f77b4", "font": {"color": "#333333"}, "id": "Visakhapatnam", "label": "Visakhapatnam", "shape": "dot", "size": 25, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eVisakhapatnam\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e Pre-existing or Unknown\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e -\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Vishakhapatnam", "label": "Vishakhapatnam", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eVishakhapatnam\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 1981\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Visakhapatnam\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Anakapalli", "label": "Anakapalli", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eAnakapalli\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 2024\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Visakhapatnam\u003c/div\u003e"}, {"color": "#1f77b4", "font": {"color": "#333333"}, "id": "Vizagapatnam", "label": "Vizagapatnam", "shape": "dot", "size": 25, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eVizagapatnam\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e Pre-existing or Unknown\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e -\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Eluru", "label": "Eluru", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eEluru\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 2024\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e West Godavari\u003c/div\u003e"}, {"color": "#1f77b4", "font": {"color": "#333333"}, "id": "West Godavari", "label": "West Godavari", "shape": "dot", "size": 25, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eWest Godavari\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e Pre-existing or Unknown\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e -\u003c/div\u003e"}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Anantapur", "label": "2024", "to": "Sri Sathya Sai"}, {"arrows": "to", "from": "Chittoor", "label": "2024", "to": "Annamayya"}, {"arrows": "to", "from": "Chittoor", "label": "2024", "to": "Tirupati"}, {"arrows": "to", "from": "Cuddapah", "label": "2011", "to": "Y.S.R."}, {"arrows": "to", "from": "Cuddapah", "label": "2011", "to": "Y.S.R."}, {"arrows": "to", "from": "East Godavari", "label": "2024", "to": "Alluri Sitharama Raju"}, {"arrows": "to", "from": "East Godavari", "label": "2024", "to": "Dr. B. R. Ambedkar Konaseema"}, {"arrows": "to", "from": "East Godavari", "label": "2024", "to": "Kakinada"}, {"arrows": "to", "from": "Guntur", "label": "2024", "to": "Bapatla"}, {"arrows": "to", "from": "Guntur", "label": "2024", "to": "Palnadu"}, {"arrows": "to", "from": "Krishna", "label": "2024", "to": "NTR"}, {"arrows": "to", "from": "Kurnool", "label": "2024", "to": "Nandyal"}, {"arrows": "to", "from": "Nellore", "label": "1981", "to": "Prakasam"}, {"arrows": "to", "from": "Nellore", "label": "2011", "to": "Sri Potti Sriramulu Nellore"}, {"arrows": "to", "from": "Nellore", "label": "2011", "to": "Sri Potti Sriramulu Nellore"}, {"arrows": "to", "from": "Sri Potti Sriramulu Nellore", "label": "2024", "to": "Tirupati"}, {"arrows": "to", "from": "Srikakulam", "label": "1981", "to": "Vizianagaram"}, {"arrows": "to", "from": "Srikakulam", "label": "1981", "to": "Vizianagaram"}, {"arrows": "to", "from": "Srikakulam", "label": "2024", "to": "Parvathipuram Manyam"}, {"arrows": "to", "from": "Visakhapatnam", "label": "1981", "to": "Vizianagaram"}, {"arrows": "to", "from": "Visakhapatnam", "label": "1981", "to": "Vizianagaram"}, {"arrows": "to", "from": "Visakhapatnam", "label": "1981", "to": "Vishakhapatnam"}, {"arrows": "to", "from": "Visakhapatnam", "label": "1981", "to": "Vishakhapatnam"}, {"arrows": "to", "from": "Visakhapatnam", "label": "1981", "to": "Vishakhapatnam"}, {"arrows": "to", "from": "Visakhapatnam", "label": "2024", "to": "Alluri Sitharama Raju"}, {"arrows": "to", "from": "Visakhapatnam", "label": "2024", "to": "Anakapalli"}, {"arrows": "to", "from": "Vishakhapatnam", "label": "1991", "to": "Visakhapatnam"}, {"arrows": "to", "from": "Vishakhapatnam", "label": "1991", "to": "Visakhapatnam"}, {"arrows": "to", "from": "Vishakhapatnam", "label": "1991", "to": "Visakhapatnam"}, {"arrows": "to", "from": "Vizagapatnam", "label": "1961", "to": "Visakhapatnam"}, {"arrows": "to", "from": "Vizagapatnam", "label": "1961", "to": "Visakhapatnam"}, {"arrows": "to", "from": "Vizagapatnam", "label": "1961", "to": "Visakhapatnam"}, {"arrows": "to", "from": "Vizagapatnam", "label": "1961", "to": "Visakhapatnam"}, {"arrows": "to", "from": "Vizagapatnam", "label": "1961", "to": "Visakhapatnam"}, {"arrows": "to", "from": "Vizianagaram", "label": "2024", "to": "Parvathipuram Manyam"}, {"arrows": "to", "from": "Vizianagaram", "label": "2024", "to": "Alluri Sitharama Raju"}, {"arrows": "to", "from": "West Godavari", "label": "2024", "to": "Eluru"}, {"arrows": "to", "from": "Y.S.R.", "label": "2024", "to": "Annamayya"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {"nodes": {"borderWidth": 2, "shadow": true, "font": {"size": 16, "face": "SegoeUI,Roboto,Helvetica,Arial,sans-serif"}}, "edges": {"color": {"color": "#bdc3c7", "highlight": "#2c3e50"}, "smooth": {"type": "cubicBezier", "forceDirection": "vertical", "roundness": 0.4}, "arrows": {"to": {"enabled": true, "scaleFactor": 1}}}, "layout": {"hierarchical": {"enabled": true, "levelSeparation": 150, "nodeSpacing": 200, "treeSpacing": 200, "blockShifting": true, "edgeMinimization": true, "parentCentralization": true, "direction": "UD", "sortMethod": "directed"}}, "interaction": {"navigationButtons": true, "zoomView": true, "dragView": true}, "physics": {"hierarchicalRepulsion": {"centralGravity": 0, "springLength": 100, "springConstant": 0.01, "nodeDistance": 120, "damping": 0.09}, "solver": "hierarchicalRepulsion", "stabilization": {"enabled": true, "iterations": 1000}}};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>

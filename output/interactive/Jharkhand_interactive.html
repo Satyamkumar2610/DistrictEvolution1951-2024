@@ -1,0 +1,127 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 600px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Bokaro", "label": "Bokaro", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eBokaro\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 2001\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Dhanbad\u003c/div\u003e"}, {"color": "#1f77b4", "font": {"color": "#333333"}, "id": "Dhanbad", "label": "Dhanbad", "shape": "dot", "size": 25, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eDhanbad\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e Pre-existing or Unknown\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e -\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Jamtara", "label": "Jamtara", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eJamtara\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 2011\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Dumka\u003c/div\u003e"}, {"color": "#1f77b4", "font": {"color": "#333333"}, "id": "Dumka", "label": "Dumka", "shape": "dot", "size": 25, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eDumka\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e Pre-existing or Unknown\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e -\u003c/div\u003e"}, {"color": "#1f77b4", "font": {"color": "#333333"}, "id": "Giridih", "label": "Giridih", "shape": "dot", "size": 25, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eGiridih\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e Pre-existing or Unknown\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e -\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Simdega", "label": "Simdega", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eSimdega\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 2011\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Gumla\u003c/div\u003e"}, {"color": "#1f77b4", "font": {"color": "#333333"}, "id": "Gumla", "label": "Gumla", "shape": "dot", "size": 25, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eGumla\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e Pre-existing or Unknown\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e -\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Chatra", "label": "Chatra", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eChatra\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 2001\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Hazaribag\u003c/div\u003e"}, {"color": "#1f77b4", "font": {"color": "#333333"}, "id": "Hazaribag", "label": "Hazaribag", "shape": "dot", "size": 25, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eHazaribag\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e Pre-existing or Unknown\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e -\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Kodarma", "label": "Kodarma", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eKodarma\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 2001\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Hazaribag\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Hazaribagh", "label": "Hazaribagh", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eHazaribagh\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 2011\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Hazaribag\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Ramgarh", "label": "Ramgarh", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eRamgarh\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 2011\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Hazaribag\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Pakur", "label": "Pakur", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003ePakur\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 2011\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Pakaur\u003c/div\u003e"}, {"color": "#1f77b4", "font": {"color": "#333333"}, "id": "Pakaur", "label": "Pakaur", "shape": "dot", "size": 25, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003ePakaur\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e Pre-existing or Unknown\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e -\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Palamu", "label": "Palamu", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003ePalamu\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 1981\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Palamau\u003c/div\u003e"}, {"color": "#1f77b4", "font": {"color": "#333333"}, "id": "Palamau", "label": "Palamau", "shape": "dot", "size": 25, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003ePalamau\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e Pre-existing or Unknown\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e -\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Garhwa", "label": "Garhwa", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eGarhwa\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 2001\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Palamu\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Latehar", "label": "Latehar", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eLatehar\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 2011\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Palamu\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Saraikela-kharsawan", "label": "Saraikela-kharsawan", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eSaraikela-kharsawan\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 2011\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Pashchimi Singhbhum\u003c/div\u003e"}, {"color": "#1f77b4", "font": {"color": "#333333"}, "id": "Pashchimi Singhbhum", "label": "Pashchimi Singhbhum", "shape": "dot", "size": 25, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003ePashchimi Singhbhum\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e Pre-existing or Unknown\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e -\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Lohardaga", "label": "Lohardaga", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eLohardaga\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 1991\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Ranchi\u003c/div\u003e"}, {"color": "#1f77b4", "font": {"color": "#333333"}, "id": "Ranchi", "label": "Ranchi", "shape": "dot", "size": 25, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eRanchi\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e Pre-existing or Unknown\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e -\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Khunti", "label": "Khunti", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eKhunti\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 2011\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Ranchi\u003c/div\u003e"}, {"color": "#1f77b4", "font": {"color": "#333333"}, "id": "Sahibganj", "label": "Sahibganj", "shape": "dot", "size": 25, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eSahibganj\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e Pre-existing or Unknown\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e -\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Santhal Pargana", "label": "Santhal Pargana", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eSanthal Pargana\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 1981\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Santal Parganas\u003c/div\u003e"}, {"color": "#1f77b4", "font": {"color": "#333333"}, "id": "Santal Parganas", "label": "Santal Parganas", "shape": "dot", "size": 25, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eSantal Parganas\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e Pre-existing or Unknown\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e -\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Deoghar", "label": "Deoghar", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eDeoghar\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 1991\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Santhal Pargana\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Godda", "label": "Godda", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eGodda\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 1991\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Santhal Pargana\u003c/div\u003e"}, {"color": "#1f77b4", "font": {"color": "#333333"}, "id": "Singhbhum", "label": "Singhbhum", "shape": "dot", "size": 25, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eSinghbhum\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e Pre-existing or Unknown\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e -\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Purbi Singhbhum", "label": "Purbi Singhbhum", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003ePurbi Singhbhum\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 1991\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Singhbhum\u003c/div\u003e"}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Dhanbad", "label": "2001", "to": "Bokaro"}, {"arrows": "to", "from": "Dumka", "label": "2011", "to": "Jamtara"}, {"arrows": "to", "from": "Giridih", "label": "2001", "to": "Bokaro"}, {"arrows": "to", "from": "Gumla", "label": "2011", "to": "Simdega"}, {"arrows": "to", "from": "Hazaribag", "label": "2001", "to": "Chatra"}, {"arrows": "to", "from": "Hazaribag", "label": "2001", "to": "Kodarma"}, {"arrows": "to", "from": "Hazaribag", "label": "2011", "to": "Hazaribagh"}, {"arrows": "to", "from": "Hazaribag", "label": "2011", "to": "Ramgarh"}, {"arrows": "to", "from": "Hazaribagh", "label": "1981", "to": "Hazaribag"}, {"arrows": "to", "from": "Hazaribagh", "label": "1981", "to": "Hazaribag"}, {"arrows": "to", "from": "Hazaribagh", "label": "1981", "to": "Hazaribag"}, {"arrows": "to", "from": "Hazaribagh", "label": "1981", "to": "Hazaribag"}, {"arrows": "to", "from": "Hazaribagh", "label": "1981", "to": "Giridih"}, {"arrows": "to", "from": "Hazaribagh", "label": "1981", "to": "Giridih"}, {"arrows": "to", "from": "Pakaur", "label": "2011", "to": "Pakur"}, {"arrows": "to", "from": "Palamau", "label": "1981", "to": "Palamu"}, {"arrows": "to", "from": "Palamau", "label": "1981", "to": "Palamu"}, {"arrows": "to", "from": "Palamau", "label": "1981", "to": "Palamu"}, {"arrows": "to", "from": "Palamu", "label": "2001", "to": "Garhwa"}, {"arrows": "to", "from": "Palamu", "label": "2011", "to": "Latehar"}, {"arrows": "to", "from": "Pashchimi Singhbhum", "label": "2011", "to": "Saraikela-kharsawan"}, {"arrows": "to", "from": "Ranchi", "label": "1991", "to": "Lohardaga"}, {"arrows": "to", "from": "Ranchi", "label": "1991", "to": "Gumla"}, {"arrows": "to", "from": "Ranchi", "label": "1991", "to": "Gumla"}, {"arrows": "to", "from": "Ranchi", "label": "2011", "to": "Khunti"}, {"arrows": "to", "from": "Sahibganj", "label": "2001", "to": "Pakaur"}, {"arrows": "to", "from": "Santal Parganas", "label": "1981", "to": "Santhal Pargana"}, {"arrows": "to", "from": "Santal Parganas", "label": "1981", "to": "Santhal Pargana"}, {"arrows": "to", "from": "Santal Parganas", "label": "1981", "to": "Santhal Pargana"}, {"arrows": "to", "from": "Santal Parganas", "label": "1981", "to": "Santhal Pargana"}, {"arrows": "to", "from": "Santal Parganas", "label": "1981", "to": "Santhal Pargana"}, {"arrows": "to", "from": "Santal Parganas", "label": "1981", "to": "Santhal Pargana"}, {"arrows": "to", "from": "Santhal Pargana", "label": "1991", "to": "Deoghar"}, {"arrows": "to", "from": "Santhal Pargana", "label": "1991", "to": "Godda"}, {"arrows": "to", "from": "Santhal Pargana", "label": "1991", "to": "Sahibganj"}, {"arrows": "to", "from": "Santhal Pargana", "label": "1991", "to": "Sahibganj"}, {"arrows": "to", "from": "Santhal Pargana", "label": "1991", "to": "Dumka"}, {"arrows": "to", "from": "Santhal Pargana", "label": "1991", "to": "Dumka"}, {"arrows": "to", "from": "Singhbhum", "label": "1991", "to": "Pashchimi Singhbhum"}, {"arrows": "to", "from": "Singhbhum", "label": "1991", "to": "Pashchimi Singhbhum"}, {"arrows": "to", "from": "Singhbhum", "label": "1991", "to": "Purbi Singhbhum"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {"nodes": {"borderWidth": 2, "shadow": true, "font": {"size": 16, "face": "SegoeUI,Roboto,Helvetica,Arial,sans-serif"}}, "edges": {"color": {"color": "#bdc3c7", "highlight": "#2c3e50"}, "smooth": {"type": "cubicBezier", "forceDirection": "vertical", "roundness": 0.4}, "arrows": {"to": {"enabled": true, "scaleFactor": 1}}}, "layout": {"hierarchical": {"enabled": true, "levelSeparation": 150, "nodeSpacing": 200, "treeSpacing": 200, "blockShifting": true, "edgeMinimization": true, "parentCentralization": true, "direction": "UD", "sortMethod": "directed"}}, "interaction": {"navigationButtons": true, "zoomView": true, "dragView": true}, "physics": {"hierarchicalRepulsion": {"centralGravity": 0, "springLength": 100, "springConstant": 0.01, "nodeDistance": 120, "damping": 0.09}, "solver": "hierarchicalRepulsion", "stabilization": {"enabled": true, "iterations": 1000}}};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>

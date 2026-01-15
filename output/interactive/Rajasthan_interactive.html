@@ -1,0 +1,127 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 600px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Dhaulpur", "label": "Dhaulpur", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eDhaulpur\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 1991\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Bharatpur\u003c/div\u003e"}, {"color": "#1f77b4", "font": {"color": "#333333"}, "id": "Bharatpur", "label": "Bharatpur", "shape": "dot", "size": 25, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eBharatpur\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e Pre-existing or Unknown\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e -\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Chittaurgarh", "label": "Chittaurgarh", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eChittaurgarh\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 1971\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Chitorgarh\u003c/div\u003e"}, {"color": "#1f77b4", "font": {"color": "#333333"}, "id": "Chitorgarh", "label": "Chitorgarh", "shape": "dot", "size": 25, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eChitorgarh\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e Pre-existing or Unknown\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e -\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Pratapgarh", "label": "Pratapgarh", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003ePratapgarh\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 2011\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Chittaurgarh\u003c/div\u003e"}, {"color": "#1f77b4", "font": {"color": "#333333"}, "id": "Chittorgarh", "label": "Chittorgarh", "shape": "dot", "size": 25, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eChittorgarh\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e Pre-existing or Unknown\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e -\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Hanumangarh", "label": "Hanumangarh", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eHanumangarh\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 2001\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Ganganagar\u003c/div\u003e"}, {"color": "#1f77b4", "font": {"color": "#333333"}, "id": "Ganganagar", "label": "Ganganagar", "shape": "dot", "size": 25, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eGanganagar\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e Pre-existing or Unknown\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e -\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Dausa", "label": "Dausa", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eDausa\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 2001\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Jaipur\u003c/div\u003e"}, {"color": "#1f77b4", "font": {"color": "#333333"}, "id": "Jaipur", "label": "Jaipur", "shape": "dot", "size": 25, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eJaipur\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e Pre-existing or Unknown\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e -\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Jalor", "label": "Jalor", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eJalor\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 1961\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Jalore\u003c/div\u003e"}, {"color": "#1f77b4", "font": {"color": "#333333"}, "id": "Jalore", "label": "Jalore", "shape": "dot", "size": 25, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eJalore\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e Pre-existing or Unknown\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e -\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Jhunjhunun", "label": "Jhunjhunun", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eJhunjhunun\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 1971\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Jhunjhunu\u003c/div\u003e"}, {"color": "#1f77b4", "font": {"color": "#333333"}, "id": "Jhunjhunu", "label": "Jhunjhunu", "shape": "dot", "size": 25, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eJhunjhunu\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e Pre-existing or Unknown\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e -\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Baran", "label": "Baran", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eBaran\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 2001\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Kota\u003c/div\u003e"}, {"color": "#1f77b4", "font": {"color": "#333333"}, "id": "Kota", "label": "Kota", "shape": "dot", "size": 25, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eKota\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e Pre-existing or Unknown\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e -\u003c/div\u003e"}, {"color": "#1f77b4", "font": {"color": "#333333"}, "id": "Kotah", "label": "Kotah", "shape": "dot", "size": 25, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eKotah\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e Pre-existing or Unknown\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e -\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Karauli", "label": "Karauli", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eKarauli\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 2001\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Sawai Madhopur\u003c/div\u003e"}, {"color": "#1f77b4", "font": {"color": "#333333"}, "id": "Sawai Madhopur", "label": "Sawai Madhopur", "shape": "dot", "size": 25, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eSawai Madhopur\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e Pre-existing or Unknown\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e -\u003c/div\u003e"}, {"color": "#1f77b4", "font": {"color": "#333333"}, "id": "Swai Madhopur", "label": "Swai Madhopur", "shape": "dot", "size": 25, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eSwai Madhopur\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e Pre-existing or Unknown\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e -\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Rajsamand", "label": "Rajsamand", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eRajsamand\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 2001\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Udaipur\u003c/div\u003e"}, {"color": "#1f77b4", "font": {"color": "#333333"}, "id": "Udaipur", "label": "Udaipur", "shape": "dot", "size": 25, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eUdaipur\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e Pre-existing or Unknown\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e -\u003c/div\u003e"}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Bharatpur", "label": "1991", "to": "Dhaulpur"}, {"arrows": "to", "from": "Chitorgarh", "label": "1971", "to": "Chittaurgarh"}, {"arrows": "to", "from": "Chitorgarh", "label": "1971", "to": "Chittaurgarh"}, {"arrows": "to", "from": "Chittaurgarh", "label": "2011", "to": "Pratapgarh"}, {"arrows": "to", "from": "Chittorgarh", "label": "1961", "to": "Chitorgarh"}, {"arrows": "to", "from": "Chittorgarh", "label": "1961", "to": "Chitorgarh"}, {"arrows": "to", "from": "Ganganagar", "label": "2001", "to": "Hanumangarh"}, {"arrows": "to", "from": "Jaipur", "label": "2001", "to": "Dausa"}, {"arrows": "to", "from": "Jalore", "label": "1961", "to": "Jalor"}, {"arrows": "to", "from": "Jhunjhunu", "label": "1971", "to": "Jhunjhunun"}, {"arrows": "to", "from": "Kota", "label": "2001", "to": "Baran"}, {"arrows": "to", "from": "Kotah", "label": "1961", "to": "Kota"}, {"arrows": "to", "from": "Kotah", "label": "1961", "to": "Kota"}, {"arrows": "to", "from": "Sawai Madhopur", "label": "2001", "to": "Karauli"}, {"arrows": "to", "from": "Swai Madhopur", "label": "1961", "to": "Sawai Madhopur"}, {"arrows": "to", "from": "Swai Madhopur", "label": "1961", "to": "Sawai Madhopur"}, {"arrows": "to", "from": "Udaipur", "label": "2001", "to": "Rajsamand"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {"nodes": {"borderWidth": 2, "shadow": true, "font": {"size": 16, "face": "SegoeUI,Roboto,Helvetica,Arial,sans-serif"}}, "edges": {"color": {"color": "#bdc3c7", "highlight": "#2c3e50"}, "smooth": {"type": "cubicBezier", "forceDirection": "vertical", "roundness": 0.4}, "arrows": {"to": {"enabled": true, "scaleFactor": 1}}}, "layout": {"hierarchical": {"enabled": true, "levelSeparation": 150, "nodeSpacing": 200, "treeSpacing": 200, "blockShifting": true, "edgeMinimization": true, "parentCentralization": true, "direction": "UD", "sortMethod": "directed"}}, "interaction": {"navigationButtons": true, "zoomView": true, "dragView": true}, "physics": {"hierarchicalRepulsion": {"centralGravity": 0, "springLength": 100, "springConstant": 0.01, "nodeDistance": 120, "damping": 0.09}, "solver": "hierarchicalRepulsion", "stabilization": {"enabled": true, "iterations": 1000}}};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>

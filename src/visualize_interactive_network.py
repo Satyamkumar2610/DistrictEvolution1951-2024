@@ -63,6 +63,11 @@ def create_interactive_graph(state_name, df, output_dir):
           "sortMethod": "directed"  
         }
       },
+      "interaction": {
+        "navigationButtons": true,
+        "zoomView": true,
+        "dragView": true
+      },
       "physics": {
         "hierarchicalRepulsion": {
           "centralGravity": 0,

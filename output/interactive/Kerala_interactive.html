@@ -1,0 +1,127 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 600px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Alappuzha", "label": "Alappuzha", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eAlappuzha\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 1991\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Alleppey\u003c/div\u003e"}, {"color": "#1f77b4", "font": {"color": "#333333"}, "id": "Alleppey", "label": "Alleppey", "shape": "dot", "size": 25, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eAlleppey\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e Pre-existing or Unknown\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e -\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Pathanamthitta", "label": "Pathanamthitta", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003ePathanamthitta\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 1991\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Alleppey\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Wayanad", "label": "Wayanad", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eWayanad\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 1981\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Cannanore\u003c/div\u003e"}, {"color": "#1f77b4", "font": {"color": "#333333"}, "id": "Cannanore", "label": "Cannanore", "shape": "dot", "size": 25, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eCannanore\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e Pre-existing or Unknown\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e -\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Kannur", "label": "Kannur", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eKannur\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 1991\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Cannanore\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Kasargod", "label": "Kasargod", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eKasargod\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 1991\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Cannanore\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Idukki", "label": "Idukki", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eIdukki\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 1981\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Ernakulam\u003c/div\u003e"}, {"color": "#1f77b4", "font": {"color": "#333333"}, "id": "Ernakulam", "label": "Ernakulam", "shape": "dot", "size": 25, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eErnakulam\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e Pre-existing or Unknown\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e -\u003c/div\u003e"}, {"color": "#1f77b4", "font": {"color": "#333333"}, "id": "Kottayam", "label": "Kottayam", "shape": "dot", "size": 25, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eKottayam\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e Pre-existing or Unknown\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e -\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Malappuram", "label": "Malappuram", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eMalappuram\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 1971\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Kozhikode\u003c/div\u003e"}, {"color": "#1f77b4", "font": {"color": "#333333"}, "id": "Kozhikode", "label": "Kozhikode", "shape": "dot", "size": 25, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eKozhikode\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e Pre-existing or Unknown\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e -\u003c/div\u003e"}, {"color": "#1f77b4", "font": {"color": "#333333"}, "id": "Malabar", "label": "Malabar", "shape": "dot", "size": 25, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eMalabar\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e Pre-existing or Unknown\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e -\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Palghat", "label": "Palghat", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003ePalghat\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 1961\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Malabar\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Palakkad", "label": "Palakkad", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003ePalakkad\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 1991\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Palghat\u003c/div\u003e"}, {"color": "#1f77b4", "font": {"color": "#333333"}, "id": "Quilon", "label": "Quilon", "shape": "dot", "size": 25, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eQuilon\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e Pre-existing or Unknown\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e -\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Kollam", "label": "Kollam", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eKollam\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 1991\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Quilon\u003c/div\u003e"}, {"color": "#1f77b4", "font": {"color": "#333333"}, "id": "Trichur", "label": "Trichur", "shape": "dot", "size": 25, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eTrichur\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e Pre-existing or Unknown\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e -\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Thrissur", "label": "Thrissur", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eThrissur\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 1991\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Trichur\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Thiruvananthapuram", "label": "Thiruvananthapuram", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eThiruvananthapuram\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 1991\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Trivandrum\u003c/div\u003e"}, {"color": "#1f77b4", "font": {"color": "#333333"}, "id": "Trivandrum", "label": "Trivandrum", "shape": "dot", "size": 25, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eTrivandrum\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e Pre-existing or Unknown\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e -\u003c/div\u003e"}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Alleppey", "label": "1991", "to": "Alappuzha"}, {"arrows": "to", "from": "Alleppey", "label": "1991", "to": "Pathanamthitta"}, {"arrows": "to", "from": "Cannanore", "label": "1981", "to": "Wayanad"}, {"arrows": "to", "from": "Cannanore", "label": "1991", "to": "Kannur"}, {"arrows": "to", "from": "Cannanore", "label": "1991", "to": "Kasargod"}, {"arrows": "to", "from": "Ernakulam", "label": "1981", "to": "Idukki"}, {"arrows": "to", "from": "Idukki", "label": "1991", "to": "Pathanamthitta"}, {"arrows": "to", "from": "Kottayam", "label": "1961", "to": "Ernakulam"}, {"arrows": "to", "from": "Kottayam", "label": "1961", "to": "Alleppey"}, {"arrows": "to", "from": "Kottayam", "label": "1981", "to": "Idukki"}, {"arrows": "to", "from": "Kottayam", "label": "1981", "to": "Idukki"}, {"arrows": "to", "from": "Kozhikode", "label": "1971", "to": "Malappuram"}, {"arrows": "to", "from": "Kozhikode", "label": "1981", "to": "Wayanad"}, {"arrows": "to", "from": "Malabar", "label": "1961", "to": "Cannanore"}, {"arrows": "to", "from": "Malabar", "label": "1961", "to": "Cannanore"}, {"arrows": "to", "from": "Malabar", "label": "1961", "to": "Cannanore"}, {"arrows": "to", "from": "Malabar", "label": "1961", "to": "Kozhikode"}, {"arrows": "to", "from": "Malabar", "label": "1961", "to": "Kozhikode"}, {"arrows": "to", "from": "Malabar", "label": "1961", "to": "Kozhikode"}, {"arrows": "to", "from": "Malabar", "label": "1961", "to": "Palghat"}, {"arrows": "to", "from": "Malabar", "label": "1961", "to": "Palghat"}, {"arrows": "to", "from": "Palghat", "label": "1971", "to": "Malappuram"}, {"arrows": "to", "from": "Palghat", "label": "1991", "to": "Palakkad"}, {"arrows": "to", "from": "Quilon", "label": "1961", "to": "Alleppey"}, {"arrows": "to", "from": "Quilon", "label": "1991", "to": "Pathanamthitta"}, {"arrows": "to", "from": "Quilon", "label": "1991", "to": "Kollam"}, {"arrows": "to", "from": "Trichur", "label": "1961", "to": "Ernakulam"}, {"arrows": "to", "from": "Trichur", "label": "1991", "to": "Thrissur"}, {"arrows": "to", "from": "Trivandrum", "label": "1991", "to": "Thiruvananthapuram"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {"nodes": {"borderWidth": 2, "shadow": true, "font": {"size": 16, "face": "SegoeUI,Roboto,Helvetica,Arial,sans-serif"}}, "edges": {"color": {"color": "#bdc3c7", "highlight": "#2c3e50"}, "smooth": {"type": "cubicBezier", "forceDirection": "vertical", "roundness": 0.4}, "arrows": {"to": {"enabled": true, "scaleFactor": 1}}}, "layout": {"hierarchical": {"enabled": true, "levelSeparation": 150, "nodeSpacing": 200, "treeSpacing": 200, "blockShifting": true, "edgeMinimization": true, "parentCentralization": true, "direction": "UD", "sortMethod": "directed"}}, "interaction": {"navigationButtons": true, "zoomView": true, "dragView": true}, "physics": {"hierarchicalRepulsion": {"centralGravity": 0, "springLength": 100, "springConstant": 0.01, "nodeDistance": 120, "damping": 0.09}, "solver": "hierarchicalRepulsion", "stabilization": {"enabled": true, "iterations": 1000}}};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>

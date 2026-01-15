@@ -1,0 +1,127 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 600px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Lahaul and Spiti", "label": "Lahaul and Spiti", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eLahaul and Spiti\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 1961\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Kangra\u003c/div\u003e"}, {"color": "#1f77b4", "font": {"color": "#333333"}, "id": "Kangra", "label": "Kangra", "shape": "dot", "size": 25, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eKangra\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e Pre-existing or Unknown\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e -\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Kulu", "label": "Kulu", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eKulu\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 1971\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Kangra\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Hamirpur", "label": "Hamirpur", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eHamirpur\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 1981\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Kangra\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Una", "label": "Una", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eUna\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 1981\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Kangra\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Simla", "label": "Simla", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eSimla\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 1961\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Kohistan\u003c/div\u003e"}, {"color": "#1f77b4", "font": {"color": "#333333"}, "id": "Kohistan", "label": "Kohistan", "shape": "dot", "size": 25, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eKohistan\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e Pre-existing or Unknown\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e -\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Kullu", "label": "Kullu", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eKullu\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 1981\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Kulu\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Lahul and Spiti", "label": "Lahul and Spiti", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eLahul and Spiti\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 1971\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Lahaul and Spiti\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Lahul \u0026 Spiti", "label": "Lahul \u0026 Spiti", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eLahul \u0026 Spiti\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 2011\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Lahul and Spiti\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Kinnaur", "label": "Kinnaur", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eKinnaur\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 1961\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Mahasu\u003c/div\u003e"}, {"color": "#1f77b4", "font": {"color": "#333333"}, "id": "Mahasu", "label": "Mahasu", "shape": "dot", "size": 25, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eMahasu\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e Pre-existing or Unknown\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e -\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Solan", "label": "Solan", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eSolan\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 1981\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Mahasu\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Shimla", "label": "Shimla", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eShimla\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 1981\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Mahasu\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Sirmur", "label": "Sirmur", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eSirmur\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 1961\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Sirmoor\u003c/div\u003e"}, {"color": "#1f77b4", "font": {"color": "#333333"}, "id": "Sirmoor", "label": "Sirmoor", "shape": "dot", "size": 25, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eSirmoor\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e Pre-existing or Unknown\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e -\u003c/div\u003e"}, {"color": "#ff7f0e", "font": {"color": "#333333"}, "id": "Sirmaur", "label": "Sirmaur", "shape": "dot", "size": 20, "title": "\u003cdiv style=\u0027background: white; padding: 8px; border-radius: 4px; border: 1px solid #ccc;\u0027\u003e\u003cb style=\u0027font-size: 14px; color: #333;\u0027\u003eSirmaur\u003c/b\u003e\u003cbr\u003e\u003chr style=\u0027margin: 4px 0;\u0027\u003e\u003cb\u003eFormed:\u003c/b\u003e 1971\u003cbr\u003e\u003cb\u003eParent:\u003c/b\u003e Sirmur\u003c/div\u003e"}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Kangra", "label": "1961", "to": "Lahaul and Spiti"}, {"arrows": "to", "from": "Kangra", "label": "1971", "to": "Kulu"}, {"arrows": "to", "from": "Kangra", "label": "1981", "to": "Hamirpur"}, {"arrows": "to", "from": "Kangra", "label": "1981", "to": "Una"}, {"arrows": "to", "from": "Kohistan", "label": "1961", "to": "Simla"}, {"arrows": "to", "from": "Kulu", "label": "1981", "to": "Kullu"}, {"arrows": "to", "from": "Lahaul and Spiti", "label": "1971", "to": "Lahul and Spiti"}, {"arrows": "to", "from": "Lahul and Spiti", "label": "2011", "to": "Lahul \u0026 Spiti"}, {"arrows": "to", "from": "Mahasu", "label": "1961", "to": "Kinnaur"}, {"arrows": "to", "from": "Mahasu", "label": "1981", "to": "Solan"}, {"arrows": "to", "from": "Mahasu", "label": "1981", "to": "Shimla"}, {"arrows": "to", "from": "Mahasu", "label": "1981", "to": "Shimla"}, {"arrows": "to", "from": "Simla", "label": "1981", "to": "Solan"}, {"arrows": "to", "from": "Sirmoor", "label": "1961", "to": "Sirmur"}, {"arrows": "to", "from": "Sirmur", "label": "1971", "to": "Sirmaur"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {"nodes": {"borderWidth": 2, "shadow": true, "font": {"size": 16, "face": "SegoeUI,Roboto,Helvetica,Arial,sans-serif"}}, "edges": {"color": {"color": "#bdc3c7", "highlight": "#2c3e50"}, "smooth": {"type": "cubicBezier", "forceDirection": "vertical", "roundness": 0.4}, "arrows": {"to": {"enabled": true, "scaleFactor": 1}}}, "layout": {"hierarchical": {"enabled": true, "levelSeparation": 150, "nodeSpacing": 200, "treeSpacing": 200, "blockShifting": true, "edgeMinimization": true, "parentCentralization": true, "direction": "UD", "sortMethod": "directed"}}, "interaction": {"navigationButtons": true, "zoomView": true, "dragView": true}, "physics": {"hierarchicalRepulsion": {"centralGravity": 0, "springLength": 100, "springConstant": 0.01, "nodeDistance": 120, "damping": 0.09}, "solver": "hierarchicalRepulsion", "stabilization": {"enabled": true, "iterations": 1000}}};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
