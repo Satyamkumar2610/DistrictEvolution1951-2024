@@ -54,7 +54,7 @@ class JSONFormatter(logging.Formatter):
 
 
 def setup_logging(log_level: str = "INFO") -> None:
-    """Configure application-wide logging."""
+    """Configure application-wide structured logging."""
 
     # Get the root logger
     root_logger = logging.getLogger()
