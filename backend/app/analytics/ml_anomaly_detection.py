@@ -72,7 +72,7 @@ class IsolationForestDetector:
     Multivariate anomaly detector using Isolation Forest.
 
     Input: a matrix of (year × feature) observations for a single district,
-    where features might include yield, area, production, rainfall, NPK usage.
+    where features might include yield, area, production, rainfall, and NPK usage.
     """
 
     def __init__(self, contamination: float = 0.1, random_state: int = 42):
