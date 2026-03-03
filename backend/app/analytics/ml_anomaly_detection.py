@@ -157,7 +157,7 @@ class LSTMAutoencoderDetector:
 
     The autoencoder learns to reconstruct "normal" sequences of agricultural
     observations. Years where reconstruction error exceeds a threshold are
-    flagged as temporally anomalous — indicating deviation from learned patterns.
+    flagged as temporally anomalous — indicating deviations from learned patterns.
     """
 
     def __init__(
