@@ -122,7 +122,7 @@ class SoilYieldAnalyzer:
     ) -> DiminishingReturnResult | None:
         """
         Fit a Mitscherlich-type (log-linear) response curve to detect
-        diminishing returns on fertilizer application.
+        diminishing returns on fertilizer applications.
 
         Args:
             crop: Target crop.
