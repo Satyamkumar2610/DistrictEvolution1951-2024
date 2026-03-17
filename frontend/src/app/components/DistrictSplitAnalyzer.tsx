@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useState, useRef } from "react";
-import Map, { Source, Layer } from "react-map-gl/mapbox";
+import Map, { Source, Layer, MapRef } from "react-map-gl/maplibre";
 import * as turf from "@turf/turf";
 import { UploadCloud, Loader2, AlertCircle, FileJson } from "lucide-react";
-import "mapbox-gl/dist/mapbox-gl.css";
+import 'maplibre-gl/dist/maplibre-gl.css';
 import { FeatureCollection, Feature, Geometry, Polygon, MultiPolygon } from "geojson";
 
 // Ensure MAPBOX_TOKEN is available
@@ -20,7 +20,7 @@ interface GeoJsonResponse {
 }
 
 export default function DistrictSplitAnalyzer() {
-    const mapRef = useRef<any>(null);
+    const mapRef = useRef<MapRef>(null);
 
     const [parentFile, setParentFile] = useState<File | null>(null);
     const [childFile, setChildFile] = useState<File | null>(null);
@@ -35,6 +35,12 @@ export default function DistrictSplitAnalyzer() {
 
     const [status, setStatus] = useState<AnalysisState>("idle");
     const [errorMessage, setErrorMessage] = useState<string>("");
+
+    const [viewState, setViewState] = useState({
+        longitude: 78.9629,
+        latitude: 20.5937,
+        zoom: 4
+    });
 
     const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: "parent" | "child") => {
         const file = e.target.files?.[0];
@@ -272,14 +278,11 @@ export default function DistrictSplitAnalyzer() {
                 <div className="flex-1 w-full bg-slate-100 relative min-h-[400px]">
                     <Map
                         ref={mapRef}
-                        mapboxAccessToken={MAPBOX_TOKEN}
-                        initialViewState={{
-                            longitude: 78.9629,
-                            latitude: 20.5937,
-                            zoom: 4
-                        }}
-                        mapStyle="mapbox://styles/mapbox/light-v11"
-                        style={{ width: "100%", height: "100%" }}
+                        id="split-map"
+                        initialViewState={viewState}
+                        onMove={(evt) => setViewState(evt.viewState)}
+                        mapStyle="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
+                        style={{ width: "100%", height: "100%", borderRadius: "0.75rem" }}
                     >
                         {/* 1. Parent Only (Before Analysis) */}
                         {parentGeoJson && !results && (
