@@ -8,6 +8,7 @@ import ReactECharts from 'echarts-for-react';
 import { EfficiencyData, RiskData } from '../../types/analysis';
 import { GitCompareArrows, X, BarChart3 } from 'lucide-react';
 import EmptyState from '../components/EmptyState';
+import Tooltip from '../components/Tooltip';
 
 interface ComparisonData {
     cdk: string;
@@ -135,7 +136,7 @@ function CompareContent() {
                 }),
             }],
         };
-    }, [data]);
+    }, [data, colors]);
 
     return (
         <main className="page-container">
@@ -285,14 +286,20 @@ function CompareContent() {
                                         <div className="space-y-4">
                                             <div className="grid grid-cols-2 gap-3">
                                                 <div className="bg-slate-50 border border-slate-100 p-2.5 rounded-lg">
-                                                    <div className="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Rel. Efficiency</div>
+                                                    <div className="text-[10px] text-slate-500 uppercase font-bold tracking-widest flex items-center">
+                                                        Rel. Efficiency
+                                                        <Tooltip text="District yield as a percentage of the 95th percentile state yield." />
+                                                    </div>
                                                     <div className="text-lg font-bold text-emerald-600">
                                                         {(item.efficiency.relative_efficiency.efficiency_score * 100).toFixed(0)}%
                                                     </div>
                                                     <div className="text-[10px] text-slate-500 font-medium">Gap: {item.efficiency.relative_efficiency.yield_gap_pct.toFixed(1)}%</div>
                                                 </div>
                                                 <div className="bg-slate-50 border border-slate-100 p-2.5 rounded-lg">
-                                                    <div className="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Resilience</div>
+                                                    <div className="text-[10px] text-slate-500 uppercase font-bold tracking-widest flex items-center">
+                                                        Resilience
+                                                        <Tooltip text="Index combining Yield Stability with historical Drought Retention." />
+                                                    </div>
                                                     <div className="text-lg font-bold text-blue-600">
                                                         {(item.risk.resilience_index.resilience_score * 100).toFixed(0)}
                                                     </div>
@@ -301,7 +308,10 @@ function CompareContent() {
                                             </div>
                                             <div className="border-t border-slate-100 pt-3 space-y-1">
                                                 <div className="flex justify-between text-sm">
-                                                    <span className="text-slate-500 font-medium">Volatility (CV)</span>
+                                                    <span className="text-slate-500 font-medium flex items-center">
+                                                        Volatility (CV)
+                                                        <Tooltip text="Coefficient of Variation. Higher percentage means more erratic yields." position="right" />
+                                                    </span>
                                                     <span className="text-slate-900 font-bold">{item.risk.risk_profile.volatility_score.toFixed(1)}%</span>
                                                 </div>
                                                 <div className="flex justify-between text-sm">
@@ -345,7 +355,10 @@ function CompareContent() {
                                 </thead>
                                 <tbody className="divide-y divide-slate-100 text-slate-900">
                                     <tr className="hover:bg-slate-50/50 transition-colors">
-                                        <td className="px-6 py-3 font-semibold text-slate-600">Resilience Index</td>
+                                        <td className="px-6 py-3 font-semibold text-slate-600">
+                                            Resilience Index
+                                            <Tooltip text="Composite of Yield Stability and Drought Retention (0-100)" position="right" />
+                                        </td>
                                         {data.map((d, i) => (
                                             <td key={i} className="px-6 py-3 font-bold font-mono">
                                                 {d.risk ? (d.risk.resilience_index.resilience_score * 100).toFixed(0) : '—'}
@@ -353,7 +366,10 @@ function CompareContent() {
                                         ))}
                                     </tr>
                                     <tr className="hover:bg-slate-50/50 transition-colors">
-                                        <td className="px-6 py-3 font-semibold text-slate-600">Relative Efficiency</td>
+                                        <td className="px-6 py-3 font-semibold text-slate-600">
+                                            Relative Efficiency
+                                            <Tooltip text="District yield / State 95th Percentile yield" position="right" />
+                                        </td>
                                         {data.map((d, i) => (
                                             <td key={i} className="px-6 py-3 font-mono">
                                                 {d.efficiency ? (d.efficiency.relative_efficiency.efficiency_score * 100).toFixed(1) + '%' : '—'}
@@ -369,7 +385,10 @@ function CompareContent() {
                                         ))}
                                     </tr>
                                     <tr className="hover:bg-slate-50/50 transition-colors">
-                                        <td className="px-6 py-3 font-semibold text-slate-600">Volatility (CV)</td>
+                                        <td className="px-6 py-3 font-semibold text-slate-600">
+                                            Volatility (CV)
+                                            <Tooltip text="Standard Deviation / Mean yield. Measures unpredictability." position="right" />
+                                        </td>
                                         {data.map((d, i) => (
                                             <td key={i} className="px-6 py-3 font-mono">
                                                 {d.risk ? d.risk.risk_profile.volatility_score.toFixed(1) + '%' : '—'}

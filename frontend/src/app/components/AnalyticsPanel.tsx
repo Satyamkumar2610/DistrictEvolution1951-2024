@@ -4,6 +4,7 @@ import { api } from '../services/api';
 import { Shield, TrendingUp, AlertTriangle, PieChart, Calculator, Bookmark as BookmarkIcon, Check, ExternalLink } from 'lucide-react';
 import SimulationPanel from './SimulationPanel';
 import ClimateCorrelationCard from './ClimateCorrelationCard';
+import Tooltip from './Tooltip';
 import { useBookmarks } from '../hooks/useBookmarks';
 import { exportToCSV } from '../../lib/reports';
 
@@ -153,7 +154,7 @@ export default function AnalyticsPanel({ cdk, districtName, state, year, crop }:
                         {/* Tooltip */}
                         <div className="absolute left-0 bottom-full mb-2 w-48 bg-slate-800 border border-slate-700 p-2 rounded text-[10px] text-slate-200 hidden group-hover/tooltip:block z-50 shadow-xl pointer-events-none">
                             <div className="font-bold text-emerald-400 mb-1">Relative Efficiency</div>
-                            Compares yield ({efficiency.relative_efficiency.district_yield}) to state top 5% ({efficiency.relative_efficiency.potential_yield}).
+                            Compares yield ({efficiency.relative_efficiency.district_yield} kg/ha) to state top 5% ({efficiency.relative_efficiency.potential_yield} kg/ha).
                         </div>
                     </div>
 
@@ -172,7 +173,7 @@ export default function AnalyticsPanel({ cdk, districtName, state, year, crop }:
                                 <div className={`text-xs font-mono font-semibold ${efficiency.historical_efficiency.is_above_trend ? 'text-blue-600' : 'text-amber-600'}`}>
                                     {efficiency.historical_efficiency.yield_diff > 0 ? '+' : ''}{efficiency.historical_efficiency.yield_diff?.toFixed(1) || '0.0'}
                                 </div>
-                                <div className="text-[10px] text-slate-500 font-medium">Diff</div>
+                                <div className="text-[10px] text-slate-500 font-medium">Diff (kg/ha)</div>
                             </div>
                         </div>
                         <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden relative shadow-inner border border-slate-200/50">
@@ -188,7 +189,7 @@ export default function AnalyticsPanel({ cdk, districtName, state, year, crop }:
                         {/* Tooltip */}
                         <div className="absolute left-0 bottom-full mb-2 w-48 bg-slate-800 border border-slate-700 p-2 rounded text-[10px] text-slate-200 hidden group-hover/tooltip:block z-50 shadow-xl pointer-events-none">
                             <div className="font-bold text-blue-400 mb-1">Historical Efficiency</div>
-                            vs 10y Mean ({efficiency.historical_efficiency.historical_mean?.toFixed(1) || '?'}).
+                            vs 10y Mean ({efficiency.historical_efficiency.historical_mean?.toFixed(1) || '?'} kg/ha).
                         </div>
                     </div>
                 </div>
@@ -209,7 +210,10 @@ export default function AnalyticsPanel({ cdk, districtName, state, year, crop }:
                         {/* Resilience Score */}
                         <div className="flex justify-between items-center mb-4 pb-3 border-b border-slate-100">
                             <div>
-                                <div className="text-[10px] text-slate-500 font-medium mb-1">Resilience Index</div>
+                                <div className="text-[10px] text-slate-500 font-medium mb-1 flex items-center">
+                                    Resilience Index
+                                    <Tooltip text="Composite of Yield Stability and Drought Retention (0-100)" position="right" />
+                                </div>
                                 <div className="text-2xl font-bold text-slate-900">
                                     {(riskData.resilience_index.resilience_score * 100).toFixed(0)}
                                 </div>
@@ -227,7 +231,10 @@ export default function AnalyticsPanel({ cdk, districtName, state, year, crop }:
                         {/* Growth Matrix */}
                         <div className="flex justify-between items-center">
                             <div>
-                                <div className="text-[10px] text-slate-500 font-medium mb-1">Growth Quadrant</div>
+                                <div className="text-[10px] text-slate-500 font-medium mb-1 flex items-center">
+                                    Growth Quadrant
+                                    <Tooltip text="Classification based on 5-year CAGR and Yield Efficiency." position="right" />
+                                </div>
                                 <div className="text-sm font-bold text-slate-800">{riskData.growth_matrix.matrix_quadrant}</div>
                             </div>
                             <div className="text-right">
@@ -275,9 +282,15 @@ export default function AnalyticsPanel({ cdk, districtName, state, year, crop }:
                                 {risk.risk_category} Risk
                             </div>
 
-                            <div className="flex-1 text-right">
-                                <div className="text-xs font-medium text-slate-700">{risk.trend_stability}</div>
-                                <div className="text-[10px] text-slate-500">CV: <span className="font-mono">{risk.volatility_score?.toFixed(1) || '?'}%</span></div>
+                            <div className="flex-1 text-right border-l border-slate-100 pl-3">
+                                <div className="text-xs font-medium text-slate-700 flex justify-end items-center">
+                                    {risk.trend_stability}
+                                    <Tooltip text="Overall directional stability of the historical yield." position="left" />
+                                </div>
+                                <div className="text-[10px] text-slate-500 mt-1 flex justify-end items-center">
+                                    CV: <span className="font-mono ml-1">{risk.volatility_score?.toFixed(1) || '?'}%</span>
+                                    <Tooltip text="Coefficient of Variation. Higher = more unpredictable yields." position="left" />
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -290,6 +303,7 @@ export default function AnalyticsPanel({ cdk, districtName, state, year, crop }:
                     <div className="bg-white border border-slate-200 shadow-sm rounded-xl p-4 transition-all duration-300 hover:shadow-md hover:border-purple-200">
                         <h4 className="text-[10px] text-purple-600 uppercase font-bold mb-3 flex items-center gap-2 tracking-wider">
                             <PieChart size={14} /> State Diversity
+                            <Tooltip text="Simpson's Diversity Index (0-1). 1 = highly diverse, 0 = monoculture." position="right" />
                         </h4>
 
                         <div className="flex justify-between items-center mb-2">
