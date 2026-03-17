@@ -108,7 +108,6 @@ function SelectInner<T = string>(
 
   // Reset highlighted index when filtered options change
   useEffect(() => {
-    // eslint-disable-next-line
     setHighlightedIndex(-1);
   }, [searchQuery]);
 

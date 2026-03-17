@@ -185,7 +185,6 @@ export function ThemeProvider({
 
   // Set mounted flag after hydration
   useEffect(() => {
-    // eslint-disable-next-line
     setMounted(true);
   }, []);
 

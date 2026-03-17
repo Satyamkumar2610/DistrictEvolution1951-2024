@@ -108,9 +108,8 @@ export default function CropShiftPage() {
                     // eslint-disable-next-line @typescript-eslint/no-unused-vars
                     let total = 0;
                     // Sort tooltip by largest share first
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    const sortedParams = [...params].sort((a, b) => b.value - a.value);
-                    sortedParams.forEach((p: any) => {
+                    const sortedParams = [...params].sort((a: any /* eslint-disable-line @typescript-eslint/no-explicit-any */, b: any /* eslint-disable-line @typescript-eslint/no-explicit-any */) => b.value - a.value);
+                    sortedParams.forEach((p: any /* eslint-disable-line @typescript-eslint/no-explicit-any */) => {
                         if (p.value > 0) {
                             html += `<div class="flex items-center justify-between gap-4 text-xs mt-1">
                                         <div class="flex items-center gap-1.5">

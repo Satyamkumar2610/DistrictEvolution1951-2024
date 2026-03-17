@@ -7,8 +7,7 @@ import { UploadCloud, Loader2, AlertCircle, FileJson } from "lucide-react";
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { FeatureCollection, Feature, Geometry, Polygon, MultiPolygon } from "geojson";
 
-// Ensure MAPBOX_TOKEN is available
-const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || "";
+
 
 type AnalysisState = "idle" | "processing_client" | "processing_server" | "success" | "error";
 
@@ -77,7 +76,7 @@ export default function DistrictSplitAnalyzer() {
                     [bbox[2], bbox[3]]
                 ], { padding: 40, duration: 1000 });
             }
-        } catch (err: any) {
+        } catch (err: any /* eslint-disable-line @typescript-eslint/no-explicit-any */) {
             setErrorMessage(`Failed to parse ${type} file: ${err.message}`);
             setStatus("error");
         }
@@ -159,7 +158,7 @@ export default function DistrictSplitAnalyzer() {
 
             setStatus("success");
 
-        } catch (err: any) {
+        } catch (err: any /* eslint-disable-line @typescript-eslint/no-explicit-any */) {
             console.error(err);
             setErrorMessage(err.message || "An error occurred during analysis.");
             setStatus("error");

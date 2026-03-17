@@ -63,6 +63,7 @@ function DistrictEvolutionApp() {
         districtData={selectedData || undefined}
         showRainfallLayer={showRainfall}
         onRainfallLayerToggle={() => updateUrl({ rainfall: !showRainfall })}
+        onContextChange={(ctx) => updateUrl({ district: ctx.district, year: ctx.year, crop: ctx.crop })}
       />
 
       {/* Main Map Area */}

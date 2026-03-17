@@ -4,7 +4,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import ReactECharts from 'echarts-for-react';
 import { api } from '../../services/api';
-import { GitBranch, Calendar, Database, MapPin, ChevronDown, Search, ArrowRight, Clock, Hash, Info, Table as TableIcon, Activity } from 'lucide-react';
+import { GitBranch, Database, MapPin, Search, ArrowRight, Info, Table as TableIcon, Activity } from 'lucide-react';
 
 interface SplitEvent {
     state_name: string;
@@ -19,7 +19,6 @@ interface SplitEvent {
 export default function LineagePage() {
     const [selectedState, setSelectedState] = useState<string>('');
     const [selectedCdk, setSelectedCdk] = useState<string>('');
-    const [expandedDecade, setExpandedDecade] = useState<number | null>(null);
     const [coverageSearch, setCoverageSearch] = useState('');
     const [viewMode, setViewMode] = useState<'graph' | 'table'>('graph');
 
@@ -34,7 +33,7 @@ export default function LineagePage() {
         enabled: !!selectedState,
     });
 
-    const { data: tracking, isLoading: isLoadingTracking } = useQuery({
+    const { data: tracking } = useQuery({
         queryKey: ['lineage-tracking', selectedCdk],
         queryFn: () => api.getDataTracking(selectedCdk),
         enabled: !!selectedCdk,
@@ -83,8 +82,8 @@ export default function LineagePage() {
     const graphData = useMemo(() => {
         if (!history || history.length === 0) return null;
 
-        const nodes: any[] = [];
-        const links: any[] = [];
+        const nodes: any[] = []; /* eslint-disable-line @typescript-eslint/no-explicit-any */
+        const links: any[] = []; /* eslint-disable-line @typescript-eslint/no-explicit-any */
         const uniqueNodes = new Set<string>();
 
         // Set up root and derived districts based on split year and edges
@@ -302,7 +301,7 @@ export default function LineagePage() {
                                                 borderColor: '#e2e8f0',
                                                 borderWidth: 1,
                                                 textStyle: { color: '#1e293b' },
-                                                formatter: function (params: any) {
+                                                formatter: function (params: any /* eslint-disable-line @typescript-eslint/no-explicit-any */) {
                                                     if (params.dataType === 'node') {
                                                         return `<div class="font-bold text-sm mb-1">${params.data.name}</div><div class="text-xs text-gray-500 flex items-center gap-1">Click to view data coverage</div>`;
                                                     } else if (params.dataType === 'edge') {
@@ -357,10 +356,10 @@ export default function LineagePage() {
                                         }}
                                         style={{ height: '100%', width: '100%' }}
                                         onEvents={{
-                                            'click': (params: any) => {
+                                            'click': (params: any /* eslint-disable-line @typescript-eslint/no-explicit-any */) => {
                                                 if (params.dataType === 'node') {
                                                     // Try to match the clicked node to a CDK from coverage lists
-                                                    const matchedDistrict = coverage?.coverage?.find((d: any) => d.district_name === params.data.name);
+                                                    const matchedDistrict = coverage?.coverage?.find((d: any /* eslint-disable-line @typescript-eslint/no-explicit-any */) => d.district_name === params.data.name);
                                                     if (matchedDistrict) {
                                                         setSelectedCdk(matchedDistrict.cdk);
                                                         // Auto-scroll to sidebar on mobile

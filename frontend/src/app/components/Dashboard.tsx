@@ -24,6 +24,7 @@ interface DashboardProps {
     // Rainfall Layer
     showRainfallLayer?: boolean;
     onRainfallLayerToggle?: () => void;
+    onContextChange?: (context: { district: string; year: number; crop: string }) => void;
 }
 
 const CROPS = [
@@ -59,6 +60,7 @@ const Dashboard: React.FC<DashboardProps> = ({
     districtData,
     showRainfallLayer,
     onRainfallLayerToggle,
+    onContextChange,
 }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [searchResults, setSearchResults] = useState<string[]>([]);
@@ -202,10 +204,16 @@ const Dashboard: React.FC<DashboardProps> = ({
                     {/* 0. Saved Views (New) */}
                     <BookmarkPanel
                         onSelect={(b) => {
-                            onDistrictSelect(b.district); // Ideally pass state/year/crop too but Dashboard props need updating
-                            // For V1, let's just trigger dist select. 
-                            // TODO: Propagate year/crop/metric changes up to Dashboard via a unified `setContext`?
-                            // For now, let's just select the district.
+                            if (onContextChange) {
+                                onContextChange({
+                                    district: b.district,
+                                    year: b.year,
+                                    crop: b.crop
+                                });
+                            } else {
+                                onDistrictSelect(b.district);
+                                onCropChange(b.crop);
+                            }
                         }}
                     />
 

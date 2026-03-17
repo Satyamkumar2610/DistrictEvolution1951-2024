@@ -8,7 +8,7 @@ import { ComparisonView } from './ComparisonView';
 import { ComparisonModeSelector } from './ComparisonModeSelector';
 import { LayoutDashboard, ChevronLeft, Menu, X } from 'lucide-react';
 
-import { useStateSummary, useSplitEvents } from '../../hooks/useSplitImpact';
+import { useSplitEvents } from '../../hooks/useSplitImpact';
 import { useQuery } from '@tanstack/react-query'; // Assuming this import is needed for useQuery
 import { api } from '../../services/api';
 

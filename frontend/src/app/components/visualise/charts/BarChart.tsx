@@ -49,7 +49,7 @@ export function BarChart({ data, metrics, colors }: BarChartProps) {
                         type: 'value',
                         axisLabel: { formatter: (val: number) => val >= 1000 ? `${(val / 1000).toFixed(1)}k` : val },
                     },
-                    series: metrics.map((metric, index) => ({
+                    series: metrics.map((metric) => ({
                         name: metric.charAt(0).toUpperCase() + metric.slice(1),
                         type: 'bar',
                         data: data.map(d => d[metric]),

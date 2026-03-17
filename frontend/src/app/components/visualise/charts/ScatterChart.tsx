@@ -32,7 +32,7 @@ export function ScatterChart({ data, xAxisMetric, yAxisMetric, color = '#3B82F6'
                 option={{
                     tooltip: {
                         trigger: 'item',
-                        formatter: function (params: any) {
+                        formatter: function (params: any /* eslint-disable-line @typescript-eslint/no-explicit-any */) {
                             return `Year: ${params.value[2]}<br/>${xAxisMetric}: ${params.value[0]}<br/>${yAxisMetric}: ${params.value[1]}`;
                         }
                     },

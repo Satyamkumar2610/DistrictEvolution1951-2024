@@ -25,7 +25,7 @@ export default function WaterStressPage() {
         enabled: !!selectedState,
     });
 
-    const districts = stressData?.districts || [];
+    const districts = useMemo(() => stressData?.districts || [], [stressData]);
     const hasData = districts.length > 0;
 
     // Analytics Summary
