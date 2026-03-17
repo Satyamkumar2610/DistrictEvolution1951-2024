@@ -131,6 +131,11 @@ export default function MethodologyPage() {
                             formula="SARIMA(1,1,1) with linear fallback"
                             explanation="Seasonal ARIMA model when ≥10 years of data available. Falls back to linear trend extrapolation for shorter series. Returns predictions with confidence intervals."
                         />
+                        <FormulaBlock
+                            title="Climate Stationary Assumption"
+                            formula='climate_assumption="stationary"'
+                            explanation="Historical rainfall normals are used to correlate with past yields. We assume climate patterns are 'stationary' across the 50-year dataset, which may not capture recent extreme volatility."
+                        />
                     </div>
                 </section>
 

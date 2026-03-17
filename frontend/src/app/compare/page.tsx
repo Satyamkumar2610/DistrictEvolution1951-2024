@@ -92,7 +92,7 @@ function CompareContent() {
     const radarOption = useMemo(() => {
         if (data.length === 0) return null;
         const indicators = [
-            { name: 'Efficiency', max: 100 },
+            { name: 'Rel. Efficiency', max: 100 },
             { name: 'Resilience', max: 100 },
             { name: 'Stability', max: 100 },
             { name: 'Historical Perf', max: 100 },
@@ -150,7 +150,7 @@ function CompareContent() {
                     </div>
                     <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Comparative Analysis</h1>
                     <p className="text-sm text-slate-500 mt-1 max-w-2xl">
-                        Compare efficiency, resilience, volatility, and growth performance across up to 4 districts side-by-side.
+                        Compare relative efficiency, resilience, volatility, and growth performance across up to 4 districts side-by-side.
                     </p>
                 </div>
             </div>

@@ -11,7 +11,7 @@ interface ClimateCorrelationCardProps {
             monsoon_rainfall: { r: number; interpretation: string; direction: string };
         };
         data_points: { district: string; yield: number; annual_rainfall: number; monsoon_rainfall: number }[];
-        validity?: { warning: string; baseline_period: string };
+        validity?: { warning: string; baseline_period: string; climate_assumption?: string };
     };
     crop: string;
 }
@@ -122,6 +122,7 @@ export default function ClimateCorrelationCard({ data, crop }: ClimateCorrelatio
                 <p>
                     Statistical correlation based on {data?.data_points?.length || 0} districts.
                     Compares {data.validity?.baseline_period || 'historic'} Rainfall Normals vs Yield.
+                    Assumption: Climate is stationary (climate_assumption="{data.validity?.climate_assumption || 'stationary'}").
                     Results may vary for irrigated regions.
                 </p>
             </div>

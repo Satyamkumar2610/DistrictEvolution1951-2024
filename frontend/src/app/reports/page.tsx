@@ -254,7 +254,7 @@ export default function ReportsPage() {
                                             <div className="text-lg font-bold text-slate-900">{report.state_benchmark.avg_yield} <span className="text-xs text-slate-500">kg/ha</span></div>
                                         </div>
                                         <div>
-                                            <div className="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">Efficiency Ratio</div>
+                                            <div className="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">Rel. Efficiency</div>
                                             <div className={`text-lg font-bold ${report.state_benchmark.efficiency > 1 ? 'text-emerald-600' : 'text-rose-600'}`}>
                                                 {report.state_benchmark.efficiency?.toFixed(3) || '—'}
                                             </div>
