@@ -56,9 +56,9 @@
 - [x] **UX/Education**: Tooltips defining "CV", "Stability", and units.
 
 ### Phase 6: Decision Intelligence (P2 - Medium Term)
-- [ ] **Resilience Index**: Composite of Yield Stability (1/CV) + Drought Retention.
-- [ ] **Growth Matrix**: 2x2 Cluster Map (CAGR vs Yield).
-- [ ] **Simulated Impact**: Regression-based scenarios with confidence bands.
+- [x] **Resilience Index**: Composite of Yield Stability (1/CV) + Drought Retention.
+- [x] **Growth Matrix**: 2x2 Cluster Map (CAGR vs Yield).
+- [x] **Simulated Impact**: Regression-based scenarios with confidence bands.
 
 ## 5. Critical Vulnerability Log (Status)
 - [x] **[CRITICAL] SQL Injection**: Identified in `analysis.py`. **Patched.**
