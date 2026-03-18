@@ -76,42 +76,98 @@ export default function ClimateCorrelationCard({ data, crop }: ClimateCorrelatio
             {/* Scatter Plot */}
             <div className="h-48 w-full bg-white border border-slate-200 shadow-sm rounded-xl p-3 mb-3">
                 <ReactECharts
-                    option={{
-                        grid: { top: 10, right: 10, bottom: 20, left: 40 },
-                        tooltip: {
-                            trigger: 'item',
-                            backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                            borderColor: '#e2e8f0',
-                            textStyle: { color: '#0f172a', fontSize: 11 },
-                            padding: [8, 12],
-                            formatter: function (params: any /* eslint-disable-line @typescript-eslint/no-explicit-any */) {
-                                return `<b>Yield:</b> ${params.value[1]} kg/ha<br/><b>Rainfall:</b> ${params.value[0]} mm`;
+                    option={(() => {
+                        const points = (data?.data_points || []).map(p => [p.monsoon_rainfall, p.yield] as [number, number]);
+
+                        // Compute simple linear regression for trend line
+                        let regressionLine: [number, number][] = [];
+                        let rSquared = 0;
+                        if (points.length >= 3) {
+                            const n = points.length;
+                            const sumX = points.reduce((s, p) => s + p[0], 0);
+                            const sumY = points.reduce((s, p) => s + p[1], 0);
+                            const sumXY = points.reduce((s, p) => s + p[0] * p[1], 0);
+                            const sumX2 = points.reduce((s, p) => s + p[0] * p[0], 0);
+                            const meanY = sumY / n;
+                            const denom = n * sumX2 - sumX * sumX;
+                            if (denom !== 0) {
+                                const slope = (n * sumXY - sumX * sumY) / denom;
+                                const intercept = (sumY - slope * sumX) / n;
+                                const xVals = points.map(p => p[0]);
+                                const xMin = Math.min(...xVals);
+                                const xMax = Math.max(...xVals);
+                                regressionLine = [[xMin, slope * xMin + intercept], [xMax, slope * xMax + intercept]];
+                                // R²
+                                const ssRes = points.reduce((s, p) => s + (p[1] - (slope * p[0] + intercept)) ** 2, 0);
+                                const ssTot = points.reduce((s, p) => s + (p[1] - meanY) ** 2, 0);
+                                rSquared = ssTot > 0 ? 1 - ssRes / ssTot : 0;
                             }
-                        },
-                        xAxis: {
-                            type: 'value',
-                            name: 'Rainfall (mm)',
-                            nameLocation: 'middle',
-                            nameGap: 25,
-                            axisLabel: { color: '#64748b', fontSize: 9 },
-                            splitLine: { lineStyle: { color: '#e2e8f0', type: 'dashed' } },
-                            axisLine: { show: false }
-                        },
-                        yAxis: {
-                            type: 'value',
-                            name: 'Yield (kg)',
-                            nameLocation: 'end',
-                            axisLabel: { color: '#64748b', fontSize: 9, formatter: (val: number) => val >= 1000 ? `${(val / 1000).toFixed(1)}k` : val },
-                            splitLine: { lineStyle: { color: '#e2e8f0', type: 'dashed' } },
-                            axisLine: { show: false }
-                        },
-                        series: [{
-                            type: 'scatter',
-                            symbolSize: 6,
-                            itemStyle: { color: '#38bdf8', opacity: 0.6 },
-                            data: (data?.data_points || []).map(p => [p.monsoon_rainfall, p.yield])
-                        }]
-                    }}
+                        }
+
+                        return {
+                            grid: { top: 18, right: 10, bottom: 20, left: 40 },
+                            graphic: regressionLine.length > 0 ? [{
+                                type: 'text',
+                                right: 8,
+                                top: 4,
+                                style: {
+                                    text: `R² = ${rSquared.toFixed(3)}`,
+                                    fontSize: 9,
+                                    fontFamily: 'monospace',
+                                    fill: '#94a3b8',
+                                },
+                            }] : [],
+                            tooltip: {
+                                trigger: 'item',
+                                backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                                borderColor: '#e2e8f0',
+                                textStyle: { color: '#0f172a', fontSize: 11 },
+                                padding: [8, 12],
+                                formatter: function (params: any /* eslint-disable-line @typescript-eslint/no-explicit-any */) {
+                                    if (params.seriesName === 'Trend') return '';
+                                    return `<b>Yield:</b> ${params.value[1]} kg/ha<br/><b>Rainfall:</b> ${params.value[0]} mm`;
+                                }
+                            },
+                            xAxis: {
+                                type: 'value',
+                                name: 'Rainfall (mm)',
+                                nameLocation: 'middle',
+                                nameGap: 25,
+                                axisLabel: { color: '#64748b', fontSize: 9 },
+                                splitLine: { lineStyle: { color: '#e2e8f0', type: 'dashed' } },
+                                axisLine: { show: false },
+                                scale: true,
+                            },
+                            yAxis: {
+                                type: 'value',
+                                name: 'Yield (kg/ha)',
+                                nameLocation: 'end',
+                                axisLabel: { color: '#64748b', fontSize: 9, formatter: (val: number) => val >= 1000 ? `${(val / 1000).toFixed(1)}k` : val },
+                                splitLine: { lineStyle: { color: '#e2e8f0', type: 'dashed' } },
+                                axisLine: { show: false },
+                                scale: true,
+                            },
+                            series: [
+                                {
+                                    name: 'Districts',
+                                    type: 'scatter',
+                                    symbolSize: 6,
+                                    itemStyle: { color: '#38bdf8', opacity: 0.6 },
+                                    data: points,
+                                },
+                                ...(regressionLine.length > 0 ? [{
+                                    name: 'Trend',
+                                    type: 'line',
+                                    showSymbol: false,
+                                    lineStyle: { color: '#6366f1', width: 1.5, type: 'dashed' as const, opacity: 0.5 },
+                                    itemStyle: { color: '#6366f1' },
+                                    data: regressionLine,
+                                    silent: true,
+                                    tooltip: { show: false },
+                                }] : []),
+                            ],
+                        };
+                    })()}
                     style={{ height: '100%', width: '100%' }}
                 />
             </div>

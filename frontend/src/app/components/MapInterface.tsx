@@ -143,6 +143,35 @@ export default function MapInterface({ year, crop = 'wheat', metric = 'yield', s
                     {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                     <Layer {...(layerStyle as any)} />
                     <Layer id="borders" type="line" paint={{ 'line-color': '#ffffff', 'line-width': 0.5, 'line-opacity': 0.2 }} />
+                    {/* Dashed borders for harmonized (backcast) districts — boundary uncertainty */}
+                    {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                    <Layer {...({
+                        id: 'harmonized-borders',
+                        type: 'line',
+                        paint: {
+                            'line-color': '#fbbf24',
+                            'line-width': (() => {
+                                const districtExpr = ['coalesce', ['get', 'DISTRICT'], ['get', 'district_name']];
+                                const stateExpr = ['coalesce', ['get', 'STATE'], ['get', 'ST_NM']];
+                                const keyExpr = ['concat', districtExpr, '|', stateExpr];
+                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                const matchExpr: any[] = ['match', keyExpr];
+                                let hasHarmonized = false;
+                                Object.entries(joinedData).forEach(([geoKey, d]) => {
+                                    if (d.method && d.method !== 'Raw') {
+                                        matchExpr.push(geoKey);
+                                        matchExpr.push(1.5);
+                                        hasHarmonized = true;
+                                    }
+                                });
+                                if (!hasHarmonized) return 0;
+                                matchExpr.push(0); // default: no border for raw
+                                return matchExpr;
+                            })(),
+                            'line-opacity': 0.7,
+                            'line-dasharray': [2, 2],
+                        }
+                    } as any)} />
                 </Source>
 
                 {hoverInfo && hoverInfo.lngLat && (
