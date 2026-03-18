@@ -42,8 +42,8 @@
 - [x] **Type Safety:** Fix the remaining `any` types.
 
 ### Phase 2: Scientific Validity (Innovation)
-- [ ] **"Confidence Interval" Visualization:** Boundaries are fuzzy. We should visualize the "uncertainty" of our harmonization (e.g., dotted lines for disputed/estimated borders).
-- [ ] **Climate Correlation:** Overlay the Rainfall Layer *mathematically* (Correlation Coefficient) against Yield, not just visually.
+- [x] **"Confidence Interval" Visualization:** Boundaries are fuzzy. We should visualize the "uncertainty" of our harmonization (e.g., dotted lines for disputed/estimated borders).
+- [x] **Climate Correlation:** Overlay the Rainfall Layer *mathematically* (Correlation Coefficient) against Yield, not just visually.
 
 ### Phase 4: Critical Foundations (P0 - Immediate)
 - [x] **Security**: Patch SQL Injection & enforce unit validation.
