@@ -46,7 +46,7 @@
 - [ ] **Climate Correlation:** Overlay the Rainfall Layer *mathematically* (Correlation Coefficient) against Yield, not just visually.
 
 ### Phase 4: Critical Foundations (P0 - Immediate)
-- [ ] **Security**: Patch SQL Injection & enforce unit validation.
+- [x] **Security**: Patch SQL Injection & enforce unit validation.
 - [ ] **Methodology**: Add `climate_assumption="stationary"` flag and disclaimer.
 - [ ] **Data Governance**: Explicit unit labeling in API & UI.
 
@@ -61,7 +61,7 @@
 - [ ] **Simulated Impact**: Regression-based scenarios with confidence bands.
 
 ## 5. Critical Vulnerability Log (Status)
-- [ ] **[CRITICAL] SQL Injection**: Identified in `analysis.py`. **Fixing Now.**
+- [x] **[CRITICAL] SQL Injection**: Identified in `analysis.py`. **Fixing Now.**
 - [ ] **[HIGH] Logic Error**: Relative vs Historical Efficiency. **Scheduled P1.**
 - [ ] **[MED] Data Validity**: Climate Normals. **Fixing P0.**
 

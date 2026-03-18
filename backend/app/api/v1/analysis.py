@@ -13,6 +13,10 @@ from app.services.analysis_service import AnalysisService
 from app.schemas.analysis import SplitImpactResponse
 from app.analytics import get_advanced_analyzer
 from app.exceptions import NotFoundError, ValidationError
+from app.validators import (
+    validate_state_name, validate_crop, validate_metric,
+    validate_year, validate_cdk, validate_cdk_list, validate_mode
+)
 
 router = APIRouter()
 
@@ -86,6 +90,8 @@ async def get_districts_for_state(
     """
     from collections import defaultdict
     from app.services.name_resolver import resolve_lgd as _resolve_lgd
+    
+    state = validate_state_name(state)
 
     # --- Query split events — use ETL pre-resolved LGDs ---
     rows = await db.fetch("""
@@ -203,8 +209,14 @@ async def analyze_split_impact(
     """
     Perform split impact analysis.
     """
-    children_list = [c.strip() for c in children.split(",") if c.strip()]
-    variable = f"{crop.lower()}_{metric.lower()}"
+    parent = validate_cdk(parent)
+    children_list = validate_cdk_list(children)
+    splitYear = validate_year(splitYear)
+    crop = validate_crop(crop)
+    metric = validate_metric(metric)
+    mode = validate_mode(mode)
+
+    variable = f"{crop}_{metric}"
     query_hash = _generate_query_hash(request)
 
     # Check Cache
@@ -254,6 +266,9 @@ async def get_crop_diversification(
     Uses Simpson's Diversity Index: 1 - Σ(pi²)
     Higher values indicate more diverse cropping patterns.
     """
+    state = validate_state_name(state)
+    year = validate_year(year)
+
     # Get crop area data aggregated by crop for the state/year
     query = """
         SELECT variable_name, value
@@ -304,8 +319,12 @@ async def get_yield_efficiency(
     """
     Calculate yield efficiency for a district compared to state potential.
     """
+    cdk = validate_cdk(cdk)
+    crop = validate_crop(crop)
+    year = validate_year(year)
+
     # 1. Try Base Variable
-    variable = f"{crop.lower()}_yield"
+    variable = f"{crop}_yield"
 
     # Check if base variable exists for this district/year
     check_query = "SELECT 1 FROM agri_metrics WHERE district_lgd::text=$1 AND variable_name=$2 AND year=$3"
@@ -388,12 +407,11 @@ async def get_risk_profile(
     """
     Calculate risk profile based on historical volatility.
     """
-    ALLOWED_METRICS = {"yield", "area", "production"}
-    if metric.lower() not in ALLOWED_METRICS:
-        raise ValidationError(
-            detail=f"Invalid metric. Allowed: {ALLOWED_METRICS}")
+    cdk = validate_cdk(cdk)
+    crop = validate_crop(crop)
+    metric = validate_metric(metric)
 
-    variable = f"{crop.lower()}_{metric.lower()}"
+    variable = f"{crop}_{metric}"
 
     # Check if base variable exists
     check_query = "SELECT 1 FROM agri_metrics WHERE district_lgd::text=$1 AND variable_name=$2 LIMIT 1"
