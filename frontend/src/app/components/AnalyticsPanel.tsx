@@ -152,9 +152,10 @@ export default function AnalyticsPanel({ cdk, districtName, state, year, crop }:
                         </div>
 
                         {/* Tooltip */}
-                        <div className="absolute left-0 bottom-full mb-2 w-48 bg-slate-800 border border-slate-700 p-2 rounded text-[10px] text-slate-200 hidden group-hover/tooltip:block z-50 shadow-xl pointer-events-none">
-                            <div className="font-bold text-emerald-400 mb-1">Relative Efficiency</div>
-                            Compares yield ({efficiency.relative_efficiency.district_yield} kg/ha) to state top 5% ({efficiency.relative_efficiency.potential_yield} kg/ha).
+                        <div className="absolute left-0 bottom-full mb-2 w-56 bg-slate-800 border border-slate-700 p-2 rounded text-[10px] text-slate-200 hidden group-hover/tooltip:block z-50 shadow-xl pointer-events-none">
+                            <div className="font-bold text-emerald-400 mb-1">Relative Efficiency (vs State)</div>
+                            <div>Formula: district yield / state top-5% yield</div>
+                            <div className="mt-1 text-slate-400">District: {efficiency.relative_efficiency.district_yield} kg/ha | State potential: {efficiency.relative_efficiency.potential_yield} kg/ha</div>
                         </div>
                     </div>
 
@@ -187,9 +188,10 @@ export default function AnalyticsPanel({ cdk, districtName, state, year, crop }:
                             />
                         </div>
                         {/* Tooltip */}
-                        <div className="absolute left-0 bottom-full mb-2 w-48 bg-slate-800 border border-slate-700 p-2 rounded text-[10px] text-slate-200 hidden group-hover/tooltip:block z-50 shadow-xl pointer-events-none">
-                            <div className="font-bold text-blue-400 mb-1">Historical Efficiency</div>
-                            vs 10y Mean ({efficiency.historical_efficiency.historical_mean?.toFixed(1) || '?'} kg/ha).
+                        <div className="absolute left-0 bottom-full mb-2 w-56 bg-slate-800 border border-slate-700 p-2 rounded text-[10px] text-slate-200 hidden group-hover/tooltip:block z-50 shadow-xl pointer-events-none">
+                            <div className="font-bold text-blue-400 mb-1">Historical Efficiency (vs 10y mean)</div>
+                            <div>Formula: current yield / 10-year mean</div>
+                            <div className="mt-1 text-slate-400">10y Mean: {efficiency.historical_efficiency.historical_mean?.toFixed(1) || '?'} kg/ha | 100% = at historical level</div>
                         </div>
                     </div>
                 </div>

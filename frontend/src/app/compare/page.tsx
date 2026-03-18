@@ -287,8 +287,8 @@ function CompareContent() {
                                             <div className="grid grid-cols-2 gap-3">
                                                 <div className="bg-slate-50 border border-slate-100 p-2.5 rounded-lg">
                                                     <div className="text-[10px] text-slate-500 uppercase font-bold tracking-widest flex items-center">
-                                                        Rel. Efficiency
-                                                        <Tooltip text="District yield as a percentage of the 95th percentile state yield." />
+                                                        Rel. Efficiency (vs State)
+                                                        <Tooltip text="District yield as % of top 5% state yield. (0-100%, higher = closer to state potential)" />
                                                     </div>
                                                     <div className="text-lg font-bold text-emerald-600">
                                                         {(item.efficiency.relative_efficiency.efficiency_score * 100).toFixed(0)}%
@@ -309,6 +309,15 @@ function CompareContent() {
                                             <div className="border-t border-slate-100 pt-3 space-y-1">
                                                 <div className="flex justify-between text-sm">
                                                     <span className="text-slate-500 font-medium flex items-center">
+                                                        Hist. Efficiency (vs 10y)
+                                                        <Tooltip text="Current yield / 10-year mean yield. 100% = at historical average. Above 100% = above trend." position="right" />
+                                                    </span>
+                                                    <span className={`font-bold ${item.efficiency.historical_efficiency.is_above_trend ? 'text-blue-600' : 'text-amber-600'}`}>
+                                                        {(item.efficiency.historical_efficiency.efficiency_ratio * 100).toFixed(0)}%
+                                                    </span>
+                                                </div>
+                                                <div className="flex justify-between text-sm">
+                                                    <span className="text-slate-500 font-medium flex items-center">
                                                         Volatility (CV)
                                                         <Tooltip text="Coefficient of Variation. Higher percentage means more erratic yields." position="right" />
                                                     </span>
@@ -321,8 +330,8 @@ function CompareContent() {
                                                     </span>
                                                 </div>
                                                 <div className="flex justify-between text-sm">
-                                                    <span className="text-slate-500 font-medium">Yield</span>
-                                                    <span className="text-slate-900 font-bold">{item.efficiency.relative_efficiency.district_yield.toFixed(0)} kg/ha</span>
+                                                    <span className="text-slate-500 font-medium">Yield (kg/ha)</span>
+                                                    <span className="text-slate-900 font-bold">{item.efficiency.relative_efficiency.district_yield.toFixed(0)}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -367,12 +376,23 @@ function CompareContent() {
                                     </tr>
                                     <tr className="hover:bg-slate-50/50 transition-colors">
                                         <td className="px-6 py-3 font-semibold text-slate-600">
-                                            Relative Efficiency
-                                            <Tooltip text="District yield / State 95th Percentile yield" position="right" />
+                                            Relative Efficiency (vs State)
+                                            <Tooltip text="District yield / State top-5% yield. 100% = at state potential." position="right" />
                                         </td>
                                         {data.map((d, i) => (
                                             <td key={i} className="px-6 py-3 font-mono">
                                                 {d.efficiency ? (d.efficiency.relative_efficiency.efficiency_score * 100).toFixed(1) + '%' : '—'}
+                                            </td>
+                                        ))}
+                                    </tr>
+                                    <tr className="hover:bg-slate-50/50 transition-colors">
+                                        <td className="px-6 py-3 font-semibold text-slate-600">
+                                            Historical Efficiency (vs 10y mean)
+                                            <Tooltip text="Current yield / 10-year district mean. 100% = at historical average." position="right" />
+                                        </td>
+                                        {data.map((d, i) => (
+                                            <td key={i} className={`px-6 py-3 font-mono ${d.efficiency?.historical_efficiency?.is_above_trend ? 'text-blue-600' : 'text-amber-600'}`}>
+                                                {d.efficiency ? (d.efficiency.historical_efficiency.efficiency_ratio * 100).toFixed(1) + '%' : '—'}
                                             </td>
                                         ))}
                                     </tr>

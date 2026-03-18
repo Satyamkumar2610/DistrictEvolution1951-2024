@@ -116,7 +116,12 @@ async def get_water_stress(
     return {
         "state": state,
         "year": year,
-        "districts": results
+        "districts": results,
+        "validity": {
+            "climate_assumption": "stationary",
+            "baseline_period": "1951-2000",
+            "warning": "Water stress mismatch index is based on historic annual rainfall normals. Not valid for current real-time drought assessment."
+        }
     }
 
 

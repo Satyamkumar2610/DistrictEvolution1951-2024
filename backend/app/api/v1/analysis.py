@@ -387,6 +387,9 @@ async def get_yield_efficiency(
     historical_result = analyzer.calculate_historical_efficiency(
         district_yield, historical_yields)
 
+    # Determine units based on metric
+    YIELD_UNIT = "kg/ha"
+
     return {
         "cdk": cdk,
         "crop": crop,
@@ -394,6 +397,17 @@ async def get_yield_efficiency(
         "state": state_name,
         "relative_efficiency": relative_result.__dict__,
         "historical_efficiency": historical_result.__dict__,
+        "units": {
+            "district_yield": YIELD_UNIT,
+            "potential_yield": YIELD_UNIT,
+            "yield_gap": YIELD_UNIT,
+            "historical_mean": YIELD_UNIT,
+            "yield_diff": YIELD_UNIT,
+            "efficiency_score": "ratio (0-1, 1 = at state potential)",
+            "efficiency_ratio": "ratio (1.0 = at 10y mean)",
+            "yield_gap_pct": "%",
+            "percentile_rank": "percentile (0-100)"
+        }
     }
 
 
@@ -447,14 +461,24 @@ async def get_risk_profile(
     resilience = analyzer.calculate_resilience(yearly_values)
     growth = analyzer.calculate_growth_matrix(yearly_values)
 
+    # Determine units based on metric type
+    METRIC_UNITS = {
+        "yield": "kg/ha",
+        "area": "1000 ha",
+        "production": "1000 tonnes"
+    }
+    unit = METRIC_UNITS.get(metric, "unit")
+
     return {
         "cdk": cdk,
         "crop": crop,
         "metric": metric,
+        "metric_unit": unit,
         "years_analyzed": len(yearly_values),
         "risk_profile": {
             "risk_category": result.risk_category.value,
             "volatility_score": result.volatility_score,
+            "volatility_score_unit": "CV (%)",
             "reliability_rating": result.reliability_rating,
             "trend_stability": result.trend_stability,
             "worst_year": result.worst_year,

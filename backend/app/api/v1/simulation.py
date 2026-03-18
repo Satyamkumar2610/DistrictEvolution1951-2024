@@ -20,6 +20,7 @@ class SimulationResponse(BaseModel):
     crop: str
     result: SimulationResult
     note: str
+    validity: dict | None = None
 
 
 @router.get("/", response_model=SimulationResponse)
@@ -139,7 +140,12 @@ async def get_simulation(
         state=state,
         crop=crop,
         result=sim_result,
-        note="Spatial Regression Proxy: Sensitivity derived from cross-district comparison within state."
+        note="Spatial Regression Proxy: Sensitivity derived from cross-district comparison within state.",
+        validity={
+            "climate_assumption": "stationary",
+            "baseline_period": "1951-2000",
+            "warning": "Simulation based on historic climate normals. Not valid for real-time weather impact."
+        }
     )
 
     # Cache Result
@@ -298,6 +304,11 @@ async def get_prediction_v2(
         "crop": crop,
         "year": year,
         "prediction": result.to_dict(),
+        "validity": {
+            "climate_assumption": "stationary",
+            "baseline_period": "1951-2000",
+            "warning": "Prediction based on historic climate normals and cross-sectional spatial regression. Not valid for real-time weather impact."
+        }
     }
 
     await cache.set(cache_key, response, CacheTTL.ANALYSIS)
