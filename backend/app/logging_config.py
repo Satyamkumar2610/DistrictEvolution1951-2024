@@ -163,10 +163,7 @@ def timed_operation(operation_name: str):
                 return result
             except Exception as e:
                 duration = (time.time() - start) * 1000
-                logger.error(
-                    f"{operation_name} failed after {
-                        duration:.0f}ms: {
-                        str(e)}")
+                logger.error(f"{operation_name} failed after {duration:.0f}ms: {str(e)}")
                 raise
 
         @wraps(func)
