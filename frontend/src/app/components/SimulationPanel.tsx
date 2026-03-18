@@ -213,6 +213,35 @@ export default function SimulationPanel({ district, state, crop, year }: Simulat
                                 scale: true,
                             },
                             series: [
+                                // Confidence band — lower bound (invisible baseline)
+                                {
+                                    name: 'CI Lower',
+                                    type: 'line',
+                                    showSymbol: false,
+                                    lineStyle: { opacity: 0 },
+                                    itemStyle: { opacity: 0 },
+                                    data: (prediction.regression_line || []).map((p) => [p.x, Math.max(0, p.y - prediction.rmse * 1.96)]),
+                                    stack: 'confidence',
+                                    silent: true,
+                                    tooltip: { show: false },
+                                },
+                                // Confidence band — upper extent (shaded area stacked on lower)
+                                {
+                                    name: '95% CI',
+                                    type: 'line',
+                                    showSymbol: false,
+                                    lineStyle: { opacity: 0 },
+                                    itemStyle: { opacity: 0 },
+                                    areaStyle: { color: '#6366f1', opacity: 0.08 },
+                                    data: (prediction.regression_line || []).map((p) => {
+                                        const lower = Math.max(0, p.y - prediction.rmse * 1.96);
+                                        const upper = p.y + prediction.rmse * 1.96;
+                                        return [p.x, upper - lower];
+                                    }),
+                                    stack: 'confidence',
+                                    silent: true,
+                                    tooltip: { show: false },
+                                },
                                 {
                                     name: 'Districts',
                                     type: 'scatter',
