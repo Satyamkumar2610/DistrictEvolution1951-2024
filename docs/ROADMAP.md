@@ -47,13 +47,13 @@
 
 ### Phase 4: Critical Foundations (P0 - Immediate)
 - [x] **Security**: Patch SQL Injection & enforce unit validation.
-- [ ] **Methodology**: Add `climate_assumption="stationary"` flag and disclaimer.
-- [ ] **Data Governance**: Explicit unit labeling in API & UI.
+- [x] **Methodology**: Add `climate_assumption="stationary"` flag and disclaimer.
+- [x] **Data Governance**: Explicit unit labeling in API & UI.
 
 ### Phase 5: Metrics & Taxonomy (P1 - Short Term)
 - [ ] **Historical Efficiency**: Implement `yield / 10-year district mean`.
-- [ ] **Taxonomy Cleanup**: Rename "Efficiency" -> "Relative Efficiency".
-- [ ] **UX/Education**: Tooltips defining "CV", "Stability", and units.
+- [x] **Taxonomy Cleanup**: Rename "Efficiency" -> "Relative Efficiency" / "Historical Efficiency (vs 10y)".
+- [x] **UX/Education**: Tooltips defining "CV", "Stability", and units.
 
 ### Phase 6: Decision Intelligence (P2 - Medium Term)
 - [ ] **Resilience Index**: Composite of Yield Stability (1/CV) + Drought Retention.
@@ -61,9 +61,9 @@
 - [ ] **Simulated Impact**: Regression-based scenarios with confidence bands.
 
 ## 5. Critical Vulnerability Log (Status)
-- [x] **[CRITICAL] SQL Injection**: Identified in `analysis.py`. **Fixing Now.**
-- [ ] **[HIGH] Logic Error**: Relative vs Historical Efficiency. **Scheduled P1.**
-- [ ] **[MED] Data Validity**: Climate Normals. **Fixing P0.**
+- [x] **[CRITICAL] SQL Injection**: Identified in `analysis.py`. **Patched.**
+- [x] **[HIGH] Logic Error**: Relative vs Historical Efficiency. **Taxonomy clarified.**
+- [x] **[MED] Data Validity**: Climate Normals. **Stationary disclaimer added.**
 
 ## 6. Conclusion
 I have built a **Research-Grade Prototype**. It works beautifully for demos and individual analysis. To make it a **Production Platform**, we must invest in **Backend Performance (Async/Caching)** and **Automated Testing**. To make it a **Decision Engine**, we must implement Phase 4.
