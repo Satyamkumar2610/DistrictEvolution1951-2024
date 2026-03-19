@@ -9,8 +9,11 @@ RULES (Non-Negotiable):
 """
 from typing import List, Dict, Optional, Literal
 from dataclasses import dataclass
+import json
+import logging
+import asyncpg  # type: ignore
 
-from app.config import get_settings
+from app.config import get_settings  # type: ignore
 
 settings = get_settings()
 
@@ -34,7 +37,7 @@ class BoundaryHarmonizer:
     2. Entity Comparison: Track individual entities across time
     """
 
-    def __init__(self, tolerance: float = None):
+    def __init__(self, tolerance: Optional[float] = None):
         self.tolerance = tolerance or settings.coverage_ratio_tolerance
 
     def validate_coverage_ratios(
@@ -226,3 +229,52 @@ class BoundaryHarmonizer:
         result.sort(key=lambda p: p.year)
 
         return result
+
+    async def compute_split_diff(self, db: asyncpg.Connection, split_event_id: int):
+        from app.core.geometry_resolver import GeometryResolver  # type: ignore
+        logger = logging.getLogger(__name__)
+        
+        # 1. Fetch event
+        event = await db.fetchrow("SELECT parent_cdk, child_cdks, split_year FROM split_events WHERE id = $1", split_event_id)
+        if not event:
+            raise ValueError(f"Split event {split_event_id} not found")
+            
+        parent_cdk = event["parent_cdk"]
+        child_cdks = event["child_cdks"]
+        split_year = event["split_year"]
+        
+        # 2. Get Geometries
+        parent_geom = await GeometryResolver.get_geometry(db, parent_cdk, split_year)
+        if not parent_geom:
+            logger.warning(f"No parent geometry resolved for {parent_cdk}")
+            return
+            
+        parent_geojson = json.dumps(parent_geom)
+        
+        for child_cdk in child_cdks:
+            child_geom = await GeometryResolver.get_geometry(db, child_cdk, split_year)
+            if not child_geom:
+                logger.warning(f"No child geometry resolved for {child_cdk}")
+                continue
+                
+            child_geojson = json.dumps(child_geom)
+            
+            # ST_Intersection for Transferred Area
+            intersect_query = """
+                SELECT 
+                    ST_Area(ST_Intersection(ST_SetSRID(ST_GeomFromGeoJSON($1), 4326), ST_SetSRID(ST_GeomFromGeoJSON($2), 4326))::geography) / 1000000.0 as area_sqkm,
+                    ST_AsGeoJSON(ST_Multi(ST_CollectionExtract(ST_Intersection(ST_SetSRID(ST_GeomFromGeoJSON($1), 4326), ST_SetSRID(ST_GeomFromGeoJSON($2), 4326)), 3))) as geomj
+            """
+            intersect_res = await db.fetchrow(intersect_query, parent_geojson, child_geojson)
+            
+            if intersect_res and intersect_res["area_sqkm"] is not None:
+                area = intersect_res["area_sqkm"]
+                if area > 0:
+                    await db.execute("""
+                        INSERT INTO area_transfers
+                            (split_event_id, source_cdk, dest_cdk, transfer_type, area_sqkm, confidence_score, geometry)
+                        VALUES
+                            ($1, $2, $3, 'inherited', $4, 0.8, ST_SetSRID(ST_GeomFromGeoJSON($5), 4326))
+                    """, split_event_id, parent_cdk, child_cdk, area, intersect_res["geomj"])
+                    logger.info(f"Recorded area transfer {parent_cdk} -> {child_cdk}: {area:.2f} sqkm")
+

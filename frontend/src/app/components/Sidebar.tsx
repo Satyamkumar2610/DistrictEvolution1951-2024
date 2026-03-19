@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import {
     Map, Shield, GitBranch, Wheat, FileText, BookOpen, Menu, X,
-    Layers, Droplet, Network, Target, Home, BarChart3, Globe2
+    Layers, Droplet, Network, Target, Home, BarChart3, Globe2, Database
 } from 'lucide-react';
 
 const NAV_GROUPS = [
@@ -36,6 +36,8 @@ const NAV_GROUPS = [
             { href: '/lineage/graph', label: 'Lineage Graph', icon: GitBranch },
             { href: '/lineage/split-report', label: 'Split Report', icon: GitBranch },
             { href: '/lineage/state-overview', label: 'State Overview', icon: Globe2 },
+            { href: '/split-analyzer', label: 'Split Analyzer', icon: Shield },
+            { href: '/data-quality', label: 'Data Quality', icon: Database },
         ]
     },
     {

@@ -4,7 +4,7 @@ from fastapi import APIRouter
 from app.api.v1 import (
     districts, lineage, metrics, analysis, climate, simulation,
     health, quality, forecast, anomalies, advanced_analytics,
-    states, search, reports, spatial,
+    states, search, reports, spatial, splits,
 )
 
 api_router = APIRouter()
@@ -34,6 +34,7 @@ api_router.include_router(
     prefix="/simulation",
     tags=["Simulation"])
 api_router.include_router(spatial.router)  # self-prefixed /spatial
+api_router.include_router(splits.router)  # self-prefixed /spatial (split analyzer)
 api_router.include_router(forecast.router)  # self-prefixed /forecast
 api_router.include_router(anomalies.router)  # self-prefixed /anomalies
 

@@ -131,10 +131,10 @@ def validate_cdk(cdk: str) -> str:
 
     cdk_stripped = cdk.strip()
 
-    # Basic format validation (relaxed for flexibility)
-    if len(cdk_stripped) < 5 or len(cdk_stripped) > 50:
+    # Basic format validation (relaxed to allow numeric LGD codes like '107')
+    if len(cdk_stripped) < 1 or len(cdk_stripped) > 50:
         raise ValidationError(
-            detail="Invalid CDK format: length must be between 5 and 50 characters",
+            detail="Invalid CDK format: length must be between 1 and 50 characters",
             field="cdk",
             value=cdk)
 
