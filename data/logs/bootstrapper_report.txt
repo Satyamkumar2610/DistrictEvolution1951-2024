@@ -1,10 +1,10 @@
-Total districts in district_snapshots : 628
+Total districts in district_snapshots : 630
 Geometry source breakdown:
   shrug_union    : 0  (confidence 0.9)
   bhuvan_wfs     : 0  (confidence 0.95)
-  manual_upload  : 628  (confidence 0.7)
+  manual_upload  : 630  (confidence 0.7)
   unknown        : 0  (confidence 0.0)
 Split events by geometry_status:
   complete : 0
-  partial  : 0
-  unknown  : 438
+  partial  : 1
+  unknown  : 437
