@@ -1,5 +1,5 @@
-import pytest
-import asyncpg
+import pytest  # type: ignore
+import asyncpg  # type: ignore
 import os
 
 
@@ -35,7 +35,7 @@ async def test_adilabad_split_diff():
         split_event_id = event["id"]
 
         # Call the harmonizer.compute_split_diff
-        from app.analytics.harmonizer import BoundaryHarmonizer
+        from app.analytics.harmonizer import BoundaryHarmonizer  # type: ignore
         harmonizer = BoundaryHarmonizer()
 
         # Clean previous transfers for idempotent testing
@@ -55,7 +55,7 @@ async def test_adilabad_split_diff():
 
         assert len(transfers) > 0, "No area transfers were calculated."
 
-        child_cdks = event["child_cdks"]
+        child_cdks = list(event["child_cdks"])  # type: ignore
         for t in transfers:
             assert t["dest_cdk"] in child_cdks
             assert t["area_sqkm"] > 0
