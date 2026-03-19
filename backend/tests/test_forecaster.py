@@ -3,6 +3,7 @@ Tests for the YieldForecaster and CropRecommender.
 """
 import pytest
 from app.ml.forecaster import YieldForecaster, CropRecommender, ForecastResult
+from typing import Dict
 
 
 # ---------------------------------------------------------------------------
@@ -144,12 +145,12 @@ class TestCropRecommender:
 
     def test_basic_recommendation(self):
         recommender = CropRecommender()
-        performances = {
+        performances: Dict[str, Dict[str, float]] = {
             "wheat": {"yield": 3000, "area": 50000, "trend": 5},
             "rice": {"yield": 2500, "area": 40000, "trend": -2},
             "maize": {"yield": 1800, "area": 20000, "trend": 10},
         }
-        benchmarks = {"wheat": 2800, "rice": 2600, "maize": 2000}
+        benchmarks: Dict[str, float] = {"wheat": 2800, "rice": 2600, "maize": 2000}
         
         result = recommender.recommend(performances, benchmarks, top_n=3)
         
@@ -162,11 +163,11 @@ class TestCropRecommender:
 
     def test_filters_unknown_crops(self):
         recommender = CropRecommender()
-        performances = {
+        performances: Dict[str, Dict[str, float]] = {
             "wheat": {"yield": 3000, "area": 50000, "trend": 5},
             "exotic_fruit": {"yield": 5000, "area": 1000, "trend": 20},
         }
-        benchmarks = {"wheat": 2800, "exotic_fruit": 3000}
+        benchmarks: Dict[str, float] = {"wheat": 2800, "exotic_fruit": 3000}
         
         result = recommender.recommend(performances, benchmarks)
         crops = [r["crop"] for r in result]
@@ -180,11 +181,11 @@ class TestCropRecommender:
 
     def test_recommendation_labels(self):
         recommender = CropRecommender()
-        performances = {
+        performances: Dict[str, Dict[str, float]] = {
             "wheat": {"yield": 3500, "area": 50000, "trend": 10},  # High → expand
             "rice": {"yield": 1000, "area": 30000, "trend": -20},  # Low → review
         }
-        benchmarks = {"wheat": 2500, "rice": 2500}
+        benchmarks: Dict[str, float] = {"wheat": 2500, "rice": 2500}
         
         result = recommender.recommend(performances, benchmarks)
         wheat_rec = next(r for r in result if r["crop"] == "wheat")

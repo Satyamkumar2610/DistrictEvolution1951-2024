@@ -7,7 +7,7 @@ from typing import List, Dict, Any, Optional
 from dataclasses import dataclass, asdict
 from enum import Enum
 
-from app.analytics.statistics import get_analyzer
+from app.analytics.statistics import get_analyzer  # type: ignore
 
 
 class RiskCategory(str, Enum):
@@ -158,7 +158,7 @@ class AdvancedAnalyzer:
         cdi = 1 - sum_of_squares
 
         # Find dominant crop
-        dominant_crop = max(crop_areas, key=crop_areas.get)
+        dominant_crop = max(crop_areas.items(), key=lambda x: x[1])[0]
         dominant_share = proportions[dominant_crop]
 
         # Interpretation
@@ -174,12 +174,12 @@ class AdvancedAnalyzer:
             interpretation = "Excellent diversification - highly resilient crop mix"
 
         return DiversificationResult(
-            cdi=round(cdi, 4),
+            cdi=round(float(cdi), 4),  # type: ignore
             interpretation=interpretation,
             dominant_crop=dominant_crop,
-            dominant_share=round(dominant_share, 4),
+            dominant_share=round(float(dominant_share), 4),  # type: ignore
             crop_count=len(crop_areas),
-            breakdown={k: round(v, 4) for k, v in proportions.items()},
+            breakdown={k: round(float(v), 4) for k, v in proportions.items()},  # type: ignore
         )
 
     # -------------------------------------------------------------------------
@@ -233,12 +233,12 @@ class AdvancedAnalyzer:
             district_yield, state_yields)
 
         return EfficiencyResult(
-            efficiency_score=round(efficiency, 4),
-            district_yield=round(district_yield, 2),
-            potential_yield=round(potential_yield, 2),
-            yield_gap=round(max(0, yield_gap), 2),
-            yield_gap_pct=round(max(0, yield_gap_pct), 2),
-            percentile_rank=round(percentile_rank, 2),
+            efficiency_score=round(float(efficiency), 4),  # type: ignore
+            district_yield=round(float(district_yield), 2),  # type: ignore
+            potential_yield=round(float(potential_yield), 2),  # type: ignore
+            yield_gap=round(float(max(0.0, yield_gap)), 2),  # type: ignore
+            yield_gap_pct=round(float(max(0.0, yield_gap_pct)), 2),  # type: ignore
+            percentile_rank=round(float(percentile_rank), 2),  # type: ignore
         )
 
     def calculate_historical_efficiency(
@@ -281,11 +281,11 @@ class AdvancedAnalyzer:
         diff = current_yield - mean_yield
 
         return HistoricalEfficiencyResult(
-            efficiency_ratio=round(ratio, 4),
-            current_yield=round(current_yield, 2),
-            historical_mean=round(mean_yield, 2),
-            yield_diff=round(diff, 2),
-            is_above_trend=diff > 0
+            efficiency_ratio=round(float(ratio), 4),  # type: ignore
+            current_yield=round(float(current_yield), 2),  # type: ignore
+            historical_mean=round(float(mean_yield), 2),  # type: ignore
+            yield_diff=round(float(diff), 2),  # type: ignore
+            is_above_trend=bool(diff > 0)
         )
 
     # -------------------------------------------------------------------------
@@ -361,7 +361,7 @@ class AdvancedAnalyzer:
 
         return RiskProfile(
             risk_category=category,
-            volatility_score=round(cv, 2),
+            volatility_score=round(cv, 2),  # type: ignore
             reliability_rating=rating,
             trend_stability=stability,
             worst_year=worst_year,
@@ -388,7 +388,7 @@ class AdvancedAnalyzer:
         # 1. Volatility Component
         cv = self.stats.coefficient_of_variation(values)
         # Normalize CV: Assume CV > 40% is 0 score, CV < 5% is 1 score.
-        cv_norm = max(0, min(1, (40 - cv) / 35))
+        cv_norm = float(max(0.0, min(1.0, (40.0 - cv) / 35.0)))
 
         # 2. Retention Component (Drought Proxy)
         median = self.stats.percentile(values, 50)
@@ -410,9 +410,9 @@ class AdvancedAnalyzer:
         rating = "A" if score > 0.8 else "B" if score > 0.6 else "C" if score > 0.4 else "D"
 
         return ResilienceResult(
-            resilience_score=round(score, 2),
-            volatility_component=round(cv_norm, 2),
-            retention_component=round(retention, 2),
+            resilience_score=round(float(score), 2),  # type: ignore
+            volatility_component=round(float(cv_norm), 2),  # type: ignore
+            retention_component=round(float(retention), 2),  # type: ignore
             drought_risk=drought_risk,
             reliability_rating=rating
         )
@@ -423,10 +423,10 @@ class AdvancedAnalyzer:
         Calculate Compound Annual Growth Rate (CAGR) and classify matrix quadrant.
         """
         if not yearly_values or len(yearly_values) < 5:
-            return GrowthResult(0, 0, "Insufficient Data", "Flat")
+            return GrowthResult(0.0, 0.0, 0.0, "Insufficient Data", "Flat")
 
-        sorted_years = sorted(yearly_values.keys())
-        recent_years = sorted_years[-5:]  # Last 5 years
+        sorted_years = list(sorted(yearly_values.keys()))
+        recent_years = sorted_years[-5:]  # type: ignore
 
         start_val = yearly_values[recent_years[0]]
         end_val = yearly_values[recent_years[-1]]
@@ -465,9 +465,9 @@ class AdvancedAnalyzer:
             cagr_hist = 0
 
         return GrowthResult(
-            cagr_5y=round(cagr * 100, 2),
-            cagr_historical=round(cagr_hist * 100, 2),
-            mean_yield_5y=round(mean_yield, 2),
+            cagr_5y=round(float(cagr * 100), 2),  # type: ignore
+            cagr_historical=round(float(cagr_hist * 100), 2),  # type: ignore
+            mean_yield_5y=round(float(mean_yield), 2),  # type: ignore
             matrix_quadrant=quadrant,
             trend_direction="Positive" if cagr > 0 else "Negative"
         )
@@ -493,10 +493,10 @@ class AdvancedAnalyzer:
         risk = self.calculate_risk_profile(yearly_values)
 
         return {
-            "diversification": asdict(diversification),
-            "efficiency": asdict(efficiency),
+            "diversification": asdict(diversification),  # type: ignore
+            "efficiency": asdict(efficiency),  # type: ignore
             "risk": {
-                **asdict(risk),
+                **asdict(risk),  # type: ignore
                 "risk_category": risk.risk_category.value,
             },
         }
@@ -540,12 +540,12 @@ class AdvancedAnalyzer:
         ]
 
         return SimulationResult(
-            baseline_yield=round(baseline_yield, 2),
-            slope=round(reg.slope, 4),
-            intercept=round(reg.intercept, 4),
-            r_squared=round(reg.r_squared, 4),
-            correlation=round(corr.value, 4),
-            confidence_interval=round(ci, 2),
+            baseline_yield=round(baseline_yield, 2),  # type: ignore
+            slope=round(reg.slope, 4),  # type: ignore
+            intercept=round(reg.intercept, 4),  # type: ignore
+            r_squared=round(reg.r_squared, 4),  # type: ignore
+            correlation=round(corr.value, 4),  # type: ignore
+            confidence_interval=round(ci, 2),  # type: ignore
             data_points=points,
             model_equation=f"Yield = {reg.slope:.2f} * Rain + {reg.intercept:.2f}"
         )

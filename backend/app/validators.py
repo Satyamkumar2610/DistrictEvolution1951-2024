@@ -5,7 +5,7 @@ Provides centralized validation functions and constants.
 
 import re
 from datetime import datetime
-from typing import List, Set, Any
+from typing import List, Set, Any, Optional
 from .exceptions import ValidationError
 
 
@@ -86,7 +86,7 @@ def validate_crop(crop: str) -> str:
     crop_lower = crop.lower().strip()
     if crop_lower not in VALID_CROPS:
         raise ValidationError(
-            detail=f"Invalid crop: '{crop}'. Valid options: {', '.join(sorted(VALID_CROPS)[:10])}...",
+            detail=f"Invalid crop: '{crop}'. Valid options: {', '.join(sorted(VALID_CROPS)[:10])}...",  # type: ignore
             field="crop",
             value=crop
         )
@@ -109,7 +109,7 @@ def validate_metric(metric: str) -> str:
     return metric_lower
 
 
-def validate_mode(mode: str) -> str:
+def validate_mode(mode: Optional[str]) -> str:
     """Validate comparison mode."""
     if not mode:
         return "before_after"  # Default

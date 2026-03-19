@@ -38,7 +38,7 @@ class InMemoryCache:
             return None
         item = self._store[key]
         if item["expires_at"] < time.time():
-            del self._store[key]
+            self._store.pop(key, None)
             return None
         return item["value"]
 
@@ -50,7 +50,7 @@ class InMemoryCache:
     async def delete(self, key: str) -> bool:
         """Delete a key."""
         if key in self._store:
-            del self._store[key]
+            self._store.pop(key, None)
             return True
         return False
 
@@ -85,7 +85,7 @@ class RedisCache:
         self._client = None
         self._default_ttl = 3600
 
-    async def _get_client(self):
+    async def _get_client(self) -> Any:
         """Lazy-initialize Redis client."""
         if self._client is None:
             import redis.asyncio as aioredis
@@ -247,7 +247,7 @@ def cached(ttl: int = 3600, prefix: str = ""):
 
             # Try cache
             try:
-                cached_value = await cache.get(cache_key)
+                cached_value: Any = await cache.get(cache_key)
                 if cached_value is not None:
                     logger.debug(f"Cache hit for {key_prefix}")
                     return cached_value

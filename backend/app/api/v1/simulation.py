@@ -66,7 +66,7 @@ async def get_simulation(
         AND m.year = $3
         AND m.value IS NOT NULL AND m.value > 0
     """
-    yield_rows = await db.fetch(yield_query, state, variable_name, year)
+    yield_rows: list = await db.fetch(yield_query, state, variable_name, year)  # type: ignore
 
     # Fallback to season-specific yield if total yield is missing
     if len(yield_rows) < 5:
@@ -81,7 +81,7 @@ async def get_simulation(
         season = season_map.get(crop.lower())
         if season:
             seasonal_variable = f"{crop.lower()}_yield_{season}"
-            yield_rows = await db.fetch(yield_query, state, seasonal_variable, year)
+            yield_rows = await db.fetch(yield_query, state, seasonal_variable, year)  # type: ignore
 
     if len(yield_rows) < 5:
         # Fallback: Try average over last 5 years if single year is sparse?
@@ -97,16 +97,16 @@ async def get_simulation(
         FROM rainfall_normals
         WHERE UPPER(state_ut) = UPPER($1)
     """
-    rain_rows = await db.fetch(rain_query, state)
+    rain_rows: list = await db.fetch(rain_query, state)  # type: ignore
     rain_map = {r["district"].upper(): float(r["annual"] or 0)
                 for r in rain_rows}
 
     # 3. Match Data (X=Rain, Y=Yield)
-    rainfall_x = []
-    yields_y = []
-    years = []  # Dummy years (indices really)
+    rainfall_x: list[float] = []
+    yields_y: list[float] = []
+    years: list[int] = []  # Dummy years (indices really)
 
-    idx = 0
+    idx: int = 0
     for row in yield_rows:
         d_name = row["district_name"]
         d_yield = float(row["yield"])
@@ -135,7 +135,7 @@ async def get_simulation(
     # The slope is generic for the state.
     # Prediction = Intercept + Slope * Rain.
 
-    result = SimulationResponse(
+    result = SimulationResponse(  # type: ignore
         district=district,
         state=state,
         crop=crop,
@@ -192,7 +192,7 @@ async def get_prediction_v2(
         AND m.year = $3
         AND m.value IS NOT NULL AND m.value > 0
     """
-    yield_rows = await db.fetch(yield_query, state, variable_name, year)
+    yield_rows: list = await db.fetch(yield_query, state, variable_name, year)  # type: ignore
 
     if len(yield_rows) < 5:
         season_map = {"rice": "kharif", "wheat": "rabi", "maize": "kharif",
@@ -200,7 +200,7 @@ async def get_prediction_v2(
         season = season_map.get(crop.lower())
         if season:
             variable_name = f"{crop.lower()}_yield_{season}"
-            yield_rows = await db.fetch(
+            yield_rows = await db.fetch(  # type: ignore
                 yield_query, state, variable_name, year
             )
 
@@ -213,7 +213,7 @@ async def get_prediction_v2(
         FROM rainfall_normals
         WHERE UPPER(state_ut) = UPPER($1)
     """
-    rain_rows = await db.fetch(rain_query, state)
+    rain_rows: list = await db.fetch(rain_query, state)  # type: ignore
     rain_map = {}
     for r in rain_rows:
         rain_map[r["district"].upper()] = {
@@ -231,7 +231,7 @@ async def get_prediction_v2(
         AND m.value IS NOT NULL AND m.value > 0
         ORDER BY d.district_name, m.year
     """
-    hist_rows = await db.fetch(hist_query, state, variable_name)
+    hist_rows: list = await db.fetch(hist_query, state, variable_name)  # type: ignore
     hist_map: dict = {}  # district_name -> [(year, value)]
     for r in hist_rows:
         dn = r["district_name"]
@@ -248,7 +248,7 @@ async def get_prediction_v2(
         AND m.year = $3
         AND m.value IS NOT NULL AND m.value > 0
     """
-    area_rows = await db.fetch(area_query, state, area_var, year)
+    area_rows: list = await db.fetch(area_query, state, area_var, year)  # type: ignore
     area_map = {r["district_name"].upper(): float(r["area"])
                 for r in area_rows}
 
@@ -277,7 +277,7 @@ async def get_prediction_v2(
             std_v = np.std(vals_arr, ddof=1)
             yield_cv = float((std_v / mean_v) * 100) if mean_v > 0 else 0.0
 
-        entry = {
+        entry: dict[str, Any] = {
             "district": d_name,
             "yield_value": d_yield,
             "rainfall": rain_info["annual"],

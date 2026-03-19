@@ -34,7 +34,7 @@ class ValidationError(APIError):
         if field:
             context["field"] = field
         if value is not None:
-            context["value"] = str(value)[:100]  # Truncate long values
+            context["value"] = str(value)[:100]  # type: ignore
 
         super().__init__(
             status_code=400,
@@ -117,7 +117,7 @@ def create_error_response(
     request_id: Optional[str] = None
 ) -> Dict[str, Any]:
     """Create a standardized error response."""
-    response = {
+    response: Dict[str, Any] = {
         "success": False,
         "error": {
             "code": error.error_code,

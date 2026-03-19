@@ -59,7 +59,7 @@ class DataExporter:
         if include_metadata:
             metadata = self._create_metadata(len(data), filters)
             output = {
-                "metadata": asdict(metadata),
+                "metadata": asdict(metadata),  # type: ignore
                 "data": data,
             }
         else:
@@ -110,7 +110,7 @@ class DataExporter:
 
         for row in data:
             # Convert any complex types to strings
-            cleaned_row = {}
+            cleaned_row: Dict[str, Any] = {}
             for key, value in row.items():
                 if key in columns:
                     if isinstance(value, (dict, list)):
@@ -154,10 +154,10 @@ class DataExporter:
             features: List of feature dicts with geometry and properties
             properties_map: Optional mapping of property names
         """
-        geojson = {
+        geojson: Dict[str, Any] = {
             "type": "FeatureCollection",
             "features": [],
-            "metadata": asdict(self._create_metadata(len(features))),
+            "metadata": asdict(self._create_metadata(len(features))),  # type: ignore
         }
 
         for f in features:
@@ -219,13 +219,13 @@ class DataExporter:
                 output = io.StringIO()
                 writer = csv.DictWriter(
                     output, fieldnames=columns, extrasaction='ignore')
-                cleaned_row = {}
+                cleaned_row: Dict[str, Any] = {}
                 for key, value in row.items():
                     if key in columns:
                         if isinstance(value, (dict, list)):
-                            cleaned_row[key] = json.dumps(value)
+                            cleaned_row[key] = json.dumps(value)  # type: ignore
                         else:
-                            cleaned_row[key] = value
+                            cleaned_row[key] = value  # type: ignore
                 writer.writerow(cleaned_row)
                 yield output.getvalue()
 
