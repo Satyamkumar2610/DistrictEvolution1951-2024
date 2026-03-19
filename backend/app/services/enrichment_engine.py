@@ -11,7 +11,6 @@ All enrichment results are stored in the `split_enrichment` table.
 """
 
 import logging
-import json
 from typing import Optional
 
 import asyncpg

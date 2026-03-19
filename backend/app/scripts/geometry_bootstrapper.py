@@ -190,15 +190,13 @@ async def run_bootstrapper():
             """)
         
         try:
-            wfs = WebFeatureService('https://bhuvan-vec1.nrsc.gov.in/bhuvan/wfs', version='1.0.0')
-            wfs_available = True
+            WebFeatureService('https://bhuvan-vec1.nrsc.gov.in/bhuvan/wfs', version='1.0.0')
         except Exception:
-            wfs_available = False
             logger.warning("Bhuvan WFS unavailable.")
 
         for row in unknowns:
-            cdk = row["district_cdk"]
-            year = row["snapshot_year"]
+            _cdk = row["district_cdk"]
+            _year = row["snapshot_year"]
             pass 
             
         # -------------------------------------------------------------------------

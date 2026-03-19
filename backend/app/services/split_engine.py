@@ -140,8 +140,8 @@ class SplitEngine:
                 detail={
                     "error": "GEOMETRY_UNKNOWN",
                     "message": (
-                        f"No child district geometries could be resolved. "
-                        f"Upload boundaries via POST /api/v1/spatial/upload-geojson"
+                        "No child district geometries could be resolved. "
+                        "Upload boundaries via POST /api/v1/spatial/upload-geojson"
                     ),
                     "unknown_children": unknown_children,
                 }

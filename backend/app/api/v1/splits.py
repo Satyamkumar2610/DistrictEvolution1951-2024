@@ -13,7 +13,6 @@ Routes:
     GET  /api/v1/spatial/quality/overview   — Data quality overview
 """
 
-import json
 import logging
 from typing import Optional
 
@@ -198,7 +197,7 @@ async def get_lineage(
         raise HTTPException(404, f"District '{district_cdk}' not found")
 
     # Get geometry info if available
-    snapshot = await db.fetchrow("""
+    _snapshot = await db.fetchrow("""
         SELECT area_sqkm, geometry_source::text, geometry_confidence
         FROM district_snapshots
         WHERE district_cdk = $1 AND geometry IS NOT NULL

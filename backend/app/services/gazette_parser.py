@@ -10,7 +10,7 @@ Returns structured SplitEvent records for insertion into split_events table.
 
 import re
 import logging
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Optional
 
 logger = logging.getLogger("app.services.gazette_parser")
