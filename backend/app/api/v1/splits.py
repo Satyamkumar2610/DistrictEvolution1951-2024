@@ -16,18 +16,18 @@ Routes:
 import logging
 from typing import Optional
 
-import asyncpg
-from fastapi import APIRouter, BackgroundTasks, Depends, Query, HTTPException
-from pydantic import BaseModel, Field
+import asyncpg  # type: ignore
+from fastapi import APIRouter, BackgroundTasks, Depends, Query, HTTPException  # type: ignore
+from pydantic import BaseModel, Field  # type: ignore
 
-from app.api.deps import get_db
-from app.services.split_engine import SplitEngine
-from app.core.geometry_resolver import GeometryResolver
-from app.services.enrichment_engine import enrich_split_event
-from app.services.gazette_parser import parse_gazette_text
-from app.services.lineage_loader import load_lineage_csv, load_changes_csv
-from app.services.drift_detector import DriftDetector
-from app.schemas.split_schemas import (
+from app.api.deps import get_db  # type: ignore
+from app.services.split_engine import SplitEngine  # type: ignore
+from app.core.geometry_resolver import GeometryResolver  # type: ignore
+from app.services.enrichment_engine import enrich_split_event  # type: ignore
+from app.services.gazette_parser import parse_gazette_text  # type: ignore
+from app.services.lineage_loader import load_lineage_csv, load_changes_csv  # type: ignore
+from app.services.drift_detector import DriftDetector  # type: ignore
+from app.schemas.split_schemas import (  # type: ignore
     SplitDiffRequest,
     SplitDiffResponse,
     TransferDetail,
@@ -205,11 +205,9 @@ async def get_lineage(
     """, district_cdk)
 
     # Build tree recursively
-    total_nodes = 0
-    total_events = 0
+    counters: dict[str, int] = {"nodes": 0, "events": 0}
 
     async def build_tree(cdk: str, current_depth: int) -> LineageNode:
-        nonlocal total_nodes, total_events
 
         # Get district info
         dist = await db.fetchrow("""
@@ -218,7 +216,7 @@ async def get_lineage(
         """, cdk)
 
         if not dist:
-            total_nodes += 1
+            counters["nodes"] += 1
             return LineageNode(
                 district_cdk=cdk,
                 district_name=cdk,  # fallback
@@ -241,7 +239,7 @@ async def get_lineage(
             geometry_source=snap["geometry_source"] if snap else "unknown",
             geometry_confidence=snap["geometry_confidence"] if snap else 0.0,
         )
-        total_nodes += 1
+        counters["nodes"] += 1
 
         # Get children from split_events
         if current_depth < depth:
@@ -264,12 +262,13 @@ async def get_lineage(
             children_cdks = set()
 
             for evt in events:
-                total_events += 1
+                counters["events"] += 1
                 for child_cdk in evt["child_cdks"]:
-                    if child_cdk not in children_cdks:
-                        children_cdks.add(child_cdk)
+                    child_cdk_str = str(child_cdk)
+                    if child_cdk_str not in children_cdks:
+                        children_cdks.add(child_cdk_str)
                         child_node = await build_tree(
-                            child_cdk, current_depth + 1
+                            child_cdk_str, current_depth + 1
                         )
                         node.children.append(child_node)
 
@@ -282,11 +281,11 @@ async def get_lineage(
                         WHERE district_name ILIKE $1
                         LIMIT 1
                     """, lc["child_district"])
-                    if child_dist and child_dist["cdk"] not in children_cdks:
-                        children_cdks.add(child_dist["cdk"])
-                        total_events += 1
+                    if child_dist and str(child_dist["cdk"]) not in children_cdks:
+                        children_cdks.add(str(child_dist["cdk"]))
+                        counters["events"] += 1
                         child_node = await build_tree(
-                            child_dist["cdk"], current_depth + 1
+                            str(child_dist["cdk"]), current_depth + 1
                         )
                         node.children.append(child_node)
 
@@ -296,8 +295,8 @@ async def get_lineage(
 
     return LineageResponse(
         root=root,
-        total_nodes=total_nodes,
-        total_split_events=total_events,
+        total_nodes=counters["nodes"],
+        total_split_events=counters["events"],
     )
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -403,7 +402,7 @@ async def trigger_enrichment(
         }
     else:
         # Run synchronously if no background tasks available
-        from app.database import get_connection
+        from app.database import get_connection  # type: ignore
         async with get_connection() as conn:
             result = await enrich_split_event(conn, event_id)
         return {"success": True, "result": result}
@@ -415,7 +414,7 @@ async def trigger_enrichment(
 
 async def _run_enrichment(event_id: int) -> None:
     """Background task that runs enrichment in a fresh DB connection."""
-    from app.database import get_connection
+    from app.database import get_connection  # type: ignore
     try:
         async with get_connection() as conn:
             result = await enrich_split_event(conn, event_id)
@@ -643,7 +642,7 @@ async def quality_overview(
             "total": total_districts,
             "with_geometry": districts_with_geom,
             "geometry_coverage_pct": round(
-                districts_with_geom / total_districts * 100, 1
+                float(districts_with_geom) / float(total_districts) * 100, 1
             ) if total_districts > 0 else 0,
         },
         "split_events": {
