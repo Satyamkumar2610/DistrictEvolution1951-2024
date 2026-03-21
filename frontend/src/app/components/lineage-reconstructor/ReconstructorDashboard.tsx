@@ -20,6 +20,12 @@ interface SearchResult {
     is_root: boolean;
 }
 
+const FEATURED_EXAMPLES: SearchResult[] = [
+    { cdk: "WB_24parg_1961", display_name: "24 Parganas", state: "West Bengal", era: 1961, is_root: true },
+    { cdk: "MH_medinipur_1951", display_name: "Medinipur", state: "Maharashtra/WB", era: 1951, is_root: true },
+    { cdk: "DL_delhi_1951", display_name: "Delhi", state: "Delhi", era: 1951, is_root: true }
+];
+
 export default function ReconstructorDashboard() {
     const mapRef = useRef<MapRef>(null);
 
@@ -135,6 +141,7 @@ export default function ReconstructorDashboard() {
                                         setShowResults(true);
                                     }}
                                     onFocus={() => setShowResults(true)}
+                                    onBlur={() => setTimeout(() => setShowResults(false), 200)}
                                     placeholder="Search e.g. WB_24parg_1961"
                                     className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
                                 />
@@ -142,18 +149,36 @@ export default function ReconstructorDashboard() {
                             </div>
 
                             {/* Dropdown */}
-                            {showResults && searchResults.length > 0 && (
+                            {showResults && (
                                 <div className="absolute top-full left-0 w-full mt-1 bg-white border border-slate-200 rounded-lg shadow-xl z-50 max-h-64 overflow-y-auto">
-                                    {searchResults.map(r => (
-                                        <div 
-                                            key={r.cdk} 
-                                            onClick={() => handleSelectResult(r.cdk, r.display_name)}
-                                            className="px-4 py-3 hover:bg-slate-50 cursor-pointer border-b border-slate-100 last:border-0"
-                                        >
-                                            <p className="font-semibold text-slate-800 text-sm whitespace-nowrap overflow-hidden text-ellipsis">{r.display_name}</p>
-                                            <p className="text-xs text-slate-500 font-mono mt-0.5">{r.cdk} • {r.state} • Era {r.era}</p>
+                                    {searchQuery.length < 2 ? (
+                                        <div className="py-2">
+                                            <p className="px-4 py-1 text-xs font-bold text-slate-400 uppercase">Featured Examples</p>
+                                            {FEATURED_EXAMPLES.map(r => (
+                                                <div 
+                                                    key={r.cdk} 
+                                                    onClick={() => handleSelectResult(r.cdk, r.display_name)}
+                                                    className="px-4 py-3 hover:bg-slate-50 cursor-pointer border-b border-slate-100 last:border-0"
+                                                >
+                                                    <p className="font-semibold text-slate-800 text-sm">{r.display_name}</p>
+                                                    <p className="text-xs text-slate-500 font-mono mt-0.5">{r.cdk} • {r.state} • Era {r.era}</p>
+                                                </div>
+                                            ))}
                                         </div>
-                                    ))}
+                                    ) : searchResults.length > 0 ? (
+                                        searchResults.map(r => (
+                                            <div 
+                                                key={r.cdk} 
+                                                onClick={() => handleSelectResult(r.cdk, r.display_name)}
+                                                className="px-4 py-3 hover:bg-slate-50 cursor-pointer border-b border-slate-100 last:border-0"
+                                            >
+                                                <p className="font-semibold text-slate-800 text-sm whitespace-nowrap overflow-hidden text-ellipsis">{r.display_name}</p>
+                                                <p className="text-xs text-slate-500 font-mono mt-0.5">{r.cdk} • {r.state} • Era {r.era}</p>
+                                            </div>
+                                        ))
+                                    ) : !isSearching ? (
+                                        <div className="p-4 text-sm text-slate-500">No districts found matching "{searchQuery}"</div>
+                                    ) : null}
                                 </div>
                             )}
                         </div>
