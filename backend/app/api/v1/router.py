@@ -42,4 +42,4 @@ api_router.include_router(anomalies.router)  # self-prefixed /anomalies
 api_router.include_router(states.router)  # self-prefixed /states
 api_router.include_router(search.router)  # self-prefixed /search
 api_router.include_router(reports.router)  # self-prefixed /reports
-api_router.include_router(lineage_reconstructor.router)
+api_router.include_router(lineage_reconstructor.router, prefix="/reconstruct", tags=["Lineage"])

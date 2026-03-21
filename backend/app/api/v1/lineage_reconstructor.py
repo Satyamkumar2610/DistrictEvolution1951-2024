@@ -1,35 +1,49 @@
-"""
-API routes for Lineage Reconstructor Dashboard.
-"""
-
-import logging
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, HTTPException
+from typing import Dict, Any, List
 import asyncpg
-
-from app.api.deps import get_db
+from app.db.database import get_db
 from app.services.reconstructor_service import ReconstructorService
-from app.validators import validate_crop, validate_year_range, validate_cdk
 
-logger = logging.getLogger("app.api.lineage_reconstructor")
+router = APIRouter()
 
-router = APIRouter(prefix="/reconstructor", tags=["Lineage Reconstructor"])
+@router.get("/search")
+async def search_districts(q: str = Query(..., min_length=2), db: asyncpg.Connection = Depends(get_db)):
+    """Fuzzy search across all CDKs"""
+    results = await db.fetch("""
+        SELECT cdk, district_name as display_name, state, census_year as era
+        FROM datasets.districts
+        WHERE district_name ILIKE $1 OR cdk ILIKE $1
+        LIMIT 10
+    """, f"%{q}%")
+    
+    out = []
+    for r in results:
+        is_root = await db.fetchval("SELECT 1 FROM datasets.split_events WHERE parent_cdk = $1 LIMIT 1", r["cdk"])
+        out.append({
+            "cdk": r["cdk"],
+            "display_name": r["display_name"],
+            "state": r["state"],
+            "era": r["era"],
+            "is_root": bool(is_root)
+        })
+    return out
+
+@router.get("/{cdk}/lineage")
+async def get_lineage(cdk: str, db: asyncpg.Connection = Depends(get_db)):
+    """Returns only the tree structure, cheaply."""
+    svc = ReconstructorService(db)
+    return await svc.get_lineage_tree(cdk)
 
 @router.get("/{cdk}")
-async def reconstruct_district_lineage(
-    cdk: str,
-    crop: str = Query("rice", description="Crop name to analyze"),
-    start_year: int = Query(1990, description="Start year of analysis window"),
-    end_year: int = Query(2020, description="End year of analysis window"),
+async def reconstruct_lineage(
+    cdk: str, 
+    crop: str = "rice", 
+    min_year: int = 1966,
     db: asyncpg.Connection = Depends(get_db)
 ):
-    """
-    Reconstruct historical district geometries and aggregate crop yields tracking descendants over time.
-    """
-    cdk = validate_cdk(cdk)
-    crop = validate_crop(crop)
-    start_year, end_year = validate_year_range(start_year, end_year)
-    
-    service = ReconstructorService(db)
-    result = await service.reconstruct(cdk, crop, start_year, end_year)
-    
+    """Returns full epoch array for a root CDK."""
+    svc = ReconstructorService(db)
+    result = await svc.reconstruct(cdk, crop, min_year)
+    if not result["epochs"]:
+        raise HTTPException(status_code=404, detail="Lineage epochs could not be generated.")
     return result
