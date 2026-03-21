@@ -19,7 +19,8 @@
     "pg": "^8.17.2",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "react-map-gl": "^8.1.0"
+    "react-map-gl": "^8.1.0",
+    "recharts": "^3.8.0"
   },
   "devDependencies": {
     "@types/geojson": "^7946.0.16",

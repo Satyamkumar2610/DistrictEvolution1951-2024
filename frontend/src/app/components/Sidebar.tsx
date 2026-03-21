@@ -37,6 +37,7 @@ const NAV_GROUPS = [
             { href: '/lineage/split-report', label: 'Split Report', icon: GitBranch },
             { href: '/lineage/state-overview', label: 'State Overview', icon: Globe2 },
             { href: '/split-analyzer', label: 'Split Analyzer', icon: Shield },
+            { href: '/reconstructor', label: 'Lineage Reconstructor', icon: Layers },
             { href: '/data-quality', label: 'Data Quality', icon: Database },
         ]
     },
