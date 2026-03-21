@@ -22,8 +22,12 @@ interface SearchResult {
 
 const FEATURED_EXAMPLES: SearchResult[] = [
     { cdk: "WB_24parg_1961", display_name: "24 Parganas", state: "West Bengal", era: 1961, is_root: true },
-    { cdk: "MH_medinipur_1951", display_name: "Medinipur", state: "Maharashtra/WB", era: 1951, is_root: true },
-    { cdk: "DL_delhi_1951", display_name: "Delhi", state: "Delhi", era: 1951, is_root: true }
+    { cdk: "DL_delhi_1991", display_name: "Delhi", state: "Delhi", era: 1991, is_root: true },
+    { cdk: "MH_mumbai_1951", display_name: "Mumbai", state: "Maharashtra", era: 1951, is_root: true },
+    { cdk: "UP_meerut_1951", display_name: "Meerut", state: "Uttar Pradesh", era: 1951, is_root: true },
+    { cdk: "PB_firozp_1951", display_name: "Firozpur", state: "Punjab", era: 1951, is_root: true },
+    { cdk: "TN_madura_1951", display_name: "Madurai", state: "Tamil Nadu", era: 1951, is_root: true },
+    { cdk: "HR_hisar_1951", display_name: "Hisar", state: "Haryana", era: 1951, is_root: true }
 ];
 
 export default function ReconstructorDashboard() {
