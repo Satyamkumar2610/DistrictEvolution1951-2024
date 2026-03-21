@@ -2,6 +2,8 @@
 Simulation API Endpoints.
 Uses Spatial-for-Temporal substitution to estimate rainfall sensitivity.
 """
+from typing import Any
+
 from fastapi import APIRouter, Depends, Query
 from pydantic import BaseModel
 import asyncpg

@@ -168,7 +168,7 @@ async def log_requests(request: Request, call_next):
 def generate_query_hash(request: Request) -> str:
     """Generate SHA-256 hash of normalized query parameters."""
     query_string = str(sorted(request.query_params.items()))
-    return f"sha256:{hashlib.sha256(query_string.encode()).hexdigest()[:16]}"
+    return f"sha256:{str(hashlib.sha256(query_string.encode()).hexdigest())[:16]}"
 
 
 # -----------------------------------------------------------------------------
@@ -211,6 +211,7 @@ async def readiness_check():
 
     # Test database connection
     try:
+        assert pool is not None
         async with pool.acquire() as conn:
             await conn.fetchval("SELECT 1")
     except Exception as e:

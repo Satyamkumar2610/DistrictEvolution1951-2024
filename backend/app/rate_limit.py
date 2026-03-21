@@ -64,7 +64,7 @@ class RateLimiter:
 
             # Refill tokens based on time passed
             time_passed = now - last_update
-            tokens = min(self.burst_size, tokens + time_passed * self.rate)
+            tokens = min(float(self.burst_size), tokens + time_passed * self.rate)
 
             # Check if request is allowed
             if tokens >= 1:
@@ -87,6 +87,9 @@ class RateLimiter:
                     "Retry-After": str(retry_after),
                 }
 
+        # Fallback return to satisfy static analysis
+        return False, {}
+
     async def _cleanup_old_buckets(self, now: float) -> None:
         """Remove stale bucket entries."""
         stale_threshold = now - 300  # 5 minutes
@@ -95,7 +98,7 @@ class RateLimiter:
             if last_update < stale_threshold
         ]
         for key in stale_keys:
-            del self._buckets[key]
+            self._buckets.pop(key, None)
 
         self._last_cleanup = now
         if stale_keys:
@@ -107,8 +110,8 @@ class RateLimiter:
             "total_requests": self._total_requests,
             "blocked_requests": self._blocked_requests,
             "block_rate": round(
-                self._blocked_requests / self._total_requests * 100, 2
-            ) if self._total_requests > 0 else 0,
+                float(self._blocked_requests) / self._total_requests * 100.0, 2
+            ) if self._total_requests > 0 else 0.0,
             "active_buckets": len(self._buckets),
             "config": {
                 "requests_per_minute": settings.rate_limit_per_minute,

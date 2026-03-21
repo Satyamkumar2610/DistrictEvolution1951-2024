@@ -399,7 +399,7 @@ class AdvancedAnalyticsService:
         self,
         state: str,
         year: int,
-        crops: List[str] = None
+        crops: Optional[List[str]] = None
     ) -> Dict[str, Any]:
         """
         Calculate correlation between crop areas/yields across districts.
