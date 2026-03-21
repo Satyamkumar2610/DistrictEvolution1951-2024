@@ -4,10 +4,9 @@ import * as turf from '@turf/turf';
 
 export default function ReconstructedMapLayer({ epoch }: { epoch: any }) {
     const { current: map } = useMap();
-    if (!epoch || !epoch.reconstructed_geojson) return null;
 
     useEffect(() => {
-        if (map && epoch.reconstructed_geojson) {
+        if (map && epoch?.reconstructed_geojson) {
             try {
                 // Ensure it's treated as a geometry or feature
                 const geom = epoch.reconstructed_geojson.type === 'Feature' 
@@ -23,7 +22,9 @@ export default function ReconstructedMapLayer({ epoch }: { epoch: any }) {
                 console.warn("Failed to fit bounds on reconstructed geom", err);
             }
         }
-    }, [map, epoch.reconstructed_geojson]);
+    }, [map, epoch?.reconstructed_geojson]);
+
+    if (!epoch || !epoch.reconstructed_geojson) return null;
 
     const isVirtual = epoch.is_virtual;
     

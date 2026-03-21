@@ -30,8 +30,8 @@ export default function YieldReconstructionChart({
     });
 
     const activeEpoch = epochs[activeEpochIndex];
-    let highlightStart = activeEpoch?.year_start;
-    let highlightEnd = activeEpoch?.year_end || 2024;
+    const highlightStart = activeEpoch?.year_start;
+    const highlightEnd = activeEpoch?.year_end || 2024;
 
     return (
         <div className="w-full h-72">

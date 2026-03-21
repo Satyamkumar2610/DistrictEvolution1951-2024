@@ -87,7 +87,7 @@ def build_epochs(
                 epoch_num=epoch_num,
                 year_start=current_year,
                 year_end=s_year - 1,
-                event_label="Stable period" if epoch_num == 1 else f"Post-split stable period",
+                event_label="Stable period" if epoch_num == 1 else "Post-split stable period",
                 active_cdks=sorted(list(active_cdks)),
                 leaf_cdks=leaf_cdks_list,
                 is_virtual=is_virtual
@@ -107,14 +107,6 @@ def build_epochs(
                 else:
                     event_labels.append(f"{parent} → {len(children)} districts")
         
-        event_label = " | ".join(event_labels) if event_labels else f"Split event in {s_year}"
-        
-        if len(epochs) > 0:
-            # Overwrite the previous epoch's label to indicate the event that ENDED it 
-            # (or started the next one). Actually, the spec says event_label describes 
-            # the split event. Let's make the NEW epoch have the event_label.
-            pass
-            
         current_year = max(current_year, s_year)
         # The new epoch representing the state AFTER this split will be created in the next iteration or at the end.
 

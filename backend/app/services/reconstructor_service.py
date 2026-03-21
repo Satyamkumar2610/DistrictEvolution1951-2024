@@ -1,9 +1,9 @@
 import logging
 import json
-from typing import List, Dict, Any, Optional, Tuple, Set
+from typing import List, Dict, Any, Optional, Tuple
 import asyncpg
 
-from app.core.epoch_builder import build_epochs, Epoch
+from app.core.epoch_builder import build_epochs
 
 logger = logging.getLogger("app.services.reconstructor")
 
