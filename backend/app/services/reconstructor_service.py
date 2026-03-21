@@ -1,9 +1,9 @@
 import logging
 import json
 from typing import List, Dict, Any, Optional, Tuple
-import asyncpg
+import asyncpg  # type: ignore
 
-from app.core.epoch_builder import build_epochs
+from app.core.epoch_builder import build_epochs  # type: ignore
 
 logger = logging.getLogger("app.services.reconstructor")
 
@@ -14,8 +14,9 @@ class ReconstructorService:
         self._graph_cache: Optional[Dict[str, List[Tuple[List[str], int]]]] = None
 
     async def _get_split_graph(self) -> Dict[str, List[Tuple[List[str], int]]]:
-        if self._graph_cache is not None:
-            return self._graph_cache
+        cache = self._graph_cache
+        if cache is not None:
+            return cache
             
         events = await self.db.fetch("SELECT parent_cdk, child_cdks, split_year FROM split_events")
         graph: Dict[str, List[Tuple[List[str], int]]] = {}
@@ -28,13 +29,13 @@ class ReconstructorService:
         self._graph_cache = graph
         return graph
 
-    async def get_lineage_tree(self, root_cdk: str, graph: Dict[str, List[Tuple[List[str], int]]] = None) -> Dict[str, Any]:
+    async def get_lineage_tree(self, root_cdk: str, graph: Optional[Dict[str, List[Tuple[List[str], int]]]] = None) -> Dict[str, Any]:
         """Returns the tree structure for the frontend without geometry or yields."""
         if graph is None:
             graph = await self._get_split_graph()
             
         def build_node(cdk: str) -> Dict[str, Any]:
-            node = {"cdk": cdk, "children": []}
+            node: Dict[str, Any] = {"cdk": cdk, "children": []}
             splits = graph.get(cdk, [])
             for children, s_year in splits:
                 for c in children:
@@ -95,7 +96,7 @@ class ReconstructorService:
                 geojson = None
                 is_contiguous = True
 
-            ep_data = {
+            ep_data: Dict[str, Any] = {
                 "epoch_num": ep.epoch_num,
                 "year_start": ep.year_start,
                 "year_end": ep.year_end,
@@ -135,31 +136,31 @@ class ReconstructorService:
         # A simple method: use the sum of geo area from snapshots or max area across years.
         # We will approximate coverage as length of cdks with data / length of active cdks.
         
-        final_epochs = []
+        final_epochs: List[Dict[str, Any]] = []
         for ep, ep_data in epoch_results:
-            y_start = ep.year_start
-            y_end = ep.year_end if ep.year_end else 2024
+            y_start: int = int(ep.year_start)
+            y_end: int = int(ep.year_end) if ep.year_end is not None else 2024
             
-            for year in range(y_start, y_end + 1):
+            for year in range(y_start, y_end + 1):  # type: ignore
                 active = ep.active_cdks
                 
-                total_prod = 0.0
-                total_area = 0.0
-                cdks_with_data = 0
+                total_prod: float = 0.0
+                total_area: float = 0.0
+                cdks_with_data: int = 0
                 
                 for cdk in active:
                     cdk_data = metric_dict.get(year, {}).get(cdk, {})
                     p = cdk_data.get(f"{crop}_production")
                     a = cdk_data.get(f"{crop}_area")
                     if p is not None and a is not None:
-                        total_prod += p
-                        total_area += a
-                        cdks_with_data += 1
+                        total_prod += float(p)  # type: ignore
+                        total_area += float(a)  # type: ignore
+                        cdks_with_data += 1  # type: ignore
                         
-                coverage = cdks_with_data / len(active) if active else 0.0
-                yield_val = (total_prod / total_area) * 1000 if total_area > 0 else None
+                coverage: float = float(cdks_with_data) / len(active) if active else 0.0
+                yield_val: Optional[float] = (total_prod / total_area) * 1000.0 if total_area > 0.0 else None  # type: ignore
                 
-                ep_data["metrics"].append({
+                ep_data["metrics"].append({  # type: ignore
                     "year": year,
                     "data_coverage": coverage,
                     "collective_yield": yield_val,
