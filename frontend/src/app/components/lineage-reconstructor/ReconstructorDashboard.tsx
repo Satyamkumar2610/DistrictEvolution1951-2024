@@ -177,7 +177,7 @@ export default function ReconstructorDashboard() {
                                             </div>
                                         ))
                                     ) : !isSearching ? (
-                                        <div className="p-4 text-sm text-slate-500">No districts found matching "{searchQuery}"</div>
+                                        <div className="p-4 text-sm text-slate-500">No districts found matching &quot;{searchQuery}&quot;</div>
                                     ) : null}
                                 </div>
                             )}
