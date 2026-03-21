@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, Query, HTTPException  # type: ignore
 
 import asyncpg  # type: ignore
-from app.db.database import get_db  # type: ignore
+from app.api.deps import get_db  # type: ignore
 from app.services.reconstructor_service import ReconstructorService  # type: ignore
 
 router = APIRouter()
