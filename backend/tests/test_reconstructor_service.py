@@ -1,5 +1,7 @@
-import pytest
-from app.services.reconstructor_service import ReconstructorService
+import pytest  # type: ignore[import-not-found]
+from app.services.reconstructor_service import ReconstructorService  # type: ignore[import-not-found]
+
+from typing import Any, Dict, List, Optional, Tuple
 
 
 class FakeDB:
@@ -10,15 +12,21 @@ class FakeDB:
     3. districts → CDK→LGD bridge (name matching)
     4. agri_metrics → yield data (keyed by district_lgd)
     """
-    def __init__(self, metrics=None, splits=None, geom=None, lgd_map=None):
-        self.metrics = metrics or []
-        self.splits = splits or []
-        self.geom = geom or {"geojson": '{"type": "Polygon"}', "type": "POLYGON"}
+    def __init__(
+        self,
+        metrics: Optional[List[Dict[str, Any]]] = None,
+        splits: Optional[List[Dict[str, Any]]] = None,
+        geom: Optional[Dict[str, str]] = None,
+        lgd_map: Optional[Dict[str, int]] = None,
+    ):
+        self.metrics: List[Dict[str, Any]] = metrics or []
+        self.splits: List[Dict[str, Any]] = splits or []
+        self.geom: Dict[str, str] = geom or {"geojson": '{"type": "Polygon"}', "type": "POLYGON"}
         # lgd_map: maps CDK text → LGD code (int), e.g. {"B": 101, "C": 102}
-        self.lgd_map = lgd_map or {}
-        self.queries = []
+        self.lgd_map: Dict[str, int] = lgd_map or {}
+        self.queries: List[Tuple[str, tuple]] = []
 
-    async def fetch(self, query, *args):
+    async def fetch(self, query: str, *args: Any) -> List[Dict[str, Any]]:
         self.queries.append((query, args))
         if "split_events" in query:
             return self.splits
@@ -34,7 +42,7 @@ class FakeDB:
             ]
         return []
 
-    async def fetchval(self, query, *args):
+    async def fetchval(self, query: str, *args: Any) -> Any:
         self.queries.append((query, args))
         if "district_snapshots" in query and "district_name" in query:
             # Name resolution: return a name based on CDK
@@ -42,10 +50,10 @@ class FakeDB:
             return cdk  # Just return the CDK as the name for simplicity
         if "districts" in query and "lgd_code" in query:
             # CDK→LGD bridge lookup
-            name_pattern = args[0].strip("%") if args else ""
+            name_pattern: str = str(args[0]).strip("%") if args else ""
             # Find matching LGD code from our map
-            for cdk, lgd in self.lgd_map.items():
-                if name_pattern.lower() in cdk.lower():
+            for cdk_key, lgd in self.lgd_map.items():
+                if name_pattern.lower() in cdk_key.lower():
                     return lgd
             return None
         return 1
