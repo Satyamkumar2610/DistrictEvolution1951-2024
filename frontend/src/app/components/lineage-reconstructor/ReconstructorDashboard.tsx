@@ -23,11 +23,24 @@ interface SearchResult {
 const FEATURED_EXAMPLES: SearchResult[] = [
     { cdk: "WB_24parg_1961", display_name: "24 Parganas", state: "West Bengal", era: 1961, is_root: true },
     { cdk: "DL_delhi_1991", display_name: "Delhi", state: "Delhi", era: 1991, is_root: true },
-    { cdk: "MH_mumbai_1951", display_name: "Mumbai", state: "Maharashtra", era: 1951, is_root: true },
+    { cdk: "NC_delhi_1991", display_name: "NCT of Delhi", state: "NCT of Delhi", era: 1991, is_root: true },
+    { cdk: "WB_medini_1951", display_name: "Medinipur", state: "West Bengal", era: 1951, is_root: true },
     { cdk: "UP_meerut_1951", display_name: "Meerut", state: "Uttar Pradesh", era: 1951, is_root: true },
+    { cdk: "UP_buland_1971", display_name: "Bulandshahr", state: "Uttar Pradesh", era: 1971, is_root: true },
+    { cdk: "HR_hisar_1951", display_name: "Hisar", state: "Haryana", era: 1951, is_root: true },
+    { cdk: "HR_rohtak_1951", display_name: "Rohtak", state: "Haryana", era: 1951, is_root: true },
+    { cdk: "PB_bhatin_1951", display_name: "Bhatinda", state: "Punjab", era: 1951, is_root: true },
     { cdk: "PB_firozp_1951", display_name: "Firozpur", state: "Punjab", era: 1951, is_root: true },
     { cdk: "TN_madura_1951", display_name: "Madurai", state: "Tamil Nadu", era: 1951, is_root: true },
-    { cdk: "HR_hisar_1951", display_name: "Hisar", state: "Haryana", era: 1951, is_root: true }
+    { cdk: "TN_coimba_1951", display_name: "Coimbatore", state: "Tamil Nadu", era: 1951, is_root: true },
+    { cdk: "MH_thane_1971", display_name: "Thane", state: "Maharashtra", era: 1971, is_root: true },
+    { cdk: "KA_dharwa_1971", display_name: "Dharwad", state: "Karnataka", era: 1971, is_root: true },
+    { cdk: "JK_jammua_1951", display_name: "Jammu & Kashmir", state: "J&K", era: 1951, is_root: true },
+    { cdk: "SK_sikkim_1971", display_name: "Sikkim", state: "Sikkim", era: 1971, is_root: true },
+    { cdk: "MN_manipu_1951", display_name: "Manipur", state: "Manipur", era: 1951, is_root: true },
+    { cdk: "TR_tripur_1951", display_name: "Tripura", state: "Tripura", era: 1951, is_root: true },
+    { cdk: "GJ_surat_1961", display_name: "Surat", state: "Gujarat", era: 1961, is_root: true },
+    { cdk: "OD_cuttac_1991", display_name: "Cuttack", state: "Odisha", era: 1991, is_root: true },
 ];
 
 export default function ReconstructorDashboard() {
@@ -84,13 +97,17 @@ export default function ReconstructorDashboard() {
         setLoading(true);
         try {
             const res = await fetch(`${API_URL}/api/v1/reconstruct/${cdk}?crop=${crop}`);
-            if (!res.ok) throw new Error("Reconstruction failed to load");
+            if (!res.ok) {
+                const errBody = await res.json().catch(() => null);
+                const detail = errBody?.detail || `Server returned ${res.status}`;
+                throw new Error(detail);
+            }
             
             const data = await res.json();
             setEpochs(data.epochs || []);
             setActiveEpochIndex(0);
         } catch (err: any) {
-            setError(err.message || "Failed");
+            setError(err.message || "Failed to fetch");
         } finally {
             setLoading(false);
         }
