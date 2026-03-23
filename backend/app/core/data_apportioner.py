@@ -5,11 +5,10 @@ Supports area-weighted, population-weighted, and crop-area-weighted modes.
 Every apportionment is annotated with the method used, and conservation of
 extensive properties (production, area) is validated post-hoc.
 """
-from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
-from typing import Dict, List, Literal, Optional, Tuple
+from typing import Any, Dict, List, Literal, Optional, Tuple
 
 from app.core.lineage_graph import DistrictEvent, EventType, LineageGraph  # type: ignore
 
@@ -114,12 +113,12 @@ class DataApportioner:
 
         # --- Apply weights ---
         for tgt in event.target_cdks:
-            w = weights.get(tgt, 0.0)
-            apportioned_val = total_source * w
+            w: float = weights.get(tgt, 0.0)
+            apportioned_val: float = float(total_source) * w
 
-            actual_method = mode
-            if area_ratios and mode == "area_weighted":
-                actual_method = "exact_geometric" if tgt in area_ratios else "area_weighted"
+            actual_method: ApportionMethod = mode
+            if area_ratios is not None and mode == "area_weighted":
+                actual_method = "exact_geometric" if str(tgt) in area_ratios else "area_weighted"
 
             results[tgt] = ApportionedValue(
                 cdk=tgt, year=event.year, value=apportioned_val,
@@ -227,21 +226,23 @@ class DataApportioner:
                 new_values: Dict[str, float] = {}
                 for src in event.source_cdks:
                     if src in current_values:
+                        src_val: float = current_values[src]
+                        src_data: Dict[str, float] = {str(src): src_val}
                         apportioned = self.apportion_to_modern(
-                            {src: current_values[src]}, event, mode
+                            src_data, event, mode
                         )
                         for tgt, av in apportioned.items():
                             new_values[tgt] = new_values.get(tgt, 0.0) + av.value
-                        del current_values[src]
+                        current_values.pop(str(src))
 
                 # Merge: districts not involved in this event carry forward
                 current_values.update(new_values)
 
             # Store final distribution
-            for cdk, val in current_values.items():
-                if cdk not in result:
-                    result[cdk] = {}
-                result[cdk][year] = val
+            for cdk_key, cdk_val in current_values.items():
+                if cdk_key not in result:
+                    result[cdk_key] = {}
+                result[cdk_key][year] = cdk_val
 
         return result
 
@@ -297,7 +298,7 @@ class DataApportioner:
         district_data: Dict[str, Dict[str, float]],
         active_cdks: List[str],
         crop: str,
-    ) -> Dict[str, Optional[float]]:
+    ) -> Dict[str, Any]:
         """
         Compute collective yield from multiple district data dicts.
         
@@ -310,32 +311,33 @@ class DataApportioner:
             {"yield": float|None, "production": float|None, "area": float|None,
              "coverage": float, "method": str}
         """
-        total_prod = 0.0
-        total_area = 0.0
-        cdks_with_data = 0
+        total_prod: float = 0.0
+        total_area: float = 0.0
+        cdks_with_data: int = 0
 
         for cdk in active_cdks:
             cdk_d = district_data.get(cdk, {})
             prod = cdk_d.get("production") or cdk_d.get(f"{crop}_production")
             area = cdk_d.get("area") or cdk_d.get(f"{crop}_area")
             if prod is not None and area is not None:
-                total_prod += float(prod)
-                total_area += float(area)
-                cdks_with_data += 1
+                total_prod = total_prod + float(prod)
+                total_area = total_area + float(area)
+                cdks_with_data = cdks_with_data + 1
 
-        coverage = (
+        coverage: float = (
             float(cdks_with_data) / len(active_cdks)
             if active_cdks else 0.0
         )
-        yield_val = (
-            round((total_prod / total_area) * 1000.0, 2)
-            if total_area > 0 else None
+        yield_val: Optional[float] = (
+            float(int((total_prod / total_area) * 1000.0 * 100)) / 100.0
+            if total_area > 0.0 else None
         )
 
-        return {
+        result: Dict[str, Any] = {
             "yield": yield_val,
-            "production": round(total_prod, 2) if cdks_with_data > 0 else None,
-            "area": round(total_area, 2) if cdks_with_data > 0 else None,
-            "coverage": round(coverage, 3),
+            "production": float(int(total_prod * 100)) / 100.0 if cdks_with_data > 0 else None,
+            "area": float(int(total_area * 100)) / 100.0 if cdks_with_data > 0 else None,
+            "coverage": float(int(coverage * 1000)) / 1000.0,
             "method": "area_weighted" if cdks_with_data > 0 else "none",
         }
+        return result
