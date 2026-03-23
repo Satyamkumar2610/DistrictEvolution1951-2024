@@ -1,6 +1,7 @@
 """
 Lineage Reconstructor API — reconstructs historical district timelines
 across split events using epoch-based aggregation.
+v2: CDK→LGD bridge architecture for cross-schema yield lookup.
 """
 import logging
 
