@@ -118,7 +118,7 @@ class DataApportioner:
 
             actual_method: ApportionMethod = mode
             if area_ratios is not None and mode == "area_weighted":
-                actual_method = "exact_geometric" if str(tgt) in area_ratios else "area_weighted"
+                actual_method = "exact_geometric" if str(tgt) in area_ratios else "area_weighted"  # type: ignore[operator]
 
             results[tgt] = ApportionedValue(
                 cdk=tgt, year=event.year, value=apportioned_val,
@@ -226,7 +226,7 @@ class DataApportioner:
                 new_values: Dict[str, float] = {}
                 for src in event.source_cdks:
                     if src in current_values:
-                        src_val: float = current_values[src]
+                        src_val: float = current_values[src]  # type: ignore[index]
                         src_data: Dict[str, float] = {str(src): src_val}
                         apportioned = self.apportion_to_modern(
                             src_data, event, mode
@@ -242,7 +242,7 @@ class DataApportioner:
             for cdk_key, cdk_val in current_values.items():
                 if cdk_key not in result:
                     result[cdk_key] = {}
-                result[cdk_key][year] = cdk_val
+                result[cdk_key][year] = cdk_val  # type: ignore[index]
 
         return result
 
@@ -320,23 +320,23 @@ class DataApportioner:
             prod = cdk_d.get("production") or cdk_d.get(f"{crop}_production")
             area = cdk_d.get("area") or cdk_d.get(f"{crop}_area")
             if prod is not None and area is not None:
-                total_prod = total_prod + float(prod)
-                total_area = total_area + float(area)
-                cdks_with_data = cdks_with_data + 1
+                total_prod = total_prod + float(prod)  # type: ignore[operator]
+                total_area = total_area + float(area)  # type: ignore[operator]
+                cdks_with_data = cdks_with_data + 1  # type: ignore[operator]
 
         coverage: float = (
             float(cdks_with_data) / len(active_cdks)
             if active_cdks else 0.0
         )
         yield_val: Optional[float] = (
-            float(int((total_prod / total_area) * 1000.0 * 100)) / 100.0
+            float(int((total_prod / total_area) * 1000.0 * 100)) / 100.0  # type: ignore[operator]
             if total_area > 0.0 else None
         )
 
         result: Dict[str, Any] = {
             "yield": yield_val,
-            "production": float(int(total_prod * 100)) / 100.0 if cdks_with_data > 0 else None,
-            "area": float(int(total_area * 100)) / 100.0 if cdks_with_data > 0 else None,
+            "production": float(int(total_prod * 100)) / 100.0 if cdks_with_data > 0 else None,  # type: ignore[operator]
+            "area": float(int(total_area * 100)) / 100.0 if cdks_with_data > 0 else None,  # type: ignore[operator]
             "coverage": float(int(coverage * 1000)) / 1000.0,
             "method": "area_weighted" if cdks_with_data > 0 else "none",
         }
