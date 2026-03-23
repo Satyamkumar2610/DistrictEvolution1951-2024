@@ -1,7 +1,7 @@
 """
 Lineage Reconstructor API — reconstructs historical district timelines
 across split events using epoch-based aggregation.
-v2: CDK→LGD bridge architecture for cross-schema yield lookup.
+v3: DAG-based LineageGraph with ancestor/descendant queries.
 """
 import logging
 
@@ -10,11 +10,28 @@ import asyncpg  # type: ignore
 
 from app.api.deps import get_db  # type: ignore
 from app.services.reconstructor_service import ReconstructorService  # type: ignore
+from app.core.lineage_graph import LineageGraph  # type: ignore
 
 logger = logging.getLogger("app.api.v1.lineage_reconstructor")
 
 router = APIRouter()
 
+
+# ------------------------------------------------------------------
+# Helper: build LineageGraph from DB
+# ------------------------------------------------------------------
+
+async def _build_graph(db: asyncpg.Connection) -> LineageGraph:
+    """Fetch split_events and construct a LineageGraph."""
+    rows = await db.fetch(
+        "SELECT parent_cdk, child_cdks, split_year FROM split_events"
+    )
+    return LineageGraph.from_split_events([dict(r) for r in rows])
+
+
+# ------------------------------------------------------------------
+# Search
+# ------------------------------------------------------------------
 
 @router.get("/search")
 async def search_districts(
@@ -22,19 +39,13 @@ async def search_districts(
     db: asyncpg.Connection = Depends(get_db),
 ):
     """
-    Fuzzy search for districts that are roots in the split_events graph.
-    Searches parent_cdk values and flattened child_cdks from split_events,
-    matching against district names from the districts table via a
-    CDK-to-name mapping built from district_snapshots.
+    Fuzzy search for districts in the split_events graph.
     """
     try:
-        # Search across split_events parent CDKs and district_snapshots names
         results = await db.fetch("""
             WITH all_cdks AS (
-                -- All unique parent CDKs
                 SELECT DISTINCT parent_cdk AS cdk FROM split_events
                 UNION
-                -- All unique child CDKs (unnest arrays)
                 SELECT DISTINCT unnest(child_cdks) AS cdk FROM split_events
             ),
             cdk_names AS (
@@ -60,11 +71,9 @@ async def search_districts(
 
         out = []
         for r in results:
-            # Extract state prefix from CDK (e.g., 'DL' from 'DL_delhi_1991')
             cdk_str = r["cdk"]
             parts = cdk_str.split("_")
             state_prefix = parts[0] if parts else ""
-
             out.append({
                 "cdk": cdk_str,
                 "display_name": r["display_name"],
@@ -78,9 +87,13 @@ async def search_districts(
         raise HTTPException(status_code=500, detail=f"Search failed: {str(e)}")
 
 
+# ------------------------------------------------------------------
+# Tree / Lineage
+# ------------------------------------------------------------------
+
 @router.get("/{cdk}/lineage")
 async def get_lineage(cdk: str, db: asyncpg.Connection = Depends(get_db)):
-    """Returns only the tree structure, cheaply."""
+    """Returns the tree structure for the frontend."""
     try:
         svc = ReconstructorService(db)
         return await svc.get_lineage_tree(cdk)
@@ -91,6 +104,79 @@ async def get_lineage(cdk: str, db: asyncpg.Connection = Depends(get_db)):
         )
 
 
+# ------------------------------------------------------------------
+# Ancestors / Descendants (new DAG-based endpoints)
+# ------------------------------------------------------------------
+
+@router.get("/{cdk}/ancestors")
+async def get_ancestors(
+    cdk: str,
+    year: int = Query(None, description="Stop at this year"),
+    db: asyncpg.Connection = Depends(get_db),
+):
+    """
+    All historical districts that contributed area to this modern district.
+    Traverses the inverse DAG from child → parents.
+    """
+    try:
+        graph = await _build_graph(db)
+        ancestors = graph.get_canonical_ancestors(cdk, target_year=year)
+        return {
+            "cdk": cdk,
+            "target_year": year,
+            "ancestors": ancestors,
+            "count": len(ancestors),
+        }
+    except Exception as e:
+        logger.error(f"Ancestors query failed for {cdk}: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/{cdk}/descendants")
+async def get_descendants(
+    cdk: str,
+    from_year: int = Query(None, description="Only events after this year"),
+    db: asyncpg.Connection = Depends(get_db),
+):
+    """
+    All modern districts that inherited area from this historical district.
+    Traverses the forward DAG from parent → children.
+    """
+    try:
+        graph = await _build_graph(db)
+        descendants = graph.get_canonical_descendants(cdk, from_year=from_year)
+        leaf_descendants = graph.get_leaf_descendants(cdk)
+        return {
+            "cdk": cdk,
+            "from_year": from_year,
+            "all_descendants": descendants,
+            "leaf_descendants": leaf_descendants,
+            "count": len(descendants),
+        }
+    except Exception as e:
+        logger.error(f"Descendants query failed for {cdk}: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ------------------------------------------------------------------
+# Graph summary
+# ------------------------------------------------------------------
+
+@router.get("/graph/summary")
+async def graph_summary(db: asyncpg.Connection = Depends(get_db)):
+    """Returns DAG statistics: node/event counts, root/leaf counts, event types."""
+    try:
+        graph = await _build_graph(db)
+        return graph.summary()
+    except Exception as e:
+        logger.error(f"Graph summary failed: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ------------------------------------------------------------------
+# Full reconstruction
+# ------------------------------------------------------------------
+
 @router.get("/{cdk}")
 async def reconstruct_lineage(
     cdk: str,
@@ -98,7 +184,7 @@ async def reconstruct_lineage(
     min_year: int = 1966,
     db: asyncpg.Connection = Depends(get_db),
 ):
-    """Returns full epoch array for a root CDK."""
+    """Returns full epoch array with yield aggregation for a root CDK."""
     try:
         svc = ReconstructorService(db)
         result = await svc.reconstruct(cdk, crop, min_year)
