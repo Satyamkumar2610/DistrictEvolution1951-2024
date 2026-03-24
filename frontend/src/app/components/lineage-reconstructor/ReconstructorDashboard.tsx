@@ -421,16 +421,24 @@ export default function ReconstructorDashboard() {
                                     style={{ width: "100%", height: "100%" }}
                                 >
                                     <NavigationControl position="top-right" />
+                                    
+                                    {/* Base district boundaries (always visible) */}
+                                    <Source id="all-districts" type="geojson" data="/data/districts.json">
+                                        <Layer id="district-base-fill" type="fill" paint={{ "fill-color": "#1e293b", "fill-opacity": 0.4 }} />
+                                        <Layer id="district-base-border" type="line" paint={{ "line-color": "#334155", "line-width": 0.5, "line-opacity": 0.6 }} />
+                                    </Source>
+
                                     {/* India official boundary overlay */}
                                     <Source id="india-boundary" type="geojson" data="/data/india_boundary.json">
-                                        <Layer id="india-boundary-fill" type="fill" paint={{ "fill-color": "#1e1b4b", "fill-opacity": 0.15 }} />
-                                        <Layer id="india-boundary-line" type="line" paint={{ "line-color": "#6366f1", "line-width": 1.5, "line-opacity": 0.4 }} />
+                                        <Layer id="india-boundary-line" type="line" paint={{ "line-color": "#6366f1", "line-width": 2, "line-opacity": 0.5 }} />
                                     </Source>
+
+                                    {/* Reconstructed district geometry (if available) */}
                                     {activeEpoch && <ReconstructedMapLayer epoch={activeEpoch} />}
                                 </Map>
                                 {/* Map caption */}
                                 <div className="absolute bottom-2 left-2 px-2 py-1 bg-slate-900/80 backdrop-blur rounded text-[9px] text-slate-500">
-                                    Boundary: Survey of India (Official)
+                                    Boundary: Survey of India (Official) • {641} Districts
                                 </div>
                             </div>
 
