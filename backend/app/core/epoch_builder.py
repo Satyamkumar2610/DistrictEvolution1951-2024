@@ -1,5 +1,10 @@
-from typing import List, Dict, Tuple, Optional, Set
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, List, Dict, Tuple, Optional, Set
 from dataclasses import dataclass
+
+if TYPE_CHECKING:
+    from app.core.lineage_graph import LineageGraph
 
 @dataclass
 class Epoch:
@@ -14,7 +19,7 @@ class Epoch:
 
 def build_epochs_from_graph(
     root_cdk: str,
-    graph: "LineageGraph",  # type: ignore[name-defined]
+    graph: LineageGraph,
     min_year: int = 1950,
 ) -> List[Epoch]:
     """
