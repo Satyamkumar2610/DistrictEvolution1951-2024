@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, List, Dict, Tuple, Optional, Set
 from dataclasses import dataclass
 
 if TYPE_CHECKING:
-    from app.core.lineage_graph import LineageGraph
+    from app.core.lineage_graph import LineageGraph  # type: ignore[import-not-found]
 
 @dataclass
 class Epoch:

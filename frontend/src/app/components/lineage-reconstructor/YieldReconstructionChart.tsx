@@ -1,6 +1,6 @@
 import React from "react";
 import {
-    LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, ReferenceArea
+    AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, ReferenceArea
 } from "recharts";
 
 export default function YieldReconstructionChart({ 
@@ -14,7 +14,7 @@ export default function YieldReconstructionChart({
 }) {
     if (!epochs || epochs.length === 0) return null;
 
-    // Flatten all metrics from all epochs into chronological array for the chart
+    // Flatten all metrics
     let fullTimeline: any[] = [];
     const splitYears: {year: number, label: string}[] = [];
     
@@ -23,7 +23,6 @@ export default function YieldReconstructionChart({
             splitYears.push({ year: ep.year_start, label: ep.event_label });
         }
         if (ep.metrics) {
-            // Include epoch Index so clicking tooltip triggers onEpochChange
             const annotated = ep.metrics.map((m: any) => ({ ...m, epochIndex: idx }));
             fullTimeline = fullTimeline.concat(annotated);
         }
@@ -34,80 +33,105 @@ export default function YieldReconstructionChart({
     const highlightEnd = activeEpoch?.year_end || 2024;
 
     return (
-        <div className="w-full h-72">
-            <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
-                Yield Reconstruction Timeline (kg/ha)
-            </h4>
-            <ResponsiveContainer width="100%" height="100%">
-                <LineChart 
-                    data={fullTimeline} 
-                    margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
-                    onClick={(e: any) => {
-                        if (e && e.activePayload && e.activePayload.length > 0) {
-                            const payload = e.activePayload[0].payload;
-                            if (payload.epochIndex !== undefined) {
-                                onEpochChange(payload.epochIndex);
+        <div className="w-full h-full flex flex-col">
+            <div className="flex items-center justify-between mb-3">
+                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+                    Yield Timeline
+                </h4>
+                <span className="text-[10px] text-slate-600">kg/ha • click to navigate</span>
+            </div>
+            <div className="flex-1 min-h-0">
+                <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart 
+                        data={fullTimeline} 
+                        margin={{ top: 10, right: 10, left: -10, bottom: 0 }}
+                        onClick={(e: any) => {
+                            if (e?.activePayload?.[0]?.payload?.epochIndex !== undefined) {
+                                onEpochChange(e.activePayload[0].payload.epochIndex);
                             }
-                        }
-                    }}
-                >
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                    <XAxis 
-                        dataKey="year" 
-                        tick={{ fontSize: 10, fill: "#64748b" }} 
-                        axisLine={false} 
-                        tickLine={false} 
-                        type="number"
-                        domain={['dataMin', 'dataMax']}
-                    />
-                    <YAxis 
-                        tick={{ fontSize: 10, fill: "#64748b" }} 
-                        axisLine={false} 
-                        tickLine={false} 
-                        width={40}
-                        domain={['auto', 'auto']}
-                    />
-                    <Tooltip
-                        contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                        labelStyle={{ fontWeight: 'bold', color: '#1e293b' }}
-                        itemStyle={{ color: '#4f46e5' }}
-                        labelFormatter={(label: any) => `Year: ${label}`}
-                        formatter={(value: string | number | readonly (string | number)[] | undefined | null, name: any, props: any) => {
-                            const cov = props.payload.data_coverage;
-                            const covStr = cov !== undefined && cov < 1 ? ` (${(cov*100).toFixed(0)}% coverage)` : '';
-                            return [`${value ? value.toLocaleString(undefined, { maximumFractionDigits: 0 }) : 'N/A'}${covStr}`, 'Yield (kg/ha)'];
                         }}
-                    />
-                    
-                    {/* Active highlight band */}
-                    {highlightStart !== undefined && (
-                        <ReferenceArea 
-                            x1={highlightStart} x2={highlightEnd} 
-                            fill="#4f46e5" fillOpacity={0.06} 
-                        />
-                    )}
+                    >
+                        <defs>
+                            <linearGradient id="yieldGradient" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stopColor="#8b5cf6" stopOpacity={0.3}/>
+                                <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0.02}/>
+                            </linearGradient>
+                        </defs>
 
-                    {splitYears.map(sy => (
-                        <ReferenceLine 
-                            key={sy.year} 
-                            x={sy.year} 
-                            stroke="#f59e0b" 
-                            strokeDasharray="4 4" 
-                            label={{ position: 'top', value: sy.label, fill: '#b45309', fontSize: 10 }}
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#1e293b" />
+                        <XAxis 
+                            dataKey="year" 
+                            tick={{ fontSize: 10, fill: "#475569" }} 
+                            axisLine={false} 
+                            tickLine={false} 
+                            type="number"
+                            domain={['dataMin', 'dataMax']}
                         />
-                    ))}
+                        <YAxis 
+                            tick={{ fontSize: 10, fill: "#475569" }} 
+                            axisLine={false} 
+                            tickLine={false} 
+                            width={40}
+                            domain={['auto', 'auto']}
+                        />
+                        <Tooltip
+                            contentStyle={{ 
+                                backgroundColor: '#0f172a', 
+                                borderRadius: '12px', 
+                                border: '1px solid #1e293b', 
+                                boxShadow: '0 25px 50px -12px rgb(0 0 0 / 0.5)',
+                                padding: '10px 14px',
+                            }}
+                            labelStyle={{ fontWeight: 'bold', color: '#e2e8f0', fontSize: '12px' }}
+                            itemStyle={{ color: '#a78bfa' }}
+                            labelFormatter={(label: any) => `Year: ${label}`}
+                            formatter={(value: any, name: any, props: any) => {
+                                const cov = props.payload.data_coverage;
+                                const covStr = cov !== undefined && cov < 1 ? ` (${(cov*100).toFixed(0)}% cov.)` : '';
+                                return [`${value ? Number(value).toLocaleString(undefined, { maximumFractionDigits: 0 }) : 'N/A'}${covStr}`, 'Yield (kg/ha)'];
+                            }}
+                            cursor={{ stroke: '#6366f1', strokeWidth: 1, strokeDasharray: '4 4' }}
+                        />
+                        
+                        {/* Active epoch highlight */}
+                        {highlightStart !== undefined && (
+                            <ReferenceArea 
+                                x1={highlightStart} x2={highlightEnd} 
+                                fill="#6366f1" fillOpacity={0.06} 
+                            />
+                        )}
 
-                    <Line 
-                        type="monotone" 
-                        dataKey="collective_yield" 
-                        stroke="#4f46e5" 
-                        strokeWidth={2} 
-                        dot={false}
-                        activeDot={{ r: 5, fill: '#4f46e5', stroke: '#c7d2fe', strokeWidth: 3 }}
-                        connectNulls={false} /* False to enforce gaps when yield is null */
-                    />
-                </LineChart>
-            </ResponsiveContainer>
+                        {/* Split year markers */}
+                        {splitYears.map(sy => (
+                            <ReferenceLine 
+                                key={sy.year} 
+                                x={sy.year} 
+                                stroke="#f59e0b" 
+                                strokeDasharray="4 4"
+                                strokeWidth={1.5}
+                                label={{ 
+                                    position: 'top', 
+                                    value: `${sy.year}`, 
+                                    fill: '#f59e0b', 
+                                    fontSize: 9,
+                                    fontWeight: 700,
+                                }}
+                            />
+                        ))}
+
+                        <Area 
+                            type="monotone" 
+                            dataKey="collective_yield" 
+                            stroke="#8b5cf6" 
+                            strokeWidth={2} 
+                            fill="url(#yieldGradient)"
+                            dot={false}
+                            activeDot={{ r: 5, fill: '#8b5cf6', stroke: '#1e1b4b', strokeWidth: 3 }}
+                            connectNulls={false}
+                        />
+                    </AreaChart>
+                </ResponsiveContainer>
+            </div>
         </div>
     );
 }

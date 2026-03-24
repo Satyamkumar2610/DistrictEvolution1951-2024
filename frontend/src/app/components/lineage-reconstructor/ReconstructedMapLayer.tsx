@@ -8,7 +8,6 @@ export default function ReconstructedMapLayer({ epoch }: { epoch: any }) {
     useEffect(() => {
         if (map && epoch?.reconstructed_geojson) {
             try {
-                // Ensure it's treated as a geometry or feature
                 const geom = epoch.reconstructed_geojson.type === 'Feature' 
                     ? epoch.reconstructed_geojson 
                     : turf.feature(epoch.reconstructed_geojson);
@@ -27,41 +26,57 @@ export default function ReconstructedMapLayer({ epoch }: { epoch: any }) {
     if (!epoch || !epoch.reconstructed_geojson) return null;
 
     const isVirtual = epoch.is_virtual;
-    
-    // Attempt to parse out some choropleth value 
     const latestYield = epoch.metrics && epoch.metrics.length > 0 
         ? epoch.metrics[epoch.metrics.length - 1].collective_yield 
         : null;
 
-    // Simple fixed color scale mapping for India yields (e.g. 1000 to 4500 kg/ha)
-    // If virtual or yield is null, neutral blue. Otherwise shade of green/indigo.
-    let fillColor = "#cbd5e1"; // default null
+    // Dynamic gradient color based on yield
+    let fillColor = "#475569"; // default slate-600
     if (isVirtual) {
-        fillColor = "#93c5fd"; // neutral blue
+        fillColor = "#6366f1"; // indigo for virtual
     } else if (latestYield) {
-        if (latestYield < 1500) fillColor = "#c7d2fe"; // lowest
-        else if (latestYield < 2500) fillColor = "#818cf8";
-        else if (latestYield < 3500) fillColor = "#4f46e5";
-        else fillColor = "#312e81"; // highest
+        if (latestYield < 1000) fillColor = "#e11d48"; // rose-600
+        else if (latestYield < 1500) fillColor = "#f59e0b"; // amber-500
+        else if (latestYield < 2000) fillColor = "#eab308"; // yellow-500
+        else if (latestYield < 2500) fillColor = "#84cc16"; // lime-500
+        else if (latestYield < 3000) fillColor = "#22c55e"; // green-500
+        else if (latestYield < 3500) fillColor = "#10b981"; // emerald-500
+        else fillColor = "#06b6d4"; // cyan-500
     }
 
-    const fillOpacity = isVirtual ? 0.2 : 0.45;
-    const lineDasharray = isVirtual ? [4, 4] : [1];
+    const fillOpacity = isVirtual ? 0.15 : 0.35;
+    const lineColor = isVirtual ? "#818cf8" : "#e2e8f0";
+    const lineWidth = isVirtual ? 1.5 : 2;
 
     return (
         <Source id="reconstructed" type="geojson" data={epoch.reconstructed_geojson}>
             <Layer 
                 id="reconstructed-fill" 
                 type="fill" 
-                paint={{ "fill-color": fillColor, "fill-opacity": fillOpacity }} 
+                paint={{ 
+                    "fill-color": fillColor, 
+                    "fill-opacity": fillOpacity,
+                }} 
             />
             <Layer 
                 id="reconstructed-line" 
                 type="line" 
                 paint={{ 
-                    "line-color": isVirtual ? "#2563eb" : "#1e1b4b", 
-                    "line-width": 2,
-                    ...(isVirtual ? { "line-dasharray": lineDasharray } : {})
+                    "line-color": lineColor, 
+                    "line-width": lineWidth,
+                    "line-opacity": 0.8,
+                    ...(isVirtual ? { "line-dasharray": [4, 3] as any } : {}),
+                }} 
+            />
+            {/* Glow effect for boundaries */}
+            <Layer 
+                id="reconstructed-glow" 
+                type="line" 
+                paint={{ 
+                    "line-color": isVirtual ? "#6366f1" : fillColor, 
+                    "line-width": 6,
+                    "line-opacity": 0.15,
+                    "line-blur": 4,
                 }} 
             />
         </Source>
