@@ -88,14 +88,17 @@ def load_data():
             
             # Map master columns to schema
             col_map = {'cdk': 'cdk', 'state_name': 'state_name', 'district_name': 'district_name'}
-            if 'creation_year' in master.columns:
-                col_map['creation_year'] = 'start_year'
-            if 'abolition_year' in master.columns:
-                col_map['abolition_year'] = 'end_year'
+            
+            # Prefer start_year/end_year if available, else map creation/abolition
             if 'start_year' in master.columns:
                 col_map['start_year'] = 'start_year'
+            elif 'creation_year' in master.columns:
+                col_map['creation_year'] = 'start_year'
+                
             if 'end_year' in master.columns:
                 col_map['end_year'] = 'end_year'
+            elif 'abolition_year' in master.columns:
+                col_map['abolition_year'] = 'end_year'
             
             dists = master.rename(columns=col_map)
             required_cols = ['cdk', 'state_name', 'district_name', 'start_year', 'end_year']
