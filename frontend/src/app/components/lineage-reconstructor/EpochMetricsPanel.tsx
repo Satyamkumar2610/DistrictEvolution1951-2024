@@ -108,12 +108,17 @@ export default function EpochMetricsPanel({
                     </span>
                 ))}
                 
+                {epoch.is_fallback && (
+                    <span className="ml-2 inline-flex items-center gap-1 px-2 py-1 bg-amber-500/10 text-amber-400 text-[10px] font-medium rounded-md border border-amber-500/20" title={`Using data from: ${(epoch.data_cdks || []).join(', ')}`}>
+                        <AlertTriangle className="w-3 h-3" /> Using parent data
+                    </span>
+                )}
                 {epoch.is_virtual && (
                     <span className="ml-2 inline-flex items-center gap-1 px-2 py-1 bg-blue-500/10 text-blue-400 text-[10px] font-medium rounded-md border border-blue-500/20">
                         <AlertTriangle className="w-3 h-3" /> Reconstructed
                     </span>
                 )}
-                {coverage !== undefined && coverage >= 1.0 && (
+                {coverage !== undefined && coverage >= 1.0 && !epoch.is_fallback && (
                     <span className="ml-1 inline-flex items-center gap-1 px-2 py-1 bg-emerald-500/10 text-emerald-400 text-[10px] font-medium rounded-md border border-emerald-500/20">
                         <CheckCircle className="w-3 h-3" /> Full coverage
                     </span>

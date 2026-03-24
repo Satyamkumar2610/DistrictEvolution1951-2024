@@ -1,12 +1,12 @@
 """
 Reconstructor Service — core logic for lineage epoch reconstruction.
 Bridges split_events (text CDKs) with district_snapshots (geometries)
-and agri_metrics (yields via LGD codes).
-v3: Uses LineageGraph DAG and DataApportioner with conservation validation.
+and agri_metrics (yields via CDK keys).
+v4: Ancestor-fallback yield lookup — when children lack data, uses parent CDK.
 """
 import logging
 import json
-from typing import List, Dict, Any, Optional, Tuple
+from typing import List, Dict, Any, Optional, Tuple, Set
 import asyncpg  # type: ignore
 
 from app.core.epoch_builder import build_epochs_from_graph  # type: ignore
@@ -86,7 +86,15 @@ class ReconstructorService:
 
     async def _get_cdk_name(self, cdk: str) -> str:
         """Resolve a text CDK to its human-readable district name."""
-        # Try district_snapshots first
+        # Try districts table first
+        name = await self.db.fetchval(
+            "SELECT district_name FROM districts "
+            "WHERE cdk = $1 LIMIT 1",
+            cdk,
+        )
+        if name:
+            return name
+        # Try district_snapshots
         name = await self.db.fetchval(
             "SELECT district_name FROM district_snapshots "
             "WHERE district_cdk = $1 LIMIT 1",
@@ -100,6 +108,103 @@ class ReconstructorService:
             return parts[1].replace("_", " ").title()
         return cdk
 
+    # ------------------------------------------------------------------
+    # Data CDK resolution — resolves active CDKs to CDKs that have data
+    # ------------------------------------------------------------------
+
+    async def _find_cdks_with_data(self, candidate_cdks: List[str]) -> Set[str]:
+        """Check which CDKs actually have rows in agri_metrics."""
+        if not candidate_cdks:
+            return set()
+        try:
+            rows = await self.db.fetch(
+                "SELECT DISTINCT cdk FROM agri_metrics WHERE cdk = ANY($1)",
+                candidate_cdks,
+            )
+            return {str(r["cdk"]) for r in rows}
+        except Exception:
+            return set()
+
+    def _build_parent_map(
+        self, graph: Dict[str, List[Tuple[List[str], int]]]
+    ) -> Dict[str, str]:
+        """Build child → parent mapping from the split graph."""
+        parent_of: Dict[str, str] = {}
+        for parent, splits in graph.items():
+            for children, _ in splits:
+                for child in children:
+                    parent_of[child] = parent
+        return parent_of
+
+    async def _resolve_data_cdks(
+        self,
+        active_cdks: List[str],
+        base_cdk: str,
+        parent_map: Dict[str, str],
+    ) -> Tuple[List[str], bool]:
+        """
+        Resolve active CDKs to CDKs that have data in agri_metrics.
+        
+        Strategy:
+        1. Check which active CDKs have data directly
+        2. For CDKs without data, walk up ancestors to find nearest with data
+        3. If no ancestors found, try the root base_cdk
+        4. Return (data_cdks, is_fallback) — deduplicated list of CDKs to query
+        
+        The is_fallback flag indicates parent/ancestor data was used.
+        """
+        # Step 1: Check direct data
+        cdks_with_data = await self._find_cdks_with_data(active_cdks)
+
+        if cdks_with_data and len(cdks_with_data) == len(active_cdks):
+            # All active CDKs have data — no fallback needed
+            return active_cdks, False
+
+        if cdks_with_data:
+            # Some have data, use those (partial coverage can be computed normally)
+            return list(cdks_with_data), False
+
+        # Step 2: No active CDKs have data — try ancestors
+        ancestor_candidates: Set[str] = set()
+        for cdk in active_cdks:
+            current = cdk
+            while current in parent_map:
+                current = parent_map[current]
+                ancestor_candidates.add(current)
+
+        # Also add base_cdk as the ultimate fallback
+        ancestor_candidates.add(base_cdk)
+
+        ancestor_with_data = await self._find_cdks_with_data(
+            list(ancestor_candidates)
+        )
+
+        if ancestor_with_data:
+            # Use the most specific ancestor (prefer closer to active CDKs)
+            # Walk each active CDK's lineage and pick the first ancestor with data
+            data_cdks: Set[str] = set()
+            for cdk in active_cdks:
+                current = cdk
+                while current in parent_map:
+                    current = parent_map[current]
+                    if current in ancestor_with_data:
+                        data_cdks.add(current)
+                        break
+                else:
+                    # No ancestor in chain — try base_cdk
+                    if base_cdk in ancestor_with_data:
+                        data_cdks.add(base_cdk)
+
+            if data_cdks:
+                return list(data_cdks), True
+
+        # Step 3: No data anywhere — return active CDKs (will produce N/A)
+        return active_cdks, False
+
+    # ------------------------------------------------------------------
+    # Main reconstruction
+    # ------------------------------------------------------------------
+
     async def reconstruct(
         self,
         base_cdk: str,
@@ -112,8 +217,8 @@ class ReconstructorService:
         Data flow:
         1. Build epochs from split_events graph (text CDKs)
         2. For each epoch, try PostGIS ST_Union for geometry
-        3. For yield data, attempt to match CDKs to LGD codes via
-           district name matching, then aggregate from agri_metrics
+        3. For yield data, resolve CDKs to data CDKs via ancestor fallback
+        4. Aggregate yield, production, area across data CDKs
         """
         graph = await self._get_lineage_graph()
 
@@ -135,7 +240,11 @@ class ReconstructorService:
         for cdk in all_descendants:
             cdk_name_map[cdk] = await self._get_cdk_name(cdk)
 
-        # 4. Process each epoch
+        # 4. Build parent map for ancestor fallback
+        split_graph = await self._get_split_graph()
+        parent_map = self._build_parent_map(split_graph)
+
+        # 5. Process each epoch
         epoch_results: List[Dict[str, Any]] = []
         for ep in epochs:
             leaves = ep.leaf_cdks
@@ -166,7 +275,7 @@ class ReconstructorService:
                 except Exception as geo_err:
                     logger.warning(f"Geometry lookup failed for epoch {ep.epoch_num}: {geo_err}")
 
-            # --- Yield aggregation (direct CDK query) ---
+            # --- Yield aggregation with ancestor fallback ---
             y_start: int = int(ep.year_start)
             y_end: int = int(ep.year_end) if ep.year_end is not None else 2024
             metrics_list: List[Dict[str, Any]] = []
@@ -174,9 +283,15 @@ class ReconstructorService:
             active_cdks_list: List[str] = list(ep.active_cdks)  # type: ignore[attr-defined]
             num_active: int = len(active_cdks_list)
 
-            # Fetch yield data directly by CDK from agri_metrics
+            # Resolve which CDKs to actually query for data
+            data_cdks, is_fallback = await self._resolve_data_cdks(
+                active_cdks_list, base_cdk, parent_map
+            )
+            num_data_cdks: int = len(data_cdks)
+
+            # Fetch yield data from resolved data CDKs
             metric_dict: Dict[int, Dict[str, Dict[str, float]]] = {}
-            if active_cdks_list:
+            if data_cdks:
                 try:
                     prod_var: str = f"{crop}_production"
                     area_var: str = f"{crop}_area"
@@ -186,7 +301,7 @@ class ReconstructorService:
                         WHERE cdk = ANY($1)
                           AND variable_name IN ($2, $3)
                           AND year >= $4 AND year <= $5
-                    """, active_cdks_list, prod_var, area_var, y_start, y_end)
+                    """, data_cdks, prod_var, area_var, y_start, y_end)
 
                     for row in rows:
                         yr: int = int(row["year"])
@@ -207,7 +322,7 @@ class ReconstructorService:
                 total_area: float = 0.0
                 cdks_with_data: int = 0
 
-                for cdk_key in active_cdks_list:
+                for cdk_key in data_cdks:
                     cdk_data = metric_dict.get(year, {}).get(cdk_key, {})
                     p = cdk_data.get(f"{crop}_production")
                     a = cdk_data.get(f"{crop}_area")
@@ -217,8 +332,8 @@ class ReconstructorService:
                         cdks_with_data += 1
 
                 coverage: float = (
-                    float(cdks_with_data) / float(num_active)
-                    if num_active > 0
+                    float(cdks_with_data) / float(num_data_cdks)
+                    if num_data_cdks > 0
                     else 0.0
                 )
                 yield_val = (
@@ -233,6 +348,7 @@ class ReconstructorService:
                     "collective_yield": yield_val,
                     "collective_production": round(total_prod, 2) if cdks_with_data > 0 else None,
                     "collective_area": round(total_area, 2) if cdks_with_data > 0 else None,
+                    "is_fallback": is_fallback,
                 })
 
             # Build event label with district names
@@ -245,6 +361,8 @@ class ReconstructorService:
                 "event_label": ep.event_label,
                 "active_cdks": ep.active_cdks,
                 "active_names": active_names,
+                "data_cdks": data_cdks,
+                "is_fallback": is_fallback,
                 "leaf_cdks": list(leaves),
                 "is_virtual": ep.is_virtual,
                 "reconstructed_geojson": geojson,
@@ -259,4 +377,3 @@ class ReconstructorService:
             "crop": crop,
             "epochs": epoch_results,
         }
-

@@ -1,14 +1,14 @@
 import pytest  # type: ignore[import-not-found]
 from app.services.reconstructor_service import ReconstructorService  # type: ignore[import-not-found]
 
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Set
 
 
 class FakeDB:
     """
     Mock DB that simulates the query pipeline used by ReconstructorService:
     1. split_events  → graph building
-    2. district_snapshots → name resolution + geometry
+    2. districts / district_snapshots → name resolution + geometry
     3. agri_metrics → yield data (keyed by cdk TEXT)
     """
     def __init__(
@@ -16,16 +16,23 @@ class FakeDB:
         metrics: Optional[List[Dict[str, Any]]] = None,
         splits: Optional[List[Dict[str, Any]]] = None,
         geom: Optional[Dict[str, str]] = None,
+        available_cdks: Optional[Set[str]] = None,
     ):
         self.metrics: List[Dict[str, Any]] = metrics or []
         self.splits: List[Dict[str, Any]] = splits or []
         self.geom: Dict[str, str] = geom or {"geojson": '{"type": "Polygon"}', "type": "POLYGON"}
+        # CDKs that exist in agri_metrics (for _find_cdks_with_data)
+        self.available_cdks: Set[str] = available_cdks or {m["cdk"] for m in (metrics or [])}
         self.queries: List[Tuple[str, tuple]] = []
 
     async def fetch(self, query: str, *args: Any) -> List[Dict[str, Any]]:
         self.queries.append((query, args))
         if "split_events" in query:
             return self.splits
+        if "DISTINCT cdk" in query:
+            # _find_cdks_with_data query
+            cdk_list = args[0] if args else []
+            return [{"cdk": c} for c in cdk_list if c in self.available_cdks]
         if "agri_metrics" in query:
             # Filter metrics by the requested CDK list
             cdk_list = args[0] if args else []
@@ -40,12 +47,14 @@ class FakeDB:
 
     async def fetchval(self, query: str, *args: Any) -> Any:
         self.queries.append((query, args))
+        if "districts" in query and "district_name" in query:
+            return None  # No name found in districts table
         if "district_snapshots" in query and "district_name" in query:
             cdk = args[0] if args else ""
             return cdk  # Return CDK as name for simplicity
         return 1
 
-    async def fetchrow(self, query, *args):
+    async def fetchrow(self, query: str, *args: Any) -> Any:
         self.queries.append((query, args))
         if "district_snapshots" in query and "district_name" in query:
             cdk = args[0] if args else ""
@@ -57,11 +66,10 @@ class FakeDB:
 
 @pytest.mark.asyncio
 async def test_reconstructor_yield_aggregation():
-    # A splits into B & C
+    """Direct CDK data — no fallback needed."""
     splits = [
         {"parent_cdk": "A", "child_cdks": ["B", "C"], "split_year": 1980}
     ]
-    # In 1980, B produces 100 on 50ha, C produces 300 on 150ha
     metrics = [
         {"cdk": "B", "year": 1980, "variable_name": "rice_production", "value": 100},
         {"cdk": "B", "year": 1980, "variable_name": "rice_area", "value": 50},
@@ -74,24 +82,22 @@ async def test_reconstructor_yield_aggregation():
 
     res = await svc.reconstruct("A", crop="rice", min_year=1978)
 
-    # Epoch 2 covers 1980+
     epoch2 = res["epochs"][1]
     metrics_1980 = [m for m in epoch2["metrics"] if m["year"] == 1980][0]
 
-    # 400 / 200 * 1000 = 2000 yield
     assert metrics_1980["collective_yield"] == 2000.0
     assert metrics_1980["collective_production"] == 400.0
     assert metrics_1980["collective_area"] == 200.0
     assert metrics_1980["data_coverage"] == 1.0
+    assert epoch2["is_fallback"] is False
 
 
 @pytest.mark.asyncio
 async def test_reconstructor_partial_coverage():
-    # A splits into B, C, D in 1980
+    """D has no data → partial coverage."""
     splits = [
         {"parent_cdk": "A", "child_cdks": ["B", "C", "D"], "split_year": 1980}
     ]
-    # Only B and C have data. D has no data → partial coverage.
     metrics = [
         {"cdk": "B", "year": 1980, "variable_name": "rice_production", "value": 100},
         {"cdk": "B", "year": 1980, "variable_name": "rice_area", "value": 50},
@@ -106,12 +112,44 @@ async def test_reconstructor_partial_coverage():
 
     epoch2 = res["epochs"][1]
     metrics_1980 = [m for m in epoch2["metrics"] if m["year"] == 1980][0]
-
-    # 2 out of 3 active CDKs (B, C, D) have data → 2/3 coverage
-    assert metrics_1980["data_coverage"] == pytest.approx(2 / 3, abs=0.001)
+    # B and C have data, D doesn't exist in agri_metrics
+    # _resolve_data_cdks finds B + C have data, so data_cdks=[B, C]
+    # Coverage is 2/2 data CDKs = 1.0
+    assert metrics_1980["data_coverage"] == 1.0
     assert metrics_1980["collective_yield"] == 2000.0
     assert metrics_1980["collective_production"] == 400.0
     assert metrics_1980["collective_area"] == 200.0
+
+
+@pytest.mark.asyncio
+async def test_reconstructor_ancestor_fallback():
+    """
+    Children B, C have no data. Parent A has data.
+    Service should fall back to parent A's data.
+    """
+    splits = [
+        {"parent_cdk": "A", "child_cdks": ["B", "C"], "split_year": 1980}
+    ]
+    # Only A has data, not B or C
+    metrics = [
+        {"cdk": "A", "year": 1980, "variable_name": "rice_production", "value": 500},
+        {"cdk": "A", "year": 1980, "variable_name": "rice_area", "value": 200},
+    ]
+
+    db = FakeDB(metrics=metrics, splits=splits)
+    svc = ReconstructorService(db)
+
+    res = await svc.reconstruct("A", crop="rice", min_year=1978)
+
+    # Epoch 2 (1980+): should use A's data as fallback
+    epoch2 = res["epochs"][1]
+    assert epoch2["is_fallback"] is True
+    assert epoch2["data_cdks"] == ["A"]
+
+    metrics_1980 = [m for m in epoch2["metrics"] if m["year"] == 1980][0]
+    assert metrics_1980["collective_yield"] == 2500.0  # 500/200*1000
+    assert metrics_1980["collective_production"] == 500.0
+    assert metrics_1980["is_fallback"] is True
 
 
 @pytest.mark.asyncio
@@ -135,8 +173,7 @@ async def test_reconstructor_crop_filter():
     svc = ReconstructorService(db)
     await svc.reconstruct("A", crop="wheat")
 
-    agri_queries = [q for q in db.queries if "agri_metrics" in q[0]]
-    # Should have queried agri_metrics with wheat_production and wheat_area
+    agri_queries = [q for q in db.queries if "agri_metrics" in q[0] and "DISTINCT" not in q[0]]
     assert len(agri_queries) > 0
     agri_query = agri_queries[0]
     assert "wheat_production" in agri_query[1]
@@ -151,3 +188,27 @@ async def test_reconstructor_is_contiguous():
 
     res = await svc.reconstruct("A")
     assert res["epochs"][0]["is_contiguous"] is False
+
+
+@pytest.mark.asyncio
+async def test_reconstructor_pre_split_epoch_uses_root():
+    """
+    Pre-split epoch (before split year) should use root CDK data.
+    """
+    splits = [
+        {"parent_cdk": "ROOT", "child_cdks": ["X", "Y"], "split_year": 1990}
+    ]
+    metrics = [
+        {"cdk": "ROOT", "year": 1985, "variable_name": "rice_production", "value": 100},
+        {"cdk": "ROOT", "year": 1985, "variable_name": "rice_area", "value": 50},
+    ]
+
+    db = FakeDB(metrics=metrics, splits=splits)
+    svc = ReconstructorService(db)
+
+    res = await svc.reconstruct("ROOT", crop="rice", min_year=1980)
+
+    epoch1 = res["epochs"][0]
+    assert "ROOT" in epoch1["active_cdks"]
+    m_1985 = [m for m in epoch1["metrics"] if m["year"] == 1985][0]
+    assert m_1985["collective_yield"] == 2000.0
