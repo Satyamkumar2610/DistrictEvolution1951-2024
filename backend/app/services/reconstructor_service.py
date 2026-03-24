@@ -6,10 +6,10 @@ v4: Ancestor-fallback yield lookup — when children lack data, uses parent CDK.
 """
 import logging
 import json
-from typing import List, Dict, Any, Optional, Tuple, Set
+from typing import List, Dict, Any, Optional, Tuple, Set, cast
 import asyncpg  # type: ignore
 
-from app.core.epoch_builder import build_epochs_from_graph  # type: ignore
+from app.core.epoch_builder import build_epochs_from_graph, Epoch  # type: ignore
 from app.core.lineage_graph import LineageGraph  # type: ignore
 from app.core.data_apportioner import DataApportioner  # type: ignore
 
@@ -246,7 +246,8 @@ class ReconstructorService:
 
         # 5. Process each epoch
         epoch_results: List[Dict[str, Any]] = []
-        for ep in epochs:
+        for ep_raw in epochs:
+            ep = cast(Epoch, ep_raw)
             leaves = ep.leaf_cdks
 
             # --- Geometry ---
@@ -326,8 +327,8 @@ class ReconstructorService:
                     p = cdk_data.get(f"{crop}_production")
                     a = cdk_data.get(f"{crop}_area")
                     if p is not None and a is not None:
-                        total_prod += float(p)
-                        total_area += float(a)
+                        total_prod += float(p)  # type: ignore
+                        total_area += float(a)  # type: ignore
                         cdks_with_data += 1
 
                 coverage: float = (
@@ -336,17 +337,17 @@ class ReconstructorService:
                     else 0.0
                 )
                 yield_val = (
-                    round((total_prod / total_area) * 1000.0, 2)
-                    if total_area > 0
+                    round((total_prod / total_area) * 1000.0, 2)  # type: ignore
+                    if total_area > 0  # type: ignore
                     else None
                 )
 
                 metrics_list.append({
                     "year": year,
-                    "data_coverage": round(coverage, 3),
+                    "data_coverage": round(coverage, 3),  # type: ignore
                     "collective_yield": yield_val,
-                    "collective_production": round(total_prod, 2) if cdks_with_data > 0 else None,
-                    "collective_area": round(total_area, 2) if cdks_with_data > 0 else None,
+                    "collective_production": round(total_prod, 2) if cdks_with_data > 0 else None,  # type: ignore
+                    "collective_area": round(total_area, 2) if cdks_with_data > 0 else None,  # type: ignore
                     "is_fallback": is_fallback,
                 })
 
