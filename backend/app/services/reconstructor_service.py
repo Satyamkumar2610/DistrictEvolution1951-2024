@@ -135,11 +135,7 @@ class ReconstructorService:
         for cdk in all_descendants:
             cdk_name_map[cdk] = await self._get_cdk_name(cdk)
 
-        # 4. Build CDK → LGD code bridge for yield lookup
-        # Match text CDK district names to districts table names
-        cdk_to_lgd = await self._build_cdk_lgd_bridge(all_descendants)
-
-        # 5. Process each epoch
+        # 4. Process each epoch
         epoch_results: List[Dict[str, Any]] = []
         for ep in epochs:
             leaves = ep.leaf_cdks
@@ -170,77 +166,73 @@ class ReconstructorService:
                 except Exception as geo_err:
                     logger.warning(f"Geometry lookup failed for epoch {ep.epoch_num}: {geo_err}")
 
-            # --- Yield aggregation ---
-            y_start = int(ep.year_start)
-            y_end = int(ep.year_end) if ep.year_end is not None else 2024
+            # --- Yield aggregation (direct CDK query) ---
+            y_start: int = int(ep.year_start)
+            y_end: int = int(ep.year_end) if ep.year_end is not None else 2024
             metrics_list: List[Dict[str, Any]] = []
 
-            # Collect LGD codes for the active CDKs in this epoch
-            active_lgds = []
-            for cdk in ep.active_cdks:  # type: ignore[attr-defined]
-                lgd = cdk_to_lgd.get(cdk)
-                if lgd is not None:
-                    active_lgds.append(lgd)
+            active_cdks_list: List[str] = list(ep.active_cdks)  # type: ignore[attr-defined]
+            num_active: int = len(active_cdks_list)
 
-            # Fetch yield data if we have any LGD mappings
-            metric_dict: Dict[int, Dict[int, Dict[str, float]]] = {}
-            if active_lgds:
+            # Fetch yield data directly by CDK from agri_metrics
+            metric_dict: Dict[int, Dict[str, Dict[str, float]]] = {}
+            if active_cdks_list:
                 try:
-                    prod_var = f"{crop}_production"
-                    area_var = f"{crop}_area"
+                    prod_var: str = f"{crop}_production"
+                    area_var: str = f"{crop}_area"
                     rows = await self.db.fetch("""
-                        SELECT district_lgd, year, variable_name, value
+                        SELECT cdk, year, variable_name, value
                         FROM agri_metrics
-                        WHERE district_lgd = ANY($1)
+                        WHERE cdk = ANY($1)
                           AND variable_name IN ($2, $3)
                           AND year >= $4 AND year <= $5
-                    """, active_lgds, prod_var, area_var, y_start, y_end)
+                    """, active_cdks_list, prod_var, area_var, y_start, y_end)
 
                     for row in rows:
-                        yr = row["year"]
-                        lgd = row["district_lgd"]
-                        var = row["variable_name"]
-                        val = float(row["value"]) if row["value"] else 0.0
+                        yr: int = int(row["year"])
+                        cdk_key: str = str(row["cdk"])
+                        var: str = str(row["variable_name"])
+                        val: float = float(row["value"]) if row["value"] is not None else 0.0
 
                         if yr not in metric_dict:
                             metric_dict[yr] = {}
-                        if lgd not in metric_dict[yr]:
-                            metric_dict[yr][lgd] = {}
-                        metric_dict[yr][lgd][var] = val
+                        if cdk_key not in metric_dict[yr]:
+                            metric_dict[yr][cdk_key] = {}
+                        metric_dict[yr][cdk_key][var] = val
                 except Exception as met_err:
                     logger.warning(f"Metrics lookup failed for epoch {ep.epoch_num}: {met_err}")  # type: ignore[attr-defined]
 
             for year in range(y_start, y_end + 1):  # type: ignore[operator]
-                total_prod = 0.0
-                total_area = 0.0
-                cdks_with_data = 0
+                total_prod: float = 0.0
+                total_area: float = 0.0
+                cdks_with_data: int = 0
 
-                for lgd in active_lgds:
-                    lgd_data = metric_dict.get(year, {}).get(lgd, {})
-                    p = lgd_data.get(f"{crop}_production")
-                    a = lgd_data.get(f"{crop}_area")
+                for cdk_key in active_cdks_list:
+                    cdk_data = metric_dict.get(year, {}).get(cdk_key, {})
+                    p = cdk_data.get(f"{crop}_production")
+                    a = cdk_data.get(f"{crop}_area")
                     if p is not None and a is not None:
-                        total_prod += p  # type: ignore[operator]
-                        total_area += a  # type: ignore[operator]
-                        cdks_with_data += 1  # type: ignore[operator]
+                        total_prod += float(p)
+                        total_area += float(a)
+                        cdks_with_data += 1
 
-                coverage = (
-                    float(cdks_with_data) / len(ep.active_cdks)
-                    if ep.active_cdks
+                coverage: float = (
+                    float(cdks_with_data) / float(num_active)
+                    if num_active > 0
                     else 0.0
                 )
                 yield_val = (
-                    round((total_prod / total_area) * 1000.0, 2)  # type: ignore[call-overload]
-                    if total_area > 0  # type: ignore[operator]
+                    round((total_prod / total_area) * 1000.0, 2)
+                    if total_area > 0
                     else None
                 )
 
                 metrics_list.append({
                     "year": year,
-                    "data_coverage": round(coverage, 3),  # type: ignore[call-overload]
+                    "data_coverage": round(coverage, 3),
                     "collective_yield": yield_val,
-                    "collective_production": round(total_prod, 2) if cdks_with_data > 0 else None,  # type: ignore[call-overload]
-                    "collective_area": round(total_area, 2) if cdks_with_data > 0 else None,  # type: ignore[call-overload]
+                    "collective_production": round(total_prod, 2) if cdks_with_data > 0 else None,
+                    "collective_area": round(total_area, 2) if cdks_with_data > 0 else None,
                 })
 
             # Build event label with district names
@@ -268,63 +260,3 @@ class ReconstructorService:
             "epochs": epoch_results,
         }
 
-    async def _build_cdk_lgd_bridge(
-        self, cdks: set
-    ) -> Dict[str, int]:
-        """
-        Build a mapping from text CDKs (e.g., DL_delhi_1991) to numeric
-        LGD codes used in the agri_metrics table.
-        
-        Strategy:
-        1. Get district names from district_snapshots for each CDK
-        2. Match those names against the districts table to find LGD codes
-        3. Return the mapping
-        """
-        bridge: Dict[str, int] = {}
-
-        for cdk in cdks:
-            try:
-                # Get the name from district_snapshots
-                snap = await self.db.fetchrow(
-                    "SELECT district_name FROM district_snapshots "
-                    "WHERE district_cdk = $1 LIMIT 1",
-                    cdk,
-                )
-                if not snap:
-                    # Try parsing the CDK
-                    parts = cdk.split("_")
-                    if len(parts) >= 2:
-                        name_guess = parts[1]
-                    else:
-                        continue
-                else:
-                    name_guess = snap["district_name"]
-
-                # Look up LGD code from districts table by name match
-                # Extract state from CDK prefix
-                state_prefix = cdk.split("_")[0] if "_" in cdk else ""
-                state_name = STATE_CODE_MAP.get(state_prefix, "")
-
-                if state_name:
-                    lgd = await self.db.fetchval("""
-                        SELECT lgd_code FROM districts
-                        WHERE LOWER(district_name) LIKE LOWER($1)
-                          AND UPPER(state_name) = UPPER($2)
-                        LIMIT 1
-                    """, f"%{name_guess}%", state_name)
-                else:
-                    lgd = await self.db.fetchval("""
-                        SELECT lgd_code FROM districts
-                        WHERE LOWER(district_name) LIKE LOWER($1)
-                        LIMIT 1
-                    """, f"%{name_guess}%")
-
-                if lgd:
-                    bridge[cdk] = int(lgd)
-            except Exception as e:
-                logger.debug(f"Could not map CDK {cdk} to LGD: {e}")
-
-        logger.info(
-            f"CDK->LGD bridge: mapped {len(bridge)}/{len(cdks)} CDKs"
-        )
-        return bridge
