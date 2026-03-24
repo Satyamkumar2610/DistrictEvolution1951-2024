@@ -11,6 +11,23 @@ class Epoch:
     leaf_cdks: List[str]
     is_virtual: bool
 
+
+def build_epochs_from_graph(
+    root_cdk: str,
+    graph: "LineageGraph",  # type: ignore[name-defined]
+    min_year: int = 1950,
+) -> List[Epoch]:
+    """
+    Build epochs from a LineageGraph instance.
+
+    Extracts the compatibility split_graph dict from the DAG and
+    delegates to the core build_epochs() logic. This is the preferred
+    entry point when a LineageGraph is already available.
+    """
+    compat_graph = graph.get_split_graph_compat()
+    return build_epochs(root_cdk, compat_graph, min_year=min_year)
+
+
 def build_epochs(
     root_cdk: str,
     split_graph: Dict[str, List[Tuple[List[str], int]]],
@@ -55,11 +72,10 @@ def build_epochs(
     epochs: List[Epoch] = []
     epoch_num = 1
     
-    active_cdks = {root_cdk}
+    active_cdks: Set[str] = {root_cdk}
     current_year = min_year
     
     # Determine if root is virtual. Virtual if it splits BEFORE we even start counting 
-    # (though in our system we usually assume if it never had rows it's virtual. We'll set a basic heuristic here)
     is_virtual = False
     if split_years and split_years[0] <= min_year:
         is_virtual = True
@@ -79,8 +95,6 @@ def build_epochs(
 
     # Loop through each distinct split year
     for i, s_year in enumerate(split_years):
-        # The period BEFORE this split year is an epoch, 
-        # UNLESS the split year <= current_year (meaning it happened before our timeline)
         if s_year > current_year:
             # Create an epoch for [current_year, s_year - 1]
             epochs.append(Epoch(
@@ -96,32 +110,19 @@ def build_epochs(
         
         # Now apply ALL splits that happened in s_year
         splits_this_year = [s for s in all_splits if s[2] == s_year]
-        event_labels = []
         for parent, children, _ in splits_this_year:
             if parent in active_cdks:
                 active_cdks.remove(parent)
                 active_cdks.update(children)
-                # Form event label
-                if len(children) <= 3:
-                    event_labels.append(f"{parent} → {' + '.join(children)}")
-                else:
-                    event_labels.append(f"{parent} → {len(children)} districts")
         
         current_year = max(current_year, s_year)
-        # The new epoch representing the state AFTER this split will be created in the next iteration or at the end.
 
     # Final epoch (from the last split year to present)
-    # The event label for the final epoch is the split that created it
     splits_last_year = [s for s in all_splits if s[2] == split_years[-1]]
     event_labels = []
     
-    # We already applied the split to active_cdks, so we just build the label
-    # Wait, we need to reconstruct the label for the last split
     for parent, children, _ in splits_last_year:
-        if len(children) <= 3:
-            event_labels.append(f"{parent} → {' + '.join(children)}")
-        else:
-            event_labels.append(f"{parent} → {len(children)} districts")
+        event_labels.append(_format_event_label(parent, children))
             
     final_label = " | ".join(event_labels) if event_labels else "Final state"
     
@@ -136,16 +137,25 @@ def build_epochs(
     ))
 
     # Fix up epoch event labels: epoch N's label should be the split that started epoch N.
-    # Epoch 1 label should just be "Initial state".
     for i, ep in enumerate(epochs):
         if i == 0:
             ep.event_label = "Initial state"
         else:
-            # The split that started THIS epoch happened at ep.year_start
             splits_started_this = [s for s in all_splits if s[2] == ep.year_start]
             lbls = []
             for p, c, _ in splits_started_this:
-                lbls.append(f"{p} → {' + '.join(c)}")
+                lbls.append(_format_event_label(p, c))
             ep.event_label = " | ".join(lbls) if lbls else f"Split in {ep.year_start}"
 
     return epochs
+
+
+def _format_event_label(parent: str, children: List[str]) -> str:
+    """Format an event label, detecting renames (1:1 transitions)."""
+    if len(children) == 1 and children[0] != parent:
+        return f"{parent} → {children[0]} (renamed)"
+    elif len(children) <= 3:
+        return f"{parent} → {' + '.join(children)}"
+    else:
+        return f"{parent} → {len(children)} districts"
+

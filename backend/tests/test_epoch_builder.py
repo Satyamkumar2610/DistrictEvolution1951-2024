@@ -71,3 +71,29 @@ def test_epoch_virtual_flag():
     assert epochs[0].year_end is None
     assert epochs[0].active_cdks == ["B", "C"]
     assert epochs[0].is_virtual == True
+
+
+def test_build_epochs_from_graph():
+    """build_epochs_from_graph should produce identical output to build_epochs."""
+    from app.core.epoch_builder import build_epochs_from_graph
+    from app.core.lineage_graph import LineageGraph, DistrictEvent, EventType
+
+    g = LineageGraph()
+    g.add_event(DistrictEvent(EventType.SPLIT, 1980, ("A",), ("B", "C")))
+    g.add_event(DistrictEvent(EventType.SPLIT, 2000, ("C",), ("D", "E")))
+
+    epochs_graph = build_epochs_from_graph("A", g, min_year=1960)
+    
+    # Same as test_epoch_builder_three_level_split
+    assert len(epochs_graph) == 3
+    assert epochs_graph[0].active_cdks == ["A"]
+    assert epochs_graph[1].active_cdks == ["B", "C"]
+    assert epochs_graph[2].active_cdks == ["B", "D", "E"]
+
+
+def test_rename_event_label():
+    """1:1 transitions should be labeled as renames."""
+    from app.core.epoch_builder import _format_event_label
+
+    assert "(renamed)" in _format_event_label("OLD_NAME", ["NEW_NAME"])
+    assert "(renamed)" not in _format_event_label("A", ["B", "C"])

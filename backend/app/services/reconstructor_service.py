@@ -2,13 +2,16 @@
 Reconstructor Service — core logic for lineage epoch reconstruction.
 Bridges split_events (text CDKs) with district_snapshots (geometries)
 and agri_metrics (yields via LGD codes).
+v3: Uses LineageGraph DAG and DataApportioner with conservation validation.
 """
 import logging
 import json
 from typing import List, Dict, Any, Optional, Tuple
 import asyncpg  # type: ignore
 
-from app.core.epoch_builder import build_epochs  # type: ignore
+from app.core.epoch_builder import build_epochs_from_graph  # type: ignore
+from app.core.lineage_graph import LineageGraph  # type: ignore
+from app.core.data_apportioner import DataApportioner  # type: ignore
 
 logger = logging.getLogger("app.services.reconstructor")
 
@@ -31,26 +34,34 @@ STATE_CODE_MAP: Dict[str, str] = {
 class ReconstructorService:
     def __init__(self, db: asyncpg.Connection):
         self.db = db
+        self._lineage_graph: Optional[LineageGraph] = None
         self._graph_cache: Optional[Dict[str, List[Tuple[List[str], int]]]] = None
+        self.apportioner = DataApportioner()
 
-    async def _get_split_graph(self) -> Dict[str, List[Tuple[List[str], int]]]:
-        """Fetch the entire split_events table and build a forward graph."""
-        cache = self._graph_cache
-        if cache is not None:
-            return cache
+    async def _get_lineage_graph(self) -> LineageGraph:
+        """Fetch split_events and build a deduplicated LineageGraph."""
+        if self._lineage_graph is not None:
+            return self._lineage_graph
 
         events = await self.db.fetch(
             "SELECT parent_cdk, child_cdks, split_year FROM split_events"
         )
-        graph: Dict[str, List[Tuple[List[str], int]]] = {}
-        for row in events:
-            p = row["parent_cdk"]
-            if p not in graph:
-                graph[p] = []
-            graph[p].append((list(row["child_cdks"]), row["split_year"]))
+        self._lineage_graph = LineageGraph.from_split_events(
+            [dict(r) for r in events]
+        )
+        return self._lineage_graph
 
-        self._graph_cache = graph
-        return graph
+    async def _get_split_graph(self) -> Dict[str, List[Tuple[List[str], int]]]:
+        """Backward-compatible: fetch graph as raw dict."""
+        cache = self._graph_cache
+        if cache is not None:
+            return cache
+
+        graph = await self._get_lineage_graph()
+        self._graph_cache = graph.get_split_graph_compat()
+        result = self._graph_cache
+        assert result is not None
+        return result
 
     async def get_lineage_tree(
         self,
@@ -104,10 +115,10 @@ class ReconstructorService:
         3. For yield data, attempt to match CDKs to LGD codes via
            district name matching, then aggregate from agri_metrics
         """
-        graph = await self._get_split_graph()
+        graph = await self._get_lineage_graph()
 
-        # 1. Build standard non-overlapping epochs
-        epochs = build_epochs(base_cdk, graph, min_year=min_year)
+        # 1. Build standard non-overlapping epochs (using DAG)
+        epochs = build_epochs_from_graph(base_cdk, graph, min_year=min_year)
 
         if not epochs:
             return {"root_cdk": base_cdk, "crop": crop, "epochs": []}

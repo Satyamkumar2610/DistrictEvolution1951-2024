@@ -7,15 +7,17 @@ RULES (Non-Negotiable):
 - Always annotate method on derived values
 - Reject if coverage ratios don't sum to ~1.0
 """
-from typing import List, Dict, Optional, Literal
+from typing import Any, Dict, List, Optional, Literal
 from dataclasses import dataclass
 import json
 import logging
 import asyncpg  # type: ignore
 
 from app.config import get_settings  # type: ignore
+from app.core.data_apportioner import DataApportioner  # type: ignore
 
 settings = get_settings()
+logger = logging.getLogger("app.analytics.harmonizer")
 
 
 @dataclass
@@ -26,6 +28,7 @@ class HarmonizedPoint:
     method: str  # 'raw', 'area_weighted', 'equal_split', etc.
     source_cdks: List[str]
     coverage: float  # Coverage ratio (0-1)
+    confidence: float = 1.0  # 0.0–1.0
 
 
 class BoundaryHarmonizer:
@@ -35,10 +38,52 @@ class BoundaryHarmonizer:
     Supports two primary use cases:
     1. Before/After: Combine children post-split to compare with parent pre-split
     2. Entity Comparison: Track individual entities across time
+
+    Integrates DataApportioner for conservation-validated apportionment.
     """
 
     def __init__(self, tolerance: Optional[float] = None):
         self.tolerance = tolerance or settings.coverage_ratio_tolerance
+        self.apportioner = DataApportioner(tolerance=self.tolerance)
+
+    def apportion_across_event(
+        self,
+        historical_data: Dict[str, float],
+        event: Any,
+        mode: str = "area_weighted",
+        area_ratios: Optional[Dict[str, float]] = None,
+        population_ratios: Optional[Dict[str, float]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Apportion data across a DistrictEvent with conservation check.
+
+        Returns:
+            {target_cdk: {"value": float, "method": str, "confidence": float}}
+        """
+        apportioned = self.apportioner.apportion_to_modern(
+            historical_data, event, mode=mode,
+            area_ratios=area_ratios,
+            population_ratios=population_ratios,
+        )
+
+        # Conservation check
+        after = {k: v.value for k, v in apportioned.items()}
+        check = self.apportioner.validate_conservation(historical_data, after)
+        if not check.is_valid:
+            logger.warning(
+                f"Conservation violation in apportionment: "
+                f"error={check.relative_error:.4%}"
+            )
+
+        return {
+            cdk: {
+                "value": av.value,
+                "method": av.method,
+                "confidence": av.confidence,
+                "coverage": av.coverage,
+            }
+            for cdk, av in apportioned.items()
+        }
 
     def validate_coverage_ratios(
         self,
