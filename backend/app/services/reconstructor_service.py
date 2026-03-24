@@ -281,7 +281,6 @@ class ReconstructorService:
             metrics_list: List[Dict[str, Any]] = []
 
             active_cdks_list: List[str] = list(ep.active_cdks)  # type: ignore[attr-defined]
-            num_active: int = len(active_cdks_list)
 
             # Resolve which CDKs to actually query for data
             data_cdks, is_fallback = await self._resolve_data_cdks(
