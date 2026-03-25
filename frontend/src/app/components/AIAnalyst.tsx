@@ -1,0 +1,393 @@
+"use client";
+/**
+ * I-ASCAP AI Analyst Panel
+ * File location: frontend/src/app/components/AIAnalyst.tsx
+ *
+ * Drop this component anywhere in your app — sidebar, drawer, or dedicated page.
+ * It gives users a natural language interface to your agricultural database.
+ *
+ * Usage in a page:
+ *   import AIAnalyst from "@/app/components/AIAnalyst";
+ *   <AIAnalyst />
+ *
+ * Or open it as a slide-over panel from a button:
+ *   const [open, setOpen] = useState(false);
+ *   <button onClick={() => setOpen(true)}>Ask AI Analyst</button>
+ *   {open && <AIAnalyst onClose={() => setOpen(false)} />}
+ */
+
+import { useState, useRef, useEffect } from "react";
+
+interface Message {
+  role: "user" | "assistant";
+  content: string;
+}
+
+const EXAMPLE_QUESTIONS = [
+  "Compare wheat yield in Punjab vs Haryana from 1990 to 2020",
+  "What happened to crop production in Adilabad after the district split?",
+  "Show me rice production trends in West Bengal over the last 30 years",
+  "Which districts had the biggest yield drop during the 2002 drought?",
+];
+
+export default function AIAnalyst({ onClose }: { onClose?: () => void }) {
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, loading]);
+
+  async function sendMessage(text?: string) {
+    const query = text ?? input.trim();
+    if (!query || loading) return;
+
+    const userMsg: Message = { role: "user", content: query };
+    const updated = [...messages, userMsg];
+    setMessages(updated);
+    setInput("");
+    setLoading(true);
+
+    try {
+      const res = await fetch("/api/analyst", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: updated.map((m) => ({
+            role: m.role,
+            content: m.content,
+          })),
+        }),
+      });
+
+      const data = await res.json();
+      setMessages([...updated, { role: "assistant", content: data.response }]);
+    } catch {
+      setMessages([
+        ...updated,
+        {
+          role: "assistant",
+          content:
+            "Failed to reach the analyst. Make sure the backend is running and your API key is set.",
+        },
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div className="analyst-panel">
+      {/* ── Header ─────────────────────────────────────────────────────────── */}
+      <div className="analyst-header">
+        <div className="analyst-header-left">
+          <div className="analyst-dot" />
+          <span className="analyst-title">Agricultural Analyst</span>
+          <span className="analyst-badge">AI</span>
+        </div>
+        {onClose && (
+          <button className="analyst-close" onClick={onClose} aria-label="Close">
+            ✕
+          </button>
+        )}
+      </div>
+
+      {/* ── Messages ───────────────────────────────────────────────────────── */}
+      <div className="analyst-messages">
+        {messages.length === 0 && (
+          <div className="analyst-welcome">
+            <p className="analyst-welcome-text">
+              Ask me anything about Indian agriculture from 1966 to 2024.
+              I have access to district-level yield, production, climate, and boundary data.
+            </p>
+            <div className="analyst-examples">
+              {EXAMPLE_QUESTIONS.map((q) => (
+                <button
+                  key={q}
+                  className="analyst-example-btn"
+                  onClick={() => sendMessage(q)}
+                >
+                  {q}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {messages.map((m, i) => (
+          <div key={i} className={`analyst-msg analyst-msg--${m.role}`}>
+            <div className="analyst-msg-label">
+              {m.role === "user" ? "You" : "Analyst"}
+            </div>
+            <div className="analyst-msg-content">
+              {m.content.split("\n").map((line, j) => (
+                <p key={j}>{line}</p>
+              ))}
+            </div>
+          </div>
+        ))}
+
+        {loading && (
+          <div className="analyst-msg analyst-msg--assistant">
+            <div className="analyst-msg-label">Analyst</div>
+            <div className="analyst-loading">
+              <span />
+              <span />
+              <span />
+            </div>
+          </div>
+        )}
+
+        <div ref={bottomRef} />
+      </div>
+
+      {/* ── Input ──────────────────────────────────────────────────────────── */}
+      <div className="analyst-input-row">
+        <input
+          className="analyst-input"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && sendMessage()}
+          placeholder="Ask about any district, crop, or year range..."
+          disabled={loading}
+        />
+        <button
+          className="analyst-send"
+          onClick={() => sendMessage()}
+          disabled={loading || !input.trim()}
+        >
+          →
+        </button>
+      </div>
+
+      {/* ── Styles ─────────────────────────────────────────────────────────── */}
+      <style>{`
+        .analyst-panel {
+          display: flex;
+          flex-direction: column;
+          height: 100%;
+          min-height: 500px;
+          max-height: 800px;
+          background: #0d1117;
+          border: 1px solid #21262d;
+          border-radius: 12px;
+          font-family: 'IBM Plex Mono', 'Fira Code', monospace;
+          color: #e6edf3;
+          overflow: hidden;
+        }
+
+        .analyst-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 14px 18px;
+          border-bottom: 1px solid #21262d;
+          background: #161b22;
+        }
+
+        .analyst-header-left {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+
+        .analyst-dot {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: #3fb950;
+          box-shadow: 0 0 6px #3fb950;
+          animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.4; }
+        }
+
+        .analyst-title {
+          font-size: 13px;
+          font-weight: 600;
+          letter-spacing: 0.05em;
+          color: #e6edf3;
+        }
+
+        .analyst-badge {
+          font-size: 10px;
+          font-weight: 700;
+          letter-spacing: 0.1em;
+          color: #58a6ff;
+          background: rgba(88, 166, 255, 0.1);
+          border: 1px solid rgba(88, 166, 255, 0.3);
+          padding: 2px 6px;
+          border-radius: 4px;
+        }
+
+        .analyst-close {
+          background: none;
+          border: none;
+          color: #8b949e;
+          cursor: pointer;
+          font-size: 14px;
+          padding: 4px 8px;
+          border-radius: 4px;
+          transition: all 0.2s;
+        }
+        .analyst-close:hover { background: #21262d; color: #e6edf3; }
+
+        .analyst-messages {
+          flex: 1;
+          overflow-y: auto;
+          padding: 20px;
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+          scrollbar-width: thin;
+          scrollbar-color: #21262d transparent;
+        }
+
+        .analyst-welcome {
+          text-align: center;
+          padding: 20px 0;
+        }
+
+        .analyst-welcome-text {
+          font-size: 13px;
+          color: #8b949e;
+          line-height: 1.6;
+          margin-bottom: 20px;
+        }
+
+        .analyst-examples {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+
+        .analyst-example-btn {
+          background: #161b22;
+          border: 1px solid #21262d;
+          color: #58a6ff;
+          font-family: inherit;
+          font-size: 12px;
+          padding: 10px 14px;
+          border-radius: 8px;
+          cursor: pointer;
+          text-align: left;
+          transition: all 0.2s;
+          line-height: 1.4;
+        }
+        .analyst-example-btn:hover {
+          background: #21262d;
+          border-color: #58a6ff;
+          color: #79c0ff;
+        }
+
+        .analyst-msg { display: flex; flex-direction: column; gap: 4px; }
+
+        .analyst-msg-label {
+          font-size: 10px;
+          font-weight: 700;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+        }
+
+        .analyst-msg--user .analyst-msg-label { color: #3fb950; }
+        .analyst-msg--assistant .analyst-msg-label { color: #58a6ff; }
+
+        .analyst-msg--user .analyst-msg-content {
+          background: #161b22;
+          border: 1px solid #21262d;
+          border-radius: 8px 8px 8px 2px;
+          padding: 12px 14px;
+          font-size: 13px;
+          color: #e6edf3;
+          align-self: flex-start;
+          max-width: 90%;
+        }
+
+        .analyst-msg--assistant .analyst-msg-content {
+          background: rgba(88, 166, 255, 0.05);
+          border: 1px solid rgba(88, 166, 255, 0.15);
+          border-radius: 8px 8px 2px 8px;
+          padding: 14px 16px;
+          font-size: 13px;
+          color: #c9d1d9;
+          line-height: 1.7;
+          max-width: 100%;
+        }
+
+        .analyst-msg-content p { margin: 0 0 6px; }
+        .analyst-msg-content p:last-child { margin: 0; }
+
+        .analyst-loading {
+          display: flex;
+          gap: 6px;
+          padding: 14px 16px;
+          background: rgba(88, 166, 255, 0.05);
+          border: 1px solid rgba(88, 166, 255, 0.15);
+          border-radius: 8px 8px 2px 8px;
+          width: fit-content;
+        }
+
+        .analyst-loading span {
+          display: block;
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          background: #58a6ff;
+          animation: bounce 1.2s infinite;
+        }
+        .analyst-loading span:nth-child(2) { animation-delay: 0.2s; }
+        .analyst-loading span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes bounce {
+          0%, 80%, 100% { transform: translateY(0); opacity: 0.5; }
+          40% { transform: translateY(-6px); opacity: 1; }
+        }
+
+        .analyst-input-row {
+          display: flex;
+          gap: 8px;
+          padding: 14px;
+          border-top: 1px solid #21262d;
+          background: #161b22;
+        }
+
+        .analyst-input {
+          flex: 1;
+          background: #0d1117;
+          border: 1px solid #30363d;
+          border-radius: 8px;
+          color: #e6edf3;
+          font-family: inherit;
+          font-size: 13px;
+          padding: 10px 14px;
+          outline: none;
+          transition: border-color 0.2s;
+        }
+        .analyst-input:focus { border-color: #58a6ff; }
+        .analyst-input::placeholder { color: #484f58; }
+        .analyst-input:disabled { opacity: 0.5; }
+
+        .analyst-send {
+          background: #238636;
+          border: none;
+          border-radius: 8px;
+          color: #fff;
+          font-size: 18px;
+          width: 42px;
+          cursor: pointer;
+          transition: all 0.2s;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .analyst-send:hover:not(:disabled) { background: #2ea043; }
+        .analyst-send:disabled { opacity: 0.4; cursor: not-allowed; }
+      `}</style>
+    </div>
+  );
+}

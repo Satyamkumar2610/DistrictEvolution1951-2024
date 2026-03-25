@@ -1,11 +1,11 @@
 """Tests for DataApportioner (hybrid apportionment with conservation)."""
-import pytest
-from app.core.lineage_graph import (
+import pytest  # type: ignore
+from app.core.lineage_graph import (  # type: ignore
     DistrictEvent,
     EventType,
     LineageGraph,
 )
-from app.core.data_apportioner import DataApportioner, ConservationResult
+from app.core.data_apportioner import DataApportioner, ConservationResult  # type: ignore
 
 
 # ---------------------------------------------------------------------------
