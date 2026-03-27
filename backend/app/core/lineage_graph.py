@@ -16,7 +16,6 @@ import logging
 from collections import defaultdict, deque
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Dict, FrozenSet, List, Optional, Set, Tuple
 
 logger = logging.getLogger("app.core.lineage_graph")
 
@@ -45,10 +44,10 @@ class DistrictEvent:
     """A single administrative boundary change event."""
     event_type: EventType
     year: int
-    source_cdks: Tuple[str, ...]     # parents / predecessor(s)
-    target_cdks: Tuple[str, ...]     # children / successor(s)
+    source_cdks: tuple[str, ...]     # parents / predecessor(s)
+    target_cdks: tuple[str, ...]     # children / successor(s)
     confidence: float = 1.0
-    area_ratios: Optional[Dict[str, float]] = field(
+    area_ratios: dict[str, float] | None = field(
         default=None, hash=False, compare=False
     )
 
@@ -72,10 +71,10 @@ class DistrictEvent:
 class DistrictNode:
     """Metadata about a district at a point in time."""
     cdk: str
-    name: Optional[str] = None
-    state_code: Optional[str] = None
-    valid_from: Optional[int] = None
-    valid_to: Optional[int] = None
+    name: str | None = None
+    state_code: str | None = None
+    valid_from: int | None = None
+    valid_to: int | None = None
 
     @property
     def state_name(self) -> str:
@@ -98,17 +97,17 @@ class LineageGraph:
 
     def __init__(self) -> None:
         # Forward: parent → children edges
-        self._forward: Dict[str, List[DistrictEvent]] = defaultdict(list)
+        self._forward: dict[str, list[DistrictEvent]] = defaultdict(list)
         # Inverse: child → parent edges
-        self._inverse: Dict[str, List[DistrictEvent]] = defaultdict(list)
+        self._inverse: dict[str, list[DistrictEvent]] = defaultdict(list)
         # All events, chronologically indexable
-        self._events: List[DistrictEvent] = []
+        self._events: list[DistrictEvent] = []
         # Dedup set to prevent duplicate event insertion
-        self._event_set: Set[FrozenSet] = set()
+        self._event_set: set[frozenset] = set()
         # Node metadata
-        self._nodes: Dict[str, DistrictNode] = {}
+        self._nodes: dict[str, DistrictNode] = {}
         # All known CDKs
-        self._all_cdks: Set[str] = set()
+        self._all_cdks: set[str] = set()
 
     # --- Construction ---
 
@@ -158,8 +157,8 @@ class LineageGraph:
     @classmethod
     def from_split_events(
         cls,
-        rows: List[Dict],
-    ) -> "LineageGraph":
+        rows: list[dict],
+    ) -> LineageGraph:
         """
         Build a LineageGraph from split_events DB rows.
         
@@ -216,8 +215,8 @@ class LineageGraph:
     @classmethod
     def from_csv_rows(
         cls,
-        rows: List[Dict],
-    ) -> "LineageGraph":
+        rows: list[dict],
+    ) -> LineageGraph:
         """
         Build from raw lineage CSV rows.
         
@@ -227,7 +226,7 @@ class LineageGraph:
         graph = cls()
 
         # Group by (parent, year, type) to collect siblings
-        groups: Dict[Tuple[str, int, str], List[str]] = defaultdict(list)
+        groups: dict[tuple[str, int, str], list[str]] = defaultdict(list)
         for row in rows:
             parent = row["parent_cdk"]
             child = row["child_cdk"]
@@ -271,23 +270,23 @@ class LineageGraph:
     # --- Queries ---
 
     @property
-    def all_cdks(self) -> Set[str]:
+    def all_cdks(self) -> set[str]:
         """All known CDKs in the graph."""
         return self._all_cdks
 
     @property
-    def events(self) -> List[DistrictEvent]:
+    def events(self) -> list[DistrictEvent]:
         """All events, sorted chronologically."""
         return sorted(self._events, key=lambda e: e.year)
 
-    def get_node(self, cdk: str) -> Optional[DistrictNode]:
+    def get_node(self, cdk: str) -> DistrictNode | None:
         return self._nodes.get(cdk)
 
-    def get_children(self, cdk: str) -> List[DistrictEvent]:
+    def get_children(self, cdk: str) -> list[DistrictEvent]:
         """Events where cdk is a source (forward traversal)."""
         return self._forward.get(cdk, [])
 
-    def get_parents(self, cdk: str) -> List[DistrictEvent]:
+    def get_parents(self, cdk: str) -> list[DistrictEvent]:
         """Events where cdk is a target (inverse traversal)."""
         return self._inverse.get(cdk, [])
 
@@ -299,25 +298,25 @@ class LineageGraph:
         """True if cdk has no children (current modern district)."""
         return not bool(self._forward.get(cdk))
 
-    def get_root_cdks(self) -> List[str]:
+    def get_root_cdks(self) -> list[str]:
         """All CDKs that are root nodes (have children, no parents)."""
         return sorted([cdk for cdk in self._all_cdks if self.is_root(cdk)])
 
-    def get_leaf_cdks(self) -> List[str]:
+    def get_leaf_cdks(self) -> list[str]:
         """All CDKs that are leaf nodes (no children)."""
         return sorted([cdk for cdk in self._all_cdks if self.is_leaf(cdk)])
 
     def get_canonical_ancestors(
-        self, cdk: str, target_year: Optional[int] = None
-    ) -> List[str]:
+        self, cdk: str, target_year: int | None = None
+    ) -> list[str]:
         """
         All historical districts that contributed area to this district.
         
         Traverses the inverse graph (child → parents) via BFS.
         If target_year is given, stops when reaching nodes from that era.
         """
-        ancestors: List[str] = []
-        visited: Set[str] = set()
+        ancestors: list[str] = []
+        visited: set[str] = set()
         queue: deque = deque([cdk])
 
         while queue:
@@ -345,15 +344,15 @@ class LineageGraph:
         return ancestors
 
     def get_canonical_descendants(
-        self, cdk: str, from_year: Optional[int] = None
-    ) -> List[str]:
+        self, cdk: str, from_year: int | None = None
+    ) -> list[str]:
         """
         All modern districts that inherited area from this district.
         
         Traverses the forward graph (parent → children) via BFS.
         """
-        descendants: List[str] = []
-        visited: Set[str] = set()
+        descendants: list[str] = []
+        visited: set[str] = set()
         queue: deque = deque([cdk])
 
         while queue:
@@ -378,7 +377,7 @@ class LineageGraph:
 
         return descendants
 
-    def get_leaf_descendants(self, cdk: str) -> List[str]:
+    def get_leaf_descendants(self, cdk: str) -> list[str]:
         """
         All leaf (modern) CDKs reachable from cdk.
         If cdk is itself a leaf, returns [cdk].
@@ -386,8 +385,8 @@ class LineageGraph:
         if self.is_leaf(cdk):
             return [cdk]
 
-        leaves: List[str] = []
-        visited: Set[str] = set()
+        leaves: list[str] = []
+        visited: set[str] = set()
         queue: deque = deque([cdk])
 
         while queue:
@@ -407,12 +406,12 @@ class LineageGraph:
 
         return sorted(leaves)
 
-    def get_subtree_events(self, root_cdk: str) -> List[DistrictEvent]:
+    def get_subtree_events(self, root_cdk: str) -> list[DistrictEvent]:
         """
         All events in the subtree rooted at root_cdk, sorted by year.
         """
-        events: List[DistrictEvent] = []
-        visited_cdks: Set[str] = set()
+        events: list[DistrictEvent] = []
+        visited_cdks: set[str] = set()
         queue: deque = deque([root_cdk])
 
         while queue:
@@ -431,14 +430,14 @@ class LineageGraph:
 
     def get_split_graph_compat(
         self,
-    ) -> Dict[str, List[Tuple[List[str], int]]]:
+    ) -> dict[str, list[tuple[list[str], int]]]:
         """
         Return a forward graph dict compatible with the existing
         epoch_builder.build_epochs() interface.
         
         { parent_cdk: [ ([child1, child2], split_year), ... ] }
         """
-        compat: Dict[str, List[Tuple[List[str], int]]] = defaultdict(list)
+        compat: dict[str, list[tuple[list[str], int]]] = defaultdict(list)
         for event in self._events:
             if event.event_type in (
                 EventType.SPLIT, EventType.RENAME,
@@ -455,7 +454,7 @@ class LineageGraph:
         Verify the graph has no cycles (is a valid DAG).
         Uses Kahn's algorithm.
         """
-        in_degree: Dict[str, int] = defaultdict(int)
+        in_degree: dict[str, int] = defaultdict(int)
         for cdk in self._all_cdks:
             if cdk not in in_degree:
                 in_degree[cdk] = 0
@@ -483,7 +482,7 @@ class LineageGraph:
             )
         return is_dag
 
-    def summary(self) -> Dict:
+    def summary(self) -> dict:
         """Graph statistics for debugging."""
         roots = self.get_root_cdks()
         leaves = self.get_leaf_cdks()

@@ -2,21 +2,20 @@
 Metrics API: Endpoints for agricultural/domain metrics.
 """
 import logging
-from typing import Optional, List
 
-from fastapi import APIRouter, Depends, Query
 import asyncpg
+from fastapi import APIRouter, Depends, Query
 
 from app.api.deps import get_db
+from app.exceptions import NotFoundError
 from app.repositories.district_repo import DistrictRepository
 from app.repositories.metric_repo import MetricRepository
 from app.schemas.metric import AggregatedMetric
-from app.exceptions import NotFoundError
 
 router = APIRouter()
 
 
-@router.get("", response_model=List[AggregatedMetric])
+@router.get("", response_model=list[AggregatedMetric])
 async def get_metrics(
     year: int = Query(2020, description="Year to fetch"),
     crop: str = Query("wheat", description="Crop name"),
@@ -35,9 +34,9 @@ async def get_metrics(
 
 @router.get("/history")
 async def get_time_series(
-    cdk: Optional[str] = Query(None, description="District CDK"),
-    district: Optional[str] = Query(None, description="District name (if CDK not provided)"),
-    state: Optional[str] = Query(None, description="State name (helps resolve district name)"),
+    cdk: str | None = Query(None, description="District CDK"),
+    district: str | None = Query(None, description="District name (if CDK not provided)"),
+    state: str | None = Query(None, description="State name (helps resolve district name)"),
     crop: str = Query("wheat", description="Crop name"),
     db: asyncpg.Connection = Depends(get_db),
 ):

@@ -10,9 +10,8 @@ Groups children by parent + year and inserts into split_events table.
 
 import csv
 import logging
-from pathlib import Path
 from collections import defaultdict
-from typing import Optional
+from pathlib import Path
 
 import asyncpg
 
@@ -26,7 +25,7 @@ CHANGES_CSV = PROJECT_ROOT / "data/processed/district_changes.csv"
 
 async def load_lineage_csv(
     db: asyncpg.Connection,
-    csv_path: Optional[Path] = None,
+    csv_path: Path | None = None,
     dry_run: bool = False,
 ) -> dict:
     """
@@ -44,7 +43,7 @@ async def load_lineage_csv(
     events: dict[tuple[str, int], list[str]] = defaultdict(list)
     total_rows = 0
 
-    with open(path, "r") as f:
+    with open(path) as f:
         reader = csv.DictReader(f)
         for row in reader:
             parent = row.get("parent_cdk", "").strip()
@@ -113,7 +112,7 @@ async def load_lineage_csv(
 
 async def load_changes_csv(
     db: asyncpg.Connection,
-    csv_path: Optional[Path] = None,
+    csv_path: Path | None = None,
     dry_run: bool = False,
 ) -> dict:
     """
@@ -136,7 +135,7 @@ async def load_changes_csv(
     events: dict[tuple[str, int, str], list[str]] = defaultdict(list)
     total_rows = 0
 
-    with open(path, "r") as f:
+    with open(path) as f:
         reader = csv.DictReader(f)
         for row in reader:
             source = row.get("source_district", "").strip()

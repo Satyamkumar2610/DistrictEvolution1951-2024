@@ -3,9 +3,9 @@ Statistical analysis module for I-ASCAP.
 Provides comprehensive statistical functions for agricultural data analysis.
 """
 
-from typing import List, Dict, Any, Optional, Tuple
 from dataclasses import dataclass
 from enum import Enum
+from typing import Any
 
 import numpy as np
 from scipy import stats as scipy_stats
@@ -22,9 +22,9 @@ class TrendDirection(str, Enum):
 class StatisticResult:
     """Result of a statistical calculation with metadata."""
     value: float
-    confidence_interval: Optional[Tuple[float, float]] = None
-    p_value: Optional[float] = None
-    significant: Optional[bool] = None
+    confidence_interval: tuple[float, float] | None = None
+    p_value: float | None = None
+    significant: bool | None = None
     method: str = ""
 
 
@@ -37,7 +37,7 @@ class TrendResult:
     r_squared: float
     p_value: float
     significant: bool
-    projected_values: Optional[List[float]] = None
+    projected_values: list[float] | None = None
 
 
 @dataclass
@@ -64,40 +64,40 @@ class StatisticalAnalyzer:
     # Basic Statistics
     # -------------------------------------------------------------------------
 
-    def mean(self, values: List[float]) -> float:
+    def mean(self, values: list[float]) -> float:
         """Calculate arithmetic mean."""
         if not values:
             return 0.0
         return float(np.mean(values))
 
-    def median(self, values: List[float]) -> float:
+    def median(self, values: list[float]) -> float:
         """Calculate median."""
         if not values:
             return 0.0
         return float(np.median(values))
 
-    def mode(self, values: List[float]) -> float:
+    def mode(self, values: list[float]) -> float:
         """Calculate mode (most frequent value)."""
         if not values:
             return 0.0
         mode_result = scipy_stats.mode(values, keepdims=True)
         return float(mode_result.mode[0])
 
-    def std_dev(self, values: List[float], sample: bool = True) -> float:
+    def std_dev(self, values: list[float], sample: bool = True) -> float:
         """Calculate standard deviation."""
         if not values or len(values) < 2:
             return 0.0
         ddof = 1 if sample else 0
         return float(np.std(values, ddof=ddof))
 
-    def variance(self, values: List[float], sample: bool = True) -> float:
+    def variance(self, values: list[float], sample: bool = True) -> float:
         """Calculate variance."""
         if not values or len(values) < 2:
             return 0.0
         ddof = 1 if sample else 0
         return float(np.var(values, ddof=ddof))
 
-    def min_max_range(self, values: List[float]) -> Tuple[float, float, float]:
+    def min_max_range(self, values: list[float]) -> tuple[float, float, float]:
         """Calculate min, max, and range."""
         if not values:
             return (0.0, 0.0, 0.0)
@@ -105,7 +105,7 @@ class StatisticalAnalyzer:
         max_val = float(np.max(values))
         return (min_val, max_val, max_val - min_val)
 
-    def quartiles(self, values: List[float]) -> Dict[str, float]:
+    def quartiles(self, values: list[float]) -> dict[str, float]:
         """Calculate quartiles and IQR."""
         if not values:
             return {"q1": 0, "q2": 0, "q3": 0, "iqr": 0}
@@ -117,13 +117,13 @@ class StatisticalAnalyzer:
             "iqr": float(q3 - q1),
         }
 
-    def percentile(self, values: List[float], p: float) -> float:
+    def percentile(self, values: list[float], p: float) -> float:
         """Calculate specific percentile."""
         if not values:
             return 0.0
         return float(np.percentile(values, p))
 
-    def coefficient_of_variation(self, values: List[float]) -> float:
+    def coefficient_of_variation(self, values: list[float]) -> float:
         """Calculate CV (std dev / mean as percentage)."""
         if not values:
             return 0.0
@@ -132,7 +132,7 @@ class StatisticalAnalyzer:
             return 0.0
         return (self.std_dev(values) / mean) * 100
 
-    def summary_stats(self, values: List[float]) -> Dict[str, Any]:
+    def summary_stats(self, values: list[float]) -> dict[str, Any]:
         """Calculate comprehensive summary statistics."""
         if not values:
             return {}
@@ -168,7 +168,7 @@ class StatisticalAnalyzer:
             return 0.0
         return (pow(end_value / start_value, 1 / years) - 1) * 100
 
-    def year_over_year_growth(self, values: List[float]) -> List[float]:
+    def year_over_year_growth(self, values: list[float]) -> list[float]:
         """Calculate year-over-year growth rates."""
         if len(values) < 2:
             return []
@@ -183,7 +183,7 @@ class StatisticalAnalyzer:
 
         return growth_rates
 
-    def average_growth_rate(self, values: List[float]) -> float:
+    def average_growth_rate(self, values: list[float]) -> float:
         """Calculate average year-over-year growth rate."""
         yoy_rates = self.year_over_year_growth(values)
         if not yoy_rates:
@@ -194,7 +194,7 @@ class StatisticalAnalyzer:
     # Trend Analysis
     # -------------------------------------------------------------------------
 
-    def linear_trend(self, values: List[float]) -> TrendResult:
+    def linear_trend(self, values: list[float]) -> TrendResult:
         """
         Perform linear regression to identify trend.
         Returns slope, intercept, R-squared, and significance.
@@ -235,8 +235,8 @@ class StatisticalAnalyzer:
 
     def moving_average(
             self,
-            values: List[float],
-            window: int = 3) -> List[float]:
+            values: list[float],
+            window: int = 3) -> list[float]:
         """Calculate moving average with specified window."""
         if len(values) < window:
             return values
@@ -251,9 +251,9 @@ class StatisticalAnalyzer:
 
     def detect_inflection_points(
         self,
-        values: List[float],
+        values: list[float],
         threshold: float = 0.1
-    ) -> List[int]:
+    ) -> list[int]:
         """
         Detect inflection points where trend direction changes significantly.
         Returns indices of inflection points.
@@ -283,8 +283,8 @@ class StatisticalAnalyzer:
 
     def linear_regression(
             self,
-            x: List[float],
-            y: List[float]) -> RegressionResult:
+            x: list[float],
+            y: list[float]) -> RegressionResult:
         """
         Perform linear regression of y on x.
         Returns detailed regression statistics.
@@ -307,8 +307,8 @@ class StatisticalAnalyzer:
 
     def pearson_correlation(
         self,
-        x: List[float],
-        y: List[float]
+        x: list[float],
+        y: list[float]
     ) -> StatisticResult:
         """Calculate Pearson correlation coefficient."""
         if len(x) != len(y) or len(x) < 3:
@@ -329,8 +329,8 @@ class StatisticalAnalyzer:
 
     def spearman_correlation(
         self,
-        x: List[float],
-        y: List[float]
+        x: list[float],
+        y: list[float]
     ) -> StatisticResult:
         """Calculate Spearman rank correlation coefficient."""
         if len(x) != len(y) or len(x) < 3:
@@ -353,19 +353,19 @@ class StatisticalAnalyzer:
     # Distribution Analysis
     # -------------------------------------------------------------------------
 
-    def skewness(self, values: List[float]) -> float:
+    def skewness(self, values: list[float]) -> float:
         """Calculate skewness of distribution."""
         if len(values) < 3:
             return 0.0
         return round(float(scipy_stats.skew(values)), 4)
 
-    def kurtosis(self, values: List[float]) -> float:
+    def kurtosis(self, values: list[float]) -> float:
         """Calculate kurtosis of distribution."""
         if len(values) < 4:
             return 0.0
         return round(float(scipy_stats.kurtosis(values)), 4)
 
-    def normality_test(self, values: List[float]) -> StatisticResult:
+    def normality_test(self, values: list[float]) -> StatisticResult:
         """
         Test for normality using Shapiro-Wilk test.
         Returns statistic and p-value.
@@ -394,7 +394,7 @@ class StatisticalAnalyzer:
     # Outlier Detection
     # -------------------------------------------------------------------------
 
-    def detect_outliers_iqr(self, values: List[float]) -> List[int]:
+    def detect_outliers_iqr(self, values: list[float]) -> list[int]:
         """
         Detect outliers using IQR method.
         Returns indices of outlier values.
@@ -419,9 +419,9 @@ class StatisticalAnalyzer:
 
     def detect_outliers_zscore(
         self,
-        values: List[float],
+        values: list[float],
         threshold: float = 3.0
-    ) -> List[int]:
+    ) -> list[int]:
         """
         Detect outliers using Z-score method.
         Returns indices of outlier values.
@@ -449,8 +449,8 @@ class StatisticalAnalyzer:
 
     def rank_values(
             self,
-            values: List[float],
-            descending: bool = True) -> List[int]:
+            values: list[float],
+            descending: bool = True) -> list[int]:
         """
         Rank values from 1 to N.
         Higher values get rank 1 if descending=True.
@@ -473,7 +473,7 @@ class StatisticalAnalyzer:
     def percentile_rank(
             self,
             value: float,
-            reference_values: List[float]) -> float:
+            reference_values: list[float]) -> float:
         """
         Calculate the percentile rank of a value within a reference set.
         Returns percentage of values that are lower.
@@ -487,8 +487,8 @@ class StatisticalAnalyzer:
     def compare_to_average(
         self,
         value: float,
-        reference_values: List[float]
-    ) -> Dict[str, Any]:
+        reference_values: list[float]
+    ) -> dict[str, Any]:
         """
         Compare a value to the average of reference values.
         Returns absolute and percentage difference.

@@ -8,11 +8,10 @@ Handles:
 - Split district scenarios: child data mapped to parent polygon
 """
 import json
-import re
-from pathlib import Path
-from typing import Dict, Optional, List
-from functools import lru_cache
 import logging
+import re
+from functools import lru_cache
+from pathlib import Path
 
 from app.services.name_resolver import _ALIASES as SHARED_ALIASES
 
@@ -29,10 +28,10 @@ class MappingService:
     """
 
     # Use aliases from the single shared source of truth
-    NAME_ALIASES: Dict[str, str] = SHARED_ALIASES
+    NAME_ALIASES: dict[str, str] = SHARED_ALIASES
 
     # State code to full name mapping
-    STATE_CODES: Dict[str, str] = {
+    STATE_CODES: dict[str, str] = {
         "AN": "Andhra Pradesh",
         "AP": "Andhra Pradesh",
         "AR": "Arunachal Pradesh",
@@ -80,7 +79,7 @@ class MappingService:
         "DA": "Dadra & Nagar Haveli",
     }
 
-    def __init__(self, bridge_path: Optional[str] = None):
+    def __init__(self, bridge_path: str | None = None):
         """
         Initialize with bridge file path.
 
@@ -88,11 +87,11 @@ class MappingService:
             bridge_path: Path to map_bridge.json. If None, uses default location.
         """
         self._bridge_path = bridge_path
-        self._bridge: Optional[Dict[str, str]] = None
-        self._reverse_bridge: Optional[Dict[str, str]] = None
-        self._geo_keys_normalized: Optional[Dict[str, str]] = None
+        self._bridge: dict[str, str] | None = None
+        self._reverse_bridge: dict[str, str] | None = None
+        self._geo_keys_normalized: dict[str, str] | None = None
 
-    def _load_bridge(self) -> Dict[str, str]:
+    def _load_bridge(self) -> dict[str, str]:
         """Load bridge file lazily."""
         if self._bridge is not None:
             return self._bridge
@@ -123,7 +122,7 @@ class MappingService:
                 return self._bridge
 
         try:
-            with open(path, 'r', encoding='utf-8') as f:
+            with open(path, encoding='utf-8') as f:
                 self._bridge = json.load(f)
             logger.info(f"Loaded bridge with {len(self._bridge)} entries")
         except Exception as e:
@@ -133,7 +132,7 @@ class MappingService:
         return self._bridge
 
     @lru_cache(maxsize=1)
-    def _build_reverse_bridge(self) -> Dict[str, str]:
+    def _build_reverse_bridge(self) -> dict[str, str]:
         """Build CDK -> GeoKey lookup from bridge."""
         bridge = self._load_bridge()
         reverse = {}
@@ -146,7 +145,7 @@ class MappingService:
         return reverse
 
     @lru_cache(maxsize=1)
-    def _build_normalized_geo_keys(self) -> Dict[str, str]:
+    def _build_normalized_geo_keys(self) -> dict[str, str]:
         """Build normalized name -> original geo_key lookup."""
         bridge = self._load_bridge()
         normalized = {}
@@ -198,7 +197,7 @@ class MappingService:
 
         return f"{district}|{state}"
 
-    def get_state_from_cdk(self, cdk: str) -> Optional[str]:
+    def get_state_from_cdk(self, cdk: str) -> str | None:
         """Extract state name from CDK code prefix."""
         if not cdk or '_' not in cdk:
             return None
@@ -209,9 +208,9 @@ class MappingService:
     def resolve_geo_key(
         self,
         cdk: str,
-        district: Optional[str] = None,
-        state: Optional[str] = None
-    ) -> Optional[str]:
+        district: str | None = None,
+        state: str | None = None
+    ) -> str | None:
         """
         Resolve the GeoJSON key for a CDK with multiple fallback strategies.
 
@@ -276,9 +275,9 @@ class MappingService:
     def fuzzy_match_geo_key(
         self,
         district: str,
-        state: Optional[str] = None,
+        state: str | None = None,
         threshold: float = 0.8
-    ) -> Optional[str]:
+    ) -> str | None:
         """
         Fuzzy match a district name against known GeoJSON keys.
 
@@ -359,7 +358,7 @@ class MappingService:
         # Combined score
         return (2 * common_prefix) / (len_a + len_b)
 
-    def get_all_unmapped_cdks(self, cdks: List[str]) -> List[str]:
+    def get_all_unmapped_cdks(self, cdks: list[str]) -> list[str]:
         """
         Get list of CDKs that don't have geo_key mappings.
         Useful for diagnostics.
@@ -369,7 +368,7 @@ class MappingService:
 
 
 # Singleton instance for reuse
-_mapping_service: Optional[MappingService] = None
+_mapping_service: MappingService | None = None
 
 
 def get_mapping_service() -> MappingService:

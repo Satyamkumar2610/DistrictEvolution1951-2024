@@ -2,9 +2,8 @@
 Pydantic schemas for the District Split Area Transfer API.
 """
 
-from pydantic import BaseModel, Field
-from typing import Optional
 
+from pydantic import BaseModel, Field
 
 # ── Request Models ─────────────────────────────────────────────────────────
 
@@ -65,7 +64,7 @@ class TransferDetail(BaseModel):
 class SplitDiffResponse(BaseModel):
     """Response for POST /api/v1/spatial/diff"""
     success: bool = True
-    event_id: Optional[int] = Field(None, description="ID of the created split_events row")
+    event_id: int | None = Field(None, description="ID of the created split_events row")
     parent_cdk: str
     child_cdks: list[str]
     split_year: int
@@ -85,11 +84,11 @@ class LineageNode(BaseModel):
     """A node in the lineage tree."""
     district_cdk: str
     district_name: str
-    year_created: Optional[int] = None
-    year_dissolved: Optional[int] = None
-    area_sqkm: Optional[float] = None
-    geometry_source: Optional[str] = None
-    geometry_confidence: Optional[float] = None
+    year_created: int | None = None
+    year_dissolved: int | None = None
+    area_sqkm: float | None = None
+    geometry_source: str | None = None
+    geometry_confidence: float | None = None
     children: list["LineageNode"] = Field(default_factory=list)
 
 
@@ -108,5 +107,5 @@ class UploadResponse(BaseModel):
     snapshot_year: int
     geometry_source: str
     geometry_confidence: float
-    area_sqkm: Optional[float] = None
+    area_sqkm: float | None = None
     message: str

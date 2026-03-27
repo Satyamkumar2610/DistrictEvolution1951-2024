@@ -3,15 +3,14 @@ Structured logging configuration for I-ASCAP API.
 Optimized for Render stdout and easy parsing.
 """
 
-import logging
 import json
+import logging
 import sys
 import time
 import uuid
-from datetime import datetime
-from typing import Optional
-from functools import wraps
 from contextvars import ContextVar
+from datetime import datetime
+from functools import wraps
 
 # Context variable for request tracking
 request_id_var: ContextVar[str] = ContextVar('request_id', default='')
@@ -128,7 +127,7 @@ def log_api_request(
     path: str,
     status_code: int,
     duration_ms: float,
-    client_ip: Optional[str] = None
+    client_ip: str | None = None
 ) -> None:
     """Log an API request with timing."""
     logger = get_logger("api")

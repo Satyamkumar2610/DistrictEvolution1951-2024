@@ -2,8 +2,8 @@
 States API: Aggregate state-level endpoints.
 Provides overview statistics for each state.
 """
-from fastapi import APIRouter, Depends, Query
 import asyncpg
+from fastapi import APIRouter, Depends, Query
 
 from app.database import get_db
 from app.exceptions import NotFoundError

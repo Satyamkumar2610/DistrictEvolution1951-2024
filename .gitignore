@@ -1,5 +1,7 @@
 # Environment
 .venv/
+venv/
+backend/venv/
 env/
 .env
 
@@ -7,6 +9,7 @@ env/
 __pycache__/
 *.py[cod]
 *$py.class
+*.egg-info/
 
 # Data & Output
 output/
@@ -50,3 +53,10 @@ data/District Splits*
 paper/
 results/
 figures/
+
+# Test & Lint Caches
+.coverage
+htmlcov/
+.ruff_cache/
+.pytest_cache/
+.mypy_cache/

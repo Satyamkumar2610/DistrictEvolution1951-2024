@@ -3,13 +3,13 @@ Metrics Collection Middleware.
 Collects and exposes application metrics for observability.
 """
 
-import time
 import threading
-from typing import Dict, Any, Optional
-from dataclasses import dataclass, field
-from datetime import datetime, timezone
+import time
 from collections import deque
 from contextlib import contextmanager
+from dataclasses import dataclass, field
+from datetime import UTC, datetime
+from typing import Any, Optional
 
 from fastapi import Request
 
@@ -19,7 +19,7 @@ class MetricPoint:
     """Single metric data point."""
     timestamp: str
     value: float
-    labels: Dict[str, str] = field(default_factory=dict)
+    labels: dict[str, str] = field(default_factory=dict)
 
 
 class MetricsCollector:
@@ -56,8 +56,8 @@ class MetricsCollector:
         self._latencies: deque = deque(maxlen=1000)
 
         # Counters
-        self._request_counts: Dict[str, int] = {}
-        self._status_counts: Dict[int, int] = {}
+        self._request_counts: dict[str, int] = {}
+        self._status_counts: dict[int, int] = {}
         self._cache_hits = 0
         self._cache_misses = 0
         self._db_queries = 0
@@ -71,7 +71,7 @@ class MetricsCollector:
         self._high_risk_alerts = 0
 
         # Start time for uptime
-        self._start_time = datetime.now(timezone.utc)
+        self._start_time = datetime.now(UTC)
 
     def record_request(
         self,
@@ -113,7 +113,7 @@ class MetricsCollector:
         """Record a quality score measurement."""
         with self._lock:
             self._quality_scores.append({
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
                 "cdk": cdk,
                 "score": score
             })
@@ -125,7 +125,7 @@ class MetricsCollector:
             if is_high_risk:
                 self._high_risk_alerts += 1
 
-    def get_latency_percentiles(self) -> Dict[str, float]:
+    def get_latency_percentiles(self) -> dict[str, float]:
         """Calculate latency percentiles."""
         with self._lock:
             if not self._latencies:
@@ -141,7 +141,7 @@ class MetricsCollector:
                 "avg": sum(sorted_latencies) / n if n > 0 else 0
             }
 
-    def get_cache_stats(self) -> Dict[str, Any]:
+    def get_cache_stats(self) -> dict[str, Any]:
         """Get cache hit/miss statistics."""
         with self._lock:
             total = self._cache_hits + self._cache_misses
@@ -154,7 +154,7 @@ class MetricsCollector:
                 "hit_rate": round(hit_rate, 3)
             }
 
-    def get_db_stats(self) -> Dict[str, Any]:
+    def get_db_stats(self) -> dict[str, Any]:
         """Get database query statistics."""
         with self._lock:
             avg_time = self._db_total_time_ms / \
@@ -166,7 +166,7 @@ class MetricsCollector:
                 "avg_query_time_ms": round(avg_time, 2)
             }
 
-    def get_quality_stats(self) -> Dict[str, Any]:
+    def get_quality_stats(self) -> dict[str, Any]:
         """Get quality score statistics."""
         with self._lock:
             if not self._quality_scores:
@@ -180,7 +180,7 @@ class MetricsCollector:
                 "recent": list(self._quality_scores)[-5:]
             }
 
-    def get_anomaly_stats(self) -> Dict[str, int]:
+    def get_anomaly_stats(self) -> dict[str, int]:
         """Get anomaly detection statistics."""
         with self._lock:
             return {
@@ -188,11 +188,11 @@ class MetricsCollector:
                 "high_risk_alerts": self._high_risk_alerts
             }
 
-    def get_all_metrics(self) -> Dict[str, Any]:
+    def get_all_metrics(self) -> dict[str, Any]:
         """Get all metrics as a combined report."""
         uptime = (
             datetime.now(
-                timezone.utc)
+                UTC)
             - self._start_time).total_seconds()
 
         with self._lock:
@@ -232,7 +232,7 @@ class MetricsCollector:
             self._quality_scores.clear()
             self._anomalies_detected = 0
             self._high_risk_alerts = 0
-            self._start_time = datetime.now(timezone.utc)
+            self._start_time = datetime.now(UTC)
 
 
 # Global metrics instance

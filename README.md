@@ -1,9 +1,11 @@
 # I-ASCAP: Indian Agri-Spatial Comparative Analytics Platform
 
+[![CI](https://github.com/Satyamkumar2610/I-ASCAP/actions/workflows/ci.yml/badge.svg)](https://github.com/Satyamkumar2610/I-ASCAP/actions/workflows/ci.yml)
 [![Deploy Status](https://img.shields.io/badge/Deployment-Live-success)](https://i-ascap.onrender.com)
-[![Documentation](https://img.shields.io/badge/API-Docs-blue)](https://i-ascap.onrender.com/docs)
+[![API Docs](https://img.shields.io/badge/API-Docs-blue)](https://i-ascap.onrender.com/docs)
 
 ## Overview
+
 I-ASCAP is a research-grade geospatial platform designed to visualize and analyze the evolution of Indian agriculture at the district level from 1966 to 2024. It solves the "Modifiable Areal Unit Problem" (MAUP) through a lineage-aware harmonization engine that tracks district splits and merges over 60 years.
 
 ## Key Features
@@ -15,8 +17,8 @@ I-ASCAP is a research-grade geospatial platform designed to visualize and analyz
 - **Period Comparison**: Statistical t-tests comparing pre- and post-split performance.
 
 ### 🛡️ Robust Architecture
-- **Reliability**: Custom error handling, rate limiting (60 req/min), and health checks.
-- **Performance**: In-memory LRU caching, database connection pooling, and Gunicorn/Uvicorn workers.
+- **Reliability**: Custom error handling, rate limiting (100 req/min), and health checks.
+- **Performance**: Redis + in-memory LRU caching, database connection pooling, and Gunicorn/Uvicorn workers.
 - **Security**: OWASP security headers, input sanitization, and SQL injection protection.
 
 ### 📊 Data & Export
@@ -26,30 +28,33 @@ I-ASCAP is a research-grade geospatial platform designed to visualize and analyz
 
 ## Technology Stack
 
-- **Frontend**: Next.js 14, React 18, Tailwind CSS, Mapbox GL JS (Optimized for Vercel).
-- **Backend**: FastAPI, Python 3.11, AsyncPG, NumPy/SciPy (Optimized for Render).
-- **Database**: PostgreSQL 15 + PostGIS (Neon Serverless).
-- **Infrastructure**: Docker, Gunicorn, GitHub Actions.
+| Layer | Technologies |
+|---|---|
+| **Frontend** | Next.js 15, React 19, Tailwind CSS 3, MapLibre GL JS |
+| **Backend** | FastAPI, Python 3.13, AsyncPG, NumPy/SciPy, Statsmodels |
+| **Database** | PostgreSQL 15 + PostGIS (Neon Serverless) |
+| **Infrastructure** | Docker, Gunicorn, GitHub Actions CI, Redis |
 
 ## Setup & Development
 
 ### Prerequisites
 - Docker & Docker Compose
-- Python 3.11+
-- Node.js 18+
+- Python 3.13+
+- Node.js 20+
 
-### Quick Start (Docker - Local Dev)
+### Environment Configuration
 ```bash
-docker-compose up --build
+cp .env.example .env
+# Edit .env with your DATABASE_URL, MAPBOX_TOKEN, etc.
 ```
-- Frontend: [http://localhost:3000](http://localhost:3000)
-- Backend: [http://localhost:8000](http://localhost:8000)
-- API Docs: [http://localhost:8000/docs](http://localhost:8000/docs)
-*(Requires `.env` file with `DATABASE_URL`)*
 
-### Live Production
-- **Frontend**: [https://i-ascap.onrender.com](https://i-ascap.onrender.com) (or Vercel URL)
-- **API Docs**: [https://i-ascap.onrender.com/docs](https://i-ascap.onrender.com/docs)
+### Quick Start (Docker)
+```bash
+docker compose up --build
+```
+- **Frontend**: [http://localhost:3000](http://localhost:3000)
+- **Backend**: [http://localhost:8000](http://localhost:8000)
+- **API Docs**: [http://localhost:8000/docs](http://localhost:8000/docs)
 
 ### Local Development
 
@@ -68,30 +73,71 @@ npm install
 npm run dev
 ```
 
+### Available Commands
+Run `make help` to see all available pipeline commands:
+```
+  clean           Remove cached/compiled files
+  dev             Start backend dev server
+  dev-all         Start both backend and frontend
+  dev-frontend    Start frontend dev server
+  format          Auto-format backend code with Ruff
+  lint            Run Ruff linter on backend
+  test            Run all backend tests
+  test-cov        Run tests with coverage report
+  typecheck       Run mypy type checking on backend
+```
+
 ### Testing
-Run the comprehensive test suite:
 ```bash
-cd backend
-pytest tests/ -v
+make test          # Run tests
+make test-cov      # Run tests with coverage
+make lint          # Lint backend with Ruff
+make typecheck     # Type-check with mypy
 ```
 
 ## API Documentation
-Interactive Swagger documentation is available at `/docs`.
-Key endpoints:
-- `GET /metrics`: Retrieve agricultural data
-- `GET /lineage`: Trace district evolution
-- `GET /analysis`: Perform split impact analysis
-- `GET /export`: Download datasets
-- `GET /stats`: System health and metrics
+
+Interactive Swagger documentation is available at `/docs`. Key endpoint groups:
+
+| Endpoint Group | Description |
+|---|---|
+| `GET /api/v1/metrics/*` | Agricultural data retrieval |
+| `GET /api/v1/lineage/*` | District evolution tracing |
+| `GET /api/v1/analytics/*` | Advanced analytics (diversification, trends, rankings) |
+| `GET /api/v1/splits/*` | Split impact analysis |
+| `GET /api/v1/climate/*` | Climate correlation data |
+| `GET /health` | System health check |
 
 ## Deployment
-- **Backend**: Deployed on Render using `gunicorn` with Uvicorn workers.
+
+- **Backend**: Deployed on Render using Gunicorn with Uvicorn workers.
 - **Frontend**: Deployed on Vercel with edge caching.
 - **Database**: Hosted on Neon with connection pooling.
 
+## Project Structure
+
+```
+├── backend/           # FastAPI application
+│   ├── app/           # Main application package
+│   │   ├── api/v1/    # API route handlers
+│   │   ├── core/      # Core business logic
+│   │   ├── models/    # Database models
+│   │   ├── schemas/   # Pydantic schemas
+│   │   ├── services/  # Service layer
+│   │   └── repositories/  # Data access layer
+│   ├── tests/         # Backend test suite
+│   └── scripts/       # Utility & debug scripts
+├── frontend/          # Next.js application
+│   └── src/app/       # App router pages & components
+├── scripts/           # ETL & data pipeline scripts
+├── data/              # Data files
+└── docs/              # Documentation
+```
+
 ## Contributing
+
 Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
-MIT License. Data sources: ICRISAT, Directorate of Economics and Statistics.
 
+MIT License. Data sources: ICRISAT, Directorate of Economics and Statistics.

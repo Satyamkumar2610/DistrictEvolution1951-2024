@@ -3,8 +3,8 @@ Time series analysis utilities for I-ASCAP.
 Provides functions for analyzing temporal agricultural data.
 """
 
-from typing import List, Dict, Any, Optional, Tuple
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass
+from typing import Any
 
 from scipy import stats as scipy_stats  # type: ignore
 
@@ -28,13 +28,13 @@ class TimeSeriesAnalysis:
     start_year: int
     end_year: int
     data_points: int
-    missing_years: List[int]
-    summary_stats: Dict[str, Any]
-    trend: Dict[str, Any]
-    growth_rates: List[float]
-    moving_averages: Dict[int, List[float]]  # window -> values
-    anomalies: List[Dict]
-    seasonality: Optional[Dict[str, Any]] = None
+    missing_years: list[int]
+    summary_stats: dict[str, Any]
+    trend: dict[str, Any]
+    growth_rates: list[float]
+    moving_averages: dict[int, list[float]]  # window -> values
+    anomalies: list[dict]
+    seasonality: dict[str, Any] | None = None
 
 
 class TimeSeriesAnalyzer:
@@ -47,10 +47,10 @@ class TimeSeriesAnalyzer:
 
     def analyze(
         self,
-        years: List[int],
-        values: List[float],
+        years: list[int],
+        values: list[float],
         detect_anomalies: bool = True,
-        windows: List[int] = [3, 5],
+        windows: list[int] = [3, 5],
     ) -> TimeSeriesAnalysis:
         """
         Perform comprehensive time series analysis.
@@ -118,9 +118,9 @@ class TimeSeriesAnalyzer:
 
     def _detect_anomalies(
         self,
-        years: List[int],
-        values: List[float]
-    ) -> List[AnomalyResult]:
+        years: list[int],
+        values: list[float]
+    ) -> list[AnomalyResult]:
         """
         Detect anomalies using multiple methods.
         """
@@ -168,7 +168,7 @@ class TimeSeriesAnalyzer:
 
         return sorted(anomalies, key=lambda a: a.year)
 
-    def calculate_cumulative(self, values: List[float]) -> List[float]:
+    def calculate_cumulative(self, values: list[float]) -> list[float]:
         """Calculate cumulative sum."""
         cumulative = []
         total = 0.0
@@ -179,11 +179,11 @@ class TimeSeriesAnalyzer:
 
     def period_comparison(
         self,
-        years: List[int],
-        values: List[float],
-        period1: Tuple[int, int],
-        period2: Tuple[int, int],
-    ) -> Dict[str, Any]:
+        years: list[int],
+        values: list[float],
+        period1: tuple[int, int],
+        period2: tuple[int, int],
+    ) -> dict[str, Any]:
         """
         Compare two time periods.
 
@@ -255,11 +255,11 @@ class TimeSeriesAnalyzer:
 
     def calculate_cagr_over_period(
         self,
-        years: List[int],
-        values: List[float],
-        start_year: Optional[int] = None,
-        end_year: Optional[int] = None,
-    ) -> Dict[str, Any]:
+        years: list[int],
+        values: list[float],
+        start_year: int | None = None,
+        end_year: int | None = None,
+    ) -> dict[str, Any]:
         """
         Calculate CAGR over a specified period.
         """

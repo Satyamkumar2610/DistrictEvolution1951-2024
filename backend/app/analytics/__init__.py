@@ -3,45 +3,41 @@ Analytics module for I-ASCAP.
 Provides statistical analysis, time series, and comparison tools.
 """
 
-from app.analytics.statistics import (
-    StatisticalAnalyzer,
-    TrendDirection,
-    TrendResult,
-    StatisticResult,
-    get_analyzer,
-)
-
-from app.analytics.timeseries import (
-    TimeSeriesAnalyzer,
-    TimeSeriesAnalysis,
-    AnomalyResult,
-    get_time_series_analyzer,
-)
-
 from app.analytics.advanced import (
     AdvancedAnalyzer,
     DiversificationResult,
     EfficiencyResult,
-    RiskProfile,
     RiskCategory,
+    RiskProfile,
     get_advanced_analyzer,
 )
-
 from app.analytics.anomaly_detection import (
-    AnomalyDetector,
-    AnomalyType,
-    RiskLevel,
     Anomaly,
-    RiskAlert,
+    AnomalyDetector,
     AnomalyReport,
+    AnomalyType,
+    RiskAlert,
+    RiskLevel,
     scan_state_anomalies,
 )
-
 from app.analytics.data_quality import (
-    DataQualityScorer,
     DataQualityReport,
+    DataQualityScorer,
     QualityLevel,
     get_state_quality_summary,
+)
+from app.analytics.statistics import (
+    StatisticalAnalyzer,
+    StatisticResult,
+    TrendDirection,
+    TrendResult,
+    get_analyzer,
+)
+from app.analytics.timeseries import (
+    AnomalyResult,
+    TimeSeriesAnalysis,
+    TimeSeriesAnalyzer,
+    get_time_series_analyzer,
 )
 
 __all__ = [

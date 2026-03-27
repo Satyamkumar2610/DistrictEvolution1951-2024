@@ -3,9 +3,9 @@ Advanced Analytics Module for I-ASCAP.
 Provides Crop Diversification Index, Yield Efficiency, and Risk Profiling.
 """
 
-from typing import List, Dict, Any, Optional
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass
 from enum import Enum
+from typing import Any
 
 from app.analytics.statistics import get_analyzer  # type: ignore
 
@@ -23,10 +23,10 @@ class DiversificationResult:
     """Result of crop diversification analysis."""
     cdi: float  # Crop Diversification Index (0-1)
     interpretation: str  # Human-readable interpretation
-    dominant_crop: Optional[str]  # Most grown crop
+    dominant_crop: str | None  # Most grown crop
     dominant_share: float  # Share of dominant crop (0-1)
     crop_count: int  # Number of crops grown
-    breakdown: Dict[str, float]  # Crop -> share mapping
+    breakdown: dict[str, float]  # Crop -> share mapping
 
 
 @dataclass
@@ -47,8 +47,8 @@ class RiskProfile:
     volatility_score: float  # CV percentage
     reliability_rating: str  # A/B/C/D/F
     trend_stability: str  # Stable/Unstable
-    worst_year: Optional[int]
-    best_year: Optional[int]
+    worst_year: int | None
+    best_year: int | None
 
 
 @dataclass
@@ -91,7 +91,7 @@ class SimulationResult:
     r_squared: float
     correlation: float
     confidence_interval: float  # Margin of error at 95%
-    data_points: List[Dict[str, float]]  # For scatter plot
+    data_points: list[dict[str, float]]  # For scatter plot
     model_equation: str  # String representation
 
 
@@ -114,7 +114,7 @@ class AdvancedAnalyzer:
 
     def calculate_diversification(
         self,
-        crop_areas: Dict[str, float],
+        crop_areas: dict[str, float],
     ) -> DiversificationResult:
         """
         Calculate Crop Diversification Index using Simpson's Diversity Index.
@@ -189,7 +189,7 @@ class AdvancedAnalyzer:
     def calculate_efficiency(
         self,
         district_yield: float,
-        state_yields: List[float],
+        state_yields: list[float],
     ) -> EfficiencyResult:
         """
         Calculate yield efficiency compared to state potential.
@@ -244,7 +244,7 @@ class AdvancedAnalyzer:
     def calculate_historical_efficiency(
         self,
         current_yield: float,
-        historical_yields: List[float],
+        historical_yields: list[float],
     ) -> HistoricalEfficiencyResult:
         """
         Calculate efficiency compared to district's own history (10-year mean).
@@ -294,7 +294,7 @@ class AdvancedAnalyzer:
 
     def calculate_risk_profile(
         self,
-        yearly_values: Dict[int, float],
+        yearly_values: dict[int, float],
     ) -> RiskProfile:
         """
         Calculate risk profile based on historical volatility.
@@ -373,7 +373,7 @@ class AdvancedAnalyzer:
     # -------------------------------------------------------------------------
 
     def calculate_resilience(self,
-                             yearly_values: Dict[int,
+                             yearly_values: dict[int,
                                                  float]) -> ResilienceResult:
         """
         Calculate resilience score.
@@ -418,7 +418,7 @@ class AdvancedAnalyzer:
         )
 
     def calculate_growth_matrix(
-            self, yearly_values: Dict[int, float]) -> GrowthResult:
+            self, yearly_values: dict[int, float]) -> GrowthResult:
         """
         Calculate Compound Annual Growth Rate (CAGR) and classify matrix quadrant.
         """
@@ -478,11 +478,11 @@ class AdvancedAnalyzer:
 
     def analyze_district_complete(
         self,
-        crop_areas: Dict[str, float],
+        crop_areas: dict[str, float],
         district_yield: float,
-        state_yields: List[float],
-        yearly_values: Dict[int, float],
-    ) -> Dict[str, Any]:
+        state_yields: list[float],
+        yearly_values: dict[int, float],
+    ) -> dict[str, Any]:
         """
         Perform complete advanced analysis for a district.
 
@@ -507,9 +507,9 @@ class AdvancedAnalyzer:
 
     def calculate_impact_simulation(
         self,
-        rainfall: List[float],
-        yields: List[float],
-        years: List[int]
+        rainfall: list[float],
+        yields: list[float],
+        years: list[int]
     ) -> SimulationResult:
         """
         Create a linear simulation model for Rainfall -> Yield.

@@ -3,7 +3,7 @@
 # Single entry point for all pipeline operations
 # ============================================================================
 
-.PHONY: help etl ingest verify maint test lint dev clean
+.PHONY: help etl ingest verify maint test lint format typecheck dev clean
 
 # Default target
 help: ## Show this help message
@@ -58,20 +58,26 @@ test: ## Run all backend tests
 test-cov: ## Run tests with coverage report
 	cd backend && python -m pytest tests/ -v --cov=app --cov-report=term-missing
 
-lint: ## Run linting on backend
-	cd backend && python -m flake8 app/ --max-line-length=120 --ignore=E501,W503
+lint: ## Run Ruff linter on backend
+	cd backend && ruff check app/
+
+format: ## Auto-format backend code with Ruff
+	cd backend && ruff format app/
+
+typecheck: ## Run mypy type checking on backend
+	cd backend && mypy app/ --ignore-missing-imports
 
 # ---------------------------------------------------------------------------
 # Docker
 # ---------------------------------------------------------------------------
 docker-up: ## Start all services via Docker Compose
-	docker-compose up -d
+	docker compose up -d
 
 docker-down: ## Stop all Docker services
-	docker-compose down
+	docker compose down
 
 docker-logs: ## Tail Docker logs
-	docker-compose logs -f
+	docker compose logs -f
 
 # ---------------------------------------------------------------------------
 # Cleanup
@@ -80,3 +86,5 @@ clean: ## Remove cached/compiled files
 	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
 	find . -type f -name "*.pyc" -delete 2>/dev/null || true
 	find . -type d -name ".pytest_cache" -exec rm -rf {} + 2>/dev/null || true
+	find . -type d -name ".ruff_cache" -exec rm -rf {} + 2>/dev/null || true
+	find . -type d -name ".mypy_cache" -exec rm -rf {} + 2>/dev/null || true

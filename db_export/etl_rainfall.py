@@ -18,11 +18,11 @@ from typing import List, Dict, Any
 IMD_API_BASE = "https://api.data.gov.in/resource/d0419b03-b41b-4226-b48b-0bc92bf139f8"
 IMD_API_KEY = "579b464db66ec23bdd0000011d0179460bed4f26443f90cf4bee20d0"
 
-# Database URL from environment
-DATABASE_URL = os.environ.get(
-    "DATABASE_URL",
-    "postgresql://neondb_owner:npg_7AtbCMWo3ksv@ep-purple-butterfly-a18tkuor.ap-southeast-1.aws.neon.tech/neondb?sslmode=require"
-)
+# Database URL from environment (required — no hardcoded credentials)
+DATABASE_URL = os.environ.get("DATABASE_URL", "")
+if not DATABASE_URL:
+    print("ERROR: DATABASE_URL environment variable is not set.")
+    sys.exit(1)
 
 
 async def fetch_all_records() -> List[Dict[str, Any]]:

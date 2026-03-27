@@ -1,18 +1,17 @@
 """
 Uncertainty Quantification: Bootstrap confidence intervals and error propagation.
 """
-import random
-from typing import List
 import math
+import random
 
-from app.schemas.common import UncertaintyBounds
 from app.config import get_settings
+from app.schemas.common import UncertaintyBounds
 
 settings = get_settings()
 
 
 def calculate_bootstrap_ci(
-    values: List[float],
+    values: list[float],
     n_iterations: int = None,
     confidence: float = None,
     statistic: str = "mean",
@@ -77,8 +76,8 @@ def calculate_bootstrap_ci(
 
 
 def calculate_impact_uncertainty(
-    pre_values: List[float],
-    post_values: List[float],
+    pre_values: list[float],
+    post_values: list[float],
     n_iterations: int = None,
     confidence: float = None,
 ) -> UncertaintyBounds:

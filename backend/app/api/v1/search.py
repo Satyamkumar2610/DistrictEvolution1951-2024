@@ -1,8 +1,8 @@
 """
 Search API: Full-text search across districts and states.
 """
-from fastapi import APIRouter, Depends, Query
 import asyncpg
+from fastapi import APIRouter, Depends, Query
 
 from app.database import get_db
 

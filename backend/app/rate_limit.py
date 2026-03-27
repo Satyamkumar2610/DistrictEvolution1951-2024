@@ -3,9 +3,8 @@ Rate limiting middleware for I-ASCAP API.
 Uses in-memory token bucket algorithm.
 """
 
-import time
 import asyncio
-from typing import Dict, Tuple
+import time
 
 from fastapi import Request
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -35,7 +34,7 @@ class RateLimiter:
         self.cleanup_interval = cleanup_interval
 
         # Bucket storage: {ip: (tokens, last_update_time)}
-        self._buckets: Dict[str, Tuple[float, float]] = {}
+        self._buckets: dict[str, tuple[float, float]] = {}
         self._lock = asyncio.Lock()
         self._last_cleanup = time.time()
 
@@ -43,7 +42,7 @@ class RateLimiter:
         self._total_requests = 0
         self._blocked_requests = 0
 
-    async def is_allowed(self, client_ip: str) -> Tuple[bool, Dict]:
+    async def is_allowed(self, client_ip: str) -> tuple[bool, dict]:
         """
         Check if a request from the given IP is allowed.
         Returns (allowed, headers_dict).
@@ -104,7 +103,7 @@ class RateLimiter:
         if stale_keys:
             logger.debug(f"Cleaned up {len(stale_keys)} stale rate limit buckets")
 
-    def stats(self) -> Dict:
+    def stats(self) -> dict:
         """Get rate limiter statistics."""
         return {
             "total_requests": self._total_requests,

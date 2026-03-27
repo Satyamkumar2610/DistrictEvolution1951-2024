@@ -3,8 +3,9 @@ IMD Rainfall Data Service.
 Reads district-level rainfall normals from database (populated via ETL).
 """
 
-from typing import Dict, List, Optional, Any
 from dataclasses import dataclass
+from typing import Any
+
 import asyncpg
 
 
@@ -57,7 +58,7 @@ async def get_rainfall_by_district(
     db: asyncpg.Connection,
     state: str,
     district: str
-) -> Optional[RainfallData]:
+) -> RainfallData | None:
     """
     Get rainfall data for a specific district from database.
     """
@@ -98,8 +99,8 @@ async def get_rainfall_by_district(
 
 async def get_all_rainfall(
     db: asyncpg.Connection,
-    state: Optional[str] = None
-) -> List[Dict[str, Any]]:
+    state: str | None = None
+) -> list[dict[str, Any]]:
     """
     Get all rainfall data (optionally filtered by state) from database.
     Returns simplified format for map visualization.
@@ -133,7 +134,7 @@ async def get_all_rainfall(
 async def get_state_rainfall_stats(
     db: asyncpg.Connection,
     state: str
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Get aggregated rainfall statistics for a state.
     """
@@ -172,7 +173,7 @@ async def get_water_stress_index(
     db: asyncpg.Connection,
     state: str,
     year: int
-) -> List[Dict[str, Any]]:
+) -> list[dict[str, Any]]:
     """
     Compute a Water Stress / Mismatch Index for districts in a state.
     Matches the area of water-intensive crops (Rice, Sugarcane, Cotton)

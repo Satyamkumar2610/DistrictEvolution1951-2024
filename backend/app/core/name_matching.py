@@ -2,7 +2,6 @@
 """
 Name matching utilities for district resolution.
 """
-from typing import Optional
 
 # Normalized corrections map
 NAME_CORRECTIONS = {
@@ -153,7 +152,7 @@ TELANGANA_DISTRICTS = {
 
 
 def resolve_district_name(district_name: str,
-                          state_name: Optional[str] = None) -> str:
+                          state_name: str | None = None) -> str:
     """
     Resolve a district name to its canonical form used in the database.
     """

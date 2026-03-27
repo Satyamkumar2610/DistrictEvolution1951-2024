@@ -1,11 +1,12 @@
-from fastapi import APIRouter, Depends, Query, UploadFile, File, HTTPException, Form
-import asyncpg
 import json
 
+import asyncpg
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile
+
 from app.api.deps import get_db
-from app.services.spatial_service import SpatialService
-from app.services.geometry_service import GeometryService
 from app.exceptions import NotFoundError
+from app.services.geometry_service import GeometryService
+from app.services.spatial_service import SpatialService
 
 router = APIRouter(prefix="/spatial", tags=["Spatial Data"])
 
@@ -74,12 +75,12 @@ async def get_district_lineage(district_id: str, db: asyncpg.Connection = Depend
     """Fetch all lineage split events and area transfers for a specific district."""
     events = await db.fetch("SELECT * FROM split_events WHERE parent_cdk = $1 OR $1 = ANY(child_cdks)", district_id)
     transfers = await db.fetch("SELECT * FROM area_transfers WHERE source_cdk = $1 OR dest_cdk = $1", district_id)
-    
+
     return {
         "district_id": district_id,
         "split_events": [dict(e) for e in events],
         "area_transfers": [
-           {k: v for k, v in dict(t).items() if k != 'geometry'} 
+           {k: v for k, v in dict(t).items() if k != 'geometry'}
            for t in transfers
         ]
     }
@@ -94,17 +95,17 @@ async def upload_manual_geojson(
     """Parses GeoJSON and saves as manual_upload to district_snapshots."""
     content = await geojson_file.read()
     parsed = json.loads(content.decode("utf-8"))
-    
+
     if "features" in parsed and len(parsed["features"]) > 0:
         geom = parsed["features"][0].get("geometry")
     elif "geometry" in parsed:
         geom = parsed["geometry"]
     else:
         geom = parsed
-        
+
     geom_str = json.dumps(geom)
     name = await db.fetchval("SELECT district_name FROM districts WHERE lgd_code::text = $1 LIMIT 1", district_id)
-    
+
     await db.execute("""
         INSERT INTO district_snapshots
             (district_cdk, snapshot_year, district_name, geometry_source, geometry_confidence, geometry)
@@ -115,6 +116,6 @@ async def upload_manual_geojson(
             geometry_source = EXCLUDED.geometry_source,
             geometry_confidence = EXCLUDED.geometry_confidence
     """, district_id, snapshot_year, name or district_id, geom_str)
-    
+
     return {"status": "success", "message": f"Uploaded manual GeoJSON for {district_id} ({snapshot_year})"}
 

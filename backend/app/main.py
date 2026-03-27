@@ -4,30 +4,29 @@ FastAPI Application Entry Point
 """
 import hashlib
 import time
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
-from datetime import datetime, timezone
-from typing import AsyncGenerator
+from datetime import UTC, datetime
 
 from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from fastapi.exceptions import RequestValidationError
 
+from app.api.v1.router import api_router
 from app.config import get_settings
-from app.database import init_db_pool, close_db_pool
-from app.exceptions import APIError, ValidationError, DatabaseError, create_error_response
+from app.database import close_db_pool, init_db_pool
+from app.exceptions import APIError, DatabaseError, ValidationError, create_error_response
 from app.logging_config import (
-    setup_logging,
-    get_logger,
     generate_request_id,
-    set_request_id,
+    get_logger,
     get_request_id,
     log_api_request,
+    set_request_id,
+    setup_logging,
 )
-
 from app.rate_limit import RateLimitMiddleware
-from app.security import SecurityHeadersMiddleware, HTTPSRedirectMiddleware
-from app.api.v1.router import api_router
+from app.security import HTTPSRedirectMiddleware, SecurityHeadersMiddleware
 
 settings = get_settings()
 
@@ -185,7 +184,7 @@ async def health_check():
     return {
         "status": "healthy",
         "version": settings.app_version,
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
     }
 
 
@@ -205,7 +204,7 @@ async def readiness_check():
             content={
                 "status": "not_ready",
                 "reason": "Database pool not initialized",
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
             }
         )
 
@@ -220,14 +219,14 @@ async def readiness_check():
             content={
                 "status": "not_ready",
                 "reason": f"Database connection failed: {str(e)}",
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
             }
         )
 
     return {
         "status": "ready",
         "database": "connected",
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
     }
 
 
@@ -262,15 +261,15 @@ async def get_system_stats(request: Request):
         )
 
     from app.cache import get_cache
-    from app.rate_limit import get_rate_limiter
     from app.database import get_pool
+    from app.rate_limit import get_rate_limiter
 
     cache = get_cache()
     rate_limiter = get_rate_limiter()
     pool = await get_pool()
 
     return {
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
         "cache": await cache.stats(),
         "rate_limiter": rate_limiter.stats(),
         "database": {
@@ -358,7 +357,7 @@ async def global_exception_handler(request: Request, exc: Exception):
             "request_id": get_request_id(),
             "provenance": {
                 "query_hash": generate_query_hash(request),
-                "generated_at": datetime.now(timezone.utc).isoformat(),
+                "generated_at": datetime.now(UTC).isoformat(),
             }
         },
     )

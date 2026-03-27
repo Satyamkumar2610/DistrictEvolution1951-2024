@@ -10,10 +10,11 @@ Cache backend selection:
 
 import hashlib
 import json
-import time
 import logging
-from typing import Any, Optional, Dict, Callable
+import time
+from collections.abc import Callable
 from functools import wraps
+from typing import Any
 
 logger = logging.getLogger("cache")
 
@@ -29,10 +30,10 @@ class InMemoryCache:
     """
 
     def __init__(self):
-        self._store: Dict[str, Dict[str, Any]] = {}
+        self._store: dict[str, dict[str, Any]] = {}
         self._default_ttl = 3600
 
-    async def get(self, key: str) -> Optional[Any]:
+    async def get(self, key: str) -> Any | None:
         """Get a value from cache."""
         if key not in self._store:
             return None
@@ -42,7 +43,7 @@ class InMemoryCache:
             return None
         return item["value"]
 
-    async def set(self, key: str, value: Any, ttl: Optional[int] = None) -> None:
+    async def set(self, key: str, value: Any, ttl: int | None = None) -> None:
         """Set a value in cache."""
         expires_at = time.time() + (ttl or self._default_ttl)
         self._store[key] = {"value": value, "expires_at": expires_at}
@@ -58,7 +59,7 @@ class InMemoryCache:
         """Clear all cached data."""
         self._store.clear()
 
-    async def stats(self) -> Dict[str, Any]:
+    async def stats(self) -> dict[str, Any]:
         """Get cache stats."""
         now = time.time()
         active = sum(1 for v in self._store.values() if v["expires_at"] > now)
@@ -97,7 +98,7 @@ class RedisCache:
             )
         return self._client
 
-    async def get(self, key: str) -> Optional[Any]:
+    async def get(self, key: str) -> Any | None:
         """Get a value from Redis."""
         client = await self._get_client()
         raw = await client.get(f"iascap:{key}")
@@ -108,7 +109,7 @@ class RedisCache:
         except (json.JSONDecodeError, TypeError):
             return raw
 
-    async def set(self, key: str, value: Any, ttl: Optional[int] = None) -> None:
+    async def set(self, key: str, value: Any, ttl: int | None = None) -> None:
         """Set a value in Redis with TTL."""
         client = await self._get_client()
         # Handle Pydantic models
@@ -137,7 +138,7 @@ class RedisCache:
             if cursor == 0:
                 break
 
-    async def stats(self) -> Dict[str, Any]:
+    async def stats(self) -> dict[str, Any]:
         """Get Redis cache stats."""
         try:
             client = await self._get_client()

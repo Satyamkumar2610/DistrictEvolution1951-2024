@@ -4,11 +4,11 @@ Provides functions to export data in various formats.
 """
 
 import csv
-import json
 import io
+import json
+from dataclasses import asdict, dataclass
 from datetime import datetime
-from typing import List, Dict, Any, Optional
-from dataclasses import dataclass, asdict
+from typing import Any
 
 from fastapi import Response
 from fastapi.responses import StreamingResponse
@@ -21,7 +21,7 @@ class ExportMetadata:
     source: str = "I-ASCAP API"
     version: str = "1.0"
     record_count: int = 0
-    filters: Optional[Dict[str, Any]] = None
+    filters: dict[str, Any] | None = None
 
 
 class DataExporter:
@@ -35,7 +35,7 @@ class DataExporter:
     def _create_metadata(
         self,
         record_count: int,
-        filters: Optional[Dict[str, Any]] = None
+        filters: dict[str, Any] | None = None
     ) -> ExportMetadata:
         """Create export metadata."""
         return ExportMetadata(
@@ -51,9 +51,9 @@ class DataExporter:
 
     def to_json(
         self,
-        data: List[Dict[str, Any]],
+        data: list[dict[str, Any]],
         include_metadata: bool = True,
-        filters: Optional[Dict[str, Any]] = None,
+        filters: dict[str, Any] | None = None,
     ) -> str:
         """Export data as JSON string."""
         if include_metadata:
@@ -69,9 +69,9 @@ class DataExporter:
 
     def to_json_response(
         self,
-        data: List[Dict[str, Any]],
+        data: list[dict[str, Any]],
         filename: str = "export.json",
-        filters: Optional[Dict[str, Any]] = None,
+        filters: dict[str, Any] | None = None,
     ) -> Response:
         """Export data as JSON download response."""
         content = self.to_json(data, include_metadata=True, filters=filters)
@@ -90,8 +90,8 @@ class DataExporter:
 
     def to_csv(
         self,
-        data: List[Dict[str, Any]],
-        columns: Optional[List[str]] = None,
+        data: list[dict[str, Any]],
+        columns: list[str] | None = None,
     ) -> str:
         """Export data as CSV string."""
         if not data:
@@ -110,7 +110,7 @@ class DataExporter:
 
         for row in data:
             # Convert any complex types to strings
-            cleaned_row: Dict[str, Any] = {}
+            cleaned_row: dict[str, Any] = {}
             for key, value in row.items():
                 if key in columns:
                     if isinstance(value, (dict, list)):
@@ -123,9 +123,9 @@ class DataExporter:
 
     def to_csv_response(
         self,
-        data: List[Dict[str, Any]],
+        data: list[dict[str, Any]],
         filename: str = "export.csv",
-        columns: Optional[List[str]] = None,
+        columns: list[str] | None = None,
     ) -> Response:
         """Export data as CSV download response."""
         content = self.to_csv(data, columns)
@@ -144,9 +144,9 @@ class DataExporter:
 
     def to_geojson(
         self,
-        features: List[Dict[str, Any]],
-        properties_map: Optional[Dict[str, str]] = None,
-    ) -> Dict[str, Any]:
+        features: list[dict[str, Any]],
+        properties_map: dict[str, str] | None = None,
+    ) -> dict[str, Any]:
         """
         Export data as GeoJSON FeatureCollection.
 
@@ -154,7 +154,7 @@ class DataExporter:
             features: List of feature dicts with geometry and properties
             properties_map: Optional mapping of property names
         """
-        geojson: Dict[str, Any] = {
+        geojson: dict[str, Any] = {
             "type": "FeatureCollection",
             "features": [],
             "metadata": asdict(self._create_metadata(len(features))),  # type: ignore
@@ -175,7 +175,7 @@ class DataExporter:
 
     def to_geojson_response(
         self,
-        features: List[Dict[str, Any]],
+        features: list[dict[str, Any]],
         filename: str = "export.geojson",
     ) -> Response:
         """Export data as GeoJSON download response."""
@@ -196,7 +196,7 @@ class DataExporter:
     def stream_csv(
         self,
         data_generator,
-        columns: List[str],
+        columns: list[str],
         filename: str = "export.csv",
     ) -> StreamingResponse:
         """
@@ -219,7 +219,7 @@ class DataExporter:
                 output = io.StringIO()
                 writer = csv.DictWriter(
                     output, fieldnames=columns, extrasaction='ignore')
-                cleaned_row: Dict[str, Any] = {}
+                cleaned_row: dict[str, Any] = {}
                 for key, value in row.items():
                     if key in columns:
                         if isinstance(value, (dict, list)):

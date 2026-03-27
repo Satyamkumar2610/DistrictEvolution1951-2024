@@ -3,14 +3,14 @@ Dependency Injection for API Routes.
 Provides database connections, provenance generators, and common utilities.
 """
 import hashlib
-from datetime import datetime, timezone
-from typing import AsyncGenerator
+from collections.abc import AsyncGenerator
+from datetime import UTC, datetime
 
 import asyncpg
 from fastapi import Request
 
-from app.database import get_connection
 from app.config import get_settings
+from app.database import get_connection
 from app.schemas.common import ProvenanceMetadata
 
 settings = get_settings()
@@ -43,7 +43,7 @@ def generate_provenance(
         dataset_version=settings.dataset_version,
         boundary_version=settings.boundary_version,
         query_hash=query_hash,
-        generated_at=datetime.now(timezone.utc),
+        generated_at=datetime.now(UTC),
         harmonization_method=method,
         warnings=[],
     )

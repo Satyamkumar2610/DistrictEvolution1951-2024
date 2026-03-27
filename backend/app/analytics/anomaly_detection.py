@@ -3,10 +3,10 @@ Anomaly Detection Module.
 Provides automated detection of outliers, suspicious patterns, and risk alerts.
 """
 
-from dataclasses import dataclass, asdict
-from typing import Dict, Any, List, Optional, Tuple
+from dataclasses import asdict, dataclass
+from datetime import UTC, datetime
 from enum import Enum
-from datetime import datetime, timezone
+from typing import Any
 
 import asyncpg
 
@@ -34,14 +34,14 @@ class Anomaly:
     """Represents a detected anomaly."""
     anomaly_type: AnomalyType
     cdk: str
-    year: Optional[int]
-    variable: Optional[str]
-    value: Optional[float]
-    expected_range: Optional[Tuple[float, float]]
+    year: int | None
+    variable: str | None
+    value: float | None
+    expected_range: tuple[float, float] | None
     severity: RiskLevel
     description: str
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         result = asdict(self)
         result['anomaly_type'] = self.anomaly_type.value
         result['severity'] = self.severity.value
@@ -55,10 +55,10 @@ class RiskAlert:
     district_name: str
     risk_level: RiskLevel
     risk_score: float  # 0-100
-    factors: List[str]
+    factors: list[str]
     recommendation: str
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         result = asdict(self)
         result['risk_level'] = self.risk_level.value
         return result
@@ -69,14 +69,14 @@ class AnomalyReport:
     """Comprehensive anomaly report for a district."""
     cdk: str
     total_anomalies: int
-    anomalies_by_type: Dict[str, int]
+    anomalies_by_type: dict[str, int]
     critical_count: int
     high_count: int
-    anomalies: List[Anomaly]
-    risk_alert: Optional[RiskAlert]
+    anomalies: list[Anomaly]
+    risk_alert: RiskAlert | None
     scan_timestamp: str
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "cdk": self.cdk,
             "total_anomalies": self.total_anomalies,
@@ -109,7 +109,7 @@ class AnomalyDetector:
 
     async def scan_district(self, cdk: str) -> AnomalyReport:
         """Run full anomaly scan for a district."""
-        anomalies: List[Anomaly] = []
+        anomalies: list[Anomaly] = []
 
         # Run all detection methods
         anomalies.extend(await self._detect_yield_outliers(cdk))
@@ -122,7 +122,7 @@ class AnomalyDetector:
         risk_alert = await self._generate_risk_alert(cdk, anomalies)
 
         # Count by type and severity
-        by_type: Dict[str, int] = {}
+        by_type: dict[str, int] = {}
         critical_count = 0
         high_count = 0
 
@@ -142,10 +142,10 @@ class AnomalyDetector:
             high_count=high_count,
             anomalies=anomalies[:50],  # Limit to 50 for response size
             risk_alert=risk_alert,
-            scan_timestamp=datetime.now(timezone.utc).isoformat()
+            scan_timestamp=datetime.now(UTC).isoformat()
         )
 
-    async def _detect_yield_outliers(self, cdk: str) -> List[Anomaly]:
+    async def _detect_yield_outliers(self, cdk: str) -> list[Anomaly]:
         """Detect yields that are > 3 std from state mean."""
         anomalies = []
 
@@ -213,7 +213,7 @@ class AnomalyDetector:
 
         return anomalies
 
-    async def _detect_yoy_spikes(self, cdk: str) -> List[Anomaly]:
+    async def _detect_yoy_spikes(self, cdk: str) -> list[Anomaly]:
         """Detect year-over-year changes > 50%."""
         anomalies = []
 
@@ -226,7 +226,7 @@ class AnomalyDetector:
         """, cdk)
 
         # Group by variable
-        by_var: Dict[str, List[Tuple[int, float]]] = {}
+        by_var: dict[str, list[tuple[int, float]]] = {}
         for row in yields:
             var = row['variable_name']
             if var not in by_var:
@@ -274,7 +274,7 @@ class AnomalyDetector:
 
         return anomalies
 
-    async def _detect_missing_sequences(self, cdk: str) -> List[Anomaly]:
+    async def _detect_missing_sequences(self, cdk: str) -> list[Anomaly]:
         """Detect sequences of 3+ consecutive missing years."""
         anomalies = []
 
@@ -334,7 +334,7 @@ class AnomalyDetector:
 
         return anomalies
 
-    async def _detect_consistency_errors(self, cdk: str) -> List[Anomaly]:
+    async def _detect_consistency_errors(self, cdk: str) -> list[Anomaly]:
         """Detect production != area * yield inconsistencies."""
         anomalies = []
 
@@ -347,7 +347,7 @@ class AnomalyDetector:
         """, cdk)
 
         # Group by year and extract crop prefixes
-        by_year: Dict[int, Dict[str, float]] = {}
+        by_year: dict[int, dict[str, float]] = {}
         for row in metrics:
             year = row['year']
             if year not in by_year:
@@ -399,7 +399,7 @@ class AnomalyDetector:
 
         return anomalies
 
-    async def _detect_invalid_values(self, cdk: str) -> List[Anomaly]:
+    async def _detect_invalid_values(self, cdk: str) -> list[Anomaly]:
         """Detect zero or negative values where they shouldn't exist."""
         anomalies = []
 
@@ -429,8 +429,8 @@ class AnomalyDetector:
     async def _generate_risk_alert(
         self,
         cdk: str,
-        anomalies: List[Anomaly]
-    ) -> Optional[RiskAlert]:
+        anomalies: list[Anomaly]
+    ) -> RiskAlert | None:
         """Generate risk early warning based on anomalies and rainfall."""
         if not anomalies:
             return None
@@ -507,7 +507,7 @@ async def scan_state_anomalies(
     db: asyncpg.Connection,
     state: str,
     limit: int = 20
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Scan all districts in a state for anomalies."""
     # Get districts in state
     districts = await db.fetch("""

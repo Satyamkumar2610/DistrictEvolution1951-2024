@@ -3,7 +3,7 @@ Research-Grade Spatio-Temporal Analytics Backend
 Configuration via Pydantic Settings
 """
 from functools import lru_cache
-from typing import List, Optional
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -52,13 +52,13 @@ class Settings(BaseSettings):
     auth_enabled: bool = False
     auth0_domain: str = ""
     auth0_audience: str = ""
-    auth0_algorithms: List[str] = ["RS256"]
+    auth0_algorithms: list[str] = ["RS256"]
 
     # Deprecated
-    api_key: Optional[str] = None
+    api_key: str | None = None
 
     # CORS (Parsed from comma-separated env var or list)
-    cors_origins: List[str] = [
+    cors_origins: list[str] = [
         "https://i-ascap.onrender.com",
         "https://i-ascap.vercel.app",
         "http://localhost:3000",
@@ -66,7 +66,7 @@ class Settings(BaseSettings):
     ]
 
     @property
-    def parsed_cors_origins(self) -> List[str]:
+    def parsed_cors_origins(self) -> list[str]:
         """
         Merge default CORS origins with env var 'CORS_ALLOW_ORIGINS'.
         """

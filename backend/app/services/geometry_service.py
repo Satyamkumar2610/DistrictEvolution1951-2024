@@ -1,4 +1,5 @@
-from typing import Dict, Any
+from typing import Any
+
 import geopandas as gpd
 from shapely.geometry import shape
 
@@ -10,7 +11,7 @@ class GeometryService:
         self.TARGET_CRS = "EPSG:7755"
         self.SOURCE_CRS = "EPSG:4326"
 
-    def _dict_to_gdf(self, geojson_dict: Dict[str, Any]) -> gpd.GeoDataFrame:
+    def _dict_to_gdf(self, geojson_dict: dict[str, Any]) -> gpd.GeoDataFrame:
         features = geojson_dict.get("features", [])
         if not features:
             if geojson_dict.get("type") in [
@@ -35,10 +36,10 @@ class GeometryService:
         return gdf
 
     def calculate_split_areas(self,
-                              parent_geojson: Dict[str,
+                              parent_geojson: dict[str,
                                                    Any],
-                              child_geojson: Dict[str,
-                                                  Any]) -> Dict[str,
+                              child_geojson: dict[str,
+                                                  Any]) -> dict[str,
                                                                 float]:
         """
         Calculates the transferred area and remaining parent area in square kilometers

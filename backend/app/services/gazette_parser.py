@@ -8,10 +8,9 @@ Uses regex and NLP pattern matching (not LLM) to parse gazette text like:
 Returns structured SplitEvent records for insertion into split_events table.
 """
 
-import re
 import logging
+import re
 from dataclasses import dataclass
-from typing import Optional
 
 logger = logging.getLogger("app.services.gazette_parser")
 
@@ -22,7 +21,7 @@ class ParsedSplitEvent:
     parent_district: str
     child_districts: list[str]
     year: int
-    state: Optional[str] = None
+    state: str | None = None
     confidence: float = 0.5
     raw_text: str = ""
     source: str = "gazette_text"
@@ -106,7 +105,7 @@ def _split_list(text: str) -> list[str]:
     return result
 
 
-def _extract_year(text: str) -> Optional[int]:
+def _extract_year(text: str) -> int | None:
     """Extract the most likely year from gazette text."""
     matches = YEAR_PATTERN.findall(text)
     years = []
@@ -122,7 +121,7 @@ def _extract_year(text: str) -> Optional[int]:
     return max(years) if years else None
 
 
-def _extract_state(text: str) -> Optional[str]:
+def _extract_state(text: str) -> str | None:
     """Extract state name from gazette text."""
     match = STATE_PATTERN.search(text)
     if match:

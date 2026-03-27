@@ -2,8 +2,8 @@
 Lineage Schemas: Graph edges representing administrative changes.
 """
 from enum import Enum
-from typing import List, Dict, Optional
-from pydantic import BaseModel, Field, ConfigDict
+
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class EventType(str, Enum):
@@ -21,12 +21,12 @@ class LineageEvent(BaseModel):
     """
     id: str = Field(..., description="Unique event identifier")
     parent_cdk: str = Field(..., description="Source district CDK")
-    parent_name: Optional[str] = Field(
+    parent_name: str | None = Field(
         None, description="Human-readable parent name")
-    children_cdks: List[str] = Field(
+    children_cdks: list[str] = Field(
         default_factory=list,
         description="Resulting district CDKs")
-    children_names: List[str] = Field(
+    children_names: list[str] = Field(
         default_factory=list,
         description="Human-readable child names")
     children_count: int = Field(default=0, description="Number of children")
@@ -34,11 +34,11 @@ class LineageEvent(BaseModel):
     event_type: EventType = Field(
         default=EventType.SPLIT,
         description="Type of change")
-    coverage_ratios: Dict[str, float] = Field(
+    coverage_ratios: dict[str, float] = Field(
         default_factory=dict,
         description="Area proportion per child (should sum to ~1.0)"
     )
-    legal_reference: Optional[str] = Field(
+    legal_reference: str | None = Field(
         None, description="Gazette notification reference")
     confidence: float = Field(
         default=1.0,
@@ -53,7 +53,7 @@ class LineageGraph(BaseModel):
     """Complete lineage graph for a state or region."""
     total_events: int = Field(...,
                               description="Total number of lineage events")
-    events: List[LineageEvent] = Field(default_factory=list)
+    events: list[LineageEvent] = Field(default_factory=list)
 
 
 class SplitEventSummary(BaseModel):
@@ -62,7 +62,7 @@ class SplitEventSummary(BaseModel):
     parent_cdk: str
     parent_name: str
     split_year: int
-    children_cdks: List[str]
-    children_names: List[str]
+    children_cdks: list[str]
+    children_names: list[str]
     children_count: int
     coverage: str = Field(default="High", description="Data coverage quality")

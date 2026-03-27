@@ -2,19 +2,17 @@
 District Repository: Data access for district entities.
 Uses lgd_code (int) as primary key, cast to text for API compatibility.
 """
-from typing import List, Optional, Dict
 
-
+from app.cache import CacheTTL, cached
 from app.repositories.base import BaseRepository
 from app.schemas.district import District
-from app.cache import cached, CacheTTL
 
 
 class DistrictRepository(BaseRepository):
     """Repository for district data access."""
 
     @cached(ttl=CacheTTL.DISTRICTS, prefix="districts:all")
-    async def get_all(self, state: Optional[str] = None) -> List[District]:
+    async def get_all(self, state: str | None = None) -> list[District]:
         """Get all districts, optionally filtered by state."""
         if state:
             query = """
@@ -38,7 +36,7 @@ class DistrictRepository(BaseRepository):
                 name=r["name"],
                 state=r["state"]) for r in rows]
 
-    async def get_by_cdk(self, cdk: str) -> Optional[District]:
+    async def get_by_cdk(self, cdk: str) -> District | None:
         """Get single district by LGD code (passed as text string)."""
         query = """
             SELECT lgd_code::text as cdk, district_name as name, state_name as state
@@ -53,7 +51,7 @@ class DistrictRepository(BaseRepository):
                 state=row["state"])
         return None
 
-    async def search(self, query_text: str, state: Optional[str] = None) -> List[District]:
+    async def search(self, query_text: str, state: str | None = None) -> list[District]:
         """Search districts by name."""
         if state:
             query = """
@@ -80,7 +78,7 @@ class DistrictRepository(BaseRepository):
                 name=r["name"],
                 state=r["state"]) for r in rows]
 
-    async def get_cdk_to_meta_map(self) -> Dict[str, Dict[str, str]]:
+    async def get_cdk_to_meta_map(self) -> dict[str, dict[str, str]]:
         """Get mapping of lgd_code (as text) to {name, state} for all districts."""
         query = "SELECT lgd_code::text as cdk, district_name, state_name FROM districts"
         rows = await self.fetch_all(query)
@@ -90,13 +88,13 @@ class DistrictRepository(BaseRepository):
                 "state": r["state_name"]} for r in rows}
 
     @cached(ttl=CacheTTL.STATES, prefix="states:all")
-    async def get_states(self) -> List[str]:
+    async def get_states(self) -> list[str]:
         """Get list of all unique states."""
         query = "SELECT DISTINCT state_name FROM districts ORDER BY state_name"
         rows = await self.fetch_all(query)
         return [r["state_name"] for r in rows if r["state_name"]]
 
-    async def count_by_state(self) -> Dict[str, int]:
+    async def count_by_state(self) -> dict[str, int]:
         """Get district count per state."""
         query = """
             SELECT state_name, COUNT(*) as count

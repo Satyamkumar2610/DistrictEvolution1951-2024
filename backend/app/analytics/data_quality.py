@@ -3,9 +3,9 @@ Data Quality Scoring Module.
 Provides automated data quality assessment for districts.
 """
 
-from dataclasses import dataclass, asdict
-from typing import Dict, Any, List
+from dataclasses import asdict, dataclass
 from enum import Enum
+from typing import Any
 
 import asyncpg
 
@@ -28,10 +28,10 @@ class DataQualityReport:
     accuracy_score: float      # Outlier/anomaly detection
     overall_score: float
     quality_level: QualityLevel
-    issues: List[str]
-    recommendations: List[str]
+    issues: list[str]
+    recommendations: list[str]
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         result = asdict(self)
         result["quality_level"] = self.quality_level.value
         return result
@@ -145,7 +145,7 @@ class DataQualityScorer:
             return 1.0  # Not enough data to check
 
         # Group by year
-        by_year: Dict[int, Dict[str, float]] = {}
+        by_year: dict[int, dict[str, float]] = {}
         for row in result:
             year = row['year']
             if year not in by_year:
@@ -223,7 +223,7 @@ class DataQualityScorer:
 async def get_state_quality_summary(
     db: asyncpg.Connection,
     state: str
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Get aggregated quality metrics for a state."""
     # Get all CDKs in state
     cdks = await db.fetch("""
@@ -255,9 +255,9 @@ async def get_state_quality_summary(
     }
 
 
-def _aggregate_issues(reports: List[DataQualityReport]) -> List[str]:
+def _aggregate_issues(reports: list[DataQualityReport]) -> list[str]:
     """Aggregate common issues across reports."""
-    issue_counts: Dict[str, int] = {}
+    issue_counts: dict[str, int] = {}
     for r in reports:
         for issue in r.issues:
             # Normalize issue text

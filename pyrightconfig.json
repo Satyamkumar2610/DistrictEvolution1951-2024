@@ -1,6 +1,8 @@
 {
   "venvPath": "backend",
   "venv": "venv",
+  "pythonVersion": "3.13",
+  "typeCheckingMode": "basic",
   "extraPaths": [
     "backend"
   ],

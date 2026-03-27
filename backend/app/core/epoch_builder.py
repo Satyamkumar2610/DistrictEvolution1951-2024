@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, List, Dict, Tuple, Optional, Set
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from app.core.lineage_graph import LineageGraph  # type: ignore[import-not-found]
@@ -10,10 +10,10 @@ if TYPE_CHECKING:
 class Epoch:
     epoch_num: int
     year_start: int
-    year_end: Optional[int]
+    year_end: int | None
     event_label: str
-    active_cdks: List[str]
-    leaf_cdks: List[str]
+    active_cdks: list[str]
+    leaf_cdks: list[str]
     is_virtual: bool
 
 
@@ -21,7 +21,7 @@ def build_epochs_from_graph(
     root_cdk: str,
     graph: LineageGraph,
     min_year: int = 1950,
-) -> List[Epoch]:
+) -> list[Epoch]:
     """
     Build epochs from a LineageGraph instance.
 
@@ -35,29 +35,29 @@ def build_epochs_from_graph(
 
 def build_epochs(
     root_cdk: str,
-    split_graph: Dict[str, List[Tuple[List[str], int]]],
+    split_graph: dict[str, list[tuple[list[str], int]]],
     min_year: int = 1950
-) -> List[Epoch]:
+) -> list[Epoch]:
     """
     Reverse-engineers a chronological list of epochs for a district's lineage.
     
     split_graph: { parent_cdk: [ ( [child1, child2], split_year ), ... ] }
     """
-    
+
     # 1. Discover all splits in the subtree via BFS to gather split years
     # and to recursively find all leaf CDKs.
     queue = [root_cdk]
-    all_splits: List[Tuple[str, List[str], int]] = []
-    
-    leaf_cdks: Set[str] = set()
-    visited: Set[str] = set()
-    
+    all_splits: list[tuple[str, list[str], int]] = []
+
+    leaf_cdks: set[str] = set()
+    visited: set[str] = set()
+
     while queue:
         curr = queue.pop(0)
         if curr in visited:
             continue
         visited.add(curr)
-        
+
         splits = split_graph.get(curr, [])
         if not splits:
             leaf_cdks.add(curr)
@@ -65,22 +65,22 @@ def build_epochs(
             for children, s_year in splits:
                 all_splits.append((curr, children, s_year))
                 queue.extend(children)
-                
+
     leaf_cdks_list = sorted(list(leaf_cdks))
-    
+
     # Process chronologically
     all_splits.sort(key=lambda x: x[2])  # sort by split_year
-    
+
     # Identify unique split years
     split_years = sorted(list(set(s[2] for s in all_splits)))
-    
-    epochs: List[Epoch] = []
+
+    epochs: list[Epoch] = []
     epoch_num = 1
-    
-    active_cdks: Set[str] = {root_cdk}
+
+    active_cdks: set[str] = {root_cdk}
     current_year = min_year
-    
-    # Determine if root is virtual. Virtual if it splits BEFORE we even start counting 
+
+    # Determine if root is virtual. Virtual if it splits BEFORE we even start counting
     is_virtual = False
     if split_years and split_years[0] <= min_year:
         is_virtual = True
@@ -112,25 +112,25 @@ def build_epochs(
                 is_virtual=is_virtual
             ))
             epoch_num += 1
-        
+
         # Now apply ALL splits that happened in s_year
         splits_this_year = [s for s in all_splits if s[2] == s_year]
         for parent, children, _ in splits_this_year:
             if parent in active_cdks:
                 active_cdks.remove(parent)
                 active_cdks.update(children)
-        
+
         current_year = max(current_year, s_year)
 
     # Final epoch (from the last split year to present)
     splits_last_year = [s for s in all_splits if s[2] == split_years[-1]]
     event_labels = []
-    
+
     for parent, children, _ in splits_last_year:
         event_labels.append(_format_event_label(parent, children))
-            
+
     final_label = " | ".join(event_labels) if event_labels else "Final state"
-    
+
     epochs.append(Epoch(
         epoch_num=epoch_num,
         year_start=current_year,
@@ -155,7 +155,7 @@ def build_epochs(
     return epochs
 
 
-def _format_event_label(parent: str, children: List[str]) -> str:
+def _format_event_label(parent: str, children: list[str]) -> str:
     """Format an event label, detecting renames (1:1 transitions)."""
     if len(children) == 1 and children[0] != parent:
         return f"{parent} → {children[0]} (renamed)"

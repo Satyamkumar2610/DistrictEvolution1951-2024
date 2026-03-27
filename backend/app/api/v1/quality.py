@@ -3,12 +3,12 @@ Data Quality API Endpoints.
 Provides quality scoring for districts and states.
 """
 
-from fastapi import APIRouter, Depends
 import asyncpg
+from fastapi import APIRouter, Depends
 
+from app.analytics.data_quality import DataQualityScorer, get_state_quality_summary
 from app.database import get_db
 from app.exceptions import NotFoundError
-from app.analytics.data_quality import DataQualityScorer, get_state_quality_summary
 
 router = APIRouter(prefix="/quality", tags=["Data Quality"])
 

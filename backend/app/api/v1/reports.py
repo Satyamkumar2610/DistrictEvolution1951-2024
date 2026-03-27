@@ -1,12 +1,12 @@
 """
 Reports API: Generate downloadable reports combining multiple analytics.
 """
-from fastapi import APIRouter, Depends, Query
 import asyncpg
+from fastapi import APIRouter, Depends, Query
 
 from app.database import get_db
-from app.export import get_exporter
 from app.exceptions import NotFoundError
+from app.export import get_exporter
 
 router = APIRouter(prefix="/reports", tags=["Reports"])
 

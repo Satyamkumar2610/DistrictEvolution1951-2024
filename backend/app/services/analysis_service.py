@@ -2,36 +2,36 @@
 Analysis Service: Orchestrates split impact analysis.
 Coordinates between repositories and analytics engine.
 """
-from typing import List, Dict, Any
-from datetime import datetime, timezone
+from datetime import UTC, datetime
+from typing import Any
 
 import asyncpg
 
-from app.repositories.district_repo import DistrictRepository
-from app.repositories.metric_repo import MetricRepository
-from app.repositories.lineage_repo import LineageRepository
 from app.analytics.harmonizer import BoundaryHarmonizer
 from app.analytics.impact_analyzer import ImpactAnalyzer
-from app.analytics.uncertainty import calculate_impact_uncertainty
 from app.analytics.split_impact_insights import get_insights_analyzer
-from app.schemas.common import ProvenanceMetadata
+from app.analytics.uncertainty import calculate_impact_uncertainty
+from app.cache import CacheTTL, cached
+from app.config import get_settings
+from app.repositories.district_repo import DistrictRepository
+from app.repositories.lineage_repo import LineageRepository
+from app.repositories.metric_repo import MetricRepository
 from app.schemas.analysis import (
-    SplitImpactResponse,
     AdvancedStats,
-    SeriesMeta,
     AnalysisMeta,
     AnalysisMode,
-    SplitInsightsInfo,
-    FragmentationInfo,
-    DivergenceInfo,
-    ConvergenceInfo,
-    EffectSizeInfo,
-    CounterfactualInfo,
     ChildPerformanceInfo,
+    ConvergenceInfo,
+    CounterfactualInfo,
+    DivergenceInfo,
+    EffectSizeInfo,
+    FragmentationInfo,
+    SeriesMeta,
+    SplitImpactResponse,
+    SplitInsightsInfo,
 )
+from app.schemas.common import ProvenanceMetadata
 from app.schemas.lineage import SplitEventSummary
-from app.config import get_settings
-from app.cache import cached, CacheTTL
 
 settings = get_settings()
 
@@ -52,7 +52,7 @@ class AnalysisService:
         self.insights_analyzer = get_insights_analyzer()
 
     @cached(ttl=CacheTTL.SUMMARY, prefix="state_summary")
-    async def get_state_summary(self) -> Dict[str, Any]:
+    async def get_state_summary(self) -> dict[str, Any]:
         """Get summary statistics for all states."""
         states = await self.district_repo.get_states()
         counts = await self.district_repo.count_by_state()
@@ -63,7 +63,7 @@ class AnalysisService:
 
         # Count boundary changes per state from lineage
         events = await self.lineage_repo.get_all_events()
-        state_changes: Dict[str, set] = {}
+        state_changes: dict[str, set] = {}
 
         for e in events:
             state = cdk_to_state.get(e.parent_cdk)
@@ -85,7 +85,7 @@ class AnalysisService:
         return {"states": states, "stats": stats}
 
     @cached(ttl=CacheTTL.SPLIT_EVENTS, prefix="split_events")
-    async def get_split_events_for_state(self, state: str) -> List[SplitEventSummary]:
+    async def get_split_events_for_state(self, state: str) -> list[SplitEventSummary]:
         """Get all split events for a state."""
         cdk_meta = await self.district_repo.get_cdk_to_meta_map()
         cdk_to_state = {cdk: meta["state"] for cdk, meta in cdk_meta.items()}
@@ -125,7 +125,7 @@ class AnalysisService:
     async def analyze_split_impact(
         self,
         parent_cdk: str,
-        children_cdks: List[str],
+        children_cdks: list[str],
         split_year: int,
         domain: str,
         variable: str,
@@ -445,7 +445,7 @@ class AnalysisService:
             boundary_version=settings.boundary_version,
             query_hash=query_hash,
             generated_at=datetime.now(
-                timezone.utc),
+                UTC),
             harmonization_method="area_weighted" if mode == "before_after" else None,
             warnings=warnings,
         )

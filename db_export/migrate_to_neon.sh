@@ -1,8 +1,8 @@
 #!/bin/bash
 # Migration script to import data into Neon DB
-# Usage: ./migrate_to_neon.sh
+# Usage: DATABASE_URL="postgresql://..." ./migrate_to_neon.sh
 
-NEON_URL="postgresql://neondb_owner:npg_7AtbCMWo3ksv@ep-purple-butterfly-a18tkuor-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require"
+NEON_URL="${DATABASE_URL:?ERROR: DATABASE_URL environment variable is not set}"
 
 EXPORT_DIR="$(dirname "$0")"
 

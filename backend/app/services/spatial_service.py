@@ -1,12 +1,13 @@
+from typing import Any
+
 import asyncpg
-from typing import List, Dict, Any
 
 
 class SpatialService:
     def __init__(self, db: asyncpg.Connection):
         self.db = db
 
-    async def get_neighbors(self, cdk: str) -> List[Dict[str, Any]]:
+    async def get_neighbors(self, cdk: str) -> list[dict[str, Any]]:
         """
         Find all immediately adjacent neighboring districts using PostGIS ST_Touches.
         """
@@ -66,7 +67,7 @@ class SpatialService:
         crop: str,
         start_year: int,
         end_year: int
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Calculates the spillover effect by comparing a district's growth
         to the average growth of its geographic neighbors.

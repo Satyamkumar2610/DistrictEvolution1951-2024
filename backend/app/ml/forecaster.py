@@ -3,11 +3,11 @@ Yield Forecasting Module.
 Provides SARIMA-based time-series yield predictions with linear fallback.
 """
 
-from dataclasses import dataclass, asdict
-from typing import List, Dict, Any, Optional
-import math
 import logging
+import math
 import warnings
+from dataclasses import asdict, dataclass
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -30,10 +30,10 @@ class ForecastResult:
     historical_years: int
     method: str
     trend_direction: str
-    forecasts: List[ForecastPoint]
-    model_stats: Dict[str, float]
+    forecasts: list[ForecastPoint]
+    model_stats: dict[str, float]
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         result = asdict(self)
         result["forecasts"] = [asdict(f) for f in self.forecasts]
         return result
@@ -72,10 +72,10 @@ class YieldForecaster:
         self,
         cdk: str,
         crop: str,
-        historical_yields: Dict[int, float],
+        historical_yields: dict[int, float],
         horizon_years: int = 3,
         confidence_level: float = 0.95
-    ) -> Optional[ForecastResult]:
+    ) -> ForecastResult | None:
         """
         Generate yield forecasts based on historical data.
 
@@ -115,15 +115,15 @@ class YieldForecaster:
         self,
         cdk: str,
         crop: str,
-        years: List[int],
-        yields: List[float],
+        years: list[int],
+        yields: list[float],
         horizon_years: int,
         confidence_level: float,
-    ) -> Optional[ForecastResult]:
+    ) -> ForecastResult | None:
         """Fit SARIMA(1,1,1) and generate forecasts."""
         try:
-            from statsmodels.tsa.statespace.sarimax import SARIMAX
             import numpy as np
+            from statsmodels.tsa.statespace.sarimax import SARIMAX
 
             endog = np.array(yields, dtype=float)
             n = len(endog)
@@ -214,11 +214,11 @@ class YieldForecaster:
         self,
         cdk: str,
         crop: str,
-        years: List[int],
-        yields: List[float],
+        years: list[int],
+        yields: list[float],
         horizon_years: int,
         confidence_level: float,
-    ) -> Optional[ForecastResult]:
+    ) -> ForecastResult | None:
         """Linear trend extrapolation (original method)."""
         n = len(years)
         x_mean = sum(years) / n
@@ -329,10 +329,10 @@ class CropRecommender:
 
     def recommend(
         self,
-        crop_performances: Dict[str, Dict[str, float]],
-        state_benchmarks: Dict[str, float],
+        crop_performances: dict[str, dict[str, float]],
+        state_benchmarks: dict[str, float],
         top_n: int = 5
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """
         Recommend crops based on efficiency and growth potential.
 

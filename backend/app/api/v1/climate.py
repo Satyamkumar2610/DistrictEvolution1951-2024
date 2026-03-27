@@ -3,21 +3,20 @@ Climate API endpoints: Rainfall data and correlation analysis.
 Data served from database (populated via ETL from IMD API).
 """
 
-from typing import Optional
 
-from fastapi import APIRouter, Depends, Query
 import asyncpg
+from fastapi import APIRouter, Depends, Query
 
+from app.analytics import get_analyzer
 from app.api.deps import get_db
+from app.exceptions import NotFoundError
 from app.services.rainfall_service import (
-    get_rainfall_by_district,
     get_all_rainfall,
-    get_state_rainfall_stats,
+    get_rainfall_by_district,
     get_rainfall_count,
+    get_state_rainfall_stats,
     get_water_stress_index,
 )
-from app.analytics import get_analyzer
-from app.exceptions import NotFoundError
 
 router = APIRouter()
 
@@ -79,7 +78,7 @@ async def get_rainfall(
 
 @router.get("/rainfall/all")
 async def get_all_rainfall_data(
-    state: Optional[str] = Query(None, description="Filter by state", max_length=50),
+    state: str | None = Query(None, description="Filter by state", max_length=50),
     db: asyncpg.Connection = Depends(get_db),
 ):
     """

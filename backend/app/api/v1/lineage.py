@@ -3,10 +3,10 @@ Lineage API: Endpoints for lineage graph and split events.
 Updated to use lgd_code/district_lgd schema where applicable.
 Note: lineage_events uses CDK text keys that cannot join to districts.lgd_code.
 """
-from typing import Optional, List, Dict, Any
+from typing import Any
 
-from fastapi import APIRouter, Depends, Query
 import asyncpg
+from fastapi import APIRouter, Depends, Query
 
 from app.api.deps import get_db
 from app.repositories.district_repo import DistrictRepository
@@ -18,7 +18,7 @@ router = APIRouter()
 
 @router.get("/history")
 async def get_district_history(
-    state: Optional[str] = Query(None, description="Filter by state name"),
+    state: str | None = Query(None, description="Filter by state name"),
     db: asyncpg.Connection = Depends(get_db),
 ):
     """
@@ -36,7 +36,7 @@ async def get_district_history(
 
 @router.get("/events")
 async def get_lineage_events(
-    state: Optional[str] = Query(None, description="Filter by state"),
+    state: str | None = Query(None, description="Filter by state"),
     db: asyncpg.Connection = Depends(get_db),
 ):
     """
@@ -57,7 +57,7 @@ async def get_lineage_events(
     return LineageGraph(total_events=len(events), events=events)
 
 
-@router.get("/splits", response_model=List[SplitEventSummary])
+@router.get("/splits", response_model=list[SplitEventSummary])
 async def get_split_events(
     state: str = Query(..., description="State name (required)"),
     db: asyncpg.Connection = Depends(get_db),
@@ -77,7 +77,7 @@ async def get_split_events(
 async def get_data_tracking(
     cdk: str = Query(..., description="District LGD code (as text)"),
     db: asyncpg.Connection = Depends(get_db),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Get data lineage tracking for a district.
 
@@ -133,7 +133,7 @@ async def get_data_tracking(
 async def get_state_coverage(
     state: str = Query(..., description="State name"),
     db: asyncpg.Connection = Depends(get_db),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Get data coverage summary for all districts in a state.
 
@@ -169,7 +169,12 @@ async def get_unmapped_splits(
     """
     Get all districts involved in splits that cannot be mapped to an LGD code.
     """
-    from app.core.name_matching import resolve_district_name, STATE_ALIASES, TELANGANA_DISTRICTS, check_historical_resolution
+    from app.core.name_matching import (
+        STATE_ALIASES,
+        TELANGANA_DISTRICTS,
+        check_historical_resolution,
+        resolve_district_name,
+    )
 
     districts = await db.fetch("SELECT lgd_code, district_name, state_name FROM districts")
     lgd_lookup = {}

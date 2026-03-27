@@ -7,7 +7,6 @@ ST_SymDifference). Hausdorff is used ONLY inside the confidence score formula.
 
 import logging
 from dataclasses import dataclass, field
-from typing import Optional
 
 import asyncpg
 
@@ -41,7 +40,7 @@ class SplitDiffResult:
     transfers: list[TransferResult] = field(default_factory=list)
     warnings: list[str] = field(default_factory=list)
     # GeoJSON FeatureCollection of all results
-    geojson_fc: Optional[dict] = None
+    geojson_fc: dict | None = None
 
 
 class SplitEngine:

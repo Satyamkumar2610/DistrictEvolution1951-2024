@@ -3,11 +3,11 @@ Health Check API Endpoints.
 Provides liveness, readiness, and data quality metrics.
 """
 
-from datetime import datetime, timezone
-from typing import Dict, Any
+from datetime import UTC, datetime
+from typing import Any
 
-from fastapi import APIRouter, Depends
 import asyncpg
+from fastapi import APIRouter, Depends
 
 from app.database import get_db
 from app.metrics import metrics
@@ -16,20 +16,20 @@ router = APIRouter(prefix="/health", tags=["health"])
 
 
 @router.get("/live")
-async def liveness() -> Dict[str, Any]:
+async def liveness() -> dict[str, Any]:
     """
     Basic liveness check.
     Returns 200 if the service is running.
     """
     return {
         "status": "healthy",
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
         "service": "i-ascap-backend"
     }
 
 
 @router.get("/ready")
-async def readiness(db: asyncpg.Connection = Depends(get_db)) -> Dict[str, Any]:
+async def readiness(db: asyncpg.Connection = Depends(get_db)) -> dict[str, Any]:
     """
     Readiness check - verifies database connectivity.
     Returns 200 if all dependencies are ready.
@@ -45,7 +45,7 @@ async def readiness(db: asyncpg.Connection = Depends(get_db)) -> Dict[str, Any]:
 
     return {
         "status": "ready" if is_ready else "not_ready",
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
         "checks": {
             "database": db_status
         }
@@ -53,7 +53,7 @@ async def readiness(db: asyncpg.Connection = Depends(get_db)) -> Dict[str, Any]:
 
 
 @router.get("/metrics")
-async def data_metrics(db: asyncpg.Connection = Depends(get_db)) -> Dict[str, Any]:
+async def data_metrics(db: asyncpg.Connection = Depends(get_db)) -> dict[str, Any]:
     """
     Data quality and coverage metrics.
     Returns statistics about loaded data.
@@ -87,7 +87,7 @@ async def data_metrics(db: asyncpg.Connection = Depends(get_db)) -> Dict[str, An
 
     return {
         "status": "healthy",
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
         "data_coverage": {
             "districts": districts_count,
             "states": state_count,
@@ -108,13 +108,13 @@ async def data_metrics(db: asyncpg.Connection = Depends(get_db)) -> Dict[str, An
 
 
 @router.get("/app-metrics")
-async def app_metrics() -> Dict[str, Any]:
+async def app_metrics() -> dict[str, Any]:
     """
     Application performance metrics.
 
     Returns latency percentiles, cache stats, database stats, and more.
     """
     return {
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
         **metrics.get_all_metrics()
     }

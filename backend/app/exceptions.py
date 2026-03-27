@@ -2,7 +2,8 @@
 Custom exception classes and error handling utilities for I-ASCAP API.
 """
 
-from typing import Any, Optional, Dict
+from typing import Any
+
 from fastapi import HTTPException
 
 
@@ -14,7 +15,7 @@ class APIError(HTTPException):
         status_code: int = 500,
         detail: str = "An unexpected error occurred",
         error_code: str = "INTERNAL_ERROR",
-        context: Optional[Dict[str, Any]] = None
+        context: dict[str, Any] | None = None
     ):
         super().__init__(status_code=status_code, detail=detail)
         self.error_code = error_code
@@ -27,8 +28,8 @@ class ValidationError(APIError):
     def __init__(
         self,
         detail: str = "Validation failed",
-        field: Optional[str] = None,
-        value: Optional[Any] = None
+        field: str | None = None,
+        value: Any | None = None
     ):
         context = {}
         if field:
@@ -50,7 +51,7 @@ class NotFoundError(APIError):
     def __init__(
         self,
         resource_type: str = "Resource",
-        resource_id: Optional[str] = None
+        resource_id: str | None = None
     ):
         detail = f"{resource_type} not found"
         if resource_id:
@@ -70,7 +71,7 @@ class DatabaseError(APIError):
     def __init__(
         self,
         detail: str = "Database operation failed",
-        operation: Optional[str] = None
+        operation: str | None = None
     ):
         super().__init__(
             status_code=500,
@@ -114,10 +115,10 @@ class DataQualityError(APIError):
 # Error response schema for consistent API responses
 def create_error_response(
     error: APIError,
-    request_id: Optional[str] = None
-) -> Dict[str, Any]:
+    request_id: str | None = None
+) -> dict[str, Any]:
     """Create a standardized error response."""
-    response: Dict[str, Any] = {
+    response: dict[str, Any] = {
         "success": False,
         "error": {
             "code": error.error_code,

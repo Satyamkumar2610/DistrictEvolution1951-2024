@@ -3,7 +3,7 @@ Common Schemas: Provenance, Uncertainty, and shared types.
 These are included in every analytical response for reproducibility.
 """
 from datetime import datetime
-from typing import List, Optional
+
 from pydantic import BaseModel, Field
 
 
@@ -30,9 +30,9 @@ class ProvenanceMetadata(BaseModel):
                             description="SHA-256 hash of normalized query params")
     generated_at: datetime = Field(...,
                                    description="UTC timestamp of response generation")
-    harmonization_method: Optional[str] = Field(
+    harmonization_method: str | None = Field(
         None, description="Method used for boundary harmonization")
-    warnings: List[str] = Field(
+    warnings: list[str] = Field(
         default_factory=list,
         description="Any data quality warnings")
 
@@ -53,5 +53,5 @@ class ImpactStats(BaseModel):
     absolute_change: float = Field(...,
                                    description="Absolute difference in means")
     pct_change: float = Field(..., description="Percentage change")
-    uncertainty: Optional[UncertaintyBounds] = Field(
+    uncertainty: UncertaintyBounds | None = Field(
         None, description="Confidence interval for impact")

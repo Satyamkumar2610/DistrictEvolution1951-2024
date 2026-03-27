@@ -1,12 +1,11 @@
 """
 Impact Analyzer: Compare pre/post split periods with statistical rigor.
 """
-from typing import List, Optional
 from dataclasses import dataclass
 
-from app.analytics.statistics import get_analyzer
 from app.analytics.harmonizer import HarmonizedPoint
-from app.schemas.common import PeriodStats, ImpactStats, UncertaintyBounds
+from app.analytics.statistics import get_analyzer
+from app.schemas.common import ImpactStats, PeriodStats, UncertaintyBounds
 
 
 @dataclass
@@ -16,7 +15,7 @@ class ImpactResult:
     post_stats: PeriodStats
     impact: ImpactStats
     split_year: int
-    warnings: List[str]
+    warnings: list[str]
 
 
 class ImpactAnalyzer:
@@ -40,9 +39,9 @@ class ImpactAnalyzer:
 
     def analyze(
         self,
-        timeline: List[HarmonizedPoint],
+        timeline: list[HarmonizedPoint],
         split_year: int,
-        uncertainty: Optional[UncertaintyBounds] = None,
+        uncertainty: UncertaintyBounds | None = None,
     ) -> ImpactResult:
         """
         Perform impact analysis on a harmonized timeline.
@@ -89,7 +88,7 @@ class ImpactAnalyzer:
             warnings=warnings,
         )
 
-    def _calculate_period_stats(self, values: List[float]) -> PeriodStats:
+    def _calculate_period_stats(self, values: list[float]) -> PeriodStats:
         """Calculate statistics for a single period."""
         if not values:
             return PeriodStats(
@@ -117,7 +116,7 @@ class ImpactAnalyzer:
         self,
         pre: PeriodStats,
         post: PeriodStats,
-        uncertainty: Optional[UncertaintyBounds] = None,
+        uncertainty: UncertaintyBounds | None = None,
     ) -> ImpactStats:
         """Calculate comparative impact between periods."""
         absolute_change = post.mean - pre.mean
@@ -135,8 +134,8 @@ class ImpactAnalyzer:
 
     def analyze_from_values(
         self,
-        pre_values: List[float],
-        post_values: List[float],
+        pre_values: list[float],
+        post_values: list[float],
         split_year: int,
     ) -> ImpactResult:
         """

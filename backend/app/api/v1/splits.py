@@ -14,28 +14,27 @@ Routes:
 """
 
 import logging
-from typing import Optional
 
 import asyncpg  # type: ignore
-from fastapi import APIRouter, BackgroundTasks, Depends, Query, HTTPException  # type: ignore
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query  # type: ignore
 from pydantic import BaseModel, Field  # type: ignore
 
 from app.api.deps import get_db  # type: ignore
-from app.services.split_engine import SplitEngine  # type: ignore
 from app.core.geometry_resolver import GeometryResolver  # type: ignore
-from app.services.enrichment_engine import enrich_split_event  # type: ignore
-from app.services.gazette_parser import parse_gazette_text  # type: ignore
-from app.services.lineage_loader import load_lineage_csv, load_changes_csv  # type: ignore
-from app.services.drift_detector import DriftDetector  # type: ignore
 from app.schemas.split_schemas import (  # type: ignore
+    GeoJsonUploadRequest,
+    LineageNode,
+    LineageResponse,
     SplitDiffRequest,
     SplitDiffResponse,
     TransferDetail,
-    GeoJsonUploadRequest,
     UploadResponse,
-    LineageResponse,
-    LineageNode,
 )
+from app.services.drift_detector import DriftDetector  # type: ignore
+from app.services.enrichment_engine import enrich_split_event  # type: ignore
+from app.services.gazette_parser import parse_gazette_text  # type: ignore
+from app.services.lineage_loader import load_changes_csv, load_lineage_csv  # type: ignore
+from app.services.split_engine import SplitEngine  # type: ignore
 
 logger = logging.getLogger("app.api.splits")
 
@@ -502,8 +501,8 @@ async def batch_import_lineage(
 )
 async def get_drift(
     district_cdk: str,
-    year_a: Optional[int] = Query(None, description="Earlier snapshot year"),
-    year_b: Optional[int] = Query(None, description="Later snapshot year"),
+    year_a: int | None = Query(None, description="Earlier snapshot year"),
+    year_b: int | None = Query(None, description="Later snapshot year"),
     timeline: bool = Query(False, description="Return full timeline"),
     db: asyncpg.Connection = Depends(get_db),
 ):

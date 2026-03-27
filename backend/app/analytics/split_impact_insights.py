@@ -9,9 +9,8 @@ Provides advanced analytics for split impact analysis:
 - Counterfactual Projection
 """
 
-from typing import List, Dict, Optional
-from dataclasses import dataclass
 import math
+from dataclasses import dataclass
 
 from app.analytics.statistics import get_analyzer
 
@@ -29,9 +28,9 @@ class DivergenceResult:
     """Result of child divergence analysis."""
     score: float  # CV across children
     interpretation: str
-    best_performer: Optional[str]
+    best_performer: str | None
     best_yield: float
-    worst_performer: Optional[str]
+    worst_performer: str | None
     worst_yield: float
     spread: float  # max - min
 
@@ -66,7 +65,7 @@ class CounterfactualResult:
 class ChildPerformance:
     """Performance metrics for a single child district."""
     cdk: str
-    name: Optional[str]
+    name: str | None
     mean_yield: float
     cv: float
     cagr: float
@@ -82,8 +81,8 @@ class SplitInsights:
     convergence: ConvergenceResult
     effect_size: EffectSizeResult
     counterfactual: CounterfactualResult
-    children_performance: List[ChildPerformance]
-    warnings: List[str]
+    children_performance: list[ChildPerformance]
+    warnings: list[str]
 
 
 class SplitImpactInsightsAnalyzer:
@@ -137,8 +136,8 @@ class SplitImpactInsightsAnalyzer:
 
     def calculate_divergence(
         self,
-        children_yields: Dict[str, float],
-        children_names: Optional[Dict[str, str]] = None
+        children_yields: dict[str, float],
+        children_names: dict[str, str] | None = None
     ) -> DivergenceResult:
         """
         Calculate divergence score across children.
@@ -194,7 +193,7 @@ class SplitImpactInsightsAnalyzer:
 
     def calculate_convergence_trend(
         self,
-        yearly_children_data: Dict[int, Dict[str, float]],
+        yearly_children_data: dict[int, dict[str, float]],
         split_year: int
     ) -> ConvergenceResult:
         """
@@ -253,8 +252,8 @@ class SplitImpactInsightsAnalyzer:
 
     def calculate_effect_size(
         self,
-        pre_values: List[float],
-        post_values: List[float]
+        pre_values: list[float],
+        post_values: list[float]
     ) -> EffectSizeResult:
         """
         Calculate Cohen's d effect size.
@@ -316,8 +315,8 @@ class SplitImpactInsightsAnalyzer:
 
     def calculate_counterfactual(
         self,
-        pre_values: List[float],
-        pre_years: List[int],
+        pre_values: list[float],
+        pre_years: list[int],
         post_mean: float,
         projection_year: int
     ) -> CounterfactualResult:
@@ -390,11 +389,11 @@ class SplitImpactInsightsAnalyzer:
 
     def analyze_child_performance(
         self,
-        yearly_data: Dict[int, Dict[str, Dict[str, float]]],
-        child_cdks: List[str],
-        child_names: Optional[Dict[str, str]] = None,
+        yearly_data: dict[int, dict[str, dict[str, float]]],
+        child_cdks: list[str],
+        child_names: dict[str, str] | None = None,
         split_year: int = 0
-    ) -> List[ChildPerformance]:
+    ) -> list[ChildPerformance]:
         """
         Analyze individual child district performance post-split.
         """
@@ -443,15 +442,15 @@ class SplitImpactInsightsAnalyzer:
 
     def compute_full_insights(
         self,
-        pre_values: List[float],
-        pre_years: List[int],
-        post_values: List[float],
+        pre_values: list[float],
+        pre_years: list[int],
+        post_values: list[float],
         split_year: int,
-        child_cdks: List[str],
-        yearly_children_data: Dict[int, Dict[str, float]],
-        children_mean_yields: Dict[str, float],
-        child_names: Optional[Dict[str, str]] = None,
-        yearly_data: Optional[Dict[int, Dict[str, Dict[str, float]]]] = None
+        child_cdks: list[str],
+        yearly_children_data: dict[int, dict[str, float]],
+        children_mean_yields: dict[str, float],
+        child_names: dict[str, str] | None = None,
+        yearly_data: dict[int, dict[str, dict[str, float]]] | None = None
     ) -> SplitInsights:
         """
         Compute complete split impact insights.

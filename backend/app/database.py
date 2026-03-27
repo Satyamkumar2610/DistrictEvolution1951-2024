@@ -1,18 +1,19 @@
 """
 Async Database Connection Pool using asyncpg.
 """
-import asyncpg
-import ssl
 import os
+import ssl
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
-from typing import AsyncGenerator, Optional
+
+import asyncpg
 
 from app.config import get_settings
 
 settings = get_settings()
 
 # Global pool reference
-_pool: Optional[asyncpg.Pool] = None
+_pool: asyncpg.Pool | None = None
 
 
 async def init_db_pool() -> asyncpg.Pool:

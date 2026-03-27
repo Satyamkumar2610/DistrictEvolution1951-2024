@@ -2,10 +2,11 @@
 Analysis Schemas: Split impact and advanced analytics responses.
 """
 from enum import Enum
-from typing import List, Dict, Optional, Any
+from typing import Any, Optional
+
 from pydantic import BaseModel, Field
 
-from app.schemas.common import ProvenanceMetadata, PeriodStats, ImpactStats
+from app.schemas.common import ImpactStats, PeriodStats, ProvenanceMetadata
 
 
 class AnalysisMode(str, Enum):
@@ -26,9 +27,9 @@ class SeriesMeta(BaseModel):
 class TimelinePoint(BaseModel):
     """Single point in a timeline series."""
     year: int
-    value: Optional[float] = None
+    value: float | None = None
     # Additional series values stored as dict for multi-series
-    series_values: Optional[Dict[str, float]] = None
+    series_values: dict[str, float] | None = None
 
 
 class AdvancedStats(BaseModel):
@@ -56,9 +57,9 @@ class DivergenceInfo(BaseModel):
     """Child divergence analysis result."""
     score: float = Field(..., description="CV across children's yields")
     interpretation: str
-    best_performer: Optional[str] = None
+    best_performer: str | None = None
     best_yield: float = 0
-    worst_performer: Optional[str] = None
+    worst_performer: str | None = None
     worst_yield: float = 0
     spread: float = 0
 
@@ -93,7 +94,7 @@ class CounterfactualInfo(BaseModel):
 class ChildPerformanceInfo(BaseModel):
     """Performance metrics for a child district."""
     cdk: str
-    name: Optional[str] = None
+    name: str | None = None
     mean_yield: float
     cv: float
     cagr: float
@@ -108,9 +109,9 @@ class SplitInsightsInfo(BaseModel):
     convergence: ConvergenceInfo
     effect_size: EffectSizeInfo
     counterfactual: CounterfactualInfo
-    children_performance: List[ChildPerformanceInfo] = Field(
+    children_performance: list[ChildPerformanceInfo] = Field(
         default_factory=list)
-    warnings: List[str] = Field(default_factory=list)
+    warnings: list[str] = Field(default_factory=list)
 
 
 class AnalysisMeta(BaseModel):
@@ -120,7 +121,7 @@ class AnalysisMeta(BaseModel):
     metric: str
     variable: str
     parent_cdk: str
-    children_cdks: List[str]
+    children_cdks: list[str]
 
 
 class SplitImpactRequest(BaseModel):
@@ -132,7 +133,7 @@ class SplitImpactRequest(BaseModel):
         max_length=64,
         pattern=r"^[A-Za-z0-9_]+$"
     )
-    children_cdks: List[str] = Field(
+    children_cdks: list[str] = Field(
         ...,
         description="Children district CDKs",
         min_length=1,
@@ -163,15 +164,15 @@ class SplitImpactResponse(BaseModel):
     Includes timeline data, series metadata, advanced statistics,
     and reproducibility provenance.
     """
-    data: List[Dict[str, Any]] = Field(
+    data: list[dict[str, Any]] = Field(
         default_factory=list,
         description="Timeline data points"
     )
-    series: List[SeriesMeta] = Field(
+    series: list[SeriesMeta] = Field(
         default_factory=list,
         description="Series metadata for charting"
     )
-    advanced_stats: Optional[AdvancedStats] = Field(
+    advanced_stats: AdvancedStats | None = Field(
         None,
         description="Statistical analysis (only for before_after mode)"
     )
@@ -190,5 +191,5 @@ class StateSummary(BaseModel):
 
 class SummaryResponse(BaseModel):
     """Response for summary endpoint."""
-    states: List[str]
-    stats: Dict[str, StateSummary]
+    states: list[str]
+    stats: dict[str, StateSummary]

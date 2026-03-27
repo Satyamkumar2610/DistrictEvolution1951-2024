@@ -4,13 +4,11 @@ Unified Name Resolver for district name matching.
 Single source of truth for district name normalization and alias resolution.
 Used by both the ETL pipeline and the backend API — no inline exceptions.
 """
-from typing import Dict, Optional
-
 
 # ──────────────────────────────────────────────────────────────
 # Canonical alias map (old / variant → normalized modern name)
 # ──────────────────────────────────────────────────────────────
-_ALIASES: Dict[str, str] = {
+_ALIASES: dict[str, str] = {
     # Karnataka
     "bangalore": "bengaluru urban",
     "bangalore rural": "bengaluru rural",
@@ -137,7 +135,7 @@ _ALIASES: Dict[str, str] = {
 }
 
 # States that changed names or were reorganised
-_STATE_ALIASES: Dict[str, list] = {
+_STATE_ALIASES: dict[str, list] = {
     "andhra pradesh-telangana": ["telangana", "andhra pradesh"],
     "daman and diu": ["the dadra and nagar haveli and daman and diu"],
     "orissa": ["odisha"],
@@ -167,8 +165,8 @@ def resolve_alias(name: str) -> str:
 def resolve_lgd(
     district_name: str,
     state_name: str,
-    lgd_lookup: Dict[tuple, int],
-) -> Optional[int]:
+    lgd_lookup: dict[tuple, int],
+) -> int | None:
     """
     Multi-strategy LGD resolution.
 

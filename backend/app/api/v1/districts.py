@@ -1,23 +1,22 @@
 """
 Districts API: Endpoints for district data access.
 """
-from typing import Optional
 
-from fastapi import APIRouter, Depends, Query
 import asyncpg
+from fastapi import APIRouter, Depends, Query
 
 from app.api.deps import get_db
+from app.exceptions import NotFoundError
 from app.repositories.district_repo import DistrictRepository
 from app.schemas.district import District, DistrictList
-from app.exceptions import NotFoundError
 
 router = APIRouter()
 
 
 @router.get("", response_model=DistrictList)
 async def list_districts(
-    state: Optional[str] = Query(None, description="Filter by state name", max_length=50),
-    search: Optional[str] = Query(None, description="Search by district name", min_length=3, max_length=50),
+    state: str | None = Query(None, description="Filter by state name", max_length=50),
+    search: str | None = Query(None, description="Search by district name", min_length=3, max_length=50),
     db: asyncpg.Connection = Depends(get_db),
 ):
     """

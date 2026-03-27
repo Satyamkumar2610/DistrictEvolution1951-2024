@@ -12,12 +12,13 @@ Provides data science-driven insights:
 Updated to use lgd_code/district_lgd schema.
 """
 
-import asyncpg
-from typing import Dict, List, Any, Optional
-from dataclasses import dataclass
 import math
+from dataclasses import dataclass
+from typing import Any
 
-from app.cache import cached, CacheTTL
+import asyncpg
+
+from app.cache import CacheTTL, cached
 
 
 @dataclass
@@ -43,7 +44,7 @@ class CropDiversification:
     num_crops: int
     dominant_crop: str
     dominant_share: float
-    breakdown: Dict[str, float]  # crop_name -> share (0-1)
+    breakdown: dict[str, float]  # crop_name -> share (0-1)
 
 
 class AdvancedAnalyticsService:
@@ -62,7 +63,7 @@ class AdvancedAnalyticsService:
         crop: str,
         metric: str,
         *args
-    ) -> List[asyncpg.Record]:
+    ) -> list[asyncpg.Record]:
         """
         Executes a query by substituting the variable_name parameter (always the last arg).
         If the primary crop_metric (e.g. 'wheat_yield') returns no data, it falls back
@@ -102,7 +103,7 @@ class AdvancedAnalyticsService:
         self,
         cdk: str,
         year: int
-    ) -> Optional[CropDiversification]:
+    ) -> CropDiversification | None:
         """
         Calculate Crop Diversification Index for a district-year.
 
@@ -159,7 +160,7 @@ class AdvancedAnalyticsService:
     async def get_crop_shift(
         self,
         cdk: str,
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """
         Calculates the shifting mix of crops over a district's entire history.
         Groups minor crops into an 'Other' category and computes diversity indices per year.
@@ -249,7 +250,7 @@ class AdvancedAnalyticsService:
         crop: str,
         start_year: int = 1990,
         end_year: int = 2020
-    ) -> Optional[YieldTrend]:
+    ) -> YieldTrend | None:
         """
         Calculate yield trend with CAGR and volatility.
         """
@@ -318,12 +319,12 @@ class AdvancedAnalyticsService:
     async def get_split_impact(
         self,
         parent_cdk: str,
-        child_cdks: List[str],
+        child_cdks: list[str],
         split_year: int,
         crop: str,
         years_before: int = 5,
         years_after: int = 5
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Compare agricultural performance before/after district split.
         """
@@ -399,8 +400,8 @@ class AdvancedAnalyticsService:
         self,
         state: str,
         year: int,
-        crops: Optional[List[str]] = None
-    ) -> Dict[str, Any]:
+        crops: list[str] | None = None
+    ) -> dict[str, Any]:
         """
         Calculate correlation between crop areas/yields across districts.
         Helps identify crop substitution patterns.
@@ -482,7 +483,7 @@ class AdvancedAnalyticsService:
         crop: str,
         year: int,
         metric: str = 'yield'
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """
         Rank districts by crop performance.
         """
@@ -523,7 +524,7 @@ class AdvancedAnalyticsService:
         crop: str,
         start_year: int = 2010,
         end_year: int = 2020
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """
         Calculate year-over-year growth rates.
         """
@@ -565,7 +566,7 @@ class AdvancedAnalyticsService:
         cdk: str,
         crop: str,
         year: int
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Compare Kharif vs Rabi season performance.
         Only works for DES data which has seasonal breakdown.
@@ -602,7 +603,7 @@ class AdvancedAnalyticsService:
         cdk: str,
         crop: str,
         forecast_years: int = 5
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Produce a yield forecast using SARIMA (statsmodels),
         with a fallback to simple linear regression.
@@ -632,8 +633,9 @@ class AdvancedAnalyticsService:
         # 1. Try SARIMA (Requires statsmodels)
         try:
             import warnings
-            from statsmodels.tsa.statespace.sarimax import SARIMAX
+
             from statsmodels.tools.sm_exceptions import ConvergenceWarning
+            from statsmodels.tsa.statespace.sarimax import SARIMAX
 
             with warnings.catch_warnings():
                 warnings.simplefilter('ignore', ConvergenceWarning)
@@ -728,8 +730,8 @@ class AdvancedAnalyticsService:
         self,
         state: str,
         crop: str,
-        year_range: List[int] = [1990, 2020]
-    ) -> List[Dict[str, Any]]:
+        year_range: list[int] = [1990, 2020]
+    ) -> list[dict[str, Any]]:
         """
         Rank districts by true climate resilience, measured by the magnitude
         of yield drop and speed of recovery during known systemic drought/shock years.
@@ -850,7 +852,7 @@ class AdvancedAnalyticsService:
         crop: str,
         start_year: int = 2000,
         end_year: int = 2020
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Quantifies the yield gap for each district against the state's 90th percentile "frontier".
         Tracks convergence or divergence over the time period.
@@ -979,9 +981,9 @@ class AdvancedAnalyticsService:
     async def get_post_split_specialization(
         self,
         parent_cdk: str,
-        child_cdks: List[str],
+        child_cdks: list[str],
         split_year: int
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Compare the crop mix of the parent (pre-split) vs the child (post-split)
         to measure economic specialization or divergence.
@@ -1007,7 +1009,7 @@ class AdvancedAnalyticsService:
         post_start = split_year + 3
         post_end = split_year + 6
 
-        async def get_crop_mix(cdks: List[str], start_yr: int, end_yr: int) -> Dict[str, float]:
+        async def get_crop_mix(cdks: list[str], start_yr: int, end_yr: int) -> dict[str, float]:
             if not cdks:
                 return {c: 0.0 for c in target_crops}
 

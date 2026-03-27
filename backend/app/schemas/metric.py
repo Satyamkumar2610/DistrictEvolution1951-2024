@@ -2,7 +2,7 @@
 Metric Schemas: Domain-agnostic observation data.
 """
 from enum import Enum
-from typing import List, Optional
+
 from pydantic import BaseModel, Field
 
 
@@ -20,19 +20,19 @@ class MetricPoint(BaseModel):
     year: int = Field(..., description="Observation year")
     variable: str = Field(..., description="Variable name (e.g., wheat_yield)")
     value: float = Field(..., description="Observed value")
-    unit: Optional[str] = Field(None, description="Measurement unit")
-    source: Optional[str] = Field(None, description="Dataset source")
-    method: Optional[str] = Field(
+    unit: str | None = Field(None, description="Measurement unit")
+    source: str | None = Field(None, description="Dataset source")
+    method: str | None = Field(
         None, description="Harmonization method if derived")
 
 
 class MetricTimeSeries(BaseModel):
     """Time series for a single district and variable."""
     cdk: str
-    district_name: Optional[str] = None
+    district_name: str | None = None
     variable: str
-    unit: Optional[str] = None
-    data: List[dict] = Field(
+    unit: str | None = None
+    data: list[dict] = Field(
         default_factory=list,
         description="List of {year, value} points")
 
@@ -40,7 +40,7 @@ class MetricTimeSeries(BaseModel):
 class MetricQueryResult(BaseModel):
     """Result of a metrics query."""
     total: int
-    items: List[MetricPoint] = Field(default_factory=list)
+    items: list[MetricPoint] = Field(default_factory=list)
 
 
 class AggregatedMetric(BaseModel):
@@ -50,7 +50,7 @@ class AggregatedMetric(BaseModel):
     district: str
     value: float
     metric: str
-    method: Optional[str] = Field(None, description="Backcast or Raw")
-    geo_key: Optional[str] = Field(
+    method: str | None = Field(None, description="Backcast or Raw")
+    geo_key: str | None = Field(
         None,
         description="Pre-computed GeoJSON key (DISTRICT|STATE) for map visualization")

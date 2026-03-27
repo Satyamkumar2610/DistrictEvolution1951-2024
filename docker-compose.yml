@@ -1,6 +1,7 @@
 services:
   db:
     image: postgis/postgis:15-3.3
+    restart: unless-stopped
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
@@ -9,9 +10,15 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d i_ascap"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   redis:
     image: redis:7-alpine
+    restart: unless-stopped
     ports:
       - "6379:6379"
     volumes:
@@ -20,6 +27,7 @@ services:
 
   backend:
     build: ./backend
+    restart: unless-stopped
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     volumes:
       - ./backend:/app
@@ -27,17 +35,20 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=postgresql://neondb_owner:npg_7AtbCMWo3ksv@ep-purple-butterfly-a18tkuor.ap-southeast-1.aws.neon.tech/neondb?sslmode=require
+      - DATABASE_URL=${DATABASE_URL:-postgresql://user:password@db:5432/i_ascap}
       - REDIS_URL=redis://redis:6379/0
       - CACHE_BACKEND=auto
     depends_on:
-      - db
-      - redis
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+    restart: unless-stopped
     command: npm run dev
     volumes:
       - ./frontend:/app

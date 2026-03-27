@@ -11,14 +11,14 @@ Provides data science-driven insights including:
 Updated to use lgd_code/district_lgd schema.
 """
 
-from fastapi import APIRouter, Depends, Query
-from typing import Optional
+
 import asyncpg
+from fastapi import APIRouter, Depends, Query
 
 from app.api.deps import get_db
-from app.services.advanced_analytics import AdvancedAnalyticsService
 from app.exceptions import NotFoundError, ValidationError
-from app.validators import validate_crop, validate_state_name, validate_year, validate_year_range, validate_cdk
+from app.services.advanced_analytics import AdvancedAnalyticsService
+from app.validators import validate_cdk, validate_crop, validate_state_name, validate_year, validate_year_range
 
 router = APIRouter(prefix="/analytics", tags=["Advanced Analytics"])
 
@@ -154,7 +154,7 @@ async def get_split_impact(
 async def get_crop_correlations(
     state: str = Query(..., description="State name"),
     year: int = Query(2015, description="Year"),
-    crops: Optional[str] = Query(None, description="Comma-separated crop list"),
+    crops: str | None = Query(None, description="Comma-separated crop list"),
     db: asyncpg.Connection = Depends(get_db)
 ):
     """

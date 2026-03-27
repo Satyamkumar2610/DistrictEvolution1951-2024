@@ -8,7 +8,7 @@ extensive properties (production, area) is validated post-hoc.
 
 import logging
 from dataclasses import dataclass
-from typing import Any, Dict, List, Literal, Optional, Tuple
+from typing import Any, Literal
 
 from app.core.lineage_graph import DistrictEvent, EventType, LineageGraph  # type: ignore
 
@@ -32,7 +32,7 @@ class ApportionedValue:
     year: int
     value: float
     method: ApportionMethod
-    source_cdks: Tuple[str, ...]
+    source_cdks: tuple[str, ...]
     coverage: float              # 0.0–1.0: proportion of area covered by data
     confidence: float = 1.0      # 0.0–1.0: confidence in the method used
 
@@ -68,12 +68,12 @@ class DataApportioner:
 
     def apportion_to_modern(
         self,
-        historical_data: Dict[str, float],
+        historical_data: dict[str, float],
         event: DistrictEvent,
         mode: ApportionMethod = "area_weighted",
-        area_ratios: Optional[Dict[str, float]] = None,
-        population_ratios: Optional[Dict[str, float]] = None,
-    ) -> Dict[str, ApportionedValue]:
+        area_ratios: dict[str, float] | None = None,
+        population_ratios: dict[str, float] | None = None,
+    ) -> dict[str, ApportionedValue]:
         """
         Redistribute values from source_cdks to target_cdks across one event.
         
@@ -87,7 +87,7 @@ class DataApportioner:
         Returns:
             {target_cdk: ApportionedValue}
         """
-        results: Dict[str, ApportionedValue] = {}
+        results: dict[str, ApportionedValue] = {}
         total_source = sum(
             historical_data.get(src, 0.0) for src in event.source_cdks
         )
@@ -134,9 +134,9 @@ class DataApportioner:
         self,
         event: DistrictEvent,
         mode: ApportionMethod,
-        area_ratios: Optional[Dict[str, float]],
-        population_ratios: Optional[Dict[str, float]],
-    ) -> Dict[str, float]:
+        area_ratios: dict[str, float] | None,
+        population_ratios: dict[str, float] | None,
+    ) -> dict[str, float]:
         """
         Determine per-target weights based on available data.
         
@@ -185,10 +185,10 @@ class DataApportioner:
     def apportion_cascade(
         self,
         root_cdk: str,
-        data: Dict[int, float],
+        data: dict[int, float],
         graph: LineageGraph,
         mode: ApportionMethod = "area_weighted",
-    ) -> Dict[str, Dict[int, float]]:
+    ) -> dict[str, dict[int, float]]:
         """
         Cascade data from a root district through all downstream splits.
         
@@ -204,7 +204,7 @@ class DataApportioner:
         Returns:
             {modern_cdk: {year: apportioned_value}}
         """
-        result: Dict[str, Dict[int, float]] = {}
+        result: dict[str, dict[int, float]] = {}
         subtree_events = graph.get_subtree_events(root_cdk)
 
         for year, value in data.items():
@@ -220,14 +220,14 @@ class DataApportioner:
 
             # Walk through events chronologically, apportioning at each step
             # current_values: {cdk: value}
-            current_values: Dict[str, float] = {root_cdk: value}
+            current_values: dict[str, float] = {root_cdk: value}
 
             for event in sorted(relevant_events, key=lambda e: e.year):
-                new_values: Dict[str, float] = {}
+                new_values: dict[str, float] = {}
                 for src in event.source_cdks:
                     if src in current_values:
                         src_val: float = current_values[src]  # type: ignore[index]
-                        src_data: Dict[str, float] = {str(src): src_val}
+                        src_data: dict[str, float] = {str(src): src_val}
                         apportioned = self.apportion_to_modern(
                             src_data, event, mode
                         )
@@ -252,9 +252,9 @@ class DataApportioner:
 
     def validate_conservation(
         self,
-        before: Dict[str, float],
-        after: Dict[str, float],
-        tolerance: Optional[float] = None,
+        before: dict[str, float],
+        after: dict[str, float],
+        tolerance: float | None = None,
     ) -> ConservationResult:
         """
         Assert that totals are preserved within tolerance.
@@ -295,10 +295,10 @@ class DataApportioner:
 
     def aggregate_collective_yield(
         self,
-        district_data: Dict[str, Dict[str, float]],
-        active_cdks: List[str],
+        district_data: dict[str, dict[str, float]],
+        active_cdks: list[str],
         crop: str,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Compute collective yield from multiple district data dicts.
         
@@ -328,12 +328,12 @@ class DataApportioner:
             float(cdks_with_data) / len(active_cdks)
             if active_cdks else 0.0
         )
-        yield_val: Optional[float] = (
+        yield_val: float | None = (
             float(int((total_prod / total_area) * 1000.0 * 100)) / 100.0  # type: ignore[operator]
             if total_area > 0.0 else None
         )
 
-        result: Dict[str, Any] = {
+        result: dict[str, Any] = {
             "yield": yield_val,
             "production": float(int(total_prod * 100)) / 100.0 if cdks_with_data > 0 else None,  # type: ignore[operator]
             "area": float(int(total_area * 100)) / 100.0 if cdks_with_data > 0 else None,  # type: ignore[operator]

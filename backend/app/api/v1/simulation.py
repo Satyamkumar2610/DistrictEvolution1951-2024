@@ -4,14 +4,14 @@ Uses Spatial-for-Temporal substitution to estimate rainfall sensitivity.
 """
 from typing import Any
 
+import asyncpg
 from fastapi import APIRouter, Depends, Query
 from pydantic import BaseModel
-import asyncpg
 
+from app.analytics.advanced import SimulationResult, get_advanced_analyzer
 from app.api.deps import get_db
-from app.analytics.advanced import get_advanced_analyzer, SimulationResult
-from app.ml.prediction_engine import PredictionEngine
 from app.exceptions import NotFoundError, ValidationError
+from app.ml.prediction_engine import PredictionEngine
 
 router = APIRouter()
 
@@ -44,7 +44,7 @@ async def get_simulation(
     # Cache Key Generation
     cache_key = f"sim:{state}:{district}:{crop}:{year}"
 
-    from app.cache import get_cache, CacheTTL
+    from app.cache import CacheTTL, get_cache
     cache = get_cache()
     cached_result = await cache.get(cache_key)
     if cached_result:
@@ -175,7 +175,7 @@ async def get_prediction_v2(
     yield volatility, and crop area for every district in the state,
     then runs the PredictionEngine.
     """
-    from app.cache import get_cache, CacheTTL
+    from app.cache import CacheTTL, get_cache
 
     cache_key = f"pred_v2:{state}:{district}:{crop}:{year}"
     cache = get_cache()

@@ -2,12 +2,10 @@
 Metric Repository: Data access for agricultural/domain metrics.
 Uses district_lgd (int FK) joined to districts.lgd_code (int PK).
 """
-from typing import List, Dict
 
-
+from app.cache import CacheTTL, cached
 from app.repositories.base import BaseRepository
-from app.schemas.metric import MetricPoint, AggregatedMetric
-from app.cache import cached, CacheTTL
+from app.schemas.metric import AggregatedMetric, MetricPoint
 
 
 class MetricRepository(BaseRepository):
@@ -16,8 +14,8 @@ class MetricRepository(BaseRepository):
     async def get_by_cdk_and_variables(
         self,
         cdk: str,
-        variables: List[str]
-    ) -> List[MetricPoint]:
+        variables: list[str]
+    ) -> list[MetricPoint]:
         """Get time series for a district and set of variables."""
         query = """
             SELECT district_lgd::text as cdk, year, variable_name, value
@@ -40,9 +38,9 @@ class MetricRepository(BaseRepository):
 
     async def get_by_cdks_and_variables(
         self,
-        cdks: List[str],
-        variables: List[str]
-    ) -> List[MetricPoint]:
+        cdks: list[str],
+        variables: list[str]
+    ) -> list[MetricPoint]:
         """Get metrics for multiple districts and variables."""
         # Convert text CDKs to int array for efficient query
         int_cdks = []
@@ -79,7 +77,7 @@ class MetricRepository(BaseRepository):
         self,
         year: int,
         variable: str
-    ) -> List[AggregatedMetric]:
+    ) -> list[AggregatedMetric]:
         """Get all district values for a given year and variable.
 
         Includes split-lineage fallback: if a child district has data but
@@ -192,7 +190,7 @@ class MetricRepository(BaseRepository):
         self,
         cdk: str,
         crop: str
-    ) -> List[Dict]:
+    ) -> list[dict]:
         """Get pivoted time series {year, area, production, yield} for a crop."""
         variables = [f"{crop}_area", f"{crop}_production", f"{crop}_yield"]
         query = """
@@ -236,7 +234,7 @@ class MetricRepository(BaseRepository):
                         break
 
         # Pivot data
-        timeline: Dict[int, Dict] = {}
+        timeline: dict[int, dict] = {}
         for r in rows:
             year = r["year"]
             if year not in timeline:
@@ -273,16 +271,16 @@ class MetricRepository(BaseRepository):
     @cached(ttl=CacheTTL.SUMMARY, prefix="metrics:map")
     async def build_data_map(
         self,
-        cdks: List[str],
-        variables: List[str]
-    ) -> Dict[int, Dict[str, Dict[str, float]]]:
+        cdks: list[str],
+        variables: list[str]
+    ) -> dict[int, dict[str, dict[str, float]]]:
         """
         Build nested map: year -> cdk -> {area, prod, yld}
         Used for boundary reconstruction calculations.
         """
         metrics = await self.get_by_cdks_and_variables(cdks, variables)
 
-        data_map: Dict[int, Dict[str, Dict[str, float]]] = {}
+        data_map: dict[int, dict[str, dict[str, float]]] = {}
 
         for m in metrics:
             year = m.year
@@ -303,7 +301,7 @@ class MetricRepository(BaseRepository):
         return data_map
 
     @cached(ttl=CacheTTL.METRICS, prefix="metrics:state_agg")
-    async def get_state_time_series_aggregated(self, state: str, crop: str) -> List[Dict]:
+    async def get_state_time_series_aggregated(self, state: str, crop: str) -> list[dict]:
         """Aggregate district data up to state level if pre-aggregated data is missing."""
         variables = [f"{crop}_area", f"{crop}_production", f"{crop}_yield"]
 
@@ -349,7 +347,7 @@ class MetricRepository(BaseRepository):
                     else:
                         break
 
-        timeline: Dict[int, Dict] = {}
+        timeline: dict[int, dict] = {}
         for r in rows:
             year = r["year"]
             if year not in timeline:

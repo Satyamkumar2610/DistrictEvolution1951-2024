@@ -7,10 +7,9 @@ Used by:
   - app.services.split_engine.SplitEngine
   - app.analytics.harmonizer.BoundaryHarmonizer
 """
-from typing import Optional
-from dataclasses import dataclass
 import json
 import logging
+from dataclasses import dataclass
 
 import asyncpg
 
@@ -25,7 +24,7 @@ class ResolvedGeometry:
     is_known: bool
     geometry_source: str  # shrug_union | bhuvan_wfs | manual_upload | inferred | unknown
     geometry_confidence: float  # 0.0 – 1.0
-    area_sqkm: Optional[float] = None
+    area_sqkm: float | None = None
 
 
 class GeometryResolver:
@@ -81,7 +80,7 @@ class GeometryResolver:
                    OR district_name ILIKE $3
                 ORDER BY start_year DESC LIMIT 1
             """, f"{name_search}%", f"%{name_search}%", f"%{name_search.replace('kumura', 'asifabad')}%")
-            
+
             # If still not found and we have a 3rd part (e.g. TG_kumura_asif_2024)
             if not lgd_code_str and len(parts) >= 3:
                 name_search_2 = parts[2]
@@ -221,7 +220,7 @@ class GeometryResolver:
         )
 
     @staticmethod
-    async def get_geometry(db: asyncpg.Connection, cdk: str, year: int) -> Optional[dict]:
+    async def get_geometry(db: asyncpg.Connection, cdk: str, year: int) -> dict | None:
         """
         Static method for backward compatibility with harmonizer.compute_split_diff.
         Returns GeoJSON dictionary if found, else None.

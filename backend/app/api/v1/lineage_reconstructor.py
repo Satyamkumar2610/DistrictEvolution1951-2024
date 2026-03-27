@@ -5,12 +5,12 @@ v3: DAG-based LineageGraph with ancestor/descendant queries.
 """
 import logging
 
-from fastapi import APIRouter, Depends, Query, HTTPException  # type: ignore
 import asyncpg  # type: ignore
+from fastapi import APIRouter, Depends, HTTPException, Query  # type: ignore
 
 from app.api.deps import get_db  # type: ignore
-from app.services.reconstructor_service import ReconstructorService  # type: ignore
 from app.core.lineage_graph import LineageGraph  # type: ignore
+from app.services.reconstructor_service import ReconstructorService  # type: ignore
 
 logger = logging.getLogger("app.api.v1.lineage_reconstructor")
 

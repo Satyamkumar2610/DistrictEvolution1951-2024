@@ -5,16 +5,16 @@ Provides centralized validation functions and constants.
 
 import re
 from datetime import datetime
-from typing import List, Set, Any, Optional
-from .exceptions import ValidationError
+from typing import Any
 
+from .exceptions import ValidationError
 
 # Valid year range for agricultural data
 YEAR_MIN = 1966
 YEAR_MAX = datetime.now().year
 
 # Valid crops in the database
-VALID_CROPS: Set[str] = {
+VALID_CROPS: set[str] = {
     "rice", "wheat", "maize", "jowar", "bajra", "ragi",
     "barley", "sorghum", "millet", "groundnut", "cotton",
     "sugarcane", "tobacco", "jute", "potato", "onion",
@@ -25,12 +25,12 @@ VALID_CROPS: Set[str] = {
 }
 
 # Valid metrics
-VALID_METRICS: Set[str] = {
+VALID_METRICS: set[str] = {
     "area", "production", "yield"
 }
 
 # Valid comparison modes
-VALID_MODES: Set[str] = {
+VALID_MODES: set[str] = {
     "before_after", "entity_comparison", "longitudinal"
 }
 
@@ -109,7 +109,7 @@ def validate_metric(metric: str) -> str:
     return metric_lower
 
 
-def validate_mode(mode: Optional[str]) -> str:
+def validate_mode(mode: str | None) -> str:
     """Validate comparison mode."""
     if not mode:
         return "before_after"  # Default
@@ -141,7 +141,7 @@ def validate_cdk(cdk: str) -> str:
     return cdk_stripped
 
 
-def validate_cdk_list(cdks: str) -> List[str]:
+def validate_cdk_list(cdks: str) -> list[str]:
     """Validate a comma-separated list of CDKs."""
     if not cdks:
         raise ValidationError(

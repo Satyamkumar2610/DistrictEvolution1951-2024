@@ -3,14 +3,11 @@ Anomaly Detection API Endpoints.
 Provides anomaly scanning and risk assessment for districts.
 """
 
-from fastapi import APIRouter, Depends
 import asyncpg
+from fastapi import APIRouter, Depends
 
+from app.analytics.anomaly_detection import AnomalyDetector, scan_state_anomalies
 from app.database import get_db
-from app.analytics.anomaly_detection import (
-    AnomalyDetector,
-    scan_state_anomalies
-)
 from app.exceptions import NotFoundError
 
 router = APIRouter(prefix="/anomalies", tags=["Anomaly Detection"])

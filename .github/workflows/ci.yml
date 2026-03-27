@@ -21,7 +21,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.11'
+        python-version: '3.13'
         
     - name: Install Linting Tools
       run: pip install ruff mypy
@@ -32,10 +32,10 @@ jobs:
       
     - name: Run Type Check (mypy)
       working-directory: ./backend
-      run: mypy app/ --ignore-missing-imports --no-error-summary || true
+      run: mypy app/ --ignore-missing-imports --no-error-summary
 
   test-backend:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     needs: lint-backend
 
@@ -60,7 +60,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.11'
+        python-version: '3.13'
         cache: 'pip'
         
     - name: Install Dependencies
@@ -104,9 +104,8 @@ jobs:
       
     - name: Run Linting
       working-directory: ./frontend
-      run: npm run lint || true
+      run: npm run lint
 
     - name: Type Check & Build
       working-directory: ./frontend
       run: npm run build
-

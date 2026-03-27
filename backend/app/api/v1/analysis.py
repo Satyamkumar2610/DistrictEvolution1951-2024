@@ -5,17 +5,22 @@ Updated to use lgd_code/district_lgd schema.
 import hashlib
 import logging
 
-from fastapi import APIRouter, Depends, Query, Request
 import asyncpg
+from fastapi import APIRouter, Depends, Query, Request
 
-from app.api.deps import get_db
-from app.services.analysis_service import AnalysisService
-from app.schemas.analysis import SplitImpactResponse
 from app.analytics import get_advanced_analyzer
+from app.api.deps import get_db
 from app.exceptions import NotFoundError, ValidationError
+from app.schemas.analysis import SplitImpactResponse
+from app.services.analysis_service import AnalysisService
 from app.validators import (
-    validate_state_name, validate_crop, validate_metric,
-    validate_year, validate_cdk, validate_cdk_list, validate_mode
+    validate_cdk,
+    validate_cdk_list,
+    validate_crop,
+    validate_metric,
+    validate_mode,
+    validate_state_name,
+    validate_year,
 )
 
 router = APIRouter()
@@ -89,8 +94,9 @@ async def get_districts_for_state(
     Falls back to shared name_resolver for any remaining unresolved entries.
     """
     from collections import defaultdict
+
     from app.services.name_resolver import resolve_lgd as _resolve_lgd
-    
+
     state = validate_state_name(state)
 
     # --- Query split events — use ETL pre-resolved LGDs ---
@@ -220,7 +226,7 @@ async def analyze_split_impact(
     query_hash = _generate_query_hash(request)
 
     # Check Cache
-    from app.cache import get_cache, CacheTTL
+    from app.cache import CacheTTL, get_cache
     cache = get_cache()
     try:
         cached_result = await cache.get(query_hash)

@@ -9,10 +9,11 @@ Provides a robust, explainable prediction model that combines:
 Uses Ridge-style regularized regression via numpy (no sklearn dependency).
 """
 
-from dataclasses import dataclass, asdict
-from typing import List, Dict, Any, Optional
-import math
 import logging
+import math
+from dataclasses import asdict, dataclass
+from typing import Any
+
 import numpy as np
 
 logger = logging.getLogger(__name__)
@@ -57,16 +58,16 @@ class PredictionResult:
     method: str                         # "multi_factor_ridge" or "simple_ols"
 
     # Explainability
-    factors: List[FactorImportance]     # Sorted by importance desc
+    factors: list[FactorImportance]     # Sorted by importance desc
     model_equation: str                 # Human-readable equation
     methodology: str                    # Explanation paragraph
-    data_quality_notes: List[str]       # Warnings / notes
+    data_quality_notes: list[str]       # Warnings / notes
 
     # Viz data
-    data_points: List[Dict[str, float]]  # [{rain, yield, district}]
-    regression_line: List[Dict[str, float]]  # [{x, y}] for trend line
+    data_points: list[dict[str, float]]  # [{rain, yield, district}]
+    regression_line: list[dict[str, float]]  # [{x, y}] for trend line
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         d = asdict(self)
         return d
 
@@ -98,9 +99,9 @@ class PredictionEngine:
 
     def predict(
         self,
-        district_data: List[Dict[str, Any]],
+        district_data: list[dict[str, Any]],
         target_district: str,
-    ) -> Optional[PredictionResult]:
+    ) -> PredictionResult | None:
         """
         Build a prediction model from cross-district data and predict
         for the target district.
@@ -135,7 +136,7 @@ class PredictionEngine:
 
     def _predict_multi_factor(
         self,
-        data: List[Dict[str, Any]],
+        data: list[dict[str, Any]],
         target_district: str,
     ) -> PredictionResult:
         """Ridge regression with multiple features."""
@@ -376,7 +377,7 @@ class PredictionEngine:
 
     def _predict_simple(
         self,
-        data: List[Dict[str, Any]],
+        data: list[dict[str, Any]],
         target_district: str,
     ) -> PredictionResult:
         """Single-variable OLS: Rainfall → Yield."""

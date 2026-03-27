@@ -11,7 +11,6 @@ Compares snapshots of the same district across different years.
 
 import logging
 from dataclasses import dataclass
-from typing import Optional
 
 import asyncpg
 
@@ -48,9 +47,9 @@ class DriftDetector:
     async def detect_drift(
         self,
         district_cdk: str,
-        year_a: Optional[int] = None,
-        year_b: Optional[int] = None,
-    ) -> Optional[DriftResult]:
+        year_a: int | None = None,
+        year_b: int | None = None,
+    ) -> DriftResult | None:
         """
         Compare two snapshots of the same district.
 

@@ -11,7 +11,6 @@ All enrichment results are stored in the `split_enrichment` table.
 """
 
 import logging
-from typing import Optional
 
 import asyncpg
 import httpx
@@ -77,7 +76,7 @@ def geojson_to_overpass_poly(geojson: dict) -> str:
     return " ".join(parts)
 
 
-async def query_overpass(poly_str: str, query_template: str) -> Optional[dict]:
+async def query_overpass(poly_str: str, query_template: str) -> dict | None:
     """Execute an Overpass API query with the given polygon."""
     if not poly_str:
         return None
@@ -383,9 +382,9 @@ async def _upsert_enrichment(
     dataset_name: str,
     metric_name: str,
     value: float,
-    unit: Optional[str],
-    reference_year: Optional[int],
-    source_url: Optional[str],
+    unit: str | None,
+    reference_year: int | None,
+    source_url: str | None,
 ) -> None:
     """Insert or update a single enrichment row."""
     await db.execute("""

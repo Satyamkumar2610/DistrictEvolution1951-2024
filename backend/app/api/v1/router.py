@@ -2,9 +2,23 @@
 from fastapi import APIRouter
 
 from app.api.v1 import (
-    districts, lineage, metrics, analysis, climate, simulation,
-    health, quality, forecast, anomalies, advanced_analytics,
-    states, search, reports, spatial, splits, lineage_reconstructor
+    advanced_analytics,
+    analysis,
+    anomalies,
+    climate,
+    districts,
+    forecast,
+    health,
+    lineage,
+    lineage_reconstructor,
+    metrics,
+    quality,
+    reports,
+    search,
+    simulation,
+    spatial,
+    splits,
+    states,
 )
 
 api_router = APIRouter()

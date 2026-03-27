@@ -3,12 +3,12 @@ Forecast API Endpoints.
 Provides yield forecasting and crop recommendations.
 """
 
-from fastapi import APIRouter, Depends, Query
 import asyncpg
+from fastapi import APIRouter, Depends, Query
 
 from app.database import get_db
-from app.ml.forecaster import YieldForecaster, CropRecommender
 from app.exceptions import NotFoundError, ValidationError
+from app.ml.forecaster import CropRecommender, YieldForecaster
 
 router = APIRouter(prefix="/forecast", tags=["Forecasting"])
 
