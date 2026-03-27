@@ -75,7 +75,7 @@ class GeometryResolver:
             # Try exact then multiple fuzzy variants
             lgd_code_str = await self.db.fetchval("""
                 SELECT lgd_code::text FROM districts
-                WHERE district_name ILIKE $1 
+                WHERE district_name ILIKE $1
                    OR district_name ILIKE $2
                    OR district_name ILIKE $3
                 ORDER BY start_year DESC LIMIT 1

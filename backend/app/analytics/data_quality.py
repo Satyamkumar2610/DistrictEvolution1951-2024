@@ -4,13 +4,13 @@ Provides automated data quality assessment for districts.
 """
 
 from dataclasses import asdict, dataclass
-from enum import Enum
+from enum import StrEnum
 from typing import Any
 
 import asyncpg
 
 
-class QualityLevel(str, Enum):
+class QualityLevel(StrEnum):
     """Data quality classification."""
     EXCELLENT = "excellent"  # 90-100%
     GOOD = "good"           # 70-89%
@@ -156,7 +156,7 @@ class DataQualityScorer:
         consistent_years = 0
         total_years = 0
 
-        for year, data in by_year.items():
+        for _year, data in by_year.items():
             if all(
                 k in data for k in [
                     'rice_area',

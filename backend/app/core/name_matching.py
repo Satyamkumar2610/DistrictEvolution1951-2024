@@ -675,7 +675,4 @@ def check_historical_resolution(state_name: str, district_name: str) -> bool:
     """
     s_lower = state_name.strip().lower()
     d_lower = district_name.strip().lower()
-    for (st, dist), data in DISTRICT_RESOLUTION.items():
-        if st.lower() == s_lower and dist.lower() == d_lower:
-            return True
-    return False
+    return any(st.lower() == s_lower and dist.lower() == d_lower for (st, dist), data in DISTRICT_RESOLUTION.items())

@@ -94,7 +94,7 @@ class AnalysisService:
         groups = self.lineage_repo.group_by_parent_year(events)
 
         results = []
-        for key, group in groups.items():
+        for _key, group in groups.items():
             parent_name = cdk_meta.get(
                 group["parent_cdk"], {}).get(
                 "name", group["parent_cdk"])

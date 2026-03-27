@@ -145,13 +145,13 @@ class ReconstructorService:
     ) -> tuple[list[str], bool]:
         """
         Resolve active CDKs to CDKs that have data in agri_metrics.
-        
+
         Strategy:
         1. Check which active CDKs have data directly
         2. For CDKs without data, walk up ancestors to find nearest with data
         3. If no ancestors found, try the root base_cdk
         4. Return (data_cdks, is_fallback) — deduplicated list of CDKs to query
-        
+
         The is_fallback flag indicates parent/ancestor data was used.
         """
         # Step 1: Check direct data
@@ -214,7 +214,7 @@ class ReconstructorService:
     ) -> dict[str, Any]:
         """
         Reconstruct the timeline of a district splitting into descendants.
-        
+
         Data flow:
         1. Build epochs from split_events graph (text CDKs)
         2. For each epoch, try PostGIS ST_Union for geometry

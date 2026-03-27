@@ -5,13 +5,13 @@ Provides automated detection of outliers, suspicious patterns, and risk alerts.
 
 from dataclasses import asdict, dataclass
 from datetime import UTC, datetime
-from enum import Enum
+from enum import StrEnum
 from typing import Any
 
 import asyncpg
 
 
-class AnomalyType(str, Enum):
+class AnomalyType(StrEnum):
     """Types of anomalies detected."""
     YIELD_OUTLIER = "yield_outlier"           # > 3 std from state mean
     YOY_SPIKE = "yoy_spike"                   # Year-over-year change > 50%
@@ -21,7 +21,7 @@ class AnomalyType(str, Enum):
     NEGATIVE_VALUE = "negative_value"         # Should never happen
 
 
-class RiskLevel(str, Enum):
+class RiskLevel(StrEnum):
     """Risk assessment levels."""
     CRITICAL = "critical"   # Immediate attention needed
     HIGH = "high"           # Significant concern

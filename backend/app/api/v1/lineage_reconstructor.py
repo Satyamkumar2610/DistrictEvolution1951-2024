@@ -84,7 +84,7 @@ async def search_districts(
         return out
     except Exception as e:
         logger.error(f"Search failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Search failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Search failed: {str(e)}") from e
 
 
 # ------------------------------------------------------------------
@@ -101,7 +101,7 @@ async def get_lineage(cdk: str, db: asyncpg.Connection = Depends(get_db)):
         logger.error(f"Lineage tree failed for {cdk}: {e}")
         raise HTTPException(
             status_code=500, detail=f"Lineage tree failed: {str(e)}"
-        )
+        ) from e
 
 
 # ------------------------------------------------------------------
@@ -129,7 +129,7 @@ async def get_ancestors(
         }
     except Exception as e:
         logger.error(f"Ancestors query failed for {cdk}: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e)) from e
 
 
 @router.get("/{cdk}/descendants")
@@ -155,7 +155,7 @@ async def get_descendants(
         }
     except Exception as e:
         logger.error(f"Descendants query failed for {cdk}: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e)) from e
 
 
 # ------------------------------------------------------------------
@@ -170,7 +170,7 @@ async def graph_summary(db: asyncpg.Connection = Depends(get_db)):
         return graph.summary()
     except Exception as e:
         logger.error(f"Graph summary failed: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e)) from e
 
 
 # ------------------------------------------------------------------
@@ -201,4 +201,4 @@ async def reconstruct_lineage(
         logger.error(f"Reconstruction failed for {cdk}: {e}")
         raise HTTPException(
             status_code=500, detail=f"Reconstruction failed: {str(e)}"
-        )
+        ) from e

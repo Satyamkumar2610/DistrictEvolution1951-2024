@@ -50,7 +50,7 @@ class TimeSeriesAnalyzer:
         years: list[int],
         values: list[float],
         detect_anomalies: bool = True,
-        windows: list[int] = [3, 5],
+        windows: list[int] = None,
     ) -> TimeSeriesAnalysis:
         """
         Perform comprehensive time series analysis.
@@ -64,6 +64,8 @@ class TimeSeriesAnalyzer:
         Returns:
             TimeSeriesAnalysis with all results
         """
+        if windows is None:
+            windows = [3, 5]
         if len(years) != len(values):
             raise ValueError("Years and values must have same length")
 
@@ -71,7 +73,7 @@ class TimeSeriesAnalyzer:
             raise ValueError("Empty time series")
 
         # Sort by year
-        sorted_pairs = sorted(zip(years, values), key=lambda x: x[0])
+        sorted_pairs = sorted(zip(years, values, strict=False), key=lambda x: x[0])
         years = [p[0] for p in sorted_pairs]
         values = [p[1] for p in sorted_pairs]
 
@@ -197,7 +199,7 @@ class TimeSeriesAnalyzer:
             Comparison statistics
         """
         # Extract values for each period
-        data = dict(zip(years, values))
+        data = dict(zip(years, values, strict=False))
 
         p1_values = [
             data[y] for y in range(  # type: ignore
@@ -263,7 +265,7 @@ class TimeSeriesAnalyzer:
         """
         Calculate CAGR over a specified period.
         """
-        data = dict(zip(years, values))
+        data = dict(zip(years, values, strict=False))
 
         start = start_year or min(years)
         end = end_year or max(years)

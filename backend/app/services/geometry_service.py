@@ -22,10 +22,7 @@ class GeometryService:
 
         geometries = []
         for feat in features:
-            if "geometry" in feat:
-                geom = shape(feat["geometry"])
-            else:
-                geom = shape(feat)
+            geom = shape(feat["geometry"]) if "geometry" in feat else shape(feat)
 
             # Apply a micro-buffer to fix invalid geometries
             if not geom.is_valid:

@@ -250,10 +250,7 @@ async def enrich_transfer_land_stats(
 
     if geom_type in ("Polygon", "MultiPolygon"):
         try:
-            if geom_type == "Polygon":
-                all_coords = coords[0]
-            else:
-                all_coords = coords[0][0]
+            all_coords = coords[0] if geom_type == "Polygon" else coords[0][0]
 
             lons = [c[0] for c in all_coords]
             lats = [c[1] for c in all_coords]

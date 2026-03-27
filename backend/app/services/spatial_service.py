@@ -95,10 +95,7 @@ class SpatialService:
 
         # Compute regional cluster average
         valid_cagrs = [n["cagr"] for n in neighbor_results if n["cagr"] != 0.0]
-        if valid_cagrs:
-            regional_avg_cagr = sum(valid_cagrs) / len(valid_cagrs)
-        else:
-            regional_avg_cagr = 0.0
+        regional_avg_cagr = sum(valid_cagrs) / len(valid_cagrs) if valid_cagrs else 0.0
 
         target_cagr_pct = round(target_cagr * 100, 2)
         diff = target_cagr_pct - regional_avg_cagr

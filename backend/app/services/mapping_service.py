@@ -150,7 +150,7 @@ class MappingService:
         bridge = self._load_bridge()
         normalized = {}
 
-        for geo_key in bridge.keys():
+        for geo_key in bridge:
             norm_key = self._normalize_geo_key(geo_key)
             if norm_key not in normalized:
                 normalized[norm_key] = geo_key
@@ -302,7 +302,7 @@ class MappingService:
         best_match = None
         best_score = 0.0
 
-        for geo_key in bridge.keys():
+        for geo_key in bridge:
             parts = geo_key.split('|', 1)
             key_district = parts[0]
             key_state = parts[1] if len(parts) > 1 else None

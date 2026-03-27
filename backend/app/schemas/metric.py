@@ -1,12 +1,12 @@
 """
 Metric Schemas: Domain-agnostic observation data.
 """
-from enum import Enum
+from enum import StrEnum
 
 from pydantic import BaseModel, Field
 
 
-class MetricDomain(str, Enum):
+class MetricDomain(StrEnum):
     """Supported metric domains."""
     AGRICULTURE = "agriculture"
     CLIMATE = "climate"

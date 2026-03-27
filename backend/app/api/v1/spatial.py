@@ -54,13 +54,13 @@ async def calculate_split(
         result = geom_service.calculate_split_areas(parent_dict, child_dict)
         return result
     except ValueError as val_err:
-        raise HTTPException(status_code=400, detail=str(val_err))
-    except json.JSONDecodeError:
+        raise HTTPException(status_code=400, detail=str(val_err)) from val_err
+    except json.JSONDecodeError as exc:
         raise HTTPException(status_code=400,
-                            detail="Invalid JSON format uploaded.")
+                            detail="Invalid JSON format uploaded.") from exc
     except Exception as e:
         raise HTTPException(status_code=500,
-                            detail=f"Geo-processing failed: {str(e)}")
+                            detail=f"Geo-processing failed: {str(e)}") from e
 
 @router.post("/diff")
 async def calculate_spatial_diff(split_event_id: int, db: asyncpg.Connection = Depends(get_db)):

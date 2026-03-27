@@ -4,13 +4,13 @@ Provides Crop Diversification Index, Yield Efficiency, and Risk Profiling.
 """
 
 from dataclasses import asdict, dataclass
-from enum import Enum
+from enum import StrEnum
 from typing import Any
 
 from app.analytics.statistics import get_analyzer  # type: ignore
 
 
-class RiskCategory(str, Enum):
+class RiskCategory(StrEnum):
     """Risk classification based on volatility."""
     LOW = "low"
     MEDIUM = "medium"
@@ -433,10 +433,7 @@ class AdvancedAnalyzer:
         years = len(recent_years) - 1
 
         # CAGR Formula: (End/Start)^(1/n) - 1
-        if start_val > 0 and years > 0:
-            cagr = (end_val / start_val) ** (1 / years) - 1
-        else:
-            cagr = 0
+        cagr = (end_val / start_val) ** (1 / years) - 1 if start_val > 0 and years > 0 else 0
 
         mean_yield = sum(yearly_values[y]
                          for y in recent_years) / len(recent_years)
@@ -459,10 +456,7 @@ class AdvancedAnalyzer:
         hist_end_val = yearly_values[hist_years[-1]]
         hist_n = len(hist_years) - 1
 
-        if hist_start_val > 0 and hist_n > 0:
-            cagr_hist = (hist_end_val / hist_start_val) ** (1 / hist_n) - 1
-        else:
-            cagr_hist = 0
+        cagr_hist = (hist_end_val / hist_start_val) ** (1 / hist_n) - 1 if hist_start_val > 0 and hist_n > 0 else 0
 
         return GrowthResult(
             cagr_5y=round(float(cagr * 100), 2),  # type: ignore
@@ -536,7 +530,7 @@ class AdvancedAnalyzer:
         # 4. Data Points for Plotting
         points = [
             {"year": y, "rain": r, "yield": yld}
-            for y, r, yld in zip(years, rainfall, yields)
+            for y, r, yld in zip(years, rainfall, yields, strict=False)
         ]
 
         return SimulationResult(

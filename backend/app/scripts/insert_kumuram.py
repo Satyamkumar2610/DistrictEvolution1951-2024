@@ -52,11 +52,11 @@ async def main():
         await conn.execute("""
             INSERT INTO district_snapshots
                 (district_cdk, snapshot_year, district_name, geometry_source, geometry_confidence, geometry, area_sqkm)
-            SELECT 
+            SELECT
                 'TG_adilab_2011', 2011, 'ADILABAD (PRE-SPLIT)', 'manual_upload', 0.9,
                 ST_Union(geometry), SUM(area_sqkm)
             FROM district_snapshots
-            WHERE district_cdk IN ('501', '680', '684', '699') 
+            WHERE district_cdk IN ('501', '680', '684', '699')
               AND snapshot_year = 2024
               AND geometry IS NOT NULL
             ON CONFLICT (district_cdk, snapshot_year) DO UPDATE SET

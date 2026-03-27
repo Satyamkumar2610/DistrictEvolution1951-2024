@@ -304,7 +304,7 @@ class PredictionEngine:
         ]
         regression_line = [
             {"x": round(float(r), 1), "y": round(y, 1)}
-            for r, y in zip(rain_range, rain_line_y)
+            for r, y in zip(rain_range, rain_line_y, strict=False)
         ]
 
         # Data points for scatter

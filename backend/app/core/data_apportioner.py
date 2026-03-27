@@ -51,10 +51,10 @@ class ConservationResult:
 class DataApportioner:
     """
     Distributes metric values across administrative boundary changes.
-    
+
     Core invariant for extensive properties (area, production):
         sum(after_values) ≈ sum(before_values)  within tolerance
-        
+
     For intensive properties (yield):
         area_weighted_average(after_yields) ≈ before_yield
     """
@@ -76,14 +76,14 @@ class DataApportioner:
     ) -> dict[str, ApportionedValue]:
         """
         Redistribute values from source_cdks to target_cdks across one event.
-        
+
         Args:
             historical_data: {cdk: value} for source districts
             event: the administrative event to apportion across
             mode: apportionment strategy
             area_ratios: {target_cdk: proportion} from geometry intersection
             population_ratios: {target_cdk: proportion} from census data
-            
+
         Returns:
             {target_cdk: ApportionedValue}
         """
@@ -93,18 +93,17 @@ class DataApportioner:
         )
 
         # --- Handle renames (1:1 passthrough) ---
-        if event.event_type == EventType.RENAME:
-            if len(event.source_cdks) == 1 and len(event.target_cdks) == 1:
-                src = event.source_cdks[0]
-                tgt = event.target_cdks[0]
-                val = historical_data.get(src, 0.0)
-                results[tgt] = ApportionedValue(
-                    cdk=tgt, year=event.year, value=val,
-                    method="rename_passthrough",
-                    source_cdks=event.source_cdks,
-                    coverage=1.0, confidence=1.0,
-                )
-                return results
+        if event.event_type == EventType.RENAME and len(event.source_cdks) == 1 and len(event.target_cdks) == 1:
+            src = event.source_cdks[0]
+            tgt = event.target_cdks[0]
+            val = historical_data.get(src, 0.0)
+            results[tgt] = ApportionedValue(
+                cdk=tgt, year=event.year, value=val,
+                method="rename_passthrough",
+                source_cdks=event.source_cdks,
+                coverage=1.0, confidence=1.0,
+            )
+            return results
 
         # --- Determine weights ---
         weights = self._compute_weights(
@@ -139,7 +138,7 @@ class DataApportioner:
     ) -> dict[str, float]:
         """
         Determine per-target weights based on available data.
-        
+
         Priority order:
         1. exact_geometric (area_transfers with ST_Intersection)
         2. population_weighted (census data)
@@ -191,16 +190,16 @@ class DataApportioner:
     ) -> dict[str, dict[int, float]]:
         """
         Cascade data from a root district through all downstream splits.
-        
+
         For each year of data, walk the lineage graph and apportion
         through every event that happened AFTER that year.
-        
+
         Args:
             root_cdk: the historical district CDK
             data: {year: value} historical data for root
             graph: the full lineage graph
             mode: apportionment strategy
-            
+
         Returns:
             {modern_cdk: {year: apportioned_value}}
         """
@@ -258,10 +257,10 @@ class DataApportioner:
     ) -> ConservationResult:
         """
         Assert that totals are preserved within tolerance.
-        
+
         For extensive properties (area, production):
             sum(before) ≈ sum(after)
-        
+
         Returns a ConservationResult with diagnostics.
         """
         tol = tolerance if tolerance is not None else self.tolerance
@@ -301,12 +300,12 @@ class DataApportioner:
     ) -> dict[str, Any]:
         """
         Compute collective yield from multiple district data dicts.
-        
+
         Args:
             district_data: {cdk: {"production": val, "area": val}}
             active_cdks: list of CDKs that SHOULD have data
             crop: crop name (for variable naming)
-            
+
         Returns:
             {"yield": float|None, "production": float|None, "area": float|None,
              "coverage": float, "method": str}

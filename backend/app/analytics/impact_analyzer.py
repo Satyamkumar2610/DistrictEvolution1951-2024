@@ -121,10 +121,7 @@ class ImpactAnalyzer:
         """Calculate comparative impact between periods."""
         absolute_change = post.mean - pre.mean
 
-        if pre.mean != 0:
-            pct_change = (absolute_change / pre.mean) * 100
-        else:
-            pct_change = 0 if post.mean == 0 else 100
+        pct_change = absolute_change / pre.mean * 100 if pre.mean != 0 else 0 if post.mean == 0 else 100
 
         return ImpactStats(
             absolute_change=absolute_change,

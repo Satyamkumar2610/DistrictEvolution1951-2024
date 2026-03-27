@@ -1,12 +1,12 @@
 """
 Lineage Schemas: Graph edges representing administrative changes.
 """
-from enum import Enum
+from enum import StrEnum
 
 from pydantic import BaseModel, ConfigDict, Field
 
 
-class EventType(str, Enum):
+class EventType(StrEnum):
     """Types of administrative boundary changes."""
     SPLIT = "split"
     MERGE = "merge"

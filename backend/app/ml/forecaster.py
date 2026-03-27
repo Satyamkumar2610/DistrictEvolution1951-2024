@@ -226,7 +226,7 @@ class YieldForecaster:
 
         # Calculate slope and intercept
         numerator = sum((x - x_mean) * (y - y_mean)
-                        for x, y in zip(years, yields))
+                        for x, y in zip(years, yields, strict=False))
         denominator = sum((x - x_mean) ** 2 for x in years)
 
         if denominator == 0:
@@ -238,7 +238,7 @@ class YieldForecaster:
 
         # Calculate residuals for confidence interval
         predictions = [slope * x + intercept for x in years]
-        residuals = [y - p for y, p in zip(yields, predictions)]
+        residuals = [y - p for y, p in zip(yields, predictions, strict=False)]
 
         # Standard error of prediction
         if n > 2:

@@ -418,10 +418,7 @@ class SplitImpactInsightsAnalyzer:
                 values) if len(values) >= 2 else 0
 
             # Calculate CAGR
-            if len(values) >= 2:
-                cagr = self.stats.cagr(values[0], values[-1], len(values) - 1)
-            else:
-                cagr = 0
+            cagr = self.stats.cagr(values[0], values[-1], len(values) - 1) if len(values) >= 2 else 0
 
             children_stats.append(ChildPerformance(
                 cdk=cdk,

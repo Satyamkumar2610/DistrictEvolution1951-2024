@@ -15,7 +15,9 @@ select = [
     "SIM", # flake8-simplify
 ]
 ignore = [
-    "E501", # line too long (handled by formatter)
+    "E501",  # line too long (handled by formatter)
+    "B008",  # function call in default argument (idiomatic FastAPI: Depends(), Query(), etc.)
+    "B019",  # lru_cache on methods (acceptable in this codebase)
 ]
 
 [format]

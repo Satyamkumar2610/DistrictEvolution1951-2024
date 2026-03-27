@@ -196,9 +196,8 @@ async def get_unmapped_splits(
                     if (dn, alt_state.lower()) in lgd_lookup:
                         return lgd_lookup[(dn, alt_state.lower())]
 
-        if dn in TELANGANA_DISTRICTS and "andhra" in sn:
-            if (dn, "telangana") in lgd_lookup:
-                return lgd_lookup[(dn, "telangana")]
+        if dn in TELANGANA_DISTRICTS and "andhra" in sn and (dn, "telangana") in lgd_lookup:
+            return lgd_lookup[(dn, "telangana")]
 
         return None
 

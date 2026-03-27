@@ -181,12 +181,12 @@ def _create_cache(
             cache = RedisCache(redis_url)
             logger.info(f"Using Redis cache: {redis_url.split('@')[-1] if '@' in redis_url else redis_url}")
             return cache
-        except ImportError:
+        except ImportError as exc:
             if backend == "redis":
                 raise RuntimeError(
                     "Redis cache requested but redis package not installed. "
                     "Install with: pip install redis[hiredis]>=5.0.0"
-                )
+                ) from exc
             logger.info("redis package not installed, using in-memory cache")
             return InMemoryCache()
         except Exception as e:

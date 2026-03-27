@@ -251,7 +251,7 @@ class MetricRepository(BaseRepository):
                     r["value"]) if r["value"] else 0
 
         # Post-process: Calculate yield if missing
-        for year, data in timeline.items():
+        for _year, data in timeline.items():
             if "yield" not in data or data["yield"] == 0:
                 area = data.get("area", 0) or 0
                 prod = data.get("production", 0) or 0
@@ -364,7 +364,7 @@ class MetricRepository(BaseRepository):
             elif var_name.endswith("_production") or "_production_" in var_name:
                 timeline[year]["production"] = val
 
-        for year, data in timeline.items():
+        for _year, data in timeline.items():
             area = data.get("area", 0)
             prod = data.get("production", 0)
             if area > 0:

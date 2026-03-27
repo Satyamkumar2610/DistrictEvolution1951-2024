@@ -170,7 +170,7 @@ class BoundaryHarmonizer:
                         v * a for v,
                         a in zip(
                             child_values,
-                            child_areas))
+                            child_areas, strict=False))
                     value = weighted_sum / sum(child_areas)
                     used_method = "area_weighted"
                 else:
@@ -307,7 +307,7 @@ class BoundaryHarmonizer:
 
             # ST_Intersection for Transferred Area
             intersect_query = """
-                SELECT 
+                SELECT
                     ST_Area(ST_Intersection(ST_SetSRID(ST_GeomFromGeoJSON($1), 4326), ST_SetSRID(ST_GeomFromGeoJSON($2), 4326))::geography) / 1000000.0 as area_sqkm,
                     ST_AsGeoJSON(ST_Multi(ST_CollectionExtract(ST_Intersection(ST_SetSRID(ST_GeomFromGeoJSON($1), 4326), ST_SetSRID(ST_GeomFromGeoJSON($2), 4326)), 3))) as geomj
             """

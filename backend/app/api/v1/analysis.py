@@ -298,10 +298,7 @@ async def get_crop_diversification(
 
         # Extract crop name: "rice_area" -> "rice", "rice_area_kharif" ->
         # "rice"
-        if "_area_" in var:
-            crop = var.split("_area_")[0]
-        else:
-            crop = var.replace("_area", "")
+        crop = var.split("_area_")[0] if "_area_" in var else var.replace("_area", "")
 
         crop_areas[crop] = crop_areas.get(crop, 0) + val
 

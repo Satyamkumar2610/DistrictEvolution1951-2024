@@ -12,6 +12,7 @@ Provides data science-driven insights:
 Updated to use lgd_code/district_lgd schema.
 """
 
+import contextlib
 import math
 from dataclasses import dataclass
 from typing import Any
@@ -273,10 +274,7 @@ class AdvancedAnalyticsService:
 
         # CAGR = (end/start)^(1/n) - 1
         n_years = years[-1] - years[0]
-        if n_years > 0 and yields[0] > 0:
-            cagr = (yields[-1] / yields[0]) ** (1 / n_years) - 1
-        else:
-            cagr = 0
+        cagr = (yields[-1] / yields[0]) ** (1 / n_years) - 1 if n_years > 0 and yields[0] > 0 else 0
 
         # Volatility (std dev of year-over-year percentage changes)
         yoy_changes = []
@@ -433,7 +431,7 @@ class AdvancedAnalyticsService:
 
         # Calculate pairwise correlations
         correlations = {}
-        for i, crop1 in enumerate(crops):
+        for _i, crop1 in enumerate(crops):
             correlations[crop1] = {}
             for crop2 in crops:
                 if crop1 == crop2:
@@ -455,7 +453,7 @@ class AdvancedAnalyticsService:
                     mean2 = sum(vals2) / len(vals2)
 
                     cov = sum((v1 - mean1) * (v2 - mean2)
-                              for v1, v2 in zip(vals1, vals2))
+                              for v1, v2 in zip(vals1, vals2, strict=False))
                     std1 = math.sqrt(sum((v - mean1) ** 2 for v in vals1))
                     std2 = math.sqrt(sum((v - mean2) ** 2 for v in vals2))
 
@@ -688,7 +686,7 @@ class AdvancedAnalyticsService:
         n = len(years)
         sum_x = sum(years)
         sum_y = sum(yields)
-        sum_xy = sum(x * y for x, y in zip(years, yields))
+        sum_xy = sum(x * y for x, y in zip(years, yields, strict=False))
         sum_xx = sum(x * x for x in years)
 
         denominator = n * sum_xx - sum_x * sum_x
@@ -730,12 +728,14 @@ class AdvancedAnalyticsService:
         self,
         state: str,
         crop: str,
-        year_range: list[int] = [1990, 2020]
+        year_range: list[int] = None
     ) -> list[dict[str, Any]]:
         """
         Rank districts by true climate resilience, measured by the magnitude
         of yield drop and speed of recovery during known systemic drought/shock years.
         """
+        if year_range is None:
+            year_range = [1990, 2020]
         query_template = """
             SELECT
                 d.district_name,
@@ -943,7 +943,7 @@ class AdvancedAnalyticsService:
                 y = gaps
                 sum_x = sum(x)
                 sum_y = sum(y)
-                sum_xy = sum(x_i * y_i for x_i, y_i in zip(x, y))
+                sum_xy = sum(x_i * y_i for x_i, y_i in zip(x, y, strict=False))
                 sum_xx = sum(x_i * x_i for x_i in x)
                 denom = n_years * sum_xx - sum_x * sum_x
                 if denom != 0:
@@ -1015,10 +1015,8 @@ class AdvancedAnalyticsService:
 
             cdk_ints = []
             for c in cdks:
-                try:
+                with contextlib.suppress(ValueError):
                     cdk_ints.append(float(c))
-                except ValueError:
-                    pass
 
             if not cdk_ints:
                 return {c: 0.0 for c in target_crops}

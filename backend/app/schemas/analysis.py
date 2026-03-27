@@ -1,7 +1,7 @@
 """
 Analysis Schemas: Split impact and advanced analytics responses.
 """
-from enum import Enum
+from enum import StrEnum
 from typing import Any, Optional
 
 from pydantic import BaseModel, Field
@@ -9,7 +9,7 @@ from pydantic import BaseModel, Field
 from app.schemas.common import ImpactStats, PeriodStats, ProvenanceMetadata
 
 
-class AnalysisMode(str, Enum):
+class AnalysisMode(StrEnum):
     """Analysis comparison modes."""
     BEFORE_AFTER = "before_after"
     ENTITY_COMPARISON = "entity_comparison"

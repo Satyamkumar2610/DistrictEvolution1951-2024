@@ -40,7 +40,7 @@ def build_epochs(
 ) -> list[Epoch]:
     """
     Reverse-engineers a chronological list of epochs for a district's lineage.
-    
+
     split_graph: { parent_cdk: [ ( [child1, child2], split_year ), ... ] }
     """
 
@@ -99,7 +99,7 @@ def build_epochs(
         return epochs
 
     # Loop through each distinct split year
-    for i, s_year in enumerate(split_years):
+    for _i, s_year in enumerate(split_years):
         if s_year > current_year:
             # Create an epoch for [current_year, s_year - 1]
             epochs.append(Epoch(

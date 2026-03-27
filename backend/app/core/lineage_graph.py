@@ -15,7 +15,7 @@ from __future__ import annotations
 import logging
 from collections import defaultdict, deque
 from dataclasses import dataclass, field
-from enum import Enum
+from enum import StrEnum
 
 logger = logging.getLogger("app.core.lineage_graph")
 
@@ -24,7 +24,7 @@ logger = logging.getLogger("app.core.lineage_graph")
 # Event Types
 # ---------------------------------------------------------------------------
 
-class EventType(str, Enum):
+class EventType(StrEnum):
     """All possible administrative boundary change types."""
     SPLIT = "SPLIT"
     MERGE = "MERGE"
@@ -89,7 +89,7 @@ class DistrictNode:
 class LineageGraph:
     """
     Directed acyclic graph representing district lineage.
-    
+
     Forward map:  parent_cdk → [(children, year, event_type)]
     Inverse map:  child_cdk  → [(parents, year, event_type)]
     Events index: all DistrictEvent objects keyed by year
@@ -114,7 +114,7 @@ class LineageGraph:
     def add_event(self, event: DistrictEvent) -> bool:
         """
         Add a DistrictEvent to the graph. Returns False if duplicate.
-        
+
         Automatically builds both forward and inverse indices a
         and deduplicates events.
         """
@@ -161,7 +161,7 @@ class LineageGraph:
     ) -> LineageGraph:
         """
         Build a LineageGraph from split_events DB rows.
-        
+
         Each row: {parent_cdk, child_cdks: List[str], split_year, event_type?}
         Handles deduplication automatically.
         """
@@ -219,7 +219,7 @@ class LineageGraph:
     ) -> LineageGraph:
         """
         Build from raw lineage CSV rows.
-        
+
         Each row: {parent_cdk, child_cdk (singular), event_year, event_type, ...}
         Groups children by (parent, year) to form proper events.
         """
@@ -311,7 +311,7 @@ class LineageGraph:
     ) -> list[str]:
         """
         All historical districts that contributed area to this district.
-        
+
         Traverses the inverse graph (child → parents) via BFS.
         If target_year is given, stops when reaching nodes from that era.
         """
@@ -348,7 +348,7 @@ class LineageGraph:
     ) -> list[str]:
         """
         All modern districts that inherited area from this district.
-        
+
         Traverses the forward graph (parent → children) via BFS.
         """
         descendants: list[str] = []
@@ -434,7 +434,7 @@ class LineageGraph:
         """
         Return a forward graph dict compatible with the existing
         epoch_builder.build_epochs() interface.
-        
+
         { parent_cdk: [ ([child1, child2], split_year), ... ] }
         """
         compat: dict[str, list[tuple[list[str], int]]] = defaultdict(list)

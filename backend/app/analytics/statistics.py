@@ -4,14 +4,14 @@ Provides comprehensive statistical functions for agricultural data analysis.
 """
 
 from dataclasses import dataclass
-from enum import Enum
+from enum import StrEnum
 from typing import Any
 
 import numpy as np
 from scipy import stats as scipy_stats
 
 
-class TrendDirection(str, Enum):
+class TrendDirection(StrEnum):
     """Direction of a trend."""
     INCREASING = "increasing"
     DECREASING = "decreasing"
@@ -269,11 +269,9 @@ class StatisticalAnalyzer:
             after_slope = smoothed[i + 2] - smoothed[i]
 
             # Check for sign change (direction reversal)
-            if before_slope * after_slope < 0:
-                # Check if change is significant
-                if abs(after_slope - before_slope) > threshold * \
-                        abs(smoothed[i]):
-                    inflection_points.append(i)
+            if before_slope * after_slope < 0 and abs(after_slope - before_slope) > threshold * \
+                    abs(smoothed[i]):
+                inflection_points.append(i)
 
         return inflection_points
 

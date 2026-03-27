@@ -62,8 +62,8 @@ async def run_bootstrapper():
                     # Broader search: try matching individual words or handling known spellings
                     search_name = dist_name.upper().replace("KOMARRAM", "KUMURAM")
                     cdk = await conn.fetchval("""
-                        SELECT lgd_code::text FROM districts 
-                        WHERE district_name ILIKE $1 
+                        SELECT lgd_code::text FROM districts
+                        WHERE district_name ILIKE $1
                            OR district_name ILIKE $2
                         ORDER BY start_year DESC LIMIT 1
                     """, f"%{search_name}%", f"%{dist_name}%")
@@ -114,7 +114,7 @@ async def run_bootstrapper():
 
         async with pool.acquire() as conn:
             parents_needing_geom = await conn.fetch("""
-                SELECT e.parent_cdk, e.split_year, d.district_name 
+                SELECT e.parent_cdk, e.split_year, d.district_name
                 FROM split_events e
                 JOIN districts d ON e.parent_cdk = d.lgd_code::text
                 WHERE e.split_year >= 2001
@@ -185,8 +185,8 @@ async def run_bootstrapper():
 
         async with pool.acquire() as conn:
             unknowns = await conn.fetch("""
-                SELECT district_cdk, snapshot_year, district_name 
-                FROM district_snapshots 
+                SELECT district_cdk, snapshot_year, district_name
+                FROM district_snapshots
                 WHERE geometry IS NULL
             """)
 
@@ -269,11 +269,11 @@ async def run_bootstrapper():
             await conn.execute("""
                 INSERT INTO district_snapshots
                     (district_cdk, snapshot_year, district_name, geometry_source, geometry_confidence, geometry, area_sqkm)
-                SELECT 
+                SELECT
                     'TG_adilab_2011', 2011, 'ADILABAD (PRE-SPLIT)', 'manual_upload', 0.9,
                     ST_Union(geometry), SUM(area_sqkm)
                 FROM district_snapshots
-                WHERE district_cdk IN ('501', '680', '684', '699') 
+                WHERE district_cdk IN ('501', '680', '684', '699')
                   AND snapshot_year = 2024
                   AND geometry IS NOT NULL
                 ON CONFLICT (district_cdk, snapshot_year) DO UPDATE SET

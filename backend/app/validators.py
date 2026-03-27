@@ -43,12 +43,12 @@ def validate_year(year: Any, field_name: str = "year") -> int:
     """Validate and return a year within the valid range."""
     try:
         year_int = int(year)
-    except (ValueError, TypeError):
+    except (ValueError, TypeError) as exc:
         raise ValidationError(
             detail=f"Invalid {field_name}: must be an integer",
             field=field_name,
             value=year
-        )
+        ) from exc
 
     if year_int < YEAR_MIN or year_int > YEAR_MAX:
         raise ValidationError(
@@ -199,12 +199,12 @@ def validate_limit(limit: Any, max_limit: int = 1000) -> int:
     """Validate pagination limit."""
     try:
         limit_int = int(limit)
-    except (ValueError, TypeError):
+    except (ValueError, TypeError) as exc:
         raise ValidationError(
             detail="Limit must be an integer",
             field="limit",
             value=limit
-        )
+        ) from exc
 
     if limit_int < 1:
         limit_int = 10
@@ -218,12 +218,12 @@ def validate_offset(offset: Any) -> int:
     """Validate pagination offset."""
     try:
         offset_int = int(offset)
-    except (ValueError, TypeError):
+    except (ValueError, TypeError) as exc:
         raise ValidationError(
             detail="Offset must be an integer",
             field="offset",
             value=offset
-        )
+        ) from exc
 
     if offset_int < 0:
         offset_int = 0
@@ -235,12 +235,12 @@ def validate_positive_number(value: Any, field_name: str = "value") -> float:
     """Validate that a value is a positive number."""
     try:
         num = float(value)
-    except (ValueError, TypeError):
+    except (ValueError, TypeError) as exc:
         raise ValidationError(
             detail=f"{field_name} must be a number",
             field=field_name,
             value=value
-        )
+        ) from exc
 
     if num < 0:
         raise ValidationError(
