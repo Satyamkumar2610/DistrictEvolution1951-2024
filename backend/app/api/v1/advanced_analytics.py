@@ -217,7 +217,7 @@ async def get_yoy_growth(
     # Calculate summary stats
     yoy_values = [d['yoy_growth']
                   for d in growth_data if d['yoy_growth'] is not None]
-    avg_growth = sum(yoy_values) / len(yoy_values) if yoy_values else 0
+    avg_growth = float(sum(yoy_values) / len(yoy_values)) if yoy_values else 0.0
     positive_years = sum(1 for y in yoy_values if y > 0)
 
     return {
@@ -226,7 +226,7 @@ async def get_yoy_growth(
         "period": f"{start_year}-{end_year}",
         "data": growth_data,
         "summary": {
-            "average_yoy_growth_percent": round(avg_growth, 2),
+            "average_yoy_growth_percent": float(f"{avg_growth:.2f}"),
             "positive_growth_years": positive_years,
             "negative_growth_years": len(yoy_values) - positive_years
         }
