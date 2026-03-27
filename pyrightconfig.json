@@ -4,11 +4,15 @@
   "pythonVersion": "3.13",
   "typeCheckingMode": "basic",
   "extraPaths": [
-    "backend"
+    "backend",
+    "db_export"
   ],
   "executionEnvironments": [
     {
       "root": "backend"
+    },
+    {
+      "root": "db_export"
     }
   ]
 }

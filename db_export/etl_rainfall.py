@@ -68,7 +68,7 @@ def parse_float(value: Any) -> float:
 
 async def insert_records(conn: asyncpg.Connection, records: List[Dict[str, Any]]) -> int:
     """Insert records into database using UPSERT."""
-    inserted = 0
+    inserted: int = 0
     
     for record in records:
         try:
@@ -104,7 +104,7 @@ async def insert_records(conn: asyncpg.Connection, records: List[Dict[str, Any]]
                 parse_float(record.get("ond")),
                 parse_float(record.get("jan_feb")),
             )
-            inserted += 1
+            inserted += 1  # type: ignore[operator]
         except Exception as e:
             print(f"Error inserting {record.get('district')}: {e}")
     
