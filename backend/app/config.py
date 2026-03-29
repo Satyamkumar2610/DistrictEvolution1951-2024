@@ -24,7 +24,7 @@ class Settings(BaseSettings):
 
     # Database
     # Must be set via DATABASE_URL env var — no hardcoded credentials
-    database_url: str = ""
+    database_url: str
     db_pool_min_size: int = 2
     db_pool_max_size: int = 20
     db_command_timeout: int = 60

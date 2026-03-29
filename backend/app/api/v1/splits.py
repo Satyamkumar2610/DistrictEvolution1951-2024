@@ -395,8 +395,8 @@ async def get_enrichment(
     description="Manually trigger enrichment workers for a previously computed split.",
 )
 async def trigger_enrichment(
+    background_tasks: BackgroundTasks,
     event_id: int = Query(..., description="Split event ID to enrich"),
-    background_tasks: BackgroundTasks | None = None,
     db: asyncpg.Connection = Depends(get_db),
 ):
     event = await db.fetchrow(

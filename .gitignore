@@ -16,6 +16,7 @@ output/
 data/raw/
 data/quarantine/
 data/maps-master/
+db_export/agri_metrics.sql
 
 # OS
 .DS_Store
