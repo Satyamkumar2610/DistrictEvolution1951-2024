@@ -7,7 +7,9 @@ from dataclasses import dataclass
 from typing import Any
 
 from app.cache import CacheTTL, cached  # type: ignore[import]
+
 from .base import BaseAnalyticsService
+
 
 @dataclass
 class CropDiversification:
@@ -118,7 +120,7 @@ class CropDiversityService(BaseAnalyticsService):
 
             shannon_index: float = 0.0
             shares: dict[str, float] = {}
-            
+
             for crp, area in top_crops:
                 share = area / total_area
                 shares[crp] = round(share, 4)

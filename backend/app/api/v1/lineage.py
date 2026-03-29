@@ -3,12 +3,12 @@ Lineage API: Endpoints for lineage graph and split events.
 Updated to use lgd_code/district_lgd schema where applicable.
 Note: lineage_events uses CDK text keys that cannot join to districts.lgd_code.
 """
-from typing import Any
 
 import asyncpg
 from fastapi import APIRouter, Depends, Query
 
 from app.api.deps import get_db
+from app.exceptions import NotFoundError
 from app.repositories.district_repo import DistrictRepository
 from app.repositories.lineage_repo import LineageRepository
 from app.schemas.lineage import (
@@ -19,7 +19,6 @@ from app.schemas.lineage import (
     StateCoverageResponse,
     UnmappedSplitItem,
 )
-from app.exceptions import NotFoundError
 
 router = APIRouter()
 

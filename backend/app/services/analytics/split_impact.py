@@ -4,7 +4,9 @@ Split Impact Analysis Service.
 from typing import Any
 
 from app.cache import CacheTTL, cached  # type: ignore[import]
+
 from .base import BaseAnalyticsService
+
 
 class SplitImpactService(BaseAnalyticsService):
     """Analytics for before/after comparison on district splits."""

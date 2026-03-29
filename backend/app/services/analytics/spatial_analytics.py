@@ -5,6 +5,7 @@ import math
 from typing import Any
 
 from app.cache import CacheTTL, cached  # type: ignore[import]
+
 from .base import BaseAnalyticsService
 
 
@@ -52,7 +53,10 @@ class SpatialAnalyticsService(BaseAnalyticsService):
                     vals2 = [crop_data[crop2][cdk] for cdk in common]
 
                     mean1, mean2 = sum(vals1) / len(vals1), sum(vals2) / len(vals2)
-                    cov = sum((v1 - mean1) * (v2 - mean2) for v1, v2 in zip(vals1, vals2))
+                    cov = sum(
+                        (v1 - mean1) * (v2 - mean2)
+                        for v1, v2 in zip(vals1, vals2, strict=True)
+                    )
                     std1 = math.sqrt(sum((v - mean1) ** 2 for v in vals1))
                     std2 = math.sqrt(sum((v - mean2) ** 2 for v in vals2))
 
@@ -117,11 +121,11 @@ class SpatialAnalyticsService(BaseAnalyticsService):
         rabi_val = rabi['value'] if rabi else None
 
         return {
-            'cdk': cdk, 
-            'crop': crop, 
-            'year': year, 
-            'kharif_yield': round(kharif_val, 2) if kharif_val else None, 
-            'rabi_yield': round(rabi_val, 2) if rabi_val else None, 
+            'cdk': cdk,
+            'crop': crop,
+            'year': year,
+            'kharif_yield': round(kharif_val, 2) if kharif_val else None,
+            'rabi_yield': round(rabi_val, 2) if rabi_val else None,
             'dominant_season': 'kharif' if (kharif_val or 0) > (rabi_val or 0) else 'rabi'
         }
 
@@ -136,7 +140,8 @@ class SpatialAnalyticsService(BaseAnalyticsService):
         Rank districts by true climate resilience, measured by the magnitude
         of yield drop and speed of recovery during known systemic drought/shock years.
         """
-        if year_range is None: year_range = [1990, 2020]
+        if year_range is None:
+            year_range = [1990, 2020]
         query = """
             SELECT d.district_name, m.district_lgd::text as cdk, m.year, m.value
             FROM agri_metrics m
@@ -161,7 +166,8 @@ class SpatialAnalyticsService(BaseAnalyticsService):
 
         for cdk, data in district_data.items():
             year_dict = data["years"]
-            if len(year_dict) < 10: continue
+            if len(year_dict) < 10:
+                continue
 
             mean_y = sum(year_dict.values()) / len(year_dict)
             shock_drops, recovery_times = [], []
@@ -169,7 +175,8 @@ class SpatialAnalyticsService(BaseAnalyticsService):
             for shock_yr in shock_years:
                 if shock_yr in year_dict:
                     pre_vals = [year_dict[y] for y in [shock_yr - 3, shock_yr - 2, shock_yr - 1] if y in year_dict]
-                    if not pre_vals: continue
+                    if not pre_vals:
+                        continue
 
                     pre_avg = sum(pre_vals) / len(pre_vals)
                     shock_val = year_dict[shock_yr]
@@ -202,5 +209,6 @@ class SpatialAnalyticsService(BaseAnalyticsService):
             })
 
         results.sort(key=lambda x: x["resilience_score"], reverse=True)
-        for i, r in enumerate(results, 1): r["rank"] = i
+        for i, r in enumerate(results, 1):
+            r["rank"] = i
         return results

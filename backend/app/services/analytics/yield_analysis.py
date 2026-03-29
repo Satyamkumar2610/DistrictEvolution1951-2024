@@ -1,12 +1,16 @@
 """
 Yield Analysis Service.
 """
+import logging
 import math
+import warnings
 from dataclasses import dataclass
 from typing import Any
 
 from app.cache import CacheTTL, cached  # type: ignore[import]
+
 from .base import BaseAnalyticsService
+
 
 @dataclass
 class YieldTrend:
@@ -147,7 +151,6 @@ class YieldAnalysisService(BaseAnalyticsService):
         slope = 0.0
 
         try:
-            import warnings
             from statsmodels.tools.sm_exceptions import ConvergenceWarning
             from statsmodels.tsa.statespace.sarimax import SARIMAX
 
@@ -165,9 +168,12 @@ class YieldAnalysisService(BaseAnalyticsService):
                 pred_mean = forecast_result.predicted_mean
                 pred_ci = forecast_result.conf_int(alpha=0.20)
 
-                if hasattr(pred_mean, "tolist"): pred_mean = pred_mean.tolist()
-                if hasattr(pred_ci, "tolist"): pred_ci = pred_ci.tolist()
-                elif hasattr(pred_ci, "values"): pred_ci = pred_ci.values.tolist()
+                if hasattr(pred_mean, "tolist"):
+                    pred_mean = pred_mean.tolist()
+                if hasattr(pred_ci, "tolist"):
+                    pred_ci = pred_ci.tolist()
+                elif hasattr(pred_ci, "values"):
+                    pred_ci = pred_ci.values.tolist()
 
                 for i in range(forecast_years):
                     forecast.append({
@@ -177,13 +183,12 @@ class YieldAnalysisService(BaseAnalyticsService):
                         "confidence_interval_upper": round(max(0, float(pred_ci[i][1])), 2)
                     })
         except Exception as e:
-            import logging
             logging.getLogger("analytics").warning(f"SARIMA failed for {cdk} {crop}: {e}")
 
         # Linear trend calculation
         n = len(years)
         sum_x, sum_y = sum(years), sum(yields)
-        sum_xy = sum(x * y for x, y in zip(years, yields))
+        sum_xy = sum(x * y for x, y in zip(years, yields, strict=True))
         sum_xx = sum(x * x for x in years)
         denom = n * sum_xx - sum_x * sum_x
         slope = (n * sum_xy - sum_x * sum_y) / denom if denom != 0 else 0
@@ -272,7 +277,10 @@ class YieldAnalysisService(BaseAnalyticsService):
                 x = list(range(n_years))
                 denom = n_years * sum(x_i * x_i for x_i in x) - sum(x) * sum(x)
                 if denom != 0:
-                    gap_trend = (n_years * sum(x_i * y_i for x_i, y_i in zip(x, gaps)) - sum(x) * sum(gaps)) / denom
+                    gap_trend = (
+                        n_years * sum(x_i * y_i for x_i, y_i in zip(x, gaps, strict=True))
+                        - sum(x) * sum(gaps)
+                    ) / denom
 
             rankings.append({
                 "cdk": cdk,
@@ -285,7 +293,8 @@ class YieldAnalysisService(BaseAnalyticsService):
             })
 
         rankings.sort(key=lambda x: x["avg_gap"], reverse=True)
-        for i, r in enumerate(rankings, 1): r["rank"] = i
+        for i, r in enumerate(rankings, 1):
+            r["rank"] = i
 
         return {
             "state": state,

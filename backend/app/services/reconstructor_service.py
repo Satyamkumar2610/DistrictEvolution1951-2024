@@ -43,7 +43,7 @@ class ReconstructorService:
         """Fetch native Postgres Recursive CTE graph for a specific root."""
         query = """
         WITH RECURSIVE lineage_tree AS (
-            SELECT 
+            SELECT
                 parent_cdk, child_cdks, split_year,
                 ARRAY[parent_cdk] AS lineage_path,
                 1 as generation
@@ -52,13 +52,13 @@ class ReconstructorService:
 
             UNION ALL
 
-            SELECT 
+            SELECT
                 se.parent_cdk, se.child_cdks, se.split_year,
                 lt.lineage_path || se.parent_cdk,
                 lt.generation + 1
             FROM split_events se
             JOIN lineage_tree lt ON se.parent_cdk = ANY(lt.child_cdks)
-            WHERE NOT se.parent_cdk = ANY(lt.lineage_path) 
+            WHERE NOT se.parent_cdk = ANY(lt.lineage_path)
         )
         SELECT parent_cdk, child_cdks, split_year FROM lineage_tree;
         """
