@@ -5,13 +5,18 @@ from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, Upload
 
 from app.api.deps import get_db
 from app.exceptions import NotFoundError
+from app.schemas.spatial import (
+    DistrictLineageResponse,
+    GenericStatusResponse,
+    SpatialContagionResponse,
+)
 from app.services.geometry_service import GeometryService
 from app.services.spatial_service import SpatialService
 
 router = APIRouter(prefix="/spatial", tags=["Spatial Data"])
 
 
-@router.get("/contagion")
+@router.get("/contagion", response_model=SpatialContagionResponse)
 async def get_spatial_contagion(
     cdk: str = Query(..., description="Target district LGD code (as text)"),
     crop: str = Query("wheat", description="Crop name to analyze"),
@@ -62,7 +67,7 @@ async def calculate_split(
         raise HTTPException(status_code=500,
                             detail=f"Geo-processing failed: {str(e)}") from e
 
-@router.post("/diff")
+@router.post("/diff", response_model=GenericStatusResponse)
 async def calculate_spatial_diff(split_event_id: int, db: asyncpg.Connection = Depends(get_db)):
     """Calculate and write spatial difference and transferred areas for a split event."""
     from app.analytics.harmonizer import BoundaryHarmonizer
@@ -70,7 +75,7 @@ async def calculate_spatial_diff(split_event_id: int, db: asyncpg.Connection = D
     await harmonizer.compute_split_diff(db, split_event_id)
     return {"status": "success", "message": f"Calculated split diff for event {split_event_id}"}
 
-@router.get("/lineage/{district_id}")
+@router.get("/lineage/{district_id}", response_model=DistrictLineageResponse)
 async def get_district_lineage(district_id: str, db: asyncpg.Connection = Depends(get_db)):
     """Fetch all lineage split events and area transfers for a specific district."""
     events = await db.fetch("SELECT * FROM split_events WHERE parent_cdk = $1 OR $1 = ANY(child_cdks)", district_id)
@@ -85,7 +90,7 @@ async def get_district_lineage(district_id: str, db: asyncpg.Connection = Depend
         ]
     }
 
-@router.post("/upload-geojson")
+@router.post("/upload-geojson", response_model=GenericStatusResponse)
 async def upload_manual_geojson(
     district_id: str = Form(...),
     snapshot_year: int = Form(...),
@@ -118,4 +123,3 @@ async def upload_manual_geojson(
     """, district_id, snapshot_year, name or district_id, geom_str)
 
     return {"status": "success", "message": f"Uploaded manual GeoJSON for {district_id} ({snapshot_year})"}
-

@@ -11,11 +11,17 @@ from fastapi import APIRouter, Depends
 
 from app.database import get_db
 from app.metrics import metrics
+from app.schemas.health import (
+    AppMetricsResponse,
+    HealthMetricsResponse,
+    LivenessResponse,
+    ReadinessResponse,
+)
 
 router = APIRouter(prefix="/health", tags=["health"])
 
 
-@router.get("/live")
+@router.get("/live", response_model=LivenessResponse)
 async def liveness() -> dict[str, Any]:
     """
     Basic liveness check.
@@ -28,7 +34,7 @@ async def liveness() -> dict[str, Any]:
     }
 
 
-@router.get("/ready")
+@router.get("/ready", response_model=ReadinessResponse)
 async def readiness(db: asyncpg.Connection = Depends(get_db)) -> dict[str, Any]:
     """
     Readiness check - verifies database connectivity.
@@ -52,7 +58,7 @@ async def readiness(db: asyncpg.Connection = Depends(get_db)) -> dict[str, Any]:
     }
 
 
-@router.get("/metrics")
+@router.get("/metrics", response_model=HealthMetricsResponse)
 async def data_metrics(db: asyncpg.Connection = Depends(get_db)) -> dict[str, Any]:
     """
     Data quality and coverage metrics.
@@ -107,7 +113,7 @@ async def data_metrics(db: asyncpg.Connection = Depends(get_db)) -> dict[str, An
     }
 
 
-@router.get("/app-metrics")
+@router.get("/app-metrics", response_model=AppMetricsResponse)
 async def app_metrics() -> dict[str, Any]:
     """
     Application performance metrics.

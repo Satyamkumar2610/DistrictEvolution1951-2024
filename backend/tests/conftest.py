@@ -34,6 +34,21 @@ async def client() -> AsyncGenerator:
         yield ac
 
 
+@pytest.fixture(autouse=True)
+def reset_rate_limiter():
+    """Reset the in-memory rate limiter so tests do not leak request state."""
+    from app.rate_limit import get_rate_limiter
+
+    limiter = get_rate_limiter()
+    limiter._buckets.clear()
+    limiter._total_requests = 0
+    limiter._blocked_requests = 0
+    yield
+    limiter._buckets.clear()
+    limiter._total_requests = 0
+    limiter._blocked_requests = 0
+
+
 # ---------------------------------------------------------------------------
 # Mock Database Connection (unit tests)
 # ---------------------------------------------------------------------------

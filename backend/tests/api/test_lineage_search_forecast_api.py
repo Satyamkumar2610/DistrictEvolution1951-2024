@@ -1,0 +1,215 @@
+from unittest.mock import AsyncMock, patch
+
+import pytest
+
+from app.api.deps import get_db as deps_get_db
+from app.database import get_db as database_get_db
+
+
+def _override_db(mock_db):
+    async def _override():
+        yield mock_db
+
+    return _override
+
+
+@pytest.mark.asyncio
+async def test_search_endpoint_combines_district_and_state_results(client):
+    mock_db = AsyncMock()
+    mock_db.fetch.side_effect = [
+        [
+            {"cdk": "101", "name": "Patna", "state": "Bihar", "start_year": 1956, "end_year": None, "result_type": "district", "sort_order": 0},
+        ],
+        [
+            {"name": "Bihar", "state": "Bihar", "district_count": 38, "result_type": "state"},
+        ],
+    ]
+
+    client._transport.app.dependency_overrides[database_get_db] = _override_db(mock_db)
+    try:
+        response = await client.get("/api/v1/search?q=Bi&type=all&limit=20")
+
+        assert response.status_code == 200
+        body = response.json()
+        assert body["total"] == 2
+        assert body["results"][0]["result_type"] == "district"
+        assert body["results"][1]["district_count"] == 38
+    finally:
+        del client._transport.app.dependency_overrides[database_get_db]
+
+
+@pytest.mark.asyncio
+async def test_forecast_endpoints_return_forecast_and_recommendations(client):
+    mock_db = AsyncMock()
+    mock_db.fetchval.side_effect = [1]
+    mock_db.fetch.side_effect = [
+        [{"year": 2018, "value": 1000.0}, {"year": 2019, "value": 1100.0}, {"year": 2020, "value": 1200.0}, {"year": 2021, "value": 1250.0}, {"year": 2022, "value": 1300.0}],
+    ]
+    forecaster = AsyncMock()
+    forecaster.forecast = AsyncMock(return_value=None)
+    forecast_result = AsyncMock()
+
+    client._transport.app.dependency_overrides[database_get_db] = _override_db(mock_db)
+    try:
+        with patch("app.api.v1.forecast.YieldForecaster") as forecaster_cls:
+            forecaster_cls.return_value.forecast.return_value = type(
+                "Forecast",
+                (),
+                {
+                    "to_dict": lambda self: {
+                        "cdk": "101",
+                        "crop": "wheat",
+                        "historical_years": 5,
+                        "method": "linear_fallback",
+                        "trend_direction": "mild_increase",
+                        "forecasts": [{"year": 2023, "predicted_yield": 1350.0, "lower_bound": 1250.0, "upper_bound": 1450.0, "confidence": 0.9}],
+                        "model_stats": {"slope": 50.0},
+                    }
+                },
+            )()
+            response = await client.get("/api/v1/forecast/101/wheat?horizon=1")
+
+        assert response.status_code == 200
+        assert response.json()["forecasts"][0]["year"] == 2023
+    finally:
+        del client._transport.app.dependency_overrides[database_get_db]
+
+    mock_db = AsyncMock()
+    mock_db.fetchrow.side_effect = [
+        {"cdk": "101", "state_name": "Bihar", "district_name": "Patna"},
+        {"yield": 1000.0, "area": 200.0},
+        {"yield": None, "area": None},
+        {"yield": None, "area": None},
+        {"yield": None, "area": None},
+        {"yield": None, "area": None},
+        {"yield": None, "area": None},
+        {"yield": None, "area": None},
+        {"yield": None, "area": None},
+        {"yield": None, "area": None},
+        {"yield": None, "area": None},
+        {"yield": None, "area": None},
+    ]
+    mock_db.fetchval.side_effect = [900.0, None, None, None, None, None, None, None, None, None]
+
+    client._transport.app.dependency_overrides[database_get_db] = _override_db(mock_db)
+    try:
+        with patch("app.api.v1.forecast._calculate_trend", AsyncMock(return_value=12.5)), patch(
+            "app.api.v1.forecast.CropRecommender"
+        ) as recommender_cls:
+            recommender_cls.return_value.recommend.return_value = [
+                {
+                    "crop": "rice",
+                    "score": 1.2,
+                    "efficiency": 1.1,
+                    "current_yield": 1000.0,
+                    "state_average": 900.0,
+                    "current_area": 200.0,
+                    "trend_pct": 12.5,
+                    "recommendation": "expand",
+                }
+            ]
+            response = await client.get("/api/v1/forecast/101/recommend?top_n=1")
+
+        assert response.status_code == 200
+        assert response.json()["recommendations"][0]["crop"] == "rice"
+    finally:
+        del client._transport.app.dependency_overrides[database_get_db]
+
+
+@pytest.mark.asyncio
+async def test_lineage_history_events_tracking_and_coverage(client):
+    mock_db = AsyncMock()
+    mock_db.fetch.side_effect = [
+        [
+            {
+                "state_name": "Bihar",
+                "split_year": 2000,
+                "parent_district": "Patna",
+                "child_district": "Nalanda",
+                "parent_cdk": "101",
+                "child_cdk": "201",
+                "source": "gazette",
+            }
+        ],
+        [
+            {
+                "cdk": "101",
+                "district_name": "Patna",
+                "start_year": 1956,
+                "end_year": None,
+                "years_with_data": 10,
+                "record_count": 100,
+                "lineage_status": "original",
+            }
+        ],
+    ]
+    mock_db.fetchrow.side_effect = [
+        {"cdk": "101", "district_name": "Patna", "state_name": "Bihar", "start_year": 1956, "end_year": None},
+        {"years_with_data": 10, "first_year": 2000, "last_year": 2009, "variables": 3, "total_records": 100},
+    ]
+
+    district_repo = AsyncMock()
+    district_repo.get_cdk_to_meta_map.return_value = {"101": {"state": "Bihar"}}
+    lineage_repo = AsyncMock()
+    lineage_repo.get_events_by_state.return_value = [
+        {
+            "id": "E1",
+            "parent_cdk": "101",
+            "parent_name": "Patna",
+            "children_cdks": ["201"],
+            "children_names": ["Nalanda"],
+            "children_count": 1,
+            "event_year": 2000,
+            "event_type": "split",
+            "coverage_ratios": {"201": 1.0},
+            "legal_reference": None,
+            "confidence": 1.0,
+        }
+    ]
+
+    client._transport.app.dependency_overrides[deps_get_db] = _override_db(mock_db)
+    try:
+        with patch("app.api.v1.lineage.DistrictRepository", return_value=district_repo), patch(
+            "app.api.v1.lineage.LineageRepository", return_value=lineage_repo
+        ):
+            history_response = await client.get("/api/v1/lineage/history?state=Bihar")
+            events_response = await client.get("/api/v1/lineage/events?state=Bihar")
+            tracking_response = await client.get("/api/v1/lineage/tracking?cdk=101")
+            coverage_response = await client.get("/api/v1/lineage/coverage?state=Bihar")
+
+        assert history_response.status_code == 200
+        assert history_response.json()[0]["parent_district"] == "Patna"
+        assert events_response.status_code == 200
+        assert events_response.json()["total_events"] == 1
+        assert tracking_response.status_code == 200
+        assert tracking_response.json()["data_coverage"]["total_records"] == 100
+        assert coverage_response.status_code == 200
+        assert coverage_response.json()["districts"] == 1
+    finally:
+        del client._transport.app.dependency_overrides[deps_get_db]
+
+
+@pytest.mark.asyncio
+async def test_lineage_tracking_not_found_and_unmapped(client):
+    mock_db = AsyncMock()
+    mock_db.fetchrow.return_value = None
+    mock_db.fetch.side_effect = [
+        [{"lgd_code": 101, "district_name": "Patna", "state_name": "Bihar"}],
+        [{"parent_district": "Old Patna", "child_district": "New Patna", "split_year": 2000, "state_name": "Bihar"}],
+    ]
+
+    client._transport.app.dependency_overrides[deps_get_db] = _override_db(mock_db)
+    try:
+        with patch("app.core.name_matching.resolve_district_name", side_effect=lambda name: name.lower()), patch(
+            "app.core.name_matching.check_historical_resolution", return_value=False
+        ), patch("app.core.name_matching.STATE_ALIASES", {}), patch(
+            "app.core.name_matching.TELANGANA_DISTRICTS", set()
+        ):
+            tracking_response = await client.get("/api/v1/lineage/tracking?cdk=404")
+            unmapped_response = await client.get("/api/v1/lineage/unmapped")
+
+        assert tracking_response.status_code == 404
+        assert unmapped_response.status_code == 200
+        assert unmapped_response.json()[0]["district"] == "New Patna"
+    finally:
+        del client._transport.app.dependency_overrides[deps_get_db]

@@ -1,24 +1,32 @@
 
 "use client";
 import ReactECharts from 'echarts-for-react';
+import { AnalysisSeries, AnalysisTimelinePoint } from '../../services/api';
 
 const COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#ec4899', '#8b5cf6'];
 
-export interface ChartSeries {
-    id: string;
-    label: string;
-    style?: 'solid' | 'dashed';
-}
+type TooltipSeriesPoint = {
+    axisValue: number | string;
+    color: string;
+    seriesName: string;
+    value: number | string | null;
+};
+
+export type ChartSeries = AnalysisSeries;
 
 interface ComparisonChartProps {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    data: any[];
+    data: AnalysisTimelinePoint[];
     series: ChartSeries[];
     splitYear: number;
     metric?: string;
 }
 
 export function ComparisonChart({ data, series, splitYear, metric = 'yield' }: ComparisonChartProps) {
+    const getMetricValue = (point: AnalysisTimelinePoint, key: string) => {
+        const value = point[key];
+        return typeof value === 'number' ? value : null;
+    };
+
     const getUnitCallback = (val: number) => {
         if (metric === 'yield') return `${val.toLocaleString()} kg/ha`;
         if (metric === 'production') return `${val.toLocaleString()} tons`;
@@ -32,9 +40,10 @@ export function ComparisonChart({ data, series, splitYear, metric = 'yield' }: C
             backgroundColor: '#ffffff',
             borderColor: '#e2e8f0',
             textStyle: { color: '#0f172a', fontSize: 11 },
-            formatter: (params: any /* eslint-disable-line @typescript-eslint/no-explicit-any */) => {
+            formatter: (params: TooltipSeriesPoint[]) => {
+                if (!params.length) return '';
                 let html = `<div class="font-bold text-slate-700 mb-1 border-b border-slate-100 pb-1">${params[0].axisValue}</div>`;
-                params.forEach((p: any /* eslint-disable-line @typescript-eslint/no-explicit-any */) => {
+                params.forEach((p) => {
                     html += `
                         <div class="flex items-center gap-2 my-1">
                             <span class="w-2 h-2 rounded-full font-bold" style="background-color: ${p.color}"></span>
@@ -78,14 +87,14 @@ export function ComparisonChart({ data, series, splitYear, metric = 'yield' }: C
             ...series.map((s, idx) => ({
                 name: s.label,
                 type: 'line',
-                data: data.map(d => d[s.id]),
+                data: data.map((d) => getMetricValue(d, s.id)),
                 symbol: 'circle',
                 symbolSize: 6,
                 showSymbol: false,
                 itemStyle: { color: COLORS[idx % COLORS.length] },
                 lineStyle: {
                     width: s.style === 'solid' ? 2.5 : 2,
-                    type: s.style === 'dashed' ? 'dashed' : 'solid'
+                    type: s.style === 'dashed' ? 'dashed' : s.style === 'dotted' ? 'dotted' : 'solid'
                 },
                 connectNulls: true
             })),

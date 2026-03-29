@@ -9,11 +9,12 @@ from fastapi import APIRouter, Depends
 from app.analytics.data_quality import DataQualityScorer, get_state_quality_summary
 from app.database import get_db
 from app.exceptions import NotFoundError
+from app.schemas.quality import DataQualityDistrictResponse, StateQualitySummaryResponse
 
 router = APIRouter(prefix="/quality", tags=["Data Quality"])
 
 
-@router.get("/district/{cdk}")
+@router.get("/district/{cdk}", response_model=DataQualityDistrictResponse)
 async def get_district_quality(
     cdk: str,
     db: asyncpg.Connection = Depends(get_db)
@@ -34,7 +35,7 @@ async def get_district_quality(
     return report.to_dict()
 
 
-@router.get("/state/{state_name}")
+@router.get("/state/{state_name}", response_model=StateQualitySummaryResponse)
 async def get_state_quality(
     state_name: str,
     db: asyncpg.Connection = Depends(get_db)

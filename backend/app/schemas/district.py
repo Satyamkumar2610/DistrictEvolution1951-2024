@@ -35,3 +35,40 @@ class DistrictGeoJSON(BaseModel):
     """GeoJSON FeatureCollection for districts."""
     type: str = Field(default="FeatureCollection")
     features: list[Any] = Field(default_factory=list)
+
+
+class StateNameList(BaseModel):
+    """Simple state-name list response."""
+    states: list[str] = Field(default_factory=list)
+
+
+class StateCount(BaseModel):
+    """State and district count."""
+    state: str = Field(..., description="Name of the state")
+    district_count: int = Field(..., description="Number of districts in the state")
+
+
+class YearRange(BaseModel):
+    min: int | None
+    max: int | None
+
+
+class Performer(BaseModel):
+    district_name: str
+    cdk: str
+    yield_value: float
+
+
+class StateOverview(BaseModel):
+    state: str
+    year: int
+    crop: str
+    total_districts: int
+    districts_with_data: int
+    year_range: YearRange
+    avg_yield: float
+    total_area: float
+    total_production: float
+    top_performers: list[Performer]
+    bottom_performers: list[Performer]
+    available_crops: list[str]

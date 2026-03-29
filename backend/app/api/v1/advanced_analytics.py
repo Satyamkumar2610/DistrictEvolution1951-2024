@@ -17,13 +17,28 @@ from fastapi import APIRouter, Depends, Query
 
 from app.api.deps import get_db
 from app.exceptions import NotFoundError, ValidationError
-from app.services.advanced_analytics import AdvancedAnalyticsService
+from app.schemas.advanced_analytics import (
+    AnalyticsSummaryResponse,
+    CropCorrelationMatrixResponse,
+    CropDiversificationResponse,
+    CropShiftResponse,
+    DistrictRankingResponse,
+    ResilienceIndexResponse,
+    SeasonalComparisonResponse,
+    SplitImpactAnalyticsResponse,
+    SplitSpecializationResponse,
+    YieldForecastResponse,
+    YieldGapResponse,
+    YieldTrendResponse,
+    YoyGrowthResponse,
+)
+from app.services.analytics import AdvancedAnalyticsService
 from app.validators import validate_cdk, validate_crop, validate_state_name, validate_year, validate_year_range
 
 router = APIRouter(prefix="/analytics", tags=["Advanced Analytics"])
 
 
-@router.get("/diversification")
+@router.get("/diversification", response_model=CropDiversificationResponse)
 async def get_crop_diversification(
     cdk: str = Query(..., description="District LGD code (as text)"),
     year: int = Query(2020, description="Year to analyze"),
@@ -61,7 +76,7 @@ async def get_crop_diversification(
         "breakdown": result.breakdown}
 
 
-@router.get("/crop-shift")
+@router.get("/crop-shift", response_model=CropShiftResponse)
 async def get_crop_shift_timeline(
     cdk: str = Query(..., description="District LGD code (as text)"),
     db: asyncpg.Connection = Depends(get_db)
@@ -89,7 +104,7 @@ async def get_crop_shift_timeline(
     }
 
 
-@router.get("/yield-trend")
+@router.get("/yield-trend", response_model=YieldTrendResponse)
 async def get_yield_trend(
     cdk: str = Query(..., description="District LGD code (as text)"),
     crop: str = Query("rice", description="Crop name"),
@@ -122,7 +137,7 @@ async def get_yield_trend(
     }
 
 
-@router.get("/split-impact")
+@router.get("/split-impact", response_model=SplitImpactAnalyticsResponse)
 async def get_split_impact(
     parent_cdk: str = Query(..., description="Parent district CDK"),
     child_cdks: str = Query(..., description="Comma-separated child CDKs"),
@@ -150,7 +165,7 @@ async def get_split_impact(
     return result
 
 
-@router.get("/crop-correlations")
+@router.get("/crop-correlations", response_model=CropCorrelationMatrixResponse)
 async def get_crop_correlations(
     state: str = Query(..., description="State name"),
     year: int = Query(2015, description="Year"),
@@ -177,7 +192,7 @@ async def get_crop_correlations(
     return result
 
 
-@router.get("/district-rankings")
+@router.get("/district-rankings", response_model=list[DistrictRankingResponse])
 async def get_district_rankings(
     state: str = Query(..., description="State name"),
     crop: str = Query("rice", description="Crop to rank"),
@@ -197,7 +212,7 @@ async def get_district_rankings(
     return rankings
 
 
-@router.get("/yoy-growth")
+@router.get("/yoy-growth", response_model=YoyGrowthResponse)
 async def get_yoy_growth(
     cdk: str = Query(..., description="District LGD code (as text)"),
     crop: str = Query("rice", description="Crop name"),
@@ -233,7 +248,7 @@ async def get_yoy_growth(
     }
 
 
-@router.get("/seasonal-comparison")
+@router.get("/seasonal-comparison", response_model=SeasonalComparisonResponse)
 async def get_seasonal_comparison(
     cdk: str = Query(..., description="District LGD code (as text)"),
     crop: str = Query("rice", description="Crop name"),
@@ -253,7 +268,7 @@ async def get_seasonal_comparison(
     return result
 
 
-@router.get("/summary")
+@router.get("/summary", response_model=AnalyticsSummaryResponse)
 async def get_analytics_summary(
     cdk: str = Query(..., description="District LGD code (as text)"),
     year: int = Query(2020, description="Year"),
@@ -291,7 +306,7 @@ async def get_analytics_summary(
     }
 
 
-@router.get("/yield-forecast")
+@router.get("/yield-forecast", response_model=YieldForecastResponse)
 async def get_yield_forecast(
     cdk: str = Query(..., description="District LGD code (as text)"),
     crop: str = Query("rice", description="Crop name"),
@@ -310,7 +325,7 @@ async def get_yield_forecast(
     return result
 
 
-@router.get("/resilience-index")
+@router.get("/resilience-index", response_model=ResilienceIndexResponse)
 async def get_resilience_index(
     state: str = Query(..., description="State name"),
     crop: str = Query("rice", description="Crop name"),
@@ -335,7 +350,7 @@ async def get_resilience_index(
     }
 
 
-@router.get("/yield-gap")
+@router.get("/yield-gap", response_model=YieldGapResponse)
 async def get_yield_gap_analysis(
     state: str = Query(..., description="State name"),
     crop: str = Query(..., description="Crop name"),
@@ -357,7 +372,7 @@ async def get_yield_gap_analysis(
     return result
 
 
-@router.get("/split-specialization")
+@router.get("/split-specialization", response_model=SplitSpecializationResponse)
 async def get_split_specialization(
     parent_cdk: str = Query(..., description="Parent district LGD code"),
     child_cdks: str = Query(..., description="Comma-separated child CDKs"),

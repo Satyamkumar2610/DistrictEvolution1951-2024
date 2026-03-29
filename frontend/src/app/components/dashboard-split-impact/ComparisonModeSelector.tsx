@@ -2,14 +2,15 @@
 "use client";
 import React from 'react';
 import { History, Network } from 'lucide-react';
+import { AnalysisMode } from '../../services/api';
 
 interface ComparisonModeSelectorProps {
-    mode: string;
-    onChange: (m: string) => void;
+    mode: AnalysisMode;
+    onChange: (m: AnalysisMode) => void;
 }
 
 export function ComparisonModeSelector({ mode, onChange }: ComparisonModeSelectorProps) {
-    const modes = [
+    const modes: Array<{ id: AnalysisMode; label: string; fullLabel: string; icon: typeof History }> = [
         { id: 'before_after', label: 'Before vs After', fullLabel: 'Before vs After (Reconstructed)', icon: History },
         { id: 'entity_comparison', label: 'Parent vs Child', fullLabel: 'Parent vs Child', icon: Network },
     ];

@@ -3,6 +3,7 @@
 
 import React from 'react';
 import { Map, AlertTriangle, Layers, Database } from 'lucide-react';
+import { StateSummary } from '../../services/api';
 
 // Static color map for light theme
 const COLOR_MAP: Record<string, { bg: string; text: string; iconBg: string }> = {
@@ -14,11 +15,7 @@ const COLOR_MAP: Record<string, { bg: string; text: string; iconBg: string }> = 
 
 interface StateSummaryPanelProps {
     stateName: string;
-    stats: {
-        total: number;
-        changed: number;
-        coverage: number;
-    } | null;
+    stats: StateSummary['stats'][string] | null;
 }
 
 export function StateSummaryPanel({ stateName, stats }: StateSummaryPanelProps) {

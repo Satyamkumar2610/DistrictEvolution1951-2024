@@ -11,7 +11,14 @@ from fastapi import APIRouter, Depends, Query, Request
 from app.analytics import get_advanced_analyzer
 from app.api.deps import get_db
 from app.exceptions import NotFoundError, ValidationError
-from app.schemas.analysis import SplitImpactResponse
+from app.schemas.analysis import (
+    DistrictRiskProfileResponse,
+    StateDiversificationResponse,
+    SplitImpactDistrictSummary,
+    SplitImpactResponse,
+    SummaryResponse,
+    YieldEfficiencyResponse,
+)
 from app.services.analysis_service import AnalysisService
 from app.validators import (
     validate_cdk,
@@ -32,7 +39,7 @@ def _generate_query_hash(request: Request) -> str:
     return f"sha256:{hashlib.sha256(query_string.encode()).hexdigest()[:16]}"
 
 
-@router.get("/split-impact/summary")
+@router.get("/split-impact/summary", response_model=SummaryResponse)
 async def get_summary(db: asyncpg.Connection = Depends(get_db)):
     """
     Get summary statistics for all states.
@@ -82,7 +89,7 @@ async def get_summary(db: asyncpg.Connection = Depends(get_db)):
     return {"states": state_list, "stats": stats}
 
 
-@router.get("/split-impact/districts")
+@router.get("/split-impact/districts", response_model=list[SplitImpactDistrictSummary])
 async def get_districts_for_state(
     state: str = Query(..., description="State name"),
     db: asyncpg.Connection = Depends(get_db),
@@ -260,7 +267,7 @@ async def analyze_split_impact(
 # -----------------------------------------------------------------------------
 
 
-@router.get("/diversification")
+@router.get("/diversification", response_model=StateDiversificationResponse)
 async def get_crop_diversification(
     state: str = Query(..., description="State name"),
     year: int = Query(..., description="Year to analyze"),
@@ -312,7 +319,7 @@ async def get_crop_diversification(
     }
 
 
-@router.get("/efficiency")
+@router.get("/efficiency", response_model=YieldEfficiencyResponse)
 async def get_yield_efficiency(
     cdk: str = Query(..., description="District LGD code (as text)"),
     crop: str = Query(..., description="Crop name"),
@@ -414,7 +421,7 @@ async def get_yield_efficiency(
     }
 
 
-@router.get("/risk-profile")
+@router.get("/risk-profile", response_model=DistrictRiskProfileResponse)
 async def get_risk_profile(
     cdk: str = Query(..., description="District LGD code (as text)"),
     crop: str = Query(..., description="Crop name"),

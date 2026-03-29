@@ -11,12 +11,20 @@ from fastapi import APIRouter, Depends, Query
 from app.api.deps import get_db
 from app.repositories.district_repo import DistrictRepository
 from app.repositories.lineage_repo import LineageRepository
-from app.schemas.lineage import LineageGraph, SplitEventSummary
+from app.schemas.lineage import (
+    DistrictHistoryItem,
+    LineageGraph,
+    ProvenanceTrackingResponse,
+    SplitEventSummary,
+    StateCoverageResponse,
+    UnmappedSplitItem,
+)
+from app.exceptions import NotFoundError
 
 router = APIRouter()
 
 
-@router.get("/history")
+@router.get("/history", response_model=list[DistrictHistoryItem])
 async def get_district_history(
     state: str | None = Query(None, description="Filter by state name"),
     db: asyncpg.Connection = Depends(get_db),
@@ -34,7 +42,7 @@ async def get_district_history(
     return [dict(r) for r in rows]
 
 
-@router.get("/events")
+@router.get("/events", response_model=LineageGraph)
 async def get_lineage_events(
     state: str | None = Query(None, description="Filter by state"),
     db: asyncpg.Connection = Depends(get_db),
@@ -73,11 +81,11 @@ async def get_split_events(
     return await service.get_split_events_for_state(state)
 
 
-@router.get("/tracking")
+@router.get("/tracking", response_model=ProvenanceTrackingResponse)
 async def get_data_tracking(
     cdk: str = Query(..., description="District LGD code (as text)"),
     db: asyncpg.Connection = Depends(get_db),
-) -> dict[str, Any]:
+):
     """
     Get data lineage tracking for a district.
 
@@ -94,7 +102,7 @@ async def get_data_tracking(
     """, cdk)
 
     if not district:
-        return {"error": f"District not found: {cdk}"}
+        raise NotFoundError("District", cdk)
 
     # Get data coverage
     coverage = await db.fetchrow("""
@@ -129,11 +137,11 @@ async def get_data_tracking(
             "created_from": []}}
 
 
-@router.get("/coverage")
+@router.get("/coverage", response_model=StateCoverageResponse)
 async def get_state_coverage(
     state: str = Query(..., description="State name"),
     db: asyncpg.Connection = Depends(get_db),
-) -> dict[str, Any]:
+):
     """
     Get data coverage summary for all districts in a state.
 
@@ -162,7 +170,7 @@ async def get_state_coverage(
     }
 
 
-@router.get("/unmapped")
+@router.get("/unmapped", response_model=list[UnmappedSplitItem])
 async def get_unmapped_splits(
     db: asyncpg.Connection = Depends(get_db),
 ):

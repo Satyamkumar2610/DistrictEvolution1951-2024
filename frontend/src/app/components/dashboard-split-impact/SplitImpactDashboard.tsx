@@ -11,6 +11,7 @@ import { LayoutDashboard, ChevronLeft, Menu, X } from 'lucide-react';
 import { useSplitEvents } from '../../hooks/useSplitImpact';
 import { useQuery } from '@tanstack/react-query'; // Assuming this import is needed for useQuery
 import { api } from '../../services/api';
+import { AnalysisMode, SplitDistrict, StateSummary } from '../../services/api';
 
 export function SplitImpactDashboard() {
     // New React Query Hooks
@@ -24,7 +25,7 @@ export function SplitImpactDashboard() {
         if (Array.isArray(summaryData.states)) return summaryData.states;
         return Object.keys(summaryData.states).sort();
     }, [summaryData]);
-    const allStats = summaryData?.stats || {};
+    const allStats: StateSummary['stats'] = summaryData?.stats || {};
     const splitEvents = splitEventsData || [];
 
     // Selectors
@@ -32,9 +33,8 @@ export function SplitImpactDashboard() {
     const [selectedMetric, setSelectedMetric] = useState('yield');
 
     // Selection
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [selectedEvent, setSelectedEvent] = useState<any>(null);
-    const [comparisonMode, setComparisonMode] = useState('before_after');
+    const [selectedEvent, setSelectedEvent] = useState<SplitDistrict | null>(null);
+    const [comparisonMode, setComparisonMode] = useState<AnalysisMode>('before_after');
 
     // Mobile UI state
     const [showMobileMenu, setShowMobileMenu] = useState(false);
@@ -64,8 +64,7 @@ export function SplitImpactDashboard() {
 
     const currentStateStats = allStats[selectedState] || null;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const handleEventSelect = (event: any) => {
+    const handleEventSelect = (event: SplitDistrict) => {
         setSelectedEvent(event);
         // Auto-switch to analysis view on mobile
         if (window.innerWidth < 1024) {

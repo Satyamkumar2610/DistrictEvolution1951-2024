@@ -1,11 +1,14 @@
 "use client";
 import React from 'react';
 import { Info } from 'lucide-react';
+import { AnalysisMode, SplitDistrict } from '../../services/api';
 
+interface ComparisonContextBannerProps {
+    event: SplitDistrict;
+    mode: AnalysisMode;
+}
 
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function ComparisonContextBanner({ event, mode }: { event: any; mode: string }) {
+export function ComparisonContextBanner({ event, mode }: ComparisonContextBannerProps) {
     if (!event) return null;
 
     return (

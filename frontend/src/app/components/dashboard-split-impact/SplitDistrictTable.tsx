@@ -1,10 +1,10 @@
 import React, { useMemo, useState } from 'react';
 import { ArrowRight, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { SplitDistrict } from '../../services/api';
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 interface SplitDistrictTableProps {
-    splits: any[];
-    onSelect?: (event: any) => void;
+    splits: SplitDistrict[];
+    onSelect?: (event: SplitDistrict) => void;
     selectedEventId?: string;
     isLoading?: boolean;
 }
@@ -28,7 +28,7 @@ export default function SplitDistrictTable({ splits, onSelect, selectedEventId, 
         if (!splits) return [];
         if (!activeDecade) return splits;
         const decadeStart = parseInt(activeDecade);
-        return splits.filter((s: any) => {
+        return splits.filter((s) => {
             const yr = s.split_year;
             return yr >= decadeStart && yr < decadeStart + 10;
         });
@@ -54,7 +54,7 @@ export default function SplitDistrictTable({ splits, onSelect, selectedEventId, 
                     </button>
                     {decades.map(d => {
                         const decadeStart = parseInt(d);
-                        const count = splits.filter((s: any) => s.split_year >= decadeStart && s.split_year < decadeStart + 10).length;
+                        const count = splits.filter((s) => s.split_year >= decadeStart && s.split_year < decadeStart + 10).length;
                         return (
                             <button
                                 key={d}
@@ -72,7 +72,7 @@ export default function SplitDistrictTable({ splits, onSelect, selectedEventId, 
             )}
 
             {/* Split event cards */}
-            {filtered.map((item: any) => {
+            {filtered.map((item) => {
                 const resolvedCount = item.resolved_count ?? item.children_cdks?.filter((c: string | null) => c != null).length ?? 0;
                 const totalCount = item.total_count ?? item.children_cdks?.length ?? 0;
                 const allResolved = resolvedCount === totalCount && totalCount > 0;
@@ -135,4 +135,3 @@ export default function SplitDistrictTable({ splits, onSelect, selectedEventId, 
         </div>
     );
 }
-

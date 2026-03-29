@@ -9,6 +9,12 @@ interface ImpactScorecardProps {
 }
 
 export function ImpactScorecard({ event, crop }: ImpactScorecardProps) {
+    const childNameByCdk = new Map(
+        event.children_cdks
+            .map((cdk, index) => [cdk, event.children_names[index] || event.children_districts[index]] as const)
+            .filter((entry): entry is readonly [string, string] => Boolean(entry[0] && entry[1]))
+    );
+
     const { data, isLoading } = useSplitImpactAnalysis(
         event.parent_cdk,
         event.children_cdks,
@@ -85,7 +91,7 @@ export function ImpactScorecard({ event, crop }: ImpactScorecardProps) {
                     {after.by_child && Object.entries(after.by_child).map(([cdk, stats]: [string, { avg: number }]) => (
                         <div key={cdk} className="bg-slate-50 border border-slate-200 rounded px-2 py-1 flex items-center gap-2 shadow-sm">
                             <span className="text-[10px] text-slate-800 font-bold">
-                                {(event.children_districts || []).find((name: string) => cdk.toLowerCase().includes(name.toLowerCase().replace(/ /g, '').slice(0, 5))) || cdk}
+                                {childNameByCdk.get(cdk) || cdk}
                             </span>
                             <span className="text-[10px] text-slate-500 font-medium">{Math.round(stats.avg)} kg/ha</span>
                         </div>

@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../services/api';
+import { SplitImpactQueryParams } from '../services/api';
 
 export function useStateSummary() {
     return useQuery({
@@ -18,20 +19,15 @@ export function useSplitEvents(state: string) {
     });
 }
 
-export interface AnalysisParams {
-    parent: string;
-    children: string;
-    splitYear: number;
-    crop: string;
-    metric: string;
-    mode: string;
-}
-
-export function useAnalysis(params: AnalysisParams | null) {
+export function useAnalysis(params: SplitImpactQueryParams | null) {
     return useQuery({
         queryKey: ['analysis', params],
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        queryFn: () => api.getAnalysis(params as any),
+        queryFn: () => {
+            if (!params) {
+                throw new Error('Missing split-impact query parameters');
+            }
+            return api.getAnalysis(params);
+        },
         enabled: !!params,
         retry: 1, // Reduce retries for analysis
     });
@@ -58,15 +54,17 @@ export function useCropDiversification(cdk: string, year: number) {
 }
 
 export function useSplitImpactAnalysis(
-    parentCdk: string,
-    childCdks: string[],
+    parentCdk: string | null,
+    childCdks: Array<string | null>,
     splitYear: number,
     crop: string
 ) {
+    const resolvedChildCdks = childCdks.filter((cdk): cdk is string => Boolean(cdk));
+
     return useQuery({
-        queryKey: ['splitImpact', parentCdk, childCdks, splitYear, crop],
-        queryFn: () => api.getSplitImpact(parentCdk, childCdks, splitYear, crop),
-        enabled: !!parentCdk && childCdks.length > 0 && !!crop,
+        queryKey: ['splitImpact', parentCdk, resolvedChildCdks, splitYear, crop],
+        queryFn: () => api.getSplitImpact(parentCdk ?? '', resolvedChildCdks, splitYear, crop),
+        enabled: !!parentCdk && resolvedChildCdks.length > 0 && !!crop,
         staleTime: 1000 * 60 * 60,
         select: (data) => {
             // Validate data structure before passing to component

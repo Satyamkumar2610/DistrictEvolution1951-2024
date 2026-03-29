@@ -1,10 +1,9 @@
 "use client";
 import { ChartSeries } from './ComparisonChart';
-/* eslint-disable @typescript-eslint/no-explicit-any */
+import { AnalysisTimelinePoint } from '../../services/api';
 
-// Simplified props for now
 interface ComparisonTableProps {
-    data: any; // Will type properly later
+    data: AnalysisTimelinePoint[];
     splitYear: number;
     series: ChartSeries[];
 }
@@ -12,14 +11,23 @@ interface ComparisonTableProps {
 export function ComparisonTable({ data, splitYear, series }: ComparisonTableProps) {
     if (!data) return null;
 
+    const getMetricValue = (point: AnalysisTimelinePoint, key: string) => {
+        const value = point[key];
+        return typeof value === 'number' ? value : null;
+    };
+
     const rows = series.map((s: ChartSeries) => {
-        const preData = data.filter((d: any) => d.year >= splitYear - 5 && d.year < splitYear && d[s.id] != null)
-            .map((d: any) => d[s.id]);
+        const preData = data
+            .filter((d) => d.year >= splitYear - 5 && d.year < splitYear)
+            .map((d) => getMetricValue(d, s.id))
+            .filter((value): value is number => value != null);
         const avgPre = preData.length > 0 ? preData.reduce((a: number, b: number) => a + b, 0) / preData.length : null;
 
         // Post-Split Window (Split to Split+5)
-        const postData = data.filter((d: any) => d.year >= splitYear && d.year <= splitYear + 5 && d[s.id] != null)
-            .map((d: any) => d[s.id]);
+        const postData = data
+            .filter((d) => d.year >= splitYear && d.year <= splitYear + 5)
+            .map((d) => getMetricValue(d, s.id))
+            .filter((value): value is number => value != null);
 
         const avgPost = postData.length > 0 ? postData.reduce((a: number, b: number) => a + b, 0) / postData.length : null;
 
@@ -39,9 +47,9 @@ export function ComparisonTable({ data, splitYear, series }: ComparisonTableProp
             entity: s.label,
             pre: avgPre,
             post: avgPost,
-            cvPre: cvPre,
-            cvPost: cvPost,
-            change: change,
+            cvPre,
+            cvPost,
+            change,
             yearsPre: preData.length,
             yearsPost: postData.length
         };
@@ -65,7 +73,7 @@ export function ComparisonTable({ data, splitYear, series }: ComparisonTableProp
                     </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 bg-white">
-                    {rows.map((r: any, idx: number) => (
+                    {rows.map((r, idx) => (
                         <tr key={idx} className="hover:bg-slate-50 transition-colors">
                             <td className="px-4 py-3 font-semibold text-slate-800">{r.entity}</td>
                             <td className="px-4 py-3 text-right text-slate-600 font-medium">

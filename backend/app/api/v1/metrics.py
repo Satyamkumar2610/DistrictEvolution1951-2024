@@ -10,7 +10,7 @@ from app.api.deps import get_db
 from app.exceptions import NotFoundError
 from app.repositories.district_repo import DistrictRepository
 from app.repositories.metric_repo import MetricRepository
-from app.schemas.metric import AggregatedMetric
+from app.schemas.metric import AggregatedMetric, MetricHistoryPoint
 
 router = APIRouter()
 
@@ -32,7 +32,7 @@ async def get_metrics(
     return await repo.get_by_year_and_variable(year, variable)
 
 
-@router.get("/history")
+@router.get("/history", response_model=list[MetricHistoryPoint])
 async def get_time_series(
     cdk: str | None = Query(None, description="District CDK"),
     district: str | None = Query(None, description="District name (if CDK not provided)"),
@@ -77,7 +77,7 @@ async def get_time_series(
     return timeline
 
 
-@router.get("/history/state")
+@router.get("/history/state", response_model=list[MetricHistoryPoint])
 async def get_state_time_series(
     state: str = Query(..., description="State name, e.g. 'Andhra Pradesh'"),
     crop: str = Query("wheat", description="Crop name"),

@@ -9,11 +9,16 @@ from fastapi import APIRouter, Depends
 from app.analytics.anomaly_detection import AnomalyDetector, scan_state_anomalies
 from app.database import get_db
 from app.exceptions import NotFoundError
+from app.schemas.anomalies import (
+    DistrictAnomalyReportResponse,
+    HighRiskResponse,
+    StateAnomalySummaryResponse,
+)
 
 router = APIRouter(prefix="/anomalies", tags=["Anomaly Detection"])
 
 
-@router.get("/district/{cdk}")
+@router.get("/district/{cdk}", response_model=DistrictAnomalyReportResponse)
 async def scan_district_anomalies(
     cdk: str,
     db: asyncpg.Connection = Depends(get_db)
@@ -41,7 +46,7 @@ async def scan_district_anomalies(
     return report.to_dict()
 
 
-@router.get("/state/{state_name}")
+@router.get("/state/{state_name}", response_model=StateAnomalySummaryResponse)
 async def scan_state(
     state_name: str,
     limit: int = 20,
@@ -61,7 +66,7 @@ async def scan_state(
     return result
 
 
-@router.get("/high-risk")
+@router.get("/high-risk", response_model=HighRiskResponse)
 async def get_high_risk_districts(
     limit: int = 10,
     db: asyncpg.Connection = Depends(get_db)

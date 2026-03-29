@@ -5,11 +5,12 @@ import asyncpg
 from fastapi import APIRouter, Depends, Query
 
 from app.database import get_db
+from app.schemas.search import SearchResponse
 
 router = APIRouter(prefix="/search", tags=["Search"])
 
 
-@router.get("")
+@router.get("", response_model=SearchResponse)
 async def search(
     q: str = Query(..., min_length=2, description="Search query"),
     type: str = Query("all", description="Filter: all, district, state"),

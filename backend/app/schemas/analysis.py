@@ -184,12 +184,109 @@ class SplitImpactResponse(BaseModel):
 class StateSummary(BaseModel):
     """Summary statistics for a state."""
     state: str
+    total: int
     total_districts: int
+    changed: int
     boundary_changes: int
+    coverage: int = Field(default=100)
     data_coverage: str = Field(default="High")
+    comparability: str = Field(default="N/A")
 
 
 class SummaryResponse(BaseModel):
     """Response for summary endpoint."""
     states: list[str]
     stats: dict[str, StateSummary]
+
+
+class SplitImpactDistrictSummary(BaseModel):
+    """Split-event summary used by the split-impact dashboard."""
+    id: str
+    parent_district: str
+    parent_name: str
+    parent_cdk: str | None = None
+    split_year: int
+    children_districts: list[str] = Field(default_factory=list)
+    children_names: list[str] = Field(default_factory=list)
+    children_cdks: list[str | None] = Field(default_factory=list)
+    state: str
+    resolved_count: int = 0
+    total_count: int = 0
+    parent_has_agri: bool = False
+    children_has_agri: list[bool] = Field(default_factory=list)
+
+
+class StateDiversificationResponse(BaseModel):
+    state: str
+    year: int
+    cdi: float
+    interpretation: str
+    dominant_crop: str | None
+    dominant_share: float
+    crop_count: int
+    breakdown: dict[str, float]
+
+
+class RelativeEfficiencyResponse(BaseModel):
+    efficiency_score: float
+    district_yield: float
+    potential_yield: float
+    yield_gap: float
+    yield_gap_pct: float
+    percentile_rank: float
+
+
+class HistoricalEfficiencyResponse(BaseModel):
+    efficiency_ratio: float
+    current_yield: float
+    historical_mean: float
+    yield_diff: float
+    is_above_trend: bool
+
+
+class YieldEfficiencyResponse(BaseModel):
+    cdk: str
+    crop: str
+    year: int
+    state: str
+    relative_efficiency: RelativeEfficiencyResponse
+    historical_efficiency: HistoricalEfficiencyResponse
+    units: dict[str, str]
+
+
+class RiskProfileDetailsResponse(BaseModel):
+    risk_category: str
+    volatility_score: float
+    volatility_score_unit: str
+    reliability_rating: str
+    trend_stability: str
+    worst_year: int | None
+    best_year: int | None
+
+
+class ResilienceIndexDetailsResponse(BaseModel):
+    resilience_score: float
+    volatility_component: float
+    retention_component: float
+    drought_risk: str
+    reliability_rating: str
+
+
+class GrowthMatrixResponse(BaseModel):
+    cagr_5y: float
+    cagr_historical: float
+    mean_yield_5y: float
+    matrix_quadrant: str
+    trend_direction: str
+    formula: str
+
+
+class DistrictRiskProfileResponse(BaseModel):
+    cdk: str
+    crop: str
+    metric: str
+    metric_unit: str
+    years_analyzed: int
+    risk_profile: RiskProfileDetailsResponse
+    resilience_index: ResilienceIndexDetailsResponse
+    growth_matrix: GrowthMatrixResponse

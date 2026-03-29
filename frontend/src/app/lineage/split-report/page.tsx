@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { api } from '../../services/api';
+import { api, type AnalysisResult, type SplitDistrict, type SplitImpactQueryParams, type SplitImpactResult, type SplitSpecializationResult } from '../../services/api';
 import {
     GitBranch, Download, FileText, TrendingUp, TrendingDown,
     Minus, ChevronDown, ChevronUp, AlertCircle, ArrowRight,
@@ -16,6 +16,17 @@ const METRICS = [
     { value: 'area', label: 'Area (Ha)' },
     { value: 'production', label: 'Production (Tonnes)' },
 ];
+type ExpandedSection = 'pre' | 'post' | 'impact' | 'spec';
+
+const isNonNullString = (value: string | null): value is string => Boolean(value);
+
+function getStdDev(variance: number | undefined) {
+    if (variance == null) {
+        return '—';
+    }
+
+    return Math.sqrt(Math.max(variance, 0)).toFixed(1);
+}
 
 function StatBox({ label, value, unit, color = 'text-slate-900', sub }: {
     label: string; value: string | number; unit?: string; color?: string; sub?: string;
@@ -45,12 +56,16 @@ function AssessmentBadge({ assessment }: { assessment: string }) {
 
 export default function SplitReportPage() {
     const [selectedState, setSelectedState] = useState('');
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [selectedEvent, setSelectedEvent] = useState<any>(null);
+    const [selectedEvent, setSelectedEvent] = useState<SplitDistrict | null>(null);
     const [crop, setCrop] = useState('wheat');
     const [metric, setMetric] = useState('yield');
     const [generated, setGenerated] = useState(false);
-    const [expandedSections, setExpandedSections] = useState({ pre: true, post: true, impact: true, spec: true });
+    const [expandedSections, setExpandedSections] = useState<Record<ExpandedSection, boolean>>({
+        pre: true,
+        post: true,
+        impact: true,
+        spec: true,
+    });
 
     // Queries
     const { data: summaryData } = useQuery({ queryKey: ['stateSummary'], queryFn: api.getSummary, staleTime: 3600000 });
@@ -73,58 +88,63 @@ export default function SplitReportPage() {
     });
 
     // Full analysis from the backend
-    const analysisParams = selectedEvent && generated ? {
-        parent: selectedEvent.parent_cdk,
-        children: selectedEvent.children_cdks.join(','),
+    const selectedParentCdk = selectedEvent?.parent_cdk ?? null;
+    const resolvedChildCdks = useMemo(
+        () => selectedEvent?.children_cdks.filter(isNonNullString) ?? [],
+        [selectedEvent],
+    );
+
+    const analysisParams: SplitImpactQueryParams | null = selectedEvent && selectedParentCdk && generated ? {
+        parent: selectedParentCdk,
+        children: resolvedChildCdks.join(','),
         splitYear: selectedEvent.split_year,
         crop,
         metric,
         mode: 'before_after',
     } : null;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: analysis, isLoading: loadingAnalysis } = useQuery<any>({
+    const { data: analysis, isLoading: loadingAnalysis } = useQuery<AnalysisResult>({
         queryKey: ['split-report-analysis', analysisParams],
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        queryFn: () => api.getAnalysis(analysisParams as any),
+        queryFn: () => api.getAnalysis(analysisParams!),
         enabled: !!analysisParams,
         retry: 1,
     });
 
     // Quick split-impact for summary stats
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: impactData } = useQuery<any>({
+    const { data: impactData } = useQuery<SplitImpactResult>({
         queryKey: ['split-impact-quick', selectedEvent?.parent_cdk, selectedEvent?.children_cdks, selectedEvent?.split_year, crop],
         queryFn: () => api.getSplitImpact(
-            selectedEvent.parent_cdk,
-            selectedEvent.children_cdks.filter(Boolean),
-            selectedEvent.split_year,
+            selectedParentCdk!,
+            resolvedChildCdks,
+            selectedEvent!.split_year,
             crop,
         ),
-        enabled: !!selectedEvent && generated && !!selectedEvent.parent_cdk,
+        enabled: !!selectedEvent && generated && !!selectedParentCdk,
     });
 
-    const { data: specData } = useQuery({
+    const { data: specData } = useQuery<SplitSpecializationResult>({
         queryKey: ['split-spec', selectedEvent?.parent_cdk, selectedEvent?.children_cdks, selectedEvent?.split_year],
         queryFn: () => api.getSplitSpecialization(
-            selectedEvent.parent_cdk,
-            selectedEvent.children_cdks.filter(Boolean),
-            selectedEvent.split_year
+            selectedParentCdk!,
+            resolvedChildCdks,
+            selectedEvent!.split_year
         ),
-        enabled: !!selectedEvent && generated && !!selectedEvent.parent_cdk,
+        enabled: !!selectedEvent && generated && !!selectedParentCdk,
     });
 
-    const advStats = analysis?.advanced_stats || analysis?.advancedStats;
+    const advStats = analysis?.advanced_stats ?? analysis?.advancedStats;
     const hasData = analysis && Array.isArray(analysis.data) && analysis.data.length > 0;
 
     // Chart data
     const chartOption = useMemo(() => {
         if (!analysis?.data || !analysis?.series) return null;
-        const years = analysis.data.map((d: { year: number }) => d.year);
-        const series = analysis.series.map((s: { id: string; label: string; style?: string }) => ({
+        const timelineData = analysis.data;
+        const seriesMeta = analysis.series;
+        const years = timelineData.map((d) => d.year);
+        const series = seriesMeta.map((s) => ({
             name: s.label,
             type: 'line',
-            data: analysis.data.map((d: Record<string, number>) => d[s.id] ?? null),
+            data: timelineData.map((d) => d[s.id] ?? null),
             smooth: true,
             symbol: 'circle',
             symbolSize: 5,
@@ -253,7 +273,7 @@ export default function SplitReportPage() {
         URL.revokeObjectURL(url);
     };
 
-    const toggleSection = (key: 'pre' | 'post' | 'impact') => {
+    const toggleSection = (key: ExpandedSection) => {
         setExpandedSections(prev => ({ ...prev, [key]: !prev[key] }));
     };
 
@@ -289,7 +309,7 @@ export default function SplitReportPage() {
                                 className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-indigo-500 outline-none"
                             >
                                 <option value="">Select state...</option>
-                                {states.map((s) => <option key={s as string} value={s as string}>{s as string}</option>)}
+                                {states.map((stateName) => <option key={stateName} value={stateName}>{stateName}</option>)}
                             </select>
                         </div>
 
@@ -299,7 +319,7 @@ export default function SplitReportPage() {
                             <select
                                 value={selectedEvent?.id || ''}
                                 onChange={(e) => {
-                                    const ev = splitEvents?.find((s: { id: string }) => s.id === e.target.value);
+                                    const ev = splitEvents?.find((splitEvent) => splitEvent.id === e.target.value);
                                     setSelectedEvent(ev || null);
                                     setGenerated(false);
                                 }}
@@ -307,7 +327,7 @@ export default function SplitReportPage() {
                                 className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-indigo-500 outline-none disabled:opacity-50"
                             >
                                 <option value="">Select split event...</option>
-                                {splitEvents?.map((ev: { id: string; parent_district: string; split_year: number; children_districts: string[] }) => (
+                                {splitEvents?.map((ev) => (
                                     <option key={ev.id} value={ev.id}>
                                         {ev.parent_district} → {ev.children_districts.length} districts ({ev.split_year})
                                     </option>
@@ -383,7 +403,7 @@ export default function SplitReportPage() {
                 )}
 
                 {/* ══════════════════ REPORT OUTPUT ══════════════════ */}
-                {generated && hasData && (
+                {generated && hasData && selectedEvent && (
                     <div className="space-y-6 animate-in">
                         {/* Export bar */}
                         <div className="flex items-center justify-between">
@@ -432,9 +452,9 @@ export default function SplitReportPage() {
                                     {advStats?.pre ? (
                                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                                             <StatBox label="Mean Yield" value={advStats.pre.mean?.toFixed(1) ?? '—'} unit="kg/ha" color="text-blue-700" />
-                                            <StatBox label="Std Dev" value={advStats.pre.std_dev?.toFixed(1) ?? '—'} unit="kg/ha" />
+                                            <StatBox label="Std Dev" value={getStdDev(advStats.pre.variance)} unit="kg/ha" />
                                             <StatBox label="CV %" value={advStats.pre.cv?.toFixed(1) ?? '—'} unit="%" sub={advStats.pre.cv > 25 ? 'High variability' : 'Stable'} />
-                                            <StatBox label="Data Points" value={advStats.pre.n ?? '—'} unit="yrs" />
+                                            <StatBox label="Data Points" value={advStats.pre.n_observations ?? '—'} unit="yrs" />
                                         </div>
                                     ) : impactData?.before ? (
                                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -503,9 +523,9 @@ export default function SplitReportPage() {
                                     {advStats?.post ? (
                                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
                                             <StatBox label="Combined Mean" value={advStats.post.mean?.toFixed(1) ?? '—'} unit="kg/ha" color="text-emerald-700" />
-                                            <StatBox label="Std Dev" value={advStats.post.std_dev?.toFixed(1) ?? '—'} unit="kg/ha" />
+                                            <StatBox label="Std Dev" value={getStdDev(advStats.post.variance)} unit="kg/ha" />
                                             <StatBox label="CV %" value={advStats.post.cv?.toFixed(1) ?? '—'} unit="%" sub={advStats.post.cv > 25 ? 'High variability' : 'Stable'} />
-                                            <StatBox label="Data Points" value={advStats.post.n ?? '—'} unit="yrs" />
+                                            <StatBox label="Data Points" value={advStats.post.n_observations ?? '—'} unit="yrs" />
                                         </div>
                                     ) : impactData?.after ? (
                                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4">
@@ -519,9 +539,9 @@ export default function SplitReportPage() {
                                         <div>
                                             <h4 className="text-xs font-bold text-slate-500 uppercase mb-2">Child District Breakdown</h4>
                                             <div className="grid gap-2">
-                                                {Object.entries(impactData.after.by_child).map(([cdk, data]: [string, unknown]) => {
-                                                    const child = data as { avg: number; yields?: number[] };
-                                                    const childName = selectedEvent.children_districts?.[selectedEvent.children_cdks?.indexOf(cdk)] || cdk;
+                                                {Object.entries(impactData.after.by_child).map(([cdk, child]) => {
+                                                    const childIndex = selectedEvent.children_cdks.indexOf(cdk);
+                                                    const childName = childIndex >= 0 ? selectedEvent.children_districts?.[childIndex] || cdk : cdk;
                                                     return (
                                                         <div key={cdk} className="flex items-center justify-between bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5">
                                                             <div>
@@ -583,7 +603,7 @@ export default function SplitReportPage() {
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        {advStats.insights.children_performance.map((cp: { rank: number; cdk: string; name?: string; mean_yield: number; cv: number; cagr: number; observations: number }) => (
+                                                        {advStats.insights.children_performance.map((cp) => (
                                                             <tr key={cp.cdk} className="border-t border-slate-100">
                                                                 <td className="px-3 py-1.5 text-slate-400 font-mono">{cp.rank}</td>
                                                                 <td className="px-3 py-1.5 text-slate-900 font-medium">{cp.name || cp.cdk}</td>
@@ -662,8 +682,8 @@ export default function SplitReportPage() {
 
                                                 {/* Std Dev */}
                                                 <div className="bg-white px-4 py-2 text-slate-700 font-medium text-xs">Std Dev</div>
-                                                <div className="bg-white px-4 py-2 text-center font-mono text-slate-600">{advStats.pre?.std_dev?.toFixed(1) ?? '—'}</div>
-                                                <div className="bg-white px-4 py-2 text-center font-mono text-slate-600">{advStats.post?.std_dev?.toFixed(1) ?? '—'}</div>
+                                                <div className="bg-white px-4 py-2 text-center font-mono text-slate-600">{getStdDev(advStats.pre?.variance)}</div>
+                                                <div className="bg-white px-4 py-2 text-center font-mono text-slate-600">{getStdDev(advStats.post?.variance)}</div>
 
                                                 {/* CV */}
                                                 <div className="bg-white px-4 py-2 text-slate-700 font-medium text-xs">CV %</div>
@@ -672,8 +692,8 @@ export default function SplitReportPage() {
 
                                                 {/* N */}
                                                 <div className="bg-white px-4 py-2 text-slate-700 font-medium text-xs">Observations</div>
-                                                <div className="bg-white px-4 py-2 text-center font-mono text-slate-600">{advStats.pre?.n ?? '—'}</div>
-                                                <div className="bg-white px-4 py-2 text-center font-mono text-slate-600">{advStats.post?.n ?? '—'}</div>
+                                                <div className="bg-white px-4 py-2 text-center font-mono text-slate-600">{advStats.pre?.n_observations ?? '—'}</div>
+                                                <div className="bg-white px-4 py-2 text-center font-mono text-slate-600">{advStats.post?.n_observations ?? '—'}</div>
                                             </div>
                                         </div>
                                     )}
@@ -683,9 +703,9 @@ export default function SplitReportPage() {
                                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                                             <StatBox
                                                 label="Mean Change"
-                                                value={advStats.impact.mean_change?.toFixed(1) ?? '—'}
+                                                value={advStats.impact.absolute_change?.toFixed(1) ?? '—'}
                                                 unit="kg/ha"
-                                                color={advStats.impact.mean_change >= 0 ? 'text-emerald-700' : 'text-red-700'}
+                                                color={advStats.impact.absolute_change >= 0 ? 'text-emerald-700' : 'text-red-700'}
                                             />
                                             <StatBox
                                                 label="% Change"
@@ -694,10 +714,10 @@ export default function SplitReportPage() {
                                                 color={advStats.impact.pct_change >= 0 ? 'text-emerald-700' : 'text-red-700'}
                                             />
                                             <StatBox
-                                                label="Statistical Sig."
-                                                value={advStats.impact.significant ? 'Yes' : 'No'}
-                                                color={advStats.impact.significant ? 'text-emerald-700' : 'text-amber-600'}
-                                                sub={advStats.impact.p_value != null ? `p=${advStats.impact.p_value.toFixed(4)}` : undefined}
+                                                label="Impact CI"
+                                                value={advStats.impact.uncertainty ? `${advStats.impact.uncertainty.lower.toFixed(1)} to ${advStats.impact.uncertainty.upper.toFixed(1)}` : '—'}
+                                                color={advStats.impact.uncertainty ? 'text-indigo-700' : 'text-slate-500'}
+                                                sub={advStats.impact.uncertainty ? `${Math.round((advStats.impact.uncertainty.confidence ?? 0.95) * 100)}% ${advStats.impact.uncertainty.method ?? 'confidence interval'}` : 'Not available'}
                                             />
                                         </div>
                                     )}
@@ -772,11 +792,10 @@ export default function SplitReportPage() {
                 )}
 
                 {/* ─── SECTION 4: ECONOMIC SPECIALIZATION ─── */}
-                {generated && specData && (
+                {generated && specData && selectedEvent && (
                     <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mt-6 animate-in">
                         <button
-                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                            onClick={() => toggleSection('spec' as any)}
+                            onClick={() => toggleSection('spec')}
                             className="w-full flex items-center justify-between px-5 py-4 hover:bg-slate-50 transition"
                         >
                             <div className="flex items-center gap-3">
@@ -788,12 +807,10 @@ export default function SplitReportPage() {
                                     <p className="text-xs text-slate-500">Multi-crop matrix divergence (Parent vs Children)</p>
                                 </div>
                             </div>
-                            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                            {(expandedSections as any).spec ? <ChevronUp size={16} className="text-slate-400" /> : <ChevronDown size={16} className="text-slate-400" />}
+                            {expandedSections.spec ? <ChevronUp size={16} className="text-slate-400" /> : <ChevronDown size={16} className="text-slate-400" />}
                         </button>
 
-                        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                        {(expandedSections as any).spec && (
+                        {expandedSections.spec && (
                             <div className="px-5 pb-5 border-t border-slate-100 pt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     <h4 className="text-xs font-bold text-slate-500 uppercase mb-3 text-center">Crop Mix Radar Comparison</h4>
@@ -813,7 +830,7 @@ export default function SplitReportPage() {
                                                 <div key={childName} className="flex items-center justify-between p-3 bg-white border border-slate-200 rounded-lg">
                                                     <span className="font-semibold text-slate-800 text-sm">{childName}</span>
                                                     <div className="text-right">
-                                                        <span className="font-mono font-bold text-fuchsia-700 text-lg">{score as React.ReactNode}</span>
+                                                        <span className="font-mono font-bold text-fuchsia-700 text-lg">{score}</span>
                                                         <span className="text-[10px] text-slate-400 ml-1">pts</span>
                                                     </div>
                                                 </div>

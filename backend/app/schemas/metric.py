@@ -37,6 +37,14 @@ class MetricTimeSeries(BaseModel):
         description="List of {year, value} points")
 
 
+class MetricHistoryPoint(BaseModel):
+    """Pivoted metric history row for charts and tables."""
+    year: int = Field(..., description="Observation year")
+    area: float = Field(default=0, description="Area for the selected crop")
+    production: float = Field(default=0, description="Production for the selected crop")
+    yield_: float = Field(default=0, alias="yield", description="Yield for the selected crop")
+
+
 class MetricQueryResult(BaseModel):
     """Result of a metrics query."""
     total: int

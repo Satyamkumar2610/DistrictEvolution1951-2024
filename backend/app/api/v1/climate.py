@@ -9,7 +9,15 @@ from fastapi import APIRouter, Depends, Query
 
 from app.analytics import get_analyzer
 from app.api.deps import get_db
-from app.exceptions import NotFoundError
+from app.exceptions import NotFoundError, ValidationError
+from app.schemas.climate import (
+    RainfallMapItem,
+    RainfallResponse,
+    RainfallStatsResponse,
+    RainfallYieldCorrelationResponse,
+    StateRainfallStatsResponse,
+    WaterStressResponse,
+)
 from app.services.rainfall_service import (
     get_all_rainfall,
     get_rainfall_by_district,
@@ -21,7 +29,7 @@ from app.services.rainfall_service import (
 router = APIRouter()
 
 
-@router.get("/rainfall/stats")
+@router.get("/rainfall/stats", response_model=RainfallStatsResponse)
 async def get_rainfall_db_stats(db: asyncpg.Connection = Depends(get_db)):
     """Get database statistics for rainfall data."""
     count = await get_rainfall_count(db)
@@ -32,7 +40,7 @@ async def get_rainfall_db_stats(db: asyncpg.Connection = Depends(get_db)):
     }
 
 
-@router.get("/rainfall")
+@router.get("/rainfall", response_model=RainfallResponse)
 async def get_rainfall(
     state: str = Query(..., description="State name", max_length=50),
     district: str = Query(..., description="District name", max_length=50),
@@ -46,7 +54,7 @@ async def get_rainfall(
     rainfall = await get_rainfall_by_district(db, state, district)
 
     if not rainfall:
-        return {"error": f"No rainfall data found for {district}, {state}"}
+        raise NotFoundError("Rainfall data", f"{district}, {state}")
 
     return {
         "state": rainfall.state,
@@ -76,7 +84,7 @@ async def get_rainfall(
     }
 
 
-@router.get("/rainfall/all")
+@router.get("/rainfall/all", response_model=list[RainfallMapItem])
 async def get_all_rainfall_data(
     state: str | None = Query(None, description="Filter by state", max_length=50),
     db: asyncpg.Connection = Depends(get_db),
@@ -89,16 +97,19 @@ async def get_all_rainfall_data(
     return data
 
 
-@router.get("/rainfall/state-stats")
+@router.get("/rainfall/state-stats", response_model=StateRainfallStatsResponse)
 async def get_state_stats(
     state: str = Query(..., description="State name", max_length=50),
     db: asyncpg.Connection = Depends(get_db),
 ):
     """Get aggregated rainfall statistics for a state."""
-    return await get_state_rainfall_stats(db, state)
+    stats = await get_state_rainfall_stats(db, state)
+    if "error" in stats:
+        raise NotFoundError("Rainfall data", state)
+    return stats
 
 
-@router.get("/water-stress")
+@router.get("/water-stress", response_model=WaterStressResponse)
 async def get_water_stress(
     state: str = Query(..., description="State name", max_length=50),
     year: int = Query(2020, description="Year to analyze (e.g., 2020)", ge=1950, le=2025),
@@ -124,7 +135,7 @@ async def get_water_stress(
     }
 
 
-@router.get("/correlation")
+@router.get("/correlation", response_model=RainfallYieldCorrelationResponse)
 async def get_rainfall_yield_correlation(
     state: str = Query(..., description="State name", max_length=50),
     crop: str = Query(..., description="Crop name", max_length=30),
@@ -161,7 +172,7 @@ async def get_rainfall_yield_correlation(
             yield_rows: list = await db.fetch(yield_query, state, variable, year)  # type: ignore
 
     if not yield_rows or len(yield_rows) < 5:
-        return {"error": "Insufficient yield data (need at least 5 districts)"}
+        raise ValidationError(detail="Insufficient yield data (need at least 5 districts)")
 
     # Match with rainfall data
     matched_data = []
@@ -178,7 +189,9 @@ async def get_rainfall_yield_correlation(
             })
 
     if len(matched_data) < 5:
-        return {"error": f"Could not match sufficient districts with rainfall data ({len(matched_data)} found)"}
+        raise ValidationError(
+            detail=f"Could not match sufficient districts with rainfall data ({len(matched_data)} found)"
+        )
 
     # Calculate correlations
     yields = [d["yield"] for d in matched_data]

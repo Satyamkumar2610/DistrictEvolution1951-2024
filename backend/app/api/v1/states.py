@@ -7,15 +7,16 @@ from fastapi import APIRouter, Depends, Query
 
 from app.database import get_db
 from app.exceptions import NotFoundError
+from app.schemas.district import StateCount, StateOverview
 
 router = APIRouter(prefix="/states", tags=["States"])
 
 
-@router.get("/{state_name}/overview")
+@router.get("/{state_name}/overview", response_model=StateOverview)
 async def get_state_overview(
     state_name: str,
     crop: str = Query("wheat", description="Crop to analyze"),
-    year: int = Query(None, description="Year (defaults to latest)"),
+    year: int | None = Query(None, description="Year (defaults to latest)"),
     db: asyncpg.Connection = Depends(get_db),
 ):
     """
@@ -131,7 +132,7 @@ async def get_state_overview(
     }
 
 
-@router.get("/list")
+@router.get("/list", response_model=list[StateCount])
 async def list_states(db: asyncpg.Connection = Depends(get_db)):
     """
     List all states with district counts.

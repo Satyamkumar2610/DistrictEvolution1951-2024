@@ -8,7 +8,7 @@ from fastapi import APIRouter, Depends, Query
 from app.api.deps import get_db
 from app.exceptions import NotFoundError
 from app.repositories.district_repo import DistrictRepository
-from app.schemas.district import District, DistrictList
+from app.schemas.district import District, DistrictList, StateNameList
 
 router = APIRouter()
 
@@ -35,7 +35,7 @@ async def list_districts(
     return DistrictList(total=len(districts), items=districts)
 
 
-@router.get("/states")
+@router.get("/states", response_model=StateNameList)
 async def list_states(db: asyncpg.Connection = Depends(get_db)):
     """Get list of all unique states."""
     repo = DistrictRepository(db)

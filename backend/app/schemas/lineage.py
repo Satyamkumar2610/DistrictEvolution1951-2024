@@ -66,3 +66,71 @@ class SplitEventSummary(BaseModel):
     children_names: list[str]
     children_count: int
     coverage: str = Field(default="High", description="Data coverage quality")
+
+
+class DistrictHistoryItem(BaseModel):
+    state_name: str
+    split_year: int
+    parent_district: str
+    child_district: str
+    parent_cdk: str | None = None
+    child_cdk: str | None = None
+    source: str
+
+
+class TrackingDistrict(BaseModel):
+    cdk: str
+    district_name: str
+    state_name: str
+    start_year: int | None = None
+    end_year: int | None = None
+
+
+class TrackingCoverage(BaseModel):
+    years_with_data: int
+    first_year: int | None = None
+    last_year: int | None = None
+    variables: int
+    total_records: int
+
+
+class TrackingSource(BaseModel):
+    source: str
+    record_count: int
+    from_year: int | None = None
+    to_year: int | None = None
+
+
+class TrackingLineage(BaseModel):
+    split_into: list[str] = Field(default_factory=list)
+    created_from: list[str] = Field(default_factory=list)
+
+
+class ProvenanceTrackingResponse(BaseModel):
+    district: TrackingDistrict
+    data_coverage: TrackingCoverage
+    data_sources: list[TrackingSource]
+    lineage: TrackingLineage
+
+
+class CoverageDistrictItem(BaseModel):
+    cdk: str
+    district_name: str
+    start_year: int | None = None
+    end_year: int | None = None
+    years_with_data: int
+    record_count: int
+    lineage_status: str
+
+
+class StateCoverageResponse(BaseModel):
+    state: str
+    districts: int
+    coverage: list[CoverageDistrictItem]
+
+
+class UnmappedSplitItem(BaseModel):
+    district: str
+    state: str
+    year: int
+    role: str

@@ -5,19 +5,16 @@ import {
     Activity,
     BarChart3
 } from 'lucide-react';
+import { AnalysisAdvancedStats } from '../../services/api';
 
 
 
 interface AdvancedStatsPanelProps {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    stats: any;
+    stats: AnalysisAdvancedStats;
     metric: string;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function AdvancedStatsPanel({ stats, metric }: AdvancedStatsPanelProps) {
-    if (!stats) return null;
-
+export function AdvancedStatsPanel({ stats, metric: _metric }: AdvancedStatsPanelProps) {
     if (!stats) return null;
 
     // unit variable removed as it was unused (stats cards have hardcoded formatting for now)

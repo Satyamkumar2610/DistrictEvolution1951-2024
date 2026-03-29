@@ -12,6 +12,7 @@ from app.analytics.advanced import SimulationResult, get_advanced_analyzer
 from app.api.deps import get_db
 from app.exceptions import NotFoundError, ValidationError
 from app.ml.prediction_engine import PredictionEngine
+from app.schemas.simulation import PredictionV2Response
 
 router = APIRouter()
 
@@ -160,7 +161,7 @@ async def get_simulation(
 # ──────────────────────────────────────────────────────────────────────────────
 
 
-@router.get("/v2")
+@router.get("/v2", response_model=PredictionV2Response)
 async def get_prediction_v2(
     district: str = Query(..., description="District Name"),
     crop: str = Query(..., description="Crop Name"),

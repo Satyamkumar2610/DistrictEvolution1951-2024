@@ -9,19 +9,20 @@ import { AdvancedStatsPanel } from './AdvancedStatsPanel';
 import { ImpactScorecard } from './ImpactScorecard';
 import { AlertCircle, Sprout, Loader2 } from 'lucide-react';
 import { useAnalysis } from '../../hooks/useSplitImpact';
+import { AnalysisMode, SplitDistrict } from '../../services/api';
 
 interface ComparisonViewProps {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    event: any;
+    event: SplitDistrict;
     crop: string;
     metric: string;
-    mode: string;
+    mode: AnalysisMode;
 }
 
 export function ComparisonView({ event, crop, metric, mode }: ComparisonViewProps) {
-    const params = event ? {
+    const resolvedChildCdks = event.children_cdks.filter((cdk): cdk is string => Boolean(cdk));
+    const params = event.parent_cdk && resolvedChildCdks.length > 0 ? {
         parent: event.parent_cdk,
-        children: event.children_cdks.join(','),
+        children: resolvedChildCdks.join(','),
         splitYear: event.split_year,
         crop,
         metric,
@@ -32,7 +33,10 @@ export function ComparisonView({ event, crop, metric, mode }: ComparisonViewProp
 
     if (!event) return null;
 
-    const hasData = payload && Array.isArray(payload.data) && payload.data.length > 0 && Array.isArray(payload.series);
+    const timelineData = payload?.data ?? [];
+    const chartSeries = payload?.series ?? [];
+    const advancedStats = payload?.advancedStats ?? payload?.advanced_stats;
+    const hasData = Boolean(timelineData.length && chartSeries.length);
 
     return (
         <div className="bg-white p-3 md:p-6 rounded-xl border border-slate-200 shadow-sm animate-in fade-in duration-500 flex flex-col h-full overflow-hidden">
@@ -64,18 +68,18 @@ export function ComparisonView({ event, crop, metric, mode }: ComparisonViewProp
                             <ImpactScorecard event={event} crop={crop} />
                         </div>
 
-                        {/* Advanced Stats */}\n
-                        {(payload.advancedStats || payload.advanced_stats) && (
+                        {/* Advanced Stats */}
+                        {advancedStats && (
                             <div className="px-3 md:px-4 pt-3 md:pt-4">
-                                <AdvancedStatsPanel stats={payload.advancedStats || payload.advanced_stats} metric={metric} />
+                                <AdvancedStatsPanel stats={advancedStats} metric={metric} />
                             </div>
                         )}
 
                         {/* Chart Area */}
                         <div className="min-h-[250px] md:min-h-[300px] p-3 md:p-4">
                             <ComparisonChart
-                                data={payload.data}
-                                series={payload.series}
+                                data={timelineData}
+                                series={chartSeries}
                                 splitYear={event.split_year}
                                 metric={metric}
                             />
@@ -84,8 +88,8 @@ export function ComparisonView({ event, crop, metric, mode }: ComparisonViewProp
                         {/* Stats Table - Hidden on very small screens */}
                         <div className="px-3 md:px-4 pb-3 md:pb-4 hidden sm:block">
                             <ComparisonTable
-                                data={payload.data}
-                                series={payload.series}
+                                data={timelineData}
+                                series={chartSeries}
                                 splitYear={event.split_year}
                             />
                         </div>

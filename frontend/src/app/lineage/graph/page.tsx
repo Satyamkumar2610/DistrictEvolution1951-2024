@@ -16,16 +16,7 @@ import dagre from 'dagre';
 import { api } from '../../services/api';
 import { GitBranch, Database, MapPin, Search, ArrowRight, Info, Activity } from 'lucide-react';
 
-interface SplitEvent {
-    state_name: string;
-    split_year: number;
-    parent_district: string;
-    child_district: string;
-    parent_cdk: string;
-    child_cdk: string;
-    source: string;
-}
-
+import { LineageCoverageItem, SplitEvent } from '../../services/api/types';
 // Dagre topological layout engine
 const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'LR') => {
     const dagreGraph = new dagre.graphlib.Graph();
@@ -164,7 +155,7 @@ export default function LineagePage() {
 
     // Handle Node Click
     const onNodeClick = (event: React.MouseEvent, node: Node) => {
-        const matchedDistrict = coverage?.coverage?.find((d: any) => d.district_name === node.data.label);
+        const matchedDistrict = coverage?.coverage?.find((d: LineageCoverageItem) => d.district_name === node.data.label);
         if (matchedDistrict) {
             setSelectedCdk(matchedDistrict.cdk);
             if (window.innerWidth < 1280) {
@@ -308,8 +299,8 @@ export default function LineagePage() {
                                 </div>
                                 <div className="max-h-[300px] overflow-y-auto custom-scrollbar space-y-1 pr-1">
                                     {coverage.coverage
-                                        .filter((d: any) => !coverageSearch || d.district_name.toLowerCase().includes(coverageSearch.toLowerCase()))
-                                        .map((d: any, i: number) => (
+                                        .filter((d: LineageCoverageItem) => !coverageSearch || d.district_name.toLowerCase().includes(coverageSearch.toLowerCase()))
+                                        .map((d: LineageCoverageItem, i: number) => (
                                         <button
                                             key={i}
                                             onClick={() => setSelectedCdk(d.cdk)}
