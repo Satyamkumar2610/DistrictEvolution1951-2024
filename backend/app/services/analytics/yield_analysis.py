@@ -5,7 +5,7 @@ import logging
 import math
 import warnings
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, TypedDict
 
 from app.cache import CacheTTL, cached  # type: ignore[import]
 
@@ -23,6 +23,23 @@ class YieldTrend:
     cagr: float
     volatility: float
     trend: str
+
+
+class DistrictGapEntry(TypedDict):
+    name: str
+    gaps: list[float]
+    yields: list[float]
+
+
+class YieldGapRankingEntry(TypedDict):
+    cdk: str
+    district_name: str
+    avg_gap: float
+    latest_gap: float
+    avg_yield: float
+    gap_trend: float
+    status: str
+    rank: int
 
 
 class YieldAnalysisService(BaseAnalyticsService):
@@ -62,7 +79,7 @@ class YieldAnalysisService(BaseAnalyticsService):
             if yields[i - 1] > 0:
                 yoy_changes.append((yields[i] - yields[i - 1]) / yields[i - 1])
 
-        volatility = 0
+        volatility = 0.0
         if yoy_changes:
             mean_change = sum(yoy_changes) / len(yoy_changes)
             variance = sum((c - mean_change) ** 2 for c in yoy_changes) / len(yoy_changes)
@@ -236,12 +253,12 @@ class YieldAnalysisService(BaseAnalyticsService):
         if not rows:
             return {"error": "No data found for the given parameters"}
 
-        yearly_data = {}
+        yearly_data: dict[int, list[tuple[str, str, float]]] = {}
         for r in rows:
             yearly_data.setdefault(r['year'], []).append((r['cdk'], r['district_name'], r['value']))
 
         convergence_timeline = []
-        district_gaps = {}
+        district_gaps: dict[str, DistrictGapEntry] = {}
 
         for yr, dist_vals in sorted(yearly_data.items()):
             yields = sorted([v[2] for v in dist_vals])
@@ -266,13 +283,13 @@ class YieldAnalysisService(BaseAnalyticsService):
                 "avg_gap": round(total_gap / len(dist_vals), 2)
             })
 
-        rankings = []
+        rankings: list[YieldGapRankingEntry] = []
         for cdk, data in district_gaps.items():
             gaps, yields = data["gaps"], data["yields"]
             if not gaps:
                 continue
 
-            gap_trend, n_years = 0, len(gaps)
+            gap_trend, n_years = 0.0, len(gaps)
             if n_years > 5:
                 x = list(range(n_years))
                 denom = n_years * sum(x_i * x_i for x_i in x) - sum(x) * sum(x)
@@ -289,7 +306,8 @@ class YieldAnalysisService(BaseAnalyticsService):
                 "latest_gap": round(gaps[-1], 2),
                 "avg_yield": round(sum(yields) / len(yields), 2),
                 "gap_trend": round(gap_trend, 2),
-                "status": "Closing" if gap_trend < -1 else "Widening" if gap_trend > 1 else "Stagnant"
+                "status": "Closing" if gap_trend < -1 else "Widening" if gap_trend > 1 else "Stagnant",
+                "rank": 0,
             })
 
         rankings.sort(key=lambda x: x["avg_gap"], reverse=True)

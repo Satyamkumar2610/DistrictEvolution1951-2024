@@ -4,7 +4,7 @@ Crop Diversity Analytics Service.
 import contextlib
 import math
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, TypedDict
 
 from app.cache import CacheTTL, cached  # type: ignore[import]
 
@@ -22,6 +22,11 @@ class CropDiversification:
     dominant_crop: str
     dominant_share: float
     breakdown: dict[str, float]
+
+
+class SplitChildMix(TypedDict):
+    cdk: str
+    mix: dict[str, float]
 
 
 class CropDiversityService(BaseAnalyticsService):
@@ -197,7 +202,7 @@ class CropDiversityService(BaseAnalyticsService):
 
         parent_pre_mix = await get_crop_mix([parent_cdk], pre_start, pre_end)
 
-        children_post_mix = {}
+        children_post_mix: dict[str, SplitChildMix] = {}
         for cdk in child_cdks:
             if not cdk:
                 continue
