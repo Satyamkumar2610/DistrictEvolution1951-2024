@@ -6,7 +6,6 @@ v4: Ancestor-fallback yield lookup — when children lack data, uses parent CDK.
 """
 import json
 import logging
-from dataclasses import dataclass
 from typing import Any, Literal, cast
 
 import asyncpg  # type: ignore
