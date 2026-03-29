@@ -60,6 +60,17 @@ services:
     depends_on:
       - backend
 
+  tileserv:
+    image: maplibre/martin:latest
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    environment:
+      - DATABASE_URL=postgresql://user:password@db:5432/i_ascap
+    depends_on:
+      db:
+        condition: service_healthy
+
 volumes:
   postgres_data:
   redis_data:

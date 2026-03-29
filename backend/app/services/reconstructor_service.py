@@ -39,30 +39,36 @@ class ReconstructorService:
         self._graph_cache: dict[str, list[tuple[list[str], int]]] | None = None
         self.apportioner = DataApportioner()
 
-    async def _get_lineage_graph(self) -> LineageGraph:
-        """Fetch split_events and build a deduplicated LineageGraph."""
-        if self._lineage_graph is not None:
-            return self._lineage_graph
+    async def _fetch_lineage_graph(self, base_cdk: str) -> LineageGraph:
+        """Fetch native Postgres Recursive CTE graph for a specific root."""
+        query = """
+        WITH RECURSIVE lineage_tree AS (
+            SELECT 
+                parent_cdk, child_cdks, split_year,
+                ARRAY[parent_cdk] AS lineage_path,
+                1 as generation
+            FROM split_events
+            WHERE parent_cdk = $1
 
-        events = await self.db.fetch(
-            "SELECT parent_cdk, child_cdks, split_year FROM split_events"
+            UNION ALL
+
+            SELECT 
+                se.parent_cdk, se.child_cdks, se.split_year,
+                lt.lineage_path || se.parent_cdk,
+                lt.generation + 1
+            FROM split_events se
+            JOIN lineage_tree lt ON se.parent_cdk = ANY(lt.child_cdks)
+            WHERE NOT se.parent_cdk = ANY(lt.lineage_path) 
         )
-        self._lineage_graph = LineageGraph.from_split_events(
-            [dict(r) for r in events]
-        )
-        return self._lineage_graph
+        SELECT parent_cdk, child_cdks, split_year FROM lineage_tree;
+        """
+        events = await self.db.fetch(query, base_cdk)
+        return LineageGraph.from_split_events([dict(r) for r in events])
 
-    async def _get_split_graph(self) -> dict[str, list[tuple[list[str], int]]]:
-        """Backward-compatible: fetch graph as raw dict."""
-        cache = self._graph_cache
-        if cache is not None:
-            return cache
-
-        graph = await self._get_lineage_graph()
-        self._graph_cache = graph.get_split_graph_compat()
-        result = self._graph_cache
-        assert result is not None
-        return result
+    async def _get_split_graph(self, base_cdk: str) -> dict[str, list[tuple[list[str], int]]]:
+        """Backward-compatible map extraction using the local CTE lineage graph."""
+        graph = await self._fetch_lineage_graph(base_cdk)
+        return graph.get_split_graph_compat()
 
     async def get_lineage_tree(
         self,
@@ -71,7 +77,7 @@ class ReconstructorService:
     ) -> dict[str, Any]:
         """Returns the tree structure for the frontend without geometry or yields."""
         if graph is None:
-            graph = await self._get_split_graph()
+            graph = await self._get_split_graph(root_cdk)
 
         def build_node(cdk: str) -> dict[str, Any]:
             node: dict[str, Any] = {"cdk": cdk, "children": []}
@@ -260,7 +266,7 @@ class ReconstructorService:
         3. For yield data, resolve CDKs to data CDKs via ancestor fallback
         4. Aggregate yield, production, area across data CDKs
         """
-        graph = await self._get_lineage_graph()
+        graph = await self._fetch_lineage_graph(base_cdk)
 
         # 1. Build standard non-overlapping epochs (using DAG)
         epochs = build_epochs_from_graph(base_cdk, graph, min_year=min_year)
@@ -281,7 +287,7 @@ class ReconstructorService:
             cdk_name_map[cdk] = await self._get_cdk_name(cdk)
 
         # 4. Build parent map for ancestor fallback
-        split_graph = await self._get_split_graph()
+        split_graph = await self._get_split_graph(base_cdk)
         parent_map = self._build_parent_map(split_graph)
 
         # 5. Process each epoch
