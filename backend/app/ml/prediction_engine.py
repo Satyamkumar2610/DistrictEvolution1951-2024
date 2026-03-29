@@ -68,7 +68,7 @@ class PredictionResult:
     regression_line: list[dict[str, float]]  # [{x, y}] for trend line
 
     def to_dict(self) -> dict[str, Any]:
-        d = asdict(self)
+        d = asdict(self)  # type: ignore
         return d
 
 
@@ -261,12 +261,12 @@ class PredictionEngine:
             predicted = float(y_mean)
             target_features = X_mean
 
-        predicted = max(0, predicted)
+        predicted = max(0.0, float(predicted))
 
         # Confidence interval (prediction interval)
         t_value = 1.96  # ~95%
         ci_half = t_value * se * math.sqrt(1 + 1 / n)
-        conf_lower = max(0, predicted - ci_half)
+        conf_lower = max(0.0, float(predicted - ci_half))
         conf_upper = predicted + ci_half
 
         # Factor importances & contributions
@@ -281,9 +281,9 @@ class PredictionEngine:
             factors.append(FactorImportance(
                 name=self._humanize(feature_names[i]),
                 key=feature_keys[i],
-                importance=round(float(importances[i]), 4),
-                coefficient=round(float(beta_raw[i]), 6),
-                contribution=round(contribution, 2),
+                importance=round(float(importances[i]), 4),  # type: ignore
+                coefficient=round(float(beta_raw[i]), 6),  # type: ignore
+                contribution=round(contribution, 2),  # type: ignore
                 direction="positive" if beta_raw[i] > 0 else "negative",
                 description=feature_descriptions[i],
             ))
@@ -298,20 +298,20 @@ class PredictionEngine:
         # features at mean)
         rain_slope = float(beta_raw[0])  # Rainfall is always feature 0
         rain_line_y = [
-            max(0, float(intercept + rain_slope * r
+            max(0.0, float(intercept + rain_slope * r
                          + sum(beta_raw[j] * X_mean[j] for j in range(1, p))))
             for r in rain_range
         ]
         regression_line = [
-            {"x": round(float(r), 1), "y": round(y, 1)}
+            {"x": round(float(r), 1), "y": round(y, 1)}  # type: ignore
             for r, y in zip(rain_range, rain_line_y, strict=False)
         ]
 
         # Data points for scatter
         data_points = [
             {
-                "rain": round(float(d["rainfall"]), 1),
-                "yield": round(float(d["yield_value"]), 1),
+                "rain": round(float(d["rainfall"]), 1),  # type: ignore
+                "yield": round(float(d["yield_value"]), 1),  # type: ignore
                 "district": d["district"],
             }
             for d in data
@@ -351,15 +351,15 @@ class PredictionEngine:
         mean_rain = float(rainfall.mean())
 
         return PredictionResult(
-            predicted_yield=round(predicted, 1),
-            baseline_yield=round(float(y_mean), 1),
-            confidence_lower=round(conf_lower, 1),
-            confidence_upper=round(conf_upper, 1),
-            slope_rain=round(rain_slope, 4),
-            mean_rain=round(mean_rain, 1),
-            r_squared=round(float(r_squared), 4),
-            adjusted_r_squared=round(float(adj_r_sq), 4),
-            rmse=round(rmse, 1),
+            predicted_yield=round(predicted, 1),  # type: ignore
+            baseline_yield=round(float(y_mean), 1),  # type: ignore
+            confidence_lower=round(conf_lower, 1),  # type: ignore
+            confidence_upper=round(conf_upper, 1),  # type: ignore
+            slope_rain=round(rain_slope, 4),  # type: ignore
+            mean_rain=round(mean_rain, 1),  # type: ignore
+            r_squared=round(float(r_squared), 4),  # type: ignore
+            adjusted_r_squared=round(float(adj_r_sq), 4),  # type: ignore
+            rmse=round(rmse, 1),  # type: ignore
             sample_size=n,
             feature_count=p,
             method="multi_factor_ridge",
@@ -413,17 +413,17 @@ class PredictionEngine:
                 target_rain = d["rainfall"]
                 break
 
-        predicted = max(0, slope * target_rain + intercept)
+        predicted = max(0.0, float(slope * target_rain + intercept))  # type: ignore
         ci_half = 1.96 * se * math.sqrt(1 + 1 / n)
 
         # Single factor
-        contribution = slope * target_rain
+        contribution = float(slope * target_rain)  # type: ignore
         factors = [FactorImportance(
             name="Annual Rainfall",
             key="rainfall",
             importance=1.0,
-            coefficient=round(slope, 6),
-            contribution=round(contribution, 2),
+            coefficient=round(float(slope), 6),  # type: ignore
+            contribution=round(contribution, 2),  # type: ignore
             direction="positive" if slope > 0 else "negative",
             description="Annual rainfall normal (mm) — the only predictor in this simplified model",
         )]
@@ -432,14 +432,14 @@ class PredictionEngine:
         rain_min, rain_max = float(rainfall.min()), float(rainfall.max())
         rain_range = np.linspace(rain_min, rain_max, 50)
         regression_line = [
-            {"x": round(float(r), 1), "y": round(max(0, slope * r + intercept), 1)}
+            {"x": round(float(r), 1), "y": round(float(max(0.0, float(slope * r + intercept))), 1)}  # type: ignore
             for r in rain_range
         ]
 
         data_points = [
             {
-                "rain": round(float(d["rainfall"]), 1),
-                "yield": round(float(d["yield_value"]), 1),
+                "rain": round(float(d["rainfall"]), 1),  # type: ignore
+                "yield": round(float(d["yield_value"]), 1),  # type: ignore
                 "district": d["district"],
             }
             for d in data
@@ -462,15 +462,15 @@ class PredictionEngine:
                 "Low R² — rainfall alone poorly explains yield variation.")
 
         return PredictionResult(
-            predicted_yield=round(predicted, 1),
-            baseline_yield=round(float(y_mean), 1),
-            confidence_lower=round(max(0, predicted - ci_half), 1),
-            confidence_upper=round(predicted + ci_half, 1),
-            slope_rain=round(slope, 4),
-            mean_rain=round(float(x_mean), 1),
-            r_squared=round(r_squared, 4),
-            adjusted_r_squared=round(r_squared, 4),
-            rmse=round(rmse, 1),
+            predicted_yield=round(predicted, 1),  # type: ignore
+            baseline_yield=round(float(y_mean), 1),  # type: ignore
+            confidence_lower=round(float(max(0.0, float(predicted - ci_half))), 1),  # type: ignore
+            confidence_upper=round(predicted + ci_half, 1),  # type: ignore
+            slope_rain=round(float(slope), 4),  # type: ignore
+            mean_rain=round(float(x_mean), 1),  # type: ignore
+            r_squared=round(r_squared, 4),  # type: ignore
+            adjusted_r_squared=round(r_squared, 4),  # type: ignore
+            rmse=round(rmse, 1),  # type: ignore
             sample_size=n,
             feature_count=1,
             method="simple_ols",

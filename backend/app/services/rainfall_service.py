@@ -157,10 +157,10 @@ async def get_state_rainfall_stats(
     return {
         "state": state,
         "district_count": row["district_count"],
-        "avg_annual_mm": round(float(row["avg_annual"] or 0), 2),
-        "min_annual_mm": round(float(row["min_annual"] or 0), 2),
-        "max_annual_mm": round(float(row["max_annual"] or 0), 2),
-        "avg_monsoon_mm": round(float(row["avg_monsoon"] or 0), 2),
+        "avg_annual_mm": round(float(row["avg_annual"] or 0), 2),  # type: ignore
+        "min_annual_mm": round(float(row["min_annual"] or 0), 2),  # type: ignore
+        "max_annual_mm": round(float(row["max_annual"] or 0), 2),  # type: ignore
+        "avg_monsoon_mm": round(float(row["avg_monsoon"] or 0), 2),  # type: ignore
     }
 
 
@@ -229,7 +229,7 @@ async def get_water_stress_index(
         # Deficit factor (1 at 0mm, 0 at >=1500mm)
         normalized_deficit = max(0.0, 1.0 - (annual_rain / 1500))
 
-        mismatch_score = round(normalized_share * normalized_deficit * 100, 1)
+        mismatch_score = round(normalized_share * normalized_deficit * 100, 1)  # type: ignore
 
         if mismatch_score > 60:
             category = "Critical"
@@ -243,16 +243,16 @@ async def get_water_stress_index(
         results.append({
             "district_name": district_name,
             "cdk": str(row["lgd_code"]),
-            "total_area": round(total_area, 2),
-            "water_intensive_area": round(water_intensive_area, 2),
-            "water_intensive_share": round(water_intensive_share * 100, 1),
-            "annual_rainfall": round(annual_rain, 1),
+            "total_area": round(total_area, 2),  # type: ignore
+            "water_intensive_area": round(water_intensive_area, 2),  # type: ignore
+            "water_intensive_share": round(water_intensive_share * 100, 1),  # type: ignore
+            "annual_rainfall": round(annual_rain, 1),  # type: ignore
             "mismatch_score": mismatch_score,
             "category": category,
             "crop_breakdown": {
-                "rice": round(rice_area, 2),
-                "sugarcane": round(sugarcane_area, 2),
-                "cotton": round(cotton_area, 2)
+                "rice": round(rice_area, 2),  # type: ignore
+                "sugarcane": round(sugarcane_area, 2),  # type: ignore
+                "cotton": round(cotton_area, 2)  # type: ignore
             }
         })
 

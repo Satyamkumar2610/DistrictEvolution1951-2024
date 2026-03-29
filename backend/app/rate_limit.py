@@ -110,7 +110,7 @@ class RateLimiter:
             "blocked_requests": self._blocked_requests,
             "block_rate": round(
                 float(self._blocked_requests) / self._total_requests * 100.0, 2
-            ) if self._total_requests > 0 else 0.0,
+            ) if self._total_requests > 0 else 0.0,  # type: ignore
             "active_buckets": len(self._buckets),
             "config": {
                 "requests_per_minute": settings.rate_limit_per_minute,

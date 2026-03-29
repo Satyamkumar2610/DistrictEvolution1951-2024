@@ -8,16 +8,16 @@ from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from datetime import UTC, datetime
 
-from fastapi import FastAPI, Request
-from fastapi.exceptions import RequestValidationError
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi import FastAPI, Request  # type: ignore[import]
+from fastapi.exceptions import RequestValidationError  # type: ignore[import]
+from fastapi.middleware.cors import CORSMiddleware  # type: ignore[import]
+from fastapi.responses import JSONResponse  # type: ignore[import]
 
-from app.api.v1.router import api_router
-from app.config import get_settings
-from app.database import close_db_pool, init_db_pool
-from app.exceptions import APIError, DatabaseError, ValidationError, create_error_response
-from app.logging_config import (
+from app.api.v1.router import api_router  # type: ignore[import]
+from app.config import get_settings  # type: ignore[import]
+from app.database import close_db_pool, init_db_pool  # type: ignore[import]
+from app.exceptions import APIError, DatabaseError, ValidationError, create_error_response  # type: ignore[import]
+from app.logging_config import (  # type: ignore[import]
     generate_request_id,
     get_logger,
     get_request_id,
@@ -25,8 +25,8 @@ from app.logging_config import (
     set_request_id,
     setup_logging,
 )
-from app.rate_limit import RateLimitMiddleware
-from app.security import HTTPSRedirectMiddleware, SecurityHeadersMiddleware
+from app.rate_limit import RateLimitMiddleware  # type: ignore[import]
+from app.security import HTTPSRedirectMiddleware, SecurityHeadersMiddleware  # type: ignore[import]
 
 settings = get_settings()
 
@@ -167,7 +167,8 @@ async def log_requests(request: Request, call_next):
 def generate_query_hash(request: Request) -> str:
     """Generate SHA-256 hash of normalized query parameters."""
     query_string = str(sorted(request.query_params.items()))
-    return f"sha256:{str(hashlib.sha256(query_string.encode()).hexdigest())[:16]}"
+    digest = hashlib.sha256(query_string.encode()).hexdigest()
+    return f"sha256:{digest[:16]}"  # type: ignore[index]
 
 
 # -----------------------------------------------------------------------------
@@ -195,7 +196,7 @@ async def readiness_check():
 
     Returns 200 if the application can serve traffic (database connected).
     """
-    from app.database import get_pool
+    from app.database import get_pool  # type: ignore[import]
 
     pool = await get_pool()
     if pool is None:
@@ -260,9 +261,9 @@ async def get_system_stats(request: Request):
             content={"error": "Forbidden: admin access required"}
         )
 
-    from app.cache import get_cache
-    from app.database import get_pool
-    from app.rate_limit import get_rate_limiter
+    from app.cache import get_cache  # type: ignore[import]
+    from app.database import get_pool  # type: ignore[import]
+    from app.rate_limit import get_rate_limiter  # type: ignore[import]
 
     cache = get_cache()
     rate_limiter = get_rate_limiter()

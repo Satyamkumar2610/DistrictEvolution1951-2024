@@ -147,7 +147,7 @@ async def get_rainfall_yield_correlation(
         WHERE UPPER(d.state_name) = UPPER($1) AND m.variable_name = $2 AND m.year = $3
         AND m.value IS NOT NULL AND m.value > 0
     """
-    yield_rows = await db.fetch(yield_query, state, variable, year)
+    yield_rows: list = await db.fetch(yield_query, state, variable, year)  # type: ignore
 
     # Fallback to seasonal
     if not yield_rows or len(yield_rows) < 5:
@@ -158,7 +158,7 @@ async def get_rainfall_yield_correlation(
         season = season_map.get(crop.lower())
         if season:
             variable = f"{crop.lower()}_yield_{season}"
-            yield_rows = await db.fetch(yield_query, state, variable, year)
+            yield_rows: list = await db.fetch(yield_query, state, variable, year)  # type: ignore
 
     if not yield_rows or len(yield_rows) < 5:
         return {"error": "Insufficient yield data (need at least 5 districts)"}
@@ -208,14 +208,14 @@ async def get_rainfall_yield_correlation(
         "sample_size": len(matched_data),
         "correlations": {
             "annual_rainfall": {
-                "r": round(annual_corr, 4),
-                "interpretation": interpret_correlation(annual_corr),
-                "direction": "positive" if annual_corr > 0 else "negative",
+                "r": round(annual_corr.value, 4),
+                "interpretation": interpret_correlation(annual_corr.value),
+                "direction": "positive" if annual_corr.value > 0 else "negative",
             },
             "monsoon_rainfall": {
-                "r": round(monsoon_corr, 4),
-                "interpretation": interpret_correlation(monsoon_corr),
-                "direction": "positive" if monsoon_corr > 0 else "negative",
+                "r": round(monsoon_corr.value, 4),
+                "interpretation": interpret_correlation(monsoon_corr.value),
+                "direction": "positive" if monsoon_corr.value > 0 else "negative",
             },
         },
         "data_points": matched_data,

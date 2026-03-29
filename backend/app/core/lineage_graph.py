@@ -486,7 +486,7 @@ class LineageGraph:
         """Graph statistics for debugging."""
         roots = self.get_root_cdks()
         leaves = self.get_leaf_cdks()
-        event_type_counts = defaultdict(int)
+        event_type_counts: dict[str, int] = defaultdict(int)
         for e in self._events:
             event_type_counts[e.event_type.value] += 1
         return {

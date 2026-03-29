@@ -9,9 +9,9 @@ Usage:
 
 import os
 import sys
-import httpx
+import httpx  # type: ignore[import]
 import asyncio
-import asyncpg
+import asyncpg  # type: ignore[import]
 from typing import List, Dict, Any
 
 # IMD API Configuration

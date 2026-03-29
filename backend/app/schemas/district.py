@@ -16,11 +16,11 @@ class District(BaseModel):
     name: str = Field(..., description="District display name")
     state: str = Field(..., description="Parent state name")
     valid_from: int | None = Field(
-        None, description="Year boundary became effective")
+        default=None, description="Year boundary became effective")
     valid_to: int | None = Field(
-        None, description="Year boundary ceased (null = current)")
+        default=None, description="Year boundary ceased (null = current)")
     geometry: Any | None = Field(
-        None, description="GeoJSON geometry (when requested)")
+        default=None, description="GeoJSON geometry (when requested)")
 
     model_config = ConfigDict(from_attributes=True)
 

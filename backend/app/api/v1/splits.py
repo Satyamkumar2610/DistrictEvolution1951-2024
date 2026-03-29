@@ -147,11 +147,23 @@ async def upload_geojson(
     if not geometry_dict:
         raise HTTPException(400, "No valid geometry found in GeoJSON")
 
-    result = await resolver.resolve_from_geojson(
-        district_cdk=request.district_cdk,
-        year=request.snapshot_year,
-        geojson_dict=geometry_dict,
-    )
+    import json as _json
+    geom_str = _json.dumps(geometry_dict)
+
+    # Insert or update the geometry in district_snapshots
+    await db.execute("""
+        INSERT INTO district_snapshots
+            (district_cdk, snapshot_year, district_name, geometry_source, geometry_confidence, geometry)
+        VALUES
+            ($1, $2, $1, 'manual_upload', 0.8, ST_SetSRID(ST_GeomFromGeoJSON($3), 4326))
+        ON CONFLICT (district_cdk, snapshot_year) DO UPDATE SET
+            geometry = EXCLUDED.geometry,
+            geometry_source = EXCLUDED.geometry_source,
+            geometry_confidence = EXCLUDED.geometry_confidence
+    """, request.district_cdk, request.snapshot_year, geom_str)
+
+    # Resolve to get the full metadata
+    result = await resolver.resolve(request.district_cdk, request.snapshot_year)
 
     return UploadResponse(
         district_cdk=result.district_cdk,
@@ -384,7 +396,7 @@ async def get_enrichment(
 )
 async def trigger_enrichment(
     event_id: int = Query(..., description="Split event ID to enrich"),
-    background_tasks: BackgroundTasks = None,
+    background_tasks: BackgroundTasks | None = None,
     db: asyncpg.Connection = Depends(get_db),
 ):
     event = await db.fetchrow(

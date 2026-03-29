@@ -90,11 +90,17 @@ async def test_reconstructor_yield_aggregation():
     assert metrics_1980["collective_area"] == 200.0
     assert metrics_1980["data_coverage"] == 1.0
     assert epoch2["is_fallback"] is False
+    # New fields
+    assert epoch2["data_quality"] == "direct"
+    assert epoch2["confidence_score"] > 0.7
+    assert metrics_1980["data_quality"] == "direct"
+    assert "B" in epoch2["cdk_resolution"]
+    assert epoch2["cdk_resolution"]["B"]["status"] == "direct"
 
 
 @pytest.mark.asyncio
 async def test_reconstructor_partial_coverage():
-    """D has no data → partial coverage."""
+    """D has no data → truthful partial coverage (2/3 = 0.667)."""
     splits = [
         {"parent_cdk": "A", "child_cdks": ["B", "C", "D"], "split_year": 1980}
     ]
@@ -112,13 +118,15 @@ async def test_reconstructor_partial_coverage():
 
     epoch2 = res["epochs"][1]
     metrics_1980 = [m for m in epoch2["metrics"] if m["year"] == 1980][0]
-    # B and C have data, D doesn't exist in agri_metrics
-    # _resolve_data_cdks finds B + C have data, so data_cdks=[B, C]
-    # Coverage is 2/2 data CDKs = 1.0
-    assert metrics_1980["data_coverage"] == 1.0
+
+    # Coverage now reflects truthful 2/3 active CDKs
+    assert metrics_1980["data_coverage"] == pytest.approx(0.667, abs=0.01)
     assert metrics_1980["collective_yield"] == 2000.0
     assert metrics_1980["collective_production"] == 400.0
     assert metrics_1980["collective_area"] == 200.0
+    # Data quality reflects partial coverage
+    assert epoch2["data_quality"] == "partial"
+    assert epoch2["confidence_score"] < 1.0
 
 
 @pytest.mark.asyncio
@@ -144,12 +152,17 @@ async def test_reconstructor_ancestor_fallback():
     # Epoch 2 (1980+): should use A's data as fallback
     epoch2 = res["epochs"][1]
     assert epoch2["is_fallback"] is True
-    assert epoch2["data_cdks"] == ["A"]
+    assert "A" in epoch2["data_cdks"]
 
     metrics_1980 = [m for m in epoch2["metrics"] if m["year"] == 1980][0]
     assert metrics_1980["collective_yield"] == 2500.0  # 500/200*1000
     assert metrics_1980["collective_production"] == 500.0
     assert metrics_1980["is_fallback"] is True
+    # New fields
+    assert epoch2["data_quality"] == "ancestor_fallback"
+    assert epoch2["confidence_score"] < 0.8
+    assert epoch2["cdk_resolution"]["B"]["status"] == "ancestor"
+    assert epoch2["cdk_resolution"]["C"]["status"] == "ancestor"
 
 
 @pytest.mark.asyncio
@@ -165,11 +178,20 @@ async def test_reconstructor_zero_data():
     assert metrics_1978["collective_production"] is None
     assert metrics_1978["collective_area"] is None
     assert metrics_1978["data_coverage"] == 0.0
+    assert metrics_1978["data_quality"] == "no_data"
 
 
 @pytest.mark.asyncio
 async def test_reconstructor_crop_filter():
-    db = FakeDB(metrics=[], splits=[])
+    """Verify that the correct crop-specific variable names are queried."""
+    splits = [
+        {"parent_cdk": "A", "child_cdks": ["B", "C"], "split_year": 1980}
+    ]
+    metrics = [
+        {"cdk": "B", "year": 1980, "variable_name": "wheat_production", "value": 100},
+        {"cdk": "B", "year": 1980, "variable_name": "wheat_area", "value": 50},
+    ]
+    db = FakeDB(metrics=metrics, splits=splits)
     svc = ReconstructorService(db)
     await svc.reconstruct("A", crop="wheat")
 
@@ -212,3 +234,53 @@ async def test_reconstructor_pre_split_epoch_uses_root():
     assert "ROOT" in epoch1["active_cdks"]
     m_1985 = [m for m in epoch1["metrics"] if m["year"] == 1985][0]
     assert m_1985["collective_yield"] == 2000.0
+
+
+@pytest.mark.asyncio
+async def test_reconstructor_mixed_resolution():
+    """
+    B has data, C does not but parent A does → mixed resolution.
+    """
+    splits = [
+        {"parent_cdk": "A", "child_cdks": ["B", "C"], "split_year": 1980}
+    ]
+    metrics = [
+        {"cdk": "B", "year": 1980, "variable_name": "rice_production", "value": 100},
+        {"cdk": "B", "year": 1980, "variable_name": "rice_area", "value": 50},
+        {"cdk": "A", "year": 1980, "variable_name": "rice_production", "value": 500},
+        {"cdk": "A", "year": 1980, "variable_name": "rice_area", "value": 200},
+    ]
+
+    db = FakeDB(metrics=metrics, splits=splits)
+    svc = ReconstructorService(db)
+
+    res = await svc.reconstruct("A", crop="rice", min_year=1978)
+
+    epoch2 = res["epochs"][1]
+    # B is direct, C falls back to A
+    assert epoch2["cdk_resolution"]["B"]["status"] == "direct"
+    assert epoch2["cdk_resolution"]["C"]["status"] == "ancestor"
+    assert epoch2["cdk_resolution"]["C"]["data_cdk"] == "A"
+    assert epoch2["data_quality"] == "partial"
+
+
+@pytest.mark.asyncio
+async def test_data_quality_classification():
+    """Test the static _classify_data_quality method."""
+    classify = ReconstructorService._classify_data_quality
+
+    # All direct
+    assert classify({"A": ("A", "direct"), "B": ("B", "direct")}) == "direct"
+
+    # Mixed direct + ancestor
+    assert classify({"A": ("A", "direct"), "B": ("P", "ancestor")}) == "partial"
+
+    # All ancestor fallback
+    assert classify({"A": ("P", "ancestor"), "B": ("P", "ancestor")}) == "ancestor_fallback"
+
+    # All missing with no data
+    assert classify({"A": (None, "missing"), "B": (None, "missing")}) == "no_data"
+
+    # Empty
+    assert classify({}) == "no_data"
+

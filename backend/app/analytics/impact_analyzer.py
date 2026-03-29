@@ -100,7 +100,7 @@ class ImpactAnalyzer:
             )
 
         # Calculate CAGR
-        cagr = 0
+        cagr: float = 0.0
         if len(values) >= 2 and values[0] > 0 and values[-1] > 0:
             cagr = self.stats.cagr(values[0], values[-1], len(values) - 1)
 

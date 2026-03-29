@@ -71,7 +71,8 @@ def process_icrisat(lgd_lookup: dict):
             if not lgd_code:
                 continue
             
-            for crop in crops[:22]:
+            crops_list: list = crops[:22]  # type: ignore
+            for crop in crops_list:
                 crop_upper = crop.upper().replace('_', ' ')
                 try:
                     area_col = f"{crop_upper} AREA (1000 ha)"

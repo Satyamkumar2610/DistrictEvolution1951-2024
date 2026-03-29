@@ -50,7 +50,7 @@ class TimeSeriesAnalyzer:
         years: list[int],
         values: list[float],
         detect_anomalies: bool = True,
-        windows: list[int] = None,
+        windows: list[int] | None = None,
     ) -> TimeSeriesAnalysis:
         """
         Perform comprehensive time series analysis.

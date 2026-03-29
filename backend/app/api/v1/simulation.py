@@ -119,8 +119,8 @@ async def get_simulation(
         if r_val and r_val > 0:
             rainfall_x.append(r_val)
             yields_y.append(d_yield)
-            years.append(idx)
-            idx += 1
+            years.append(int(idx))
+            idx = int(idx) + 1  # type: ignore
 
     if len(rainfall_x) < 5:
         raise NotFoundError(detail="Insufficient matching rainfall/yield data")
@@ -137,18 +137,18 @@ async def get_simulation(
     # The slope is generic for the state.
     # Prediction = Intercept + Slope * Rain.
 
-    result = SimulationResponse(  # type: ignore
-        district=district,
-        state=state,
-        crop=crop,
-        result=sim_result,
-        note="Spatial Regression Proxy: Sensitivity derived from cross-district comparison within state.",
-        validity={
+    result = SimulationResponse(**{  # type: ignore
+        "district": district,
+        "state": state,
+        "crop": crop,
+        "result": sim_result,
+        "note": "Spatial Regression Proxy: Sensitivity derived from cross-district comparison within state.",
+        "validity": {
             "climate_assumption": "stationary",
             "baseline_period": "1951-2000",
             "warning": "Simulation based on historic climate normals. Not valid for real-time weather impact."
         }
-    )
+    })
 
     # Cache Result
     await cache.set(cache_key, result, CacheTTL.ANALYSIS)
@@ -275,8 +275,8 @@ async def get_prediction_v2(
             from scipy import stats as sp_stats
             slope, _, _, _, _ = sp_stats.linregress(years_arr, vals_arr)
             yield_trend = float(slope)
-            mean_v = np.mean(vals_arr)
-            std_v = np.std(vals_arr, ddof=1)
+            mean_v = np.mean(vals_arr)  # type: ignore
+            std_v = np.std(vals_arr, ddof=1)  # type: ignore
             yield_cv = float((std_v / mean_v) * 100) if mean_v > 0 else 0.0
 
         entry: dict[str, Any] = {

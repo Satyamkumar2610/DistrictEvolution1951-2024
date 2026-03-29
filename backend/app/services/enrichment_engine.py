@@ -11,6 +11,7 @@ All enrichment results are stored in the `split_enrichment` table.
 """
 
 import logging
+from typing import Any
 
 import asyncpg
 import httpx
@@ -325,7 +326,7 @@ async def enrich_split_event(
         WHERE event_id = $1
     """, event_id)
 
-    summary = {
+    summary: dict[str, Any] = {
         "event_id": event_id,
         "total_transfers": len(transfers),
         "enrichments": {},
@@ -336,7 +337,7 @@ async def enrich_split_event(
         geojson = transfer["geojson"]
         area = float(transfer["area_sqkm"])
 
-        enriched_counts = {}
+        enriched_counts: dict[str, int] = {}
 
         # 1. Geometry-derived stats (always available)
         count = await enrich_transfer_land_stats(db, tid, area, geojson)
@@ -358,8 +359,9 @@ async def enrich_split_event(
 
         summary["enrichments"][tid] = enriched_counts
 
+    enrichments: dict[int, dict[str, int]] = summary["enrichments"]
     total_rows = sum(
-        sum(v.values()) for v in summary["enrichments"].values()
+        sum(v.values()) for v in enrichments.values()
     )
     summary["total_enrichment_rows"] = total_rows
 

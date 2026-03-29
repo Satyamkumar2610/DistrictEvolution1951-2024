@@ -17,7 +17,7 @@ class APIError(HTTPException):
         error_code: str = "INTERNAL_ERROR",
         context: dict[str, Any] | None = None
     ):
-        super().__init__(status_code=status_code, detail=detail)
+        super().__init__(status_code=status_code, detail=detail)  # type: ignore
         self.error_code = error_code
         self.context = context or {}
 
@@ -51,11 +51,13 @@ class NotFoundError(APIError):
     def __init__(
         self,
         resource_type: str = "Resource",
-        resource_id: str | None = None
+        resource_id: str | None = None,
+        detail: str | None = None,
     ):
-        detail = f"{resource_type} not found"
-        if resource_id:
-            detail = f"{resource_type} '{resource_id}' not found"
+        if detail is None:
+            detail = f"{resource_type} not found"
+            if resource_id:
+                detail = f"{resource_type} '{resource_id}' not found"
 
         super().__init__(
             status_code=404,

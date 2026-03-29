@@ -74,13 +74,14 @@ class AnalysisService:
 
         stats = {}
         for state in states:
-            stats[state] = {
-                "state": state, "total_districts": counts.get(
-                    state, 0), "boundary_changes": len(
+            state_str = str(state)
+            stats[state_str] = {
+                "state": state_str, "total_districts": counts.get(
+                    state_str, 0), "boundary_changes": len(
                     state_changes.get(
-                        state, set())), "data_coverage": "High", "comparability": "Active" if len(
+                        state_str, set())), "data_coverage": "High", "comparability": "Active" if len(
                     state_changes.get(
-                        state, set())) > 0 else "N/A", }
+                        state_str, set())) > 0 else "N/A", }
 
         return {"states": states, "stats": stats}
 
@@ -234,8 +235,9 @@ class AnalysisService:
 
             # Use BoundaryHarmonizer for reconstruction
             # 1. Get pre-split parent data
+            metric_literal = metric_type if metric_type in ("area", "production", "yield") else "yield"
             parent_series = self.harmonizer.get_parent_series(
-                data_map, parent_cdk, metric_type
+                data_map, parent_cdk, metric_literal  # type: ignore[arg-type]
             )
 
             # 2. Reconstruct post-split data from children
@@ -247,7 +249,7 @@ class AnalysisService:
                 if year >= split_year
             }
             reconstructed_series = self.harmonizer.reconstruct_parent_from_children(
-                post_split_data, children_cdks, metric_type)
+                post_split_data, children_cdks, metric_literal)  # type: ignore[arg-type]
 
             # 3. Merge into single timeline
             harmonized_points = self.harmonizer.merge_series(
@@ -286,8 +288,8 @@ class AnalysisService:
                                  for p in timeline if p["year"] < split_year]
 
                     # Compute children's mean yields for divergence analysis
-                    children_mean_yields = {}
-                    yearly_children_yields = {}  # For convergence trend
+                    children_mean_yields: dict[str, list[float]] = {}
+                    yearly_children_yields: dict[int, dict[str, float]] = {}  # For convergence trend
 
                     for year, year_data in data_map.items():
                         if year >= split_year:
@@ -318,7 +320,7 @@ class AnalysisService:
                     effect_size = self.insights_analyzer.calculate_effect_size(
                         pre_values, post_values)
                     counterfactual = self.insights_analyzer.calculate_counterfactual(
-                        pre_values, pre_years, result.post_stats.mean, split_year + 5
+                        pre_values, [int(y) for y in pre_years], result.post_stats.mean, split_year + 5
                     )
 
                     # Analyze child performance

@@ -89,7 +89,7 @@ class RedisCache:
     async def _get_client(self) -> Any:
         """Lazy-initialize Redis client."""
         if self._client is None:
-            import redis.asyncio as aioredis
+            import redis.asyncio as aioredis  # type: ignore[import]
             self._client = aioredis.from_url(
                 self._redis_url,
                 decode_responses=True,
@@ -105,6 +105,7 @@ class RedisCache:
         if raw is None:
             return None
         try:
+            assert raw is not None  # Guarded by check on line 105
             return json.loads(raw)
         except (json.JSONDecodeError, TypeError):
             return raw
@@ -177,7 +178,7 @@ def _create_cache(
 
     if backend in ("redis", "auto"):
         try:
-            import redis.asyncio  # noqa: F401
+            import redis.asyncio  # noqa: F401  # type: ignore[import]
             cache = RedisCache(redis_url)
             logger.info(f"Using Redis cache: {redis_url.split('@')[-1] if '@' in redis_url else redis_url}")
             return cache
@@ -204,7 +205,7 @@ def get_cache():
     global _cache
     if _cache is None:
         try:
-            from app.config import get_settings
+            from app.config import get_settings  # type: ignore[import]
             settings = get_settings()
             _cache = _create_cache(
                 backend=getattr(
@@ -248,7 +249,7 @@ def cached(ttl: int = 3600, prefix: str = ""):
 
             # Try cache
             try:
-                cached_value: Any = await cache.get(cache_key)
+                cached_value: Any = await cache.get(cache_key)  # type: ignore[misc]
                 if cached_value is not None:
                     logger.debug(f"Cache hit for {key_prefix}")
                     return cached_value

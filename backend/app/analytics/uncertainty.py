@@ -12,8 +12,8 @@ settings = get_settings()
 
 def calculate_bootstrap_ci(
     values: list[float],
-    n_iterations: int = None,
-    confidence: float = None,
+    n_iterations: int | None = None,
+    confidence: float | None = None,
     statistic: str = "mean",
 ) -> UncertaintyBounds:
     """
@@ -78,8 +78,8 @@ def calculate_bootstrap_ci(
 def calculate_impact_uncertainty(
     pre_values: list[float],
     post_values: list[float],
-    n_iterations: int = None,
-    confidence: float = None,
+    n_iterations: int | None = None,
+    confidence: float | None = None,
 ) -> UncertaintyBounds:
     """
     Calculate confidence interval for the difference in means.

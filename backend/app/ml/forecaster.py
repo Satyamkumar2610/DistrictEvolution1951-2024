@@ -199,8 +199,8 @@ class YieldForecaster:
                 model_stats={
                     "aic": round(aic, 2),
                     "bic": round(bic, 2),
-                    "data_points": n,
-                    "order": "(1,1,1)",
+                    "data_points": float(n),
+                    "order": "(1,1,1)",  # type: ignore[dict-item]
                 },
             )
         except Exception as e:
@@ -230,7 +230,7 @@ class YieldForecaster:
         denominator = sum((x - x_mean) ** 2 for x in years)
 
         if denominator == 0:
-            slope = 0
+            slope: float = 0.0
             intercept = y_mean
         else:
             slope = numerator / denominator
@@ -377,6 +377,6 @@ class CropRecommender:
             })
 
         # Sort by score
-        recommendations.sort(key=lambda x: -x["score"])
+        recommendations.sort(key=lambda x: -float(x.get("score", 0)))  # type: ignore[arg-type]
 
         return recommendations[:top_n]

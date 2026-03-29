@@ -62,7 +62,7 @@ class BoundaryHarmonizer:
             {target_cdk: {"value": float, "method": str, "confidence": float}}
         """
         apportioned = self.apportioner.apportion_to_modern(
-            historical_data, event, mode=mode,
+            historical_data, event, mode=mode,  # type: ignore[arg-type]
             area_ratios=area_ratios,
             population_ratios=population_ratios,
         )

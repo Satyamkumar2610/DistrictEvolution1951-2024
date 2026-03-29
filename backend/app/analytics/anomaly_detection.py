@@ -147,7 +147,7 @@ class AnomalyDetector:
 
     async def _detect_yield_outliers(self, cdk: str) -> list[Anomaly]:
         """Detect yields that are > 3 std from state mean."""
-        anomalies = []
+        anomalies: list[Anomaly] = []
 
         # Get district's state
         state = await self.db.fetchval("""
@@ -276,7 +276,7 @@ class AnomalyDetector:
 
     async def _detect_missing_sequences(self, cdk: str) -> list[Anomaly]:
         """Detect sequences of 3+ consecutive missing years."""
-        anomalies = []
+        anomalies: list[Anomaly] = []
 
         # Get years with data
         result = await self.db.fetch("""
@@ -311,7 +311,7 @@ class AnomalyDetector:
                             value=None,
                             expected_range=None,
                             severity=RiskLevel.HIGH if current_gap_length >= 5 else RiskLevel.MEDIUM,
-                            description=f"Missing data for {current_gap_length} consecutive years ({current_gap_start}-{current_gap_start + current_gap_length - 1})"
+                            description=f"Missing data for {current_gap_length} consecutive years ({current_gap_start}-{current_gap_start + current_gap_length - 1})"  # type: ignore[operator]
                         )
                     )
                 current_gap_start = None
@@ -328,7 +328,7 @@ class AnomalyDetector:
                     value=None,
                     expected_range=None,
                     severity=RiskLevel.HIGH if current_gap_length >= 5 else RiskLevel.MEDIUM,
-                    description=f"Missing data for {current_gap_length} consecutive years ({current_gap_start}-{current_gap_start + current_gap_length - 1})"
+                    description=f"Missing data for {current_gap_length} consecutive years ({current_gap_start}-{current_gap_start + current_gap_length - 1})"  # type: ignore[operator]
                 )
             )
 

@@ -20,10 +20,10 @@ class MetricPoint(BaseModel):
     year: int = Field(..., description="Observation year")
     variable: str = Field(..., description="Variable name (e.g., wheat_yield)")
     value: float = Field(..., description="Observed value")
-    unit: str | None = Field(None, description="Measurement unit")
-    source: str | None = Field(None, description="Dataset source")
+    unit: str | None = Field(default=None, description="Measurement unit")
+    source: str | None = Field(default=None, description="Dataset source")
     method: str | None = Field(
-        None, description="Harmonization method if derived")
+        default=None, description="Harmonization method if derived")
 
 
 class MetricTimeSeries(BaseModel):

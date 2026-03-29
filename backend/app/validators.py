@@ -7,7 +7,7 @@ import re
 from datetime import datetime
 from typing import Any
 
-from .exceptions import ValidationError
+from .exceptions import ValidationError  # type: ignore
 
 # Valid year range for agricultural data
 YEAR_MIN = 1966

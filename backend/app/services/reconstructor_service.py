@@ -6,7 +6,8 @@ v4: Ancestor-fallback yield lookup — when children lack data, uses parent CDK.
 """
 import json
 import logging
-from typing import Any, cast
+from dataclasses import dataclass
+from typing import Any, Literal, cast
 
 import asyncpg  # type: ignore
 
@@ -137,70 +138,109 @@ class ReconstructorService:
                     parent_of[child] = parent
         return parent_of
 
+    # Resolution status for each CDK
+    CdkResolutionStatus = Literal["direct", "ancestor", "missing"]
+
+    async def _resolve_data_cdks_v2(
+        self,
+        active_cdks: list[str],
+        base_cdk: str,
+        parent_map: dict[str, str],
+    ) -> dict[str, tuple[str | None, "ReconstructorService.CdkResolutionStatus"]]:
+        """
+        Resolve each active CDK to a data CDK with status annotation.
+
+        Returns:
+            {active_cdk: (data_cdk, status)}
+            - status='direct': CDK has its own data
+            - status='ancestor': using nearest ancestor's data
+            - status='missing': no data found anywhere in lineage
+        """
+        result: dict[str, tuple[str | None, ReconstructorService.CdkResolutionStatus]] = {}
+
+        # Step 1: Check direct data availability
+        cdks_with_data = await self._find_cdks_with_data(active_cdks)
+
+        for cdk in active_cdks:
+            if cdk in cdks_with_data:
+                result[cdk] = (cdk, "direct")
+            else:
+                result[cdk] = (None, "missing")  # Placeholder
+
+        # Step 2: For CDKs without data, walk up ancestors
+        missing_cdks = [c for c, (_, s) in result.items() if s == "missing"]
+        if missing_cdks:
+            # Collect all possible ancestors
+            ancestor_candidates: set[str] = set()
+            for cdk in missing_cdks:
+                current = cdk
+                while current in parent_map:
+                    current = parent_map[current]
+                    ancestor_candidates.add(current)
+            ancestor_candidates.add(base_cdk)
+
+            ancestors_with_data = await self._find_cdks_with_data(
+                list(ancestor_candidates)
+            )
+
+            # Resolve each missing CDK to nearest ancestor with data
+            for cdk in missing_cdks:
+                current = cdk
+                found = False
+                while current in parent_map:
+                    current = parent_map[current]
+                    if current in ancestors_with_data:
+                        result[cdk] = (current, "ancestor")
+                        found = True
+                        break
+                if not found and base_cdk in ancestors_with_data:
+                    result[cdk] = (base_cdk, "ancestor")
+                # Otherwise stays (None, "missing")
+
+        return result
+
+    @staticmethod
+    def _classify_data_quality(
+        resolution_map: dict[str, tuple[str | None, "ReconstructorService.CdkResolutionStatus"]],
+    ) -> Literal["direct", "partial", "ancestor_fallback", "no_data"]:
+        """Classify overall data quality from per-CDK resolution statuses."""
+        statuses = [s for _, (_, s) in resolution_map.items()]
+        if not statuses:
+            return "no_data"
+        if all(s == "direct" for s in statuses):
+            return "direct"
+        if all(s == "missing" for s in statuses):
+            # Check if any have ancestor fallback
+            has_ancestor = any(
+                data_cdk is not None
+                for _, (data_cdk, _) in resolution_map.items()
+            )
+            return "ancestor_fallback" if has_ancestor else "no_data"
+        if any(s == "ancestor" for s in statuses) and not any(s == "direct" for s in statuses):
+            return "ancestor_fallback"
+        return "partial"
+
+    # Backward-compat wrapper (still used for is_fallback bool)
     async def _resolve_data_cdks(
         self,
         active_cdks: list[str],
         base_cdk: str,
         parent_map: dict[str, str],
     ) -> tuple[list[str], bool]:
-        """
-        Resolve active CDKs to CDKs that have data in agri_metrics.
-
-        Strategy:
-        1. Check which active CDKs have data directly
-        2. For CDKs without data, walk up ancestors to find nearest with data
-        3. If no ancestors found, try the root base_cdk
-        4. Return (data_cdks, is_fallback) — deduplicated list of CDKs to query
-
-        The is_fallback flag indicates parent/ancestor data was used.
-        """
-        # Step 1: Check direct data
-        cdks_with_data = await self._find_cdks_with_data(active_cdks)
-
-        if cdks_with_data and len(cdks_with_data) == len(active_cdks):
-            # All active CDKs have data — no fallback needed
-            return active_cdks, False
-
-        if cdks_with_data:
-            # Some have data, use those (partial coverage can be computed normally)
-            return list(cdks_with_data), False
-
-        # Step 2: No active CDKs have data — try ancestors
-        ancestor_candidates: set[str] = set()
-        for cdk in active_cdks:
-            current = cdk
-            while current in parent_map:
-                current = parent_map[current]
-                ancestor_candidates.add(current)
-
-        # Also add base_cdk as the ultimate fallback
-        ancestor_candidates.add(base_cdk)
-
-        ancestor_with_data = await self._find_cdks_with_data(
-            list(ancestor_candidates)
+        """Backward-compatible wrapper around _resolve_data_cdks_v2."""
+        resolution = await self._resolve_data_cdks_v2(
+            active_cdks, base_cdk, parent_map
         )
-
-        if ancestor_with_data:
-            # Use the most specific ancestor (prefer closer to active CDKs)
-            # Walk each active CDK's lineage and pick the first ancestor with data
-            data_cdks: set[str] = set()
-            for cdk in active_cdks:
-                current = cdk
-                while current in parent_map:
-                    current = parent_map[current]
-                    if current in ancestor_with_data:
-                        data_cdks.add(current)
-                        break
-                else:
-                    # No ancestor in chain — try base_cdk
-                    if base_cdk in ancestor_with_data:
-                        data_cdks.add(base_cdk)
-
-            if data_cdks:
-                return list(data_cdks), True
-
-        # Step 3: No data anywhere — return active CDKs (will produce N/A)
-        return active_cdks, False
+        data_cdks: set[str] = set()
+        has_fallback = False
+        for _, (data_cdk, status) in resolution.items():
+            if data_cdk is not None:
+                data_cdks.add(data_cdk)
+            if status == "ancestor":
+                has_fallback = True
+        if not data_cdks:
+            return active_cdks, False
+        return list(data_cdks), has_fallback
 
     # ------------------------------------------------------------------
     # Main reconstruction
@@ -277,18 +317,32 @@ class ReconstructorService:
                 except Exception as geo_err:
                     logger.warning(f"Geometry lookup failed for epoch {ep.epoch_num}: {geo_err}")
 
-            # --- Yield aggregation with ancestor fallback ---
+            # --- Yield aggregation with v2 resolution ---
             y_start: int = int(ep.year_start)
             y_end: int = int(ep.year_end) if ep.year_end is not None else 2024
             metrics_list: list[dict[str, Any]] = []
 
             active_cdks_list: list[str] = list(ep.active_cdks)  # type: ignore[attr-defined]
+            num_active: int = len(active_cdks_list)
 
-            # Resolve which CDKs to actually query for data
-            data_cdks, is_fallback = await self._resolve_data_cdks(
+            # V2 resolution: per-CDK status tracking
+            resolution_map = await self._resolve_data_cdks_v2(
                 active_cdks_list, base_cdk, parent_map
             )
-            num_data_cdks: int = len(data_cdks)
+            epoch_data_quality = self._classify_data_quality(resolution_map)
+            is_fallback = epoch_data_quality in ("ancestor_fallback", "partial")
+
+            # Collect unique data CDKs for querying
+            data_cdks_set: set[str] = set()
+            for _, (data_cdk, _) in resolution_map.items():
+                if data_cdk is not None:
+                    data_cdks_set.add(data_cdk)
+            data_cdks: list[str] = list(data_cdks_set)
+
+            # Count direct vs ancestor vs missing for confidence
+            direct_count = sum(1 for cdk_k, (dcdk, s) in resolution_map.items() if s == "direct")
+            ancestor_count = sum(1 for cdk_k, (dcdk, s) in resolution_map.items() if s == "ancestor")
+            missing_count = sum(1 for cdk_k, (dcdk, s) in resolution_map.items() if s == "missing" and dcdk is None)
 
             # Fetch yield data from resolved data CDKs
             metric_dict: dict[int, dict[str, dict[str, float]]] = {}
@@ -318,6 +372,9 @@ class ReconstructorService:
                 except Exception as met_err:
                     logger.warning(f"Metrics lookup failed for epoch {ep.epoch_num}: {met_err}")  # type: ignore[attr-defined]
 
+            data_years_count: int = 0
+            epoch_span: int = y_end - y_start + 1
+
             for year in range(y_start, y_end + 1):  # type: ignore[operator]
                 total_prod: float = 0.0
                 total_area: float = 0.0
@@ -332,9 +389,10 @@ class ReconstructorService:
                         total_area += float(a)  # type: ignore
                         cdks_with_data += 1
 
+                # Coverage = data CDKs with data this year / total active CDKs
                 coverage: float = (
-                    float(cdks_with_data) / float(num_data_cdks)
-                    if num_data_cdks > 0
+                    float(cdks_with_data) / float(num_active)
+                    if num_active > 0
                     else 0.0
                 )
                 yield_val = (
@@ -343,6 +401,17 @@ class ReconstructorService:
                     else None
                 )
 
+                if cdks_with_data > 0:
+                    data_years_count += 1  # type: ignore[operator]
+
+                # Per-year data quality
+                if cdks_with_data == 0:
+                    year_quality = "no_data"
+                elif is_fallback and cdks_with_data > 0:
+                    year_quality = epoch_data_quality  # inherit epoch-level quality
+                else:
+                    year_quality = "direct" if cdks_with_data == num_active else "partial"
+
                 metrics_list.append({
                     "year": year,
                     "data_coverage": round(coverage, 3),  # type: ignore
@@ -350,10 +419,45 @@ class ReconstructorService:
                     "collective_production": round(total_prod, 2) if cdks_with_data > 0 else None,  # type: ignore
                     "collective_area": round(total_area, 2) if cdks_with_data > 0 else None,  # type: ignore
                     "is_fallback": is_fallback,
+                    "data_quality": year_quality,
                 })
+
+            # Epoch-level confidence score
+            #   source_quality: direct=1.0, ancestor=0.6, missing=0.0  (40%)
+            #   coverage: proportion of active CDKs resolved             (40%)
+            #   temporal: data years / epoch span                         (20%)
+            source_quality: float = 0.0
+            if num_active > 0:
+                source_quality = (
+                    direct_count * 1.0
+                    + ancestor_count * 0.6
+                    + missing_count * 0.0
+                ) / num_active
+            resolved_coverage: float = (
+                (direct_count + ancestor_count) / num_active
+                if num_active > 0 else 0.0
+            )
+            temporal_coverage: float = (
+                data_years_count / epoch_span  # type: ignore[operator]
+                if epoch_span > 0 else 0.0
+            )
+            epoch_confidence: float = round(  # type: ignore[call-overload]
+                source_quality * 0.4
+                + resolved_coverage * 0.4
+                + temporal_coverage * 0.2,
+                3,  # type: ignore[call-overload]
+            )
 
             # Build event label with district names
             active_names = [cdk_name_map.get(c, c) for c in ep.active_cdks]
+
+            # Resolution details for transparency
+            resolution_details: dict[str, dict[str, Any]] = {}
+            for active_cdk, (data_cdk, status) in resolution_map.items():
+                resolution_details[active_cdk] = {
+                    "data_cdk": data_cdk,
+                    "status": status,
+                }
 
             ep_data: dict[str, Any] = {
                 "epoch_num": ep.epoch_num,
@@ -364,6 +468,9 @@ class ReconstructorService:
                 "active_names": active_names,
                 "data_cdks": data_cdks,
                 "is_fallback": is_fallback,
+                "data_quality": epoch_data_quality,
+                "confidence_score": epoch_confidence,
+                "cdk_resolution": resolution_details,
                 "leaf_cdks": list(leaves),
                 "is_virtual": ep.is_virtual,
                 "reconstructed_geojson": geojson,

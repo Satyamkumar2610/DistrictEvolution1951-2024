@@ -22,7 +22,7 @@ class LineageEvent(BaseModel):
     id: str = Field(..., description="Unique event identifier")
     parent_cdk: str = Field(..., description="Source district CDK")
     parent_name: str | None = Field(
-        None, description="Human-readable parent name")
+        default=None, description="Human-readable parent name")
     children_cdks: list[str] = Field(
         default_factory=list,
         description="Resulting district CDKs")
@@ -39,7 +39,7 @@ class LineageEvent(BaseModel):
         description="Area proportion per child (should sum to ~1.0)"
     )
     legal_reference: str | None = Field(
-        None, description="Gazette notification reference")
+        default=None, description="Gazette notification reference")
     confidence: float = Field(
         default=1.0,
         ge=0,

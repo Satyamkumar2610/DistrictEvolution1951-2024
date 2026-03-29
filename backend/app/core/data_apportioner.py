@@ -340,3 +340,39 @@ class DataApportioner:
             "method": "area_weighted" if cdks_with_data > 0 else "none",
         }
         return result
+
+    def compute_epoch_confidence(
+        self,
+        total_active: int,
+        direct_count: int,
+        fallback_count: int,
+        data_years: int,
+        epoch_span: int,
+    ) -> float:
+        """
+        Compute a 0.0–1.0 confidence score for an epoch.
+
+        Formula:
+          source_quality (40%):  direct=1.0, fallback=0.6, missing=0.0
+          coverage (40%):        resolved CDKs / active CDKs
+          temporal (20%):        years with data / epoch span
+        """
+        if total_active == 0:
+            return 0.0
+
+        missing_count = total_active - direct_count - fallback_count
+        source_quality = (
+            direct_count * 1.0
+            + fallback_count * 0.6
+            + missing_count * 0.0
+        ) / total_active
+
+        resolved_coverage = (direct_count + fallback_count) / total_active
+        temporal_coverage = data_years / epoch_span if epoch_span > 0 else 0.0
+
+        confidence = (
+            source_quality * 0.4
+            + resolved_coverage * 0.4
+            + temporal_coverage * 0.2
+        )
+        return round(min(1.0, max(0.0, confidence)), 3)  # type: ignore[call-overload]

@@ -291,7 +291,7 @@ async def get_crop_diversification(
         raise NotFoundError(
             detail="No data found for specified state and year")
 
-    crop_areas = {}
+    crop_areas: dict[str, float] = {}
     for row in rows:
         var = row["variable_name"]
         val = float(row["value"])

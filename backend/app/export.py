@@ -56,6 +56,7 @@ class DataExporter:
         filters: dict[str, Any] | None = None,
     ) -> str:
         """Export data as JSON string."""
+        output: Any
         if include_metadata:
             metadata = self._create_metadata(len(data), filters)
             output = {

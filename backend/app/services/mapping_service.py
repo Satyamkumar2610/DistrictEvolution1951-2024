@@ -122,6 +122,7 @@ class MappingService:
                 return self._bridge
 
         try:
+            assert path is not None
             with open(path, encoding='utf-8') as f:
                 self._bridge = json.load(f)
             logger.info(f"Loaded bridge with {len(self._bridge)} entries")

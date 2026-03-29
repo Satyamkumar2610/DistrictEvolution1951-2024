@@ -24,7 +24,7 @@ async def get_db() -> AsyncGenerator[asyncpg.Connection, None]:
 
 def generate_provenance(
         request: Request,
-        method: str = None) -> ProvenanceMetadata:
+        method: str | None = None) -> ProvenanceMetadata:
     """
     Generate reproducibility metadata for API responses.
 
