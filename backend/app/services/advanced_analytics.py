@@ -211,8 +211,8 @@ class AdvancedAnalyticsService:
             other_area = sum(area for crp, area in sorted_crops[5:])  # type: ignore[index]
 
             # Compute Shannon Diversity Index (H = -sum(p * ln(p)))
-            shannon_index = 0
-            shares = {}
+            shannon_index: float = 0.0
+            shares: dict[str, float] = {}
             for crp, area in top_crops:
                 share = area / total_area
                 shares[crp] = round(share, 4)  # type: ignore[call-overload]
@@ -345,7 +345,7 @@ class AdvancedAnalyticsService:
             len(before_yields) if before_yields else 0
 
         # After split: weighted average of children
-        after_results = {}
+        after_results: dict[str, dict[str, Any]] = {}
         for child_cdk in child_cdks:
             after_data = await self._fetch_with_fallback(
                 query_template, crop, "yield", child_cdk, split_year, split_year + years_after
@@ -356,8 +356,8 @@ class AdvancedAnalyticsService:
                 after_yields) / len(after_yields) if after_yields else 0}
 
         # Calculate aggregate after-split performance
-        all_after_avgs = [v['avg']
-                          for v in after_results.values() if v['avg'] > 0]  # type: ignore[operator]
+        all_after_avgs: list[float] = [float(v['avg'])
+                          for v in after_results.values() if v['avg'] > 0]
         after_avg = sum(all_after_avgs) / \
             len(all_after_avgs) if all_after_avgs else 0  # type: ignore[operator]
 
