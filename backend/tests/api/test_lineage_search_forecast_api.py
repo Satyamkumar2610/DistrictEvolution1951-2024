@@ -41,77 +41,64 @@ async def test_search_endpoint_combines_district_and_state_results(client):
 @pytest.mark.asyncio
 async def test_forecast_endpoints_return_forecast_and_recommendations(client):
     mock_db = AsyncMock()
-    mock_db.fetchval.side_effect = [1]
-    mock_db.fetch.side_effect = [
-        [{"year": 2018, "value": 1000.0}, {"year": 2019, "value": 1100.0}, {"year": 2020, "value": 1200.0}, {"year": 2021, "value": 1250.0}, {"year": 2022, "value": 1300.0}],
-    ]
-    forecaster = AsyncMock()
-    forecaster.forecast = AsyncMock(return_value=None)
-    forecast_result = AsyncMock()
+    service = AsyncMock()
+    service.get_yield_forecast_response.return_value = {
+        "cdk": "101",
+        "crop": "wheat",
+        "historical_years": 5,
+        "method": "linear_fallback",
+        "trend_direction": "mild_increase",
+        "forecasts": [
+            {
+                "year": 2023,
+                "predicted_yield": 1350.0,
+                "lower_bound": 1250.0,
+                "upper_bound": 1450.0,
+                "confidence": 0.9,
+            }
+        ],
+        "model_stats": {"slope": 50.0},
+    }
 
     client._transport.app.dependency_overrides[database_get_db] = _override_db(mock_db)
     try:
-        with patch("app.api.v1.forecast.YieldForecaster") as forecaster_cls:
-            forecaster_cls.return_value.forecast.return_value = type(
-                "Forecast",
-                (),
-                {
-                    "to_dict": lambda self: {
-                        "cdk": "101",
-                        "crop": "wheat",
-                        "historical_years": 5,
-                        "method": "linear_fallback",
-                        "trend_direction": "mild_increase",
-                        "forecasts": [{"year": 2023, "predicted_yield": 1350.0, "lower_bound": 1250.0, "upper_bound": 1450.0, "confidence": 0.9}],
-                        "model_stats": {"slope": 50.0},
-                    }
-                },
-            )()
+        with patch("app.api.v1.forecast.ForecastService", return_value=service):
             response = await client.get("/api/v1/forecast/101/wheat?horizon=1")
 
         assert response.status_code == 200
         assert response.json()["forecasts"][0]["year"] == 2023
+        service.get_yield_forecast_response.assert_awaited_once_with("101", "wheat", 1)
     finally:
         del client._transport.app.dependency_overrides[database_get_db]
 
     mock_db = AsyncMock()
-    mock_db.fetchrow.side_effect = [
-        {"cdk": "101", "state_name": "Bihar", "district_name": "Patna"},
-        {"yield": 1000.0, "area": 200.0},
-        {"yield": None, "area": None},
-        {"yield": None, "area": None},
-        {"yield": None, "area": None},
-        {"yield": None, "area": None},
-        {"yield": None, "area": None},
-        {"yield": None, "area": None},
-        {"yield": None, "area": None},
-        {"yield": None, "area": None},
-        {"yield": None, "area": None},
-        {"yield": None, "area": None},
-    ]
-    mock_db.fetchval.side_effect = [900.0, None, None, None, None, None, None, None, None, None]
+    service = AsyncMock()
+    service.get_crop_recommendations_response.return_value = {
+        "cdk": "101",
+        "district": "Patna",
+        "state": "Bihar",
+        "recommendations": [
+            {
+                "crop": "rice",
+                "score": 1.2,
+                "efficiency": 1.1,
+                "current_yield": 1000.0,
+                "state_average": 900.0,
+                "current_area": 200.0,
+                "trend_pct": 12.5,
+                "recommendation": "expand",
+            }
+        ],
+    }
 
     client._transport.app.dependency_overrides[database_get_db] = _override_db(mock_db)
     try:
-        with patch("app.api.v1.forecast._calculate_trend", AsyncMock(return_value=12.5)), patch(
-            "app.api.v1.forecast.CropRecommender"
-        ) as recommender_cls:
-            recommender_cls.return_value.recommend.return_value = [
-                {
-                    "crop": "rice",
-                    "score": 1.2,
-                    "efficiency": 1.1,
-                    "current_yield": 1000.0,
-                    "state_average": 900.0,
-                    "current_area": 200.0,
-                    "trend_pct": 12.5,
-                    "recommendation": "expand",
-                }
-            ]
+        with patch("app.api.v1.forecast.ForecastService", return_value=service):
             response = await client.get("/api/v1/forecast/101/recommend?top_n=1")
 
         assert response.status_code == 200
         assert response.json()["recommendations"][0]["crop"] == "rice"
+        service.get_crop_recommendations_response.assert_awaited_once_with("101", 1)
     finally:
         del client._transport.app.dependency_overrides[database_get_db]
 
