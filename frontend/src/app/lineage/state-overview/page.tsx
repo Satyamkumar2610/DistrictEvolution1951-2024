@@ -7,6 +7,11 @@ import Link from 'next/link';
 import { MapPin, TrendingUp, TrendingDown, Layers, ArrowRight } from 'lucide-react';
 import ReactECharts from 'echarts-for-react';
 
+interface BarTooltipParam {
+    name: string;
+    value: number;
+}
+
 const CROPS = [
     { value: 'wheat', label: 'Wheat' },
     { value: 'rice', label: 'Rice' },
@@ -134,7 +139,7 @@ export default function StatePage() {
                                             backgroundColor: '#ffffff',
                                             borderColor: '#e2e8f0',
                                             textStyle: { color: '#0f172a' },
-                                            formatter: (params: any /* eslint-disable-line @typescript-eslint/no-explicit-any */) => {
+                                            formatter: (params: BarTooltipParam[]) => {
                                                 const p = params[0];
                                                 return `<div class="font-bold mb-1">${p.name}</div>
                                                         <div class="text-sm text-slate-600">Yield: <span class="text-emerald-600 font-semibold">${p.value.toLocaleString()}</span> kg/ha</div>`;
@@ -184,7 +189,7 @@ export default function StatePage() {
                                             backgroundColor: '#ffffff',
                                             borderColor: '#e2e8f0',
                                             textStyle: { color: '#0f172a' },
-                                            formatter: (params: any /* eslint-disable-line @typescript-eslint/no-explicit-any */) => {
+                                            formatter: (params: BarTooltipParam[]) => {
                                                 const p = params[0];
                                                 return `<div class="font-bold mb-1">${p.name}</div>
                                                         <div class="text-sm text-slate-600">Yield: <span class="text-rose-600 font-semibold">${p.value.toLocaleString()}</span> kg/ha</div>`;

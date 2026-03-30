@@ -7,6 +7,11 @@ import { Wheat, TrendingUp, TrendingDown, Minus, BarChart3, Grid3X3 } from 'luci
 import ReactECharts from 'echarts-for-react';
 import EmptyState from '../../components/EmptyState';
 
+interface ChartTooltipParam {
+    name: string;
+    value: number;
+}
+
 const PIE_COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4', '#f97316', '#6366f1', '#14b8a6', '#e11d48'];
 const CORR_POSITIVE = '#10b981';
 const CORR_NEGATIVE = '#ef4444';
@@ -306,8 +311,7 @@ export default function CropPortfolioPage() {
                                                 backgroundColor: '#ffffff',
                                                 borderColor: '#e2e8f0',
                                                 textStyle: { color: '#0f172a' },
-                                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                                formatter: (params: any) => {
+                                                formatter: (params: ChartTooltipParam[]) => {
                                                     const p = params[0];
                                                     return `<div class="font-bold mb-1">${p.name}</div>
                                                             <div class="text-sm text-slate-600">Yield: <span class="text-indigo-600 font-semibold">${p.value.toLocaleString()}</span> kg/ha</div>`;
@@ -384,8 +388,7 @@ export default function CropPortfolioPage() {
                                             backgroundColor: '#ffffff',
                                             borderColor: '#e2e8f0',
                                             textStyle: { color: '#0f172a' },
-                                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                            formatter: (params: any) => {
+                                            formatter: (params: ChartTooltipParam[]) => {
                                                 const p = params[0];
                                                 return `<div class="font-bold mb-1">${p.name}</div>
                                                         <div class="text-sm text-slate-600">Yield: <span class="text-emerald-600 font-semibold">${p.value.toLocaleString()}</span> kg/ha</div>`;

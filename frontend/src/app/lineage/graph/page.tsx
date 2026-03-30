@@ -9,12 +9,13 @@ import {
     MiniMap,
     Panel,
     Node,
-    Edge
+    Edge,
+    Position,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import dagre from 'dagre';
 import { api } from '../../services/api';
-import { GitBranch, Database, MapPin, Search, ArrowRight, Info, Activity } from 'lucide-react';
+import { GitBranch, Database, MapPin, Search } from 'lucide-react';
 
 import { LineageCoverageItem, SplitEvent } from '../../services/api/types';
 // Dagre topological layout engine
@@ -40,8 +41,8 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'LR') => 
 
     nodes.forEach((node) => {
         const nodeWithPosition = dagreGraph.node(node.id);
-        node.targetPosition = direction === 'LR' ? 'left' as any : 'top' as any;
-        node.sourcePosition = direction === 'LR' ? 'right' as any : 'bottom' as any;
+        node.targetPosition = direction === 'LR' ? Position.Left : Position.Top;
+        node.sourcePosition = direction === 'LR' ? Position.Right : Position.Bottom;
         node.position = {
             x: nodeWithPosition.x - nodeWidth / 2,
             y: nodeWithPosition.y - nodeHeight / 2,
@@ -63,7 +64,7 @@ export default function LineagePage() {
         queryFn: () => api.getStatesList(),
     });
 
-    const { data: history, isLoading: isLoadingHistory, isError: isHistoryError } = useQuery({
+    const { data: history, isError: isHistoryError } = useQuery({
         queryKey: ['lineage-history', selectedState],
         queryFn: () => api.getLineageHistory(selectedState),
         enabled: !!selectedState,
@@ -75,7 +76,7 @@ export default function LineagePage() {
         enabled: !!selectedCdk,
     });
 
-    const { data: coverage, isLoading: isLoadingCoverage, isError: isCoverageError } = useQuery({
+    const { data: coverage, isError: isCoverageError } = useQuery({
         queryKey: ['state-coverage', selectedState],
         queryFn: () => api.getStateCoverage(selectedState),
         enabled: !!selectedState,

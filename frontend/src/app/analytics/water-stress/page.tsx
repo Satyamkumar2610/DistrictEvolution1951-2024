@@ -6,6 +6,11 @@ import { api } from '../../services/api';
 import { Droplet, AlertTriangle, Info, Table2, Activity } from 'lucide-react';
 import ReactECharts from 'echarts-for-react';
 
+interface WaterStressTooltipDatum {
+    name: string;
+    value: [number, number, number, string, number];
+}
+
 export default function WaterStressPage() {
     const [selectedState, setSelectedState] = useState('');
     const [selectedYear, setSelectedYear] = useState(2020);
@@ -63,15 +68,13 @@ export default function WaterStressPage() {
             grid: { left: '8%', right: '8%', bottom: '10%', top: '15%', containLabel: true },
             tooltip: {
                 trigger: 'item',
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                formatter: function (params: any) {
-                    const d = params.data;
-                    return `<div class="font-bold border-b border-slate-200 pb-1 mb-1">${d.name}</div>
+                formatter: function (params: WaterStressTooltipDatum) {
+                    return `<div class="font-bold border-b border-slate-200 pb-1 mb-1">${params.name}</div>
                             <div class="text-xs space-y-1">
-                                <div><span class="text-slate-500">Mismatch Score:</span> <span class="font-bold font-mono text-slate-800">${d.value[2].toFixed(1)}</span></div>
-                                <div><span class="text-slate-500">Category:</span> <span class="font-bold ${d.value[3] === 'Critical' ? 'text-rose-600' : d.value[3] === 'High' ? 'text-amber-600' : 'text-slate-600'}">${d.value[3]}</span></div>
-                                <div><span class="text-slate-500">Water Intensive:</span> <span class="font-mono text-slate-800">${d.value[0].toFixed(1)}%</span></div>
-                                <div><span class="text-slate-500">Annual Rainfall:</span> <span class="font-mono text-slate-800">${d.value[1].toFixed(0)} mm</span></div>
+                                <div><span class="text-slate-500">Mismatch Score:</span> <span class="font-bold font-mono text-slate-800">${params.value[2].toFixed(1)}</span></div>
+                                <div><span class="text-slate-500">Category:</span> <span class="font-bold ${params.value[3] === 'Critical' ? 'text-rose-600' : params.value[3] === 'High' ? 'text-amber-600' : 'text-slate-600'}">${params.value[3]}</span></div>
+                                <div><span class="text-slate-500">Water Intensive:</span> <span class="font-mono text-slate-800">${params.value[0].toFixed(1)}%</span></div>
+                                <div><span class="text-slate-500">Annual Rainfall:</span> <span class="font-mono text-slate-800">${params.value[1].toFixed(0)} mm</span></div>
                             </div>`;
                 }
             },
@@ -111,8 +114,7 @@ export default function WaterStressPage() {
             },
             series: [{
                 type: 'scatter',
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                symbolSize: function (data: any) {
+                symbolSize: function (data: [number, number, number, string, number]) {
                     // Bubble size relative to total agricultural area
                     return Math.max(8, Math.min(30, Math.sqrt(data[4]) / 10));
                 },

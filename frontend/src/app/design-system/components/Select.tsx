@@ -128,7 +128,9 @@ function SelectInner<T = string>(
   };
 
   // Handle keyboard navigation
-  const handleKeyDown = (event: React.KeyboardEvent) => {
+  const handleKeyDown = (
+    event: React.KeyboardEvent<HTMLButtonElement | HTMLInputElement>
+  ) => {
     if (isDisabled) return;
 
     switch (event.key) {
@@ -400,7 +402,7 @@ function SelectInner<T = string>(
               onKeyDown={(e) => {
                 if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
                   e.preventDefault();
-                  handleKeyDown(e as any /* eslint-disable-line @typescript-eslint/no-explicit-any */);
+                  handleKeyDown(e);
                 } else if (e.key === 'Escape') {
                   setIsOpen(false);
                   setSearchQuery('');

@@ -47,6 +47,10 @@ const STATUS_COLORS: Record<string, string> = {
     unknown: "text-slate-400",
 };
 
+function getErrorMessage(error: unknown): string {
+    return error instanceof Error ? error.message : "Failed to load";
+}
+
 export default function DataQualityDashboard() {
     const [data, setData] = useState<QualityData | null>(null);
     const [loading, setLoading] = useState(true);
@@ -62,8 +66,8 @@ export default function DataQualityDashboard() {
             if (!res.ok) throw new Error("Failed to fetch quality data");
             const json = await res.json();
             setData(json);
-        } catch (err: any) {
-            setError(err.message || "Failed to load");
+        } catch (err: unknown) {
+            setError(getErrorMessage(err));
         } finally {
             setLoading(false);
         }

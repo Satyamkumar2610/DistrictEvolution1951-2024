@@ -4,7 +4,7 @@ import React, { useState, useRef, useCallback, useEffect } from "react";
 import Map, { Source, Layer, MapRef } from "react-map-gl/maplibre";
 import * as turf from "@turf/turf";
 import {
-    UploadCloud, Loader2, AlertCircle, FileJson, Plus, X, Trash2,
+    UploadCloud, Loader2, AlertCircle, FileJson, Plus, Trash2,
     Shield, ArrowRight, CheckCircle2, AlertTriangle, Download,
     Database, MapPin, GraduationCap, HeartPulse, Compass
 } from "lucide-react";
@@ -114,6 +114,10 @@ function statusBadge(status: string) {
     return { color: "text-rose-700 bg-rose-50", icon: AlertCircle };
 }
 
+function getErrorMessage(error: unknown, fallback: string): string {
+    return error instanceof Error ? error.message : fallback;
+}
+
 // ── Main Component ───────────────────────────────────────────────────────
 
 export default function DistrictSplitAnalyzer() {
@@ -218,8 +222,8 @@ export default function DistrictSplitAnalyzer() {
         setParentUploaded(false);
         try {
             await handleFile(file, setParentGeoJson);
-        } catch (err: any) {
-            setErrorMessage(`Parent file error: ${err.message}`);
+        } catch (err: unknown) {
+            setErrorMessage(`Parent file error: ${getErrorMessage(err, "Invalid file")}`);
             setStatus("error");
         }
     };
@@ -233,8 +237,8 @@ export default function DistrictSplitAnalyzer() {
             setChildren(prev => prev.map(c =>
                 c.id === childId ? { ...c, file, geojson: parsedGj, uploaded: false } : c
             ));
-        } catch (err: any) {
-            setErrorMessage(`Child file error: ${err.message}`);
+        } catch (err: unknown) {
+            setErrorMessage(`Child file error: ${getErrorMessage(err, "Invalid file")}`);
             setStatus("error");
         }
     };
@@ -345,9 +349,9 @@ export default function DistrictSplitAnalyzer() {
                 );
             }
 
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error(err);
-            setErrorMessage(err.message || "Analysis failed");
+            setErrorMessage(getErrorMessage(err, "Analysis failed"));
             setStatus("error");
         }
     };
@@ -643,7 +647,7 @@ export default function DistrictSplitAnalyzer() {
                         )}
 
                         {/* Pre-analysis: show uploaded children */}
-                        {!result && children.map((child, i) =>
+                        {!result && children.map((child) =>
                             child.geojson ? (
                                 <Source key={`pre-child-${child.id}`} id={`pre-child-${child.id}`} type="geojson" data={child.geojson}>
                                     <Layer id={`pre-child-fill-${child.id}`} type="fill" paint={{ "fill-color": "#60a5fa", "fill-opacity": 0.3 }} />

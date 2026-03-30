@@ -16,6 +16,11 @@ interface ClimateCorrelationCardProps {
     crop: string;
 }
 
+interface ClimateTooltipParam {
+    seriesName: string;
+    value: [number, number];
+}
+
 export default function ClimateCorrelationCard({ data, crop }: ClimateCorrelationCardProps) {
     const correlations = data?.correlations?.monsoon_rainfall || {};
     const r = correlations.r || 0;
@@ -123,7 +128,7 @@ export default function ClimateCorrelationCard({ data, crop }: ClimateCorrelatio
                                 borderColor: '#e2e8f0',
                                 textStyle: { color: '#0f172a', fontSize: 11 },
                                 padding: [8, 12],
-                                formatter: function (params: any /* eslint-disable-line @typescript-eslint/no-explicit-any */) {
+                                formatter: function (params: ClimateTooltipParam) {
                                     if (params.seriesName === 'Trend') return '';
                                     return `<b>Yield:</b> ${params.value[1]} kg/ha<br/><b>Rainfall:</b> ${params.value[0]} mm`;
                                 }

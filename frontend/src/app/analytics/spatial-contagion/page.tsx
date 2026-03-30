@@ -252,8 +252,7 @@ export default function SpatialContagionPage() {
                             <div className="flex-1 overflow-y-auto">
                                 <table className="w-full text-left text-sm">
                                     <tbody className="divide-y divide-slate-100">
-                                        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                                        {contagion.neighbors.map((n: any) => (
+                                        {contagion.neighbors.map((n) => (
                                             <tr key={n.cdk} className="hover:bg-slate-50 transition-colors">
                                                 <td className="py-3 px-4 font-medium text-slate-800">{n.name}</td>
                                                 <td className="py-3 px-4 text-right">

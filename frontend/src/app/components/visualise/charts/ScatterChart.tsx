@@ -15,6 +15,10 @@ interface ScatterChartProps {
     color?: string;
 }
 
+interface ScatterTooltipParam {
+    value: [number, number, number];
+}
+
 export function ScatterChart({ data, xAxisMetric, yAxisMetric, color = '#3B82F6' }: ScatterChartProps) {
     if (!data || data.length === 0) {
         return (
@@ -32,7 +36,7 @@ export function ScatterChart({ data, xAxisMetric, yAxisMetric, color = '#3B82F6'
                 option={{
                     tooltip: {
                         trigger: 'item',
-                        formatter: function (params: any /* eslint-disable-line @typescript-eslint/no-explicit-any */) {
+                        formatter: function (params: ScatterTooltipParam) {
                             return `Year: ${params.value[2]}<br/>${xAxisMetric}: ${params.value[0]}<br/>${yAxisMetric}: ${params.value[1]}`;
                         }
                     },

@@ -16,6 +16,12 @@ interface SimulationPanelProps {
     year: number;
 }
 
+interface SimulationTooltipParam {
+    seriesName: string;
+    value?: unknown;
+    data?: [number, number, string?];
+}
+
 export default function SimulationPanel({ district, state, crop, year }: SimulationPanelProps) {
     const [deviation, setDeviation] = useState<number>(0);
     const [showExplanation, setShowExplanation] = useState(false);
@@ -177,7 +183,7 @@ export default function SimulationPanel({ district, state, crop, year }: Simulat
                                 borderColor: '#e2e8f0',
                                 textStyle: { color: '#0f172a', fontSize: 10 },
                                 padding: [6, 10],
-                                formatter: function (params: any /* eslint-disable-line @typescript-eslint/no-explicit-any */) {
+                                formatter: function (params: SimulationTooltipParam) {
                                     if (!params.value || !Array.isArray(params.value) || params.value.length < 2) return '';
                                     if (params.seriesName === 'Projection') {
                                         return `<span style="color:#e11d48;font-weight:600">Projected</span><br/>Yield: ${Number(params.value[1]).toFixed(0)} kg/ha<br/>Rain: ${Number(params.value[0]).toFixed(0)} mm`;

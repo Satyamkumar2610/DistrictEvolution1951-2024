@@ -122,7 +122,7 @@ export const Card = forwardRef<HTMLElement, CardProps>(
 
     return (
       <Component
-        ref={ref as any /* eslint-disable-line @typescript-eslint/no-explicit-any */}
+        ref={ref as React.Ref<HTMLDivElement>}
         className={cardClasses}
         {...interactiveProps}
         {...props}
