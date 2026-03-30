@@ -5,8 +5,7 @@ import {
     Database, Shield, AlertTriangle, CheckCircle2, BarChart3,
     Loader2, RefreshCcw, Layers, Map, GitBranch, Zap
 } from "lucide-react";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+import { buildPublicApiV1Url } from "../services/api/config";
 
 interface QualityData {
     districts: {
@@ -60,7 +59,7 @@ export default function DataQualityDashboard() {
         setLoading(true);
         setError("");
         try {
-            const res = await fetch(`${API_URL}/api/v1/spatial/quality/overview`, {
+            const res = await fetch(buildPublicApiV1Url("/spatial/quality/overview"), {
                 signal: AbortSignal.timeout(15000),
             });
             if (!res.ok) throw new Error("Failed to fetch quality data");

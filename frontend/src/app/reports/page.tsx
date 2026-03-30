@@ -27,7 +27,11 @@ export default function ReportsPage() {
     const [previewOpen, setPreviewOpen] = useState(false);
 
     // Search districts
-    const { data: searchResults } = useQuery({
+    const {
+        data: searchResults,
+        isFetching: searchingDistricts,
+        isError: searchError,
+    } = useQuery({
         queryKey: ['search', searchQuery],
         queryFn: () => api.searchDistricts(searchQuery, 'district'),
         enabled: searchQuery.length >= 2,
@@ -131,6 +135,24 @@ export default function ReportsPage() {
                                     </button>
                                 ))}
                             </div>
+                        )}
+                        {searchQuery.length >= 2 && searchingDistricts && (
+                            <p className="text-xs text-slate-500 font-medium">Searching districts...</p>
+                        )}
+                        {searchQuery.length >= 2 && searchError && (
+                            <p className="text-xs text-rose-600 font-medium">
+                                District search failed. Please retry.
+                            </p>
+                        )}
+                        {searchQuery.length >= 2 && !searchingDistricts && !searchError && searchResults?.results.length === 0 && (
+                            <p className="text-xs text-slate-500 font-medium">
+                                No districts matched &quot;{searchQuery}&quot;.
+                            </p>
+                        )}
+                        {!selectedCdk && searchQuery.length > 0 && (
+                            <p className="mt-2 text-xs text-slate-500 font-medium">
+                                Type at least two characters and choose a district from the results to enable report generation.
+                            </p>
                         )}
                         {selectedCdk && (
                             <div className="mt-3 p-2 rounded-lg bg-indigo-50 border border-indigo-200 text-xs text-indigo-800 font-medium">

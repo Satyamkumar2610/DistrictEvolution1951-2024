@@ -6,7 +6,7 @@ import { api } from '../../services/api';
 import { Layers, AlertCircle, Info, Sparkles } from 'lucide-react';
 import ReactECharts from 'echarts-for-react';
 
-import type { CropShiftTimelinePoint, SplitDistrict } from '../../services/api';
+import type { CropShiftTimelinePoint } from '../../services/api';
 
 const STATE_COLORS = ['#6366f1', '#10b981', '#f59e0b', '#ec4899', '#06b6d4', '#8b5cf6', '#ef4444', '#14b8a6', '#f97316', '#64748b'];
 
@@ -46,28 +46,22 @@ export default function CropShiftPage() {
         return Object.keys(summaryData.states).sort();
     }, [summaryData]);
 
-    const { data: districtsData } = useQuery({
-        queryKey: ['districts', selectedState],
-        queryFn: () => api.getSplitEvents(selectedState),
+    const {
+        data: districtsResponse,
+        isLoading: loadingDistricts,
+        isError: districtsError,
+    } = useQuery({
+        queryKey: ['districtsByState', selectedState],
+        queryFn: () => api.getDistrictsByState(selectedState),
         enabled: !!selectedState,
     });
 
-    // We can extract all unique dists from Split Events (parents + children)
     const allDistricts = useMemo(() => {
-        if (!districtsData) return [];
-        const distMap = new Map<string, string>();
-        districtsData.forEach((event: SplitDistrict) => {
-            if (event.parent_cdk && !distMap.has(event.parent_cdk)) {
-                distMap.set(event.parent_cdk, event.parent_district);
-            }
-            event.children_cdks.forEach((cId, i) => {
-                if (!cId) return;
-                const cName = event.children_districts[i] || event.children_names[i] || cId;
-                if (!distMap.has(cId)) distMap.set(cId, cName);
-            });
-        });
-        return Array.from(distMap.entries()).map(([cdk, name]) => ({ cdk, name })).sort((a, b) => a.name.localeCompare(b.name));
-    }, [districtsData]);
+        if (!districtsResponse?.items) return [];
+        return districtsResponse.items
+            .map((district) => ({ cdk: district.cdk, name: district.name }))
+            .sort((left, right) => left.name.localeCompare(right.name));
+    }, [districtsResponse]);
 
     const { data: cropShift, isLoading: loadingShift, isError } = useQuery({
         queryKey: ['cropShift', selectedCdk],
@@ -229,11 +223,31 @@ export default function CropShiftPage() {
                         disabled={!selectedState || allDistricts.length === 0}
                         className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-indigo-500 outline-none disabled:opacity-50"
                     >
-                        <option value="">Select district...</option>
+                        <option value="">
+                            {!selectedState
+                                ? 'Select a state first...'
+                                : loadingDistricts
+                                    ? 'Loading districts...'
+                                    : districtsError
+                                        ? 'Failed to load districts'
+                                        : allDistricts.length === 0
+                                            ? 'No districts available'
+                                            : 'Select district...'}
+                        </option>
                         {allDistricts.map(d => (
                             <option key={d.cdk} value={d.cdk}>{d.name} ({d.cdk})</option>
                         ))}
                     </select>
+                    {selectedState && districtsError && (
+                        <p className="mt-2 text-xs text-rose-600 font-medium">
+                            District options could not be loaded for {selectedState}. Please retry or refresh.
+                        </p>
+                    )}
+                    {selectedState && !loadingDistricts && !districtsError && allDistricts.length === 0 && (
+                        <p className="mt-2 text-xs text-slate-500 font-medium">
+                            No district list was returned for {selectedState}.
+                        </p>
+                    )}
                 </div>
             </div>
 

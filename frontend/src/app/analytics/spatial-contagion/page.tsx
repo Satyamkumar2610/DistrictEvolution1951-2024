@@ -23,7 +23,11 @@ export default function SpatialContagionPage() {
         return Object.keys(summaryData.states).sort();
     }, [summaryData]);
 
-    const { data: districtsResponse } = useQuery({
+    const {
+        data: districtsResponse,
+        isLoading: loadingDistricts,
+        isError: districtsError,
+    } = useQuery({
         queryKey: ['districtsByState', selectedState],
         queryFn: () => api.getDistrictsByState(selectedState),
         enabled: !!selectedState,
@@ -137,11 +141,31 @@ export default function SpatialContagionPage() {
                         disabled={!selectedState || allDistricts.length === 0}
                         className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-violet-500 outline-none disabled:opacity-50"
                     >
-                        <option value="">Select target...</option>
+                        <option value="">
+                            {!selectedState
+                                ? 'Select a state first...'
+                                : loadingDistricts
+                                    ? 'Loading districts...'
+                                    : districtsError
+                                        ? 'Failed to load districts'
+                                        : allDistricts.length === 0
+                                            ? 'No districts available'
+                                            : 'Select target...'}
+                        </option>
                         {allDistricts.map(d => (
                             <option key={d.cdk} value={d.cdk}>{d.name} ({d.cdk})</option>
                         ))}
                     </select>
+                    {selectedState && districtsError && (
+                        <p className="mt-2 text-xs text-rose-600 font-medium">
+                            District options could not be loaded for {selectedState}. Please retry or refresh.
+                        </p>
+                    )}
+                    {selectedState && !loadingDistricts && !districtsError && allDistricts.length === 0 && (
+                        <p className="mt-2 text-xs text-slate-500 font-medium">
+                            No district list was returned for {selectedState}.
+                        </p>
+                    )}
                 </div>
 
                 <div className="w-40">

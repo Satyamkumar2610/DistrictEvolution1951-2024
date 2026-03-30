@@ -8,6 +8,7 @@ import {
     Map, Shield, GitBranch, Wheat, FileText, BookOpen, Menu, X,
     Layers, Droplet, Network, Target, Home, BarChart3, Globe2, Database
 } from 'lucide-react';
+import { buildPublicOriginUrl } from '../services/api/config';
 
 const NAV_GROUPS = [
     {
@@ -56,8 +57,7 @@ export default function Sidebar() {
     const [backendOnline, setBackendOnline] = useState<boolean | null>(null);
 
     useEffect(() => {
-        const BASE = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_BASE_URL || 'https://i-ascap.onrender.com';
-        fetch(`${BASE}/health`, { signal: AbortSignal.timeout(5000) })
+        fetch(buildPublicOriginUrl('/health'), { signal: AbortSignal.timeout(5000) })
             .then(r => setBackendOnline(r.ok))
             .catch(() => setBackendOnline(false));
     }, []);

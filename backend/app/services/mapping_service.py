@@ -9,6 +9,7 @@ Handles:
 """
 import json
 import logging
+import os
 import re
 from functools import lru_cache
 from pathlib import Path
@@ -91,6 +92,23 @@ class MappingService:
         self._reverse_bridge: dict[str, str] | None = None
         self._geo_keys_normalized: dict[str, str] | None = None
 
+    @staticmethod
+    def _default_bridge_candidates() -> list[Path]:
+        """Return candidate locations for the map bridge in local and deployed layouts."""
+        repo_root = Path(__file__).resolve().parents[3]
+        candidates: list[Path] = []
+
+        env_path = os.getenv("MAP_BRIDGE_PATH")
+        if env_path:
+            candidates.append(Path(env_path))
+
+        candidates.extend([
+            repo_root / "frontend" / "public" / "data" / "map_bridge.json",
+            repo_root / "backend" / "data" / "map_bridge.json",
+        ])
+
+        return candidates
+
     def _load_bridge(self) -> dict[str, str]:
         """Load bridge file lazily."""
         if self._bridge is not None:
@@ -99,16 +117,7 @@ class MappingService:
         if self._bridge_path:
             path = Path(self._bridge_path)
         else:
-            # Default path relative to project structure
-            # Try frontend public data first
-            possible_paths = [
-                Path(__file__).parent.parent.parent.parent.parent
-                / "frontend"
-                / "public"
-                / "data"
-                / "map_bridge.json",
-                Path("/Users/satyamkumar/Desktop/DistrictEvolution/frontend/public/data/map_bridge.json"),
-            ]
+            possible_paths = self._default_bridge_candidates()
             path = None
             for p in possible_paths:
                 if p.exists():
@@ -117,7 +126,9 @@ class MappingService:
 
             if path is None:
                 logger.warning(
-                    "Could not find map_bridge.json, using empty bridge")
+                    "Could not find map_bridge.json in any known location: %s",
+                    [str(candidate) for candidate in possible_paths],
+                )
                 self._bridge = {}
                 return self._bridge
 

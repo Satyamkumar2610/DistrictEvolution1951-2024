@@ -11,13 +11,12 @@ import type {
     LineageReconstructionResponse,
     LineageReconstructorSearchResult,
 } from "@/app/services/api/types";
+import { buildPublicApiV1Url } from "@/app/services/api/config";
 
 import EpochTimeline from "./EpochTimeline";
 import ReconstructedMapLayer from "./ReconstructedMapLayer";
 import YieldReconstructionChart from "./YieldReconstructionChart";
 import EpochMetricsPanel from "./EpochMetricsPanel";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_BASE_URL || "https://i-ascap.onrender.com";
 
 /* ---------- 50+ Featured Districts grouped by state ---------- */
 const FEATURED_EXAMPLES: LineageReconstructorSearchResult[] = [
@@ -238,7 +237,9 @@ export default function ReconstructorDashboard() {
         const delay = setTimeout(async () => {
             setIsSearching(true);
             try {
-                const res = await fetch(`${API_URL}/api/v1/reconstruct/search?q=${encodeURIComponent(searchQuery)}`);
+                const res = await fetch(
+                    buildPublicApiV1Url(`/reconstruct/search?q=${encodeURIComponent(searchQuery)}`),
+                );
                 if (res.ok) {
                     const data: LineageReconstructorSearchResult[] = await res.json();
                     setSearchResults(data);
@@ -260,7 +261,9 @@ export default function ReconstructorDashboard() {
         if (!cdk) return;
         setError(""); setLoading(true);
         try {
-            const res = await fetch(`${API_URL}/api/v1/reconstruct/${cdk}?crop=${crop}`);
+            const res = await fetch(
+                buildPublicApiV1Url(`/reconstruct/${cdk}?crop=${encodeURIComponent(crop)}`),
+            );
             if (!res.ok) {
                 const errBody = await res.json().catch(() => null);
                 throw new Error(errBody?.detail || `Server ${res.status}`);

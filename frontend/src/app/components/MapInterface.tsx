@@ -35,6 +35,25 @@ const buildFeatureKeyExpression = (): StyleExpression => [
     ['coalesce', ['get', 'STATE'], ['get', 'ST_NM']],
 ];
 
+function getFeatureDistrict(feature: MapGeoJSONFeature): string {
+    return String(
+        feature.properties?.DISTRICT ??
+        feature.properties?.district_name ??
+        feature.properties?.district ??
+        'unknown',
+    );
+}
+
+function getFeatureState(feature: MapGeoJSONFeature): string {
+    return String(
+        feature.properties?.STATE ??
+        feature.properties?.ST_NM ??
+        feature.properties?.state_name ??
+        feature.properties?.state ??
+        '',
+    );
+}
+
 export default function MapInterface({ year, crop = 'wheat', metric = 'yield', selectedDistrict, onDistrictSelect, showRainfallLayer = false }: MapInterfaceProps) {
     const mapRef = useRef<MapRef>(null);
     const [viewState, setViewState] = useState({
@@ -107,8 +126,8 @@ export default function MapInterface({ year, crop = 'wheat', metric = 'yield', s
         const feature = features && features[0];
 
         if (feature) {
-            const dist = feature.properties?.DISTRICT;
-            const state = feature.properties?.STATE;
+            const dist = getFeatureDistrict(feature);
+            const state = getFeatureState(feature);
             const geoKey = `${dist}|${state}`;
             const metricData = joinedData[geoKey];
 
@@ -127,8 +146,7 @@ export default function MapInterface({ year, crop = 'wheat', metric = 'yield', s
     const onClick = React.useCallback((event: MapLayerMouseEvent) => {
         const feature = event.features && event.features[0];
         if (feature) {
-            // Pass back the display name
-            onDistrictSelect(feature.properties?.DISTRICT || "unknown");
+            onDistrictSelect(getFeatureDistrict(feature));
         }
     }, [onDistrictSelect]);
 
@@ -184,8 +202,8 @@ export default function MapInterface({ year, crop = 'wheat', metric = 'yield', s
                         className="text-black"
                     >
                         <div className="p-2">
-                            <h3 className="font-bold text-lg">{hoverInfo.feature.properties?.DISTRICT}</h3>
-                            <p className="text-sm text-gray-500">{hoverInfo.feature.properties?.STATE}</p>
+                            <h3 className="font-bold text-lg">{getFeatureDistrict(hoverInfo.feature)}</h3>
+                            <p className="text-sm text-gray-500">{getFeatureState(hoverInfo.feature)}</p>
 
                             <hr className="my-2 border-gray-200" />
 

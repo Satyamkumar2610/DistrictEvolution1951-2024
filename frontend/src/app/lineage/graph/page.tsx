@@ -15,7 +15,7 @@ import {
 import '@xyflow/react/dist/style.css';
 import dagre from 'dagre';
 import { api } from '../../services/api';
-import { GitBranch, Database, MapPin, Search } from 'lucide-react';
+import { AlertTriangle, GitBranch, Database, MapPin, Search } from 'lucide-react';
 
 import { LineageCoverageItem, SplitEvent } from '../../services/api/types';
 // Dagre topological layout engine
@@ -82,7 +82,8 @@ export default function LineagePage() {
         enabled: !!selectedState,
     });
 
-    const hasErrors = isStatesError || isHistoryError || isCoverageError;
+    const hasFatalErrors = isStatesError || isHistoryError;
+    const hasCoverageWarning = isCoverageError && !hasFatalErrors;
 
     // Reset selectedCdk and coverageSearch when state changes
     useEffect(() => {
@@ -208,7 +209,7 @@ export default function LineagePage() {
             </div>
 
             {/* Empty States */}
-            {!selectedState && !hasErrors && (
+            {!selectedState && !hasFatalErrors && (
                 <div className="bg-slate-50 rounded-xl flex-grow flex items-center justify-center border border-dashed border-slate-300">
                     <div className="text-center">
                         <GitBranch className="text-slate-400 mx-auto mb-3" size={40} />
@@ -217,7 +218,7 @@ export default function LineagePage() {
                 </div>
             )}
 
-            {hasErrors && (
+            {hasFatalErrors && (
                 <div className="bg-rose-50 rounded-xl flex-grow flex items-center justify-center border border-rose-200">
                     <div className="text-center text-rose-600 font-bold">Failed to load data from server.</div>
                 </div>
@@ -254,6 +255,16 @@ export default function LineagePage() {
 
                     {/* Right: Tracket Sidebar */}
                     <div id="sidebar-panel" className="w-full xl:w-[350px] shrink-0 h-full overflow-y-auto space-y-4 pb-10 custom-scrollbar">
+                        {hasCoverageWarning && (
+                            <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-800">
+                                <div className="flex items-start gap-2">
+                                    <AlertTriangle size={16} className="mt-0.5 shrink-0" />
+                                    <div>
+                                        Coverage metadata could not be loaded for {selectedState}. The lineage graph is still available, but node-to-dataset tracking may be incomplete.
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                         {tracking && tracking.district ? (
                             <div className="bg-white border text-sm border-slate-200 shadow-sm rounded-xl p-5">
                                 <div className="flex items-center gap-2 mb-4">

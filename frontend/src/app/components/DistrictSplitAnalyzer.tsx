@@ -10,8 +10,7 @@ import {
 } from "lucide-react";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { FeatureCollection, Geometry } from "geojson";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_BASE_URL || "https://i-ascap.onrender.com";
+import { buildPublicApiV1Url } from "../services/api/config";
 
 // ── Types ────────────────────────────────────────────────────────────────
 
@@ -163,7 +162,7 @@ export default function DistrictSplitAnalyzer() {
             while (!cancelled && attempts < maxAttempts) {
                 attempts++;
                 try {
-                    const res = await fetch(`${API_URL}/api/v1/spatial/enrichment/${eventId}`, {
+                    const res = await fetch(buildPublicApiV1Url(`/spatial/enrichment/${eventId}`), {
                         signal: AbortSignal.timeout(10000),
                     });
                     if (res.ok) {
@@ -258,7 +257,7 @@ export default function DistrictSplitAnalyzer() {
     // ── Upload to Backend ────────────────────────────────────────────────
 
     const uploadGeometry = async (cdk: string, year: number, geojson: FeatureCollection<Geometry>): Promise<UploadResponse> => {
-        const res = await fetch(`${API_URL}/api/v1/spatial/upload-geojson`, {
+        const res = await fetch(buildPublicApiV1Url("/spatial/upload-geojson"), {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -315,7 +314,7 @@ export default function DistrictSplitAnalyzer() {
             // Step 2: Run diff
             setStatus("processing");
 
-            const diffRes = await fetch(`${API_URL}/api/v1/spatial/diff`, {
+            const diffRes = await fetch(buildPublicApiV1Url("/spatial/diff"), {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
