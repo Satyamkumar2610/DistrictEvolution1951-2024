@@ -7,7 +7,7 @@ import csv
 import io
 import json
 from dataclasses import asdict, dataclass
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Any
 
 from fastapi import Response
@@ -39,7 +39,7 @@ class DataExporter:
     ) -> ExportMetadata:
         """Create export metadata."""
         return ExportMetadata(
-            exported_at=datetime.utcnow().isoformat() + "Z",
+            exported_at=datetime.now(UTC).isoformat().replace("+00:00", "Z"),
             source=self.source,
             record_count=record_count,
             filters=filters,

@@ -17,24 +17,27 @@ def _override_db(mock_db):
 @pytest.mark.asyncio
 async def test_search_endpoint_combines_district_and_state_results(client):
     mock_db = AsyncMock()
-    mock_db.fetch.side_effect = [
-        [
-            {"cdk": "101", "name": "Patna", "state": "Bihar", "start_year": 1956, "end_year": None, "result_type": "district", "sort_order": 0},
-        ],
-        [
+    service = AsyncMock()
+    service.search_response.return_value = {
+        "query": "Bi",
+        "total": 2,
+        "results": [
+            {"cdk": "101", "name": "Patna", "state": "Bihar", "start_year": 1956, "end_year": None, "result_type": "district"},
             {"name": "Bihar", "state": "Bihar", "district_count": 38, "result_type": "state"},
         ],
-    ]
+    }
 
     client._transport.app.dependency_overrides[database_get_db] = _override_db(mock_db)
     try:
-        response = await client.get("/api/v1/search?q=Bi&type=all&limit=20")
+        with patch("app.api.v1.search.SearchService", return_value=service):
+            response = await client.get("/api/v1/search?q=Bi&type=all&limit=20")
 
         assert response.status_code == 200
         body = response.json()
         assert body["total"] == 2
         assert body["results"][0]["result_type"] == "district"
         assert body["results"][1]["district_count"] == 38
+        service.search_response.assert_awaited_once_with("Bi", "all", 20)
     finally:
         del client._transport.app.dependency_overrides[database_get_db]
 
