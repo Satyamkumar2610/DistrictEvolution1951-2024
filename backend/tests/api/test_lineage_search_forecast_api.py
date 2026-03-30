@@ -4,6 +4,7 @@ import pytest
 
 from app.api.deps import get_db as deps_get_db
 from app.database import get_db as database_get_db
+from app.exceptions import NotFoundError
 
 
 def _override_db(mock_db):
@@ -106,19 +107,65 @@ async def test_forecast_endpoints_return_forecast_and_recommendations(client):
 @pytest.mark.asyncio
 async def test_lineage_history_events_tracking_and_coverage(client):
     mock_db = AsyncMock()
-    mock_db.fetch.side_effect = [
-        [
+    service = AsyncMock()
+    service.get_district_history_response.return_value = [
+        {
+            "state_name": "Bihar",
+            "split_year": 2000,
+            "parent_district": "Patna",
+            "child_district": "Nalanda",
+            "parent_cdk": "101",
+            "child_cdk": "201",
+            "source": "gazette",
+        }
+    ]
+    service.get_lineage_events_response.return_value = {
+        "total_events": 1,
+        "events": [
             {
-                "state_name": "Bihar",
-                "split_year": 2000,
-                "parent_district": "Patna",
-                "child_district": "Nalanda",
+                "id": "E1",
                 "parent_cdk": "101",
-                "child_cdk": "201",
-                "source": "gazette",
+                "parent_name": "Patna",
+                "children_cdks": ["201"],
+                "children_names": ["Nalanda"],
+                "children_count": 1,
+                "event_year": 2000,
+                "event_type": "split",
+                "coverage_ratios": {"201": 1.0},
+                "legal_reference": None,
+                "confidence": 1.0,
             }
         ],
-        [
+    }
+    service.get_data_tracking_response.return_value = {
+        "district": {
+            "cdk": "101",
+            "district_name": "Patna",
+            "state_name": "Bihar",
+            "start_year": 1956,
+            "end_year": None,
+        },
+        "data_coverage": {
+            "years_with_data": 10,
+            "first_year": 2000,
+            "last_year": 2009,
+            "variables": 3,
+            "total_records": 100,
+        },
+        "data_sources": [
+            {
+                "source": "ICRISAT/DES",
+                "record_count": 100,
+                "from_year": 2000,
+                "to_year": 2009,
+            }
+        ],
+        "lineage": {"split_into": [], "created_from": []},
+    }
+    service.get_state_coverage_response.return_value = {
+        "state": "Bihar",
+        "districts": 1,
+        "coverage": [
             {
                 "cdk": "101",
                 "district_name": "Patna",
@@ -129,36 +176,11 @@ async def test_lineage_history_events_tracking_and_coverage(client):
                 "lineage_status": "original",
             }
         ],
-    ]
-    mock_db.fetchrow.side_effect = [
-        {"cdk": "101", "district_name": "Patna", "state_name": "Bihar", "start_year": 1956, "end_year": None},
-        {"years_with_data": 10, "first_year": 2000, "last_year": 2009, "variables": 3, "total_records": 100},
-    ]
-
-    district_repo = AsyncMock()
-    district_repo.get_cdk_to_meta_map.return_value = {"101": {"state": "Bihar"}}
-    lineage_repo = AsyncMock()
-    lineage_repo.get_events_by_state.return_value = [
-        {
-            "id": "E1",
-            "parent_cdk": "101",
-            "parent_name": "Patna",
-            "children_cdks": ["201"],
-            "children_names": ["Nalanda"],
-            "children_count": 1,
-            "event_year": 2000,
-            "event_type": "split",
-            "coverage_ratios": {"201": 1.0},
-            "legal_reference": None,
-            "confidence": 1.0,
-        }
-    ]
+    }
 
     client._transport.app.dependency_overrides[deps_get_db] = _override_db(mock_db)
     try:
-        with patch("app.api.v1.lineage.DistrictRepository", return_value=district_repo), patch(
-            "app.api.v1.lineage.LineageRepository", return_value=lineage_repo
-        ):
+        with patch("app.api.v1.lineage.LineageService", return_value=service):
             history_response = await client.get("/api/v1/lineage/history?state=Bihar")
             events_response = await client.get("/api/v1/lineage/events?state=Bihar")
             tracking_response = await client.get("/api/v1/lineage/tracking?cdk=101")
@@ -172,6 +194,10 @@ async def test_lineage_history_events_tracking_and_coverage(client):
         assert tracking_response.json()["data_coverage"]["total_records"] == 100
         assert coverage_response.status_code == 200
         assert coverage_response.json()["districts"] == 1
+        service.get_district_history_response.assert_awaited_once_with("Bihar")
+        service.get_lineage_events_response.assert_awaited_once_with("Bihar")
+        service.get_data_tracking_response.assert_awaited_once_with("101")
+        service.get_state_coverage_response.assert_awaited_once_with("Bihar")
     finally:
         del client._transport.app.dependency_overrides[deps_get_db]
 
@@ -179,24 +205,27 @@ async def test_lineage_history_events_tracking_and_coverage(client):
 @pytest.mark.asyncio
 async def test_lineage_tracking_not_found_and_unmapped(client):
     mock_db = AsyncMock()
-    mock_db.fetchrow.return_value = None
-    mock_db.fetch.side_effect = [
-        [{"lgd_code": 101, "district_name": "Patna", "state_name": "Bihar"}],
-        [{"parent_district": "Old Patna", "child_district": "New Patna", "split_year": 2000, "state_name": "Bihar"}],
+    service = AsyncMock()
+    service.get_data_tracking_response.side_effect = NotFoundError("District", "404")
+    service.get_unmapped_splits_response.return_value = [
+        {
+            "district": "New Patna",
+            "state": "Bihar",
+            "year": 2000,
+            "role": "Child",
+        }
     ]
 
     client._transport.app.dependency_overrides[deps_get_db] = _override_db(mock_db)
     try:
-        with patch("app.core.name_matching.resolve_district_name", side_effect=lambda name: name.lower()), patch(
-            "app.core.name_matching.check_historical_resolution", return_value=False
-        ), patch("app.core.name_matching.STATE_ALIASES", {}), patch(
-            "app.core.name_matching.TELANGANA_DISTRICTS", set()
-        ):
+        with patch("app.api.v1.lineage.LineageService", return_value=service):
             tracking_response = await client.get("/api/v1/lineage/tracking?cdk=404")
             unmapped_response = await client.get("/api/v1/lineage/unmapped")
 
         assert tracking_response.status_code == 404
         assert unmapped_response.status_code == 200
         assert unmapped_response.json()[0]["district"] == "New Patna"
+        service.get_data_tracking_response.assert_awaited_once_with("404")
+        service.get_unmapped_splits_response.assert_awaited_once()
     finally:
         del client._transport.app.dependency_overrides[deps_get_db]
