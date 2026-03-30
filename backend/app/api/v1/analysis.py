@@ -47,46 +47,8 @@ async def get_summary(db: asyncpg.Connection = Depends(get_db)):
     Returns list of states with district counts and boundary change counts.
     Uses district_splits table for split event counts.
     """
-    # Get all states and district counts
-    states = await db.fetch("""
-        SELECT state_name, COUNT(*) as total_districts
-        FROM districts
-        GROUP BY state_name
-        ORDER BY state_name
-    """)
-
-    # Count distinct split events (parent+year combos) per state from
-    # district_splits
-    split_counts = await db.fetch("""
-        SELECT state_name, COUNT(DISTINCT parent_district || '_' || split_year::text) as boundary_changes
-        FROM district_splits
-        GROUP BY state_name
-    """)
-
-    split_map = {r["state_name"].strip().upper(): r["boundary_changes"]
-                 for r in split_counts}
-
-    state_list = []
-    stats = {}
-    for row in states:
-        state = row["state_name"]
-        # Normalize for matching
-        lookup_key = state.strip().upper()
-        changes = split_map.get(lookup_key, 0)
-
-        state_list.append(state)
-        stats[state] = {
-            "state": state,
-            "total": row["total_districts"],
-            "total_districts": row["total_districts"],
-            "changed": changes,
-            "boundary_changes": changes,
-            "coverage": 100,
-            "data_coverage": "High",
-            "comparability": "Active" if changes > 0 else "N/A",
-        }
-
-    return {"states": state_list, "stats": stats}
+    service = AnalysisService(db)
+    return await service.get_split_summary()
 
 
 @router.get("/split-impact/districts", response_model=list[SplitImpactDistrictSummary])
@@ -100,112 +62,9 @@ async def get_districts_for_state(
     Uses pre-resolved LGD codes from district_splits (populated by ETL).
     Falls back to shared name_resolver for any remaining unresolved entries.
     """
-    from collections import defaultdict
-
-    from app.services.name_resolver import resolve_lgd as _resolve_lgd
-
     state = validate_state_name(state)
-
-    # --- Query split events — use ETL pre-resolved LGDs ---
-    rows = await db.fetch("""
-        SELECT
-            ds.parent_district,
-            ds.child_district,
-            ds.split_year,
-            ds.state_name,
-            ds.parent_lgd,
-            ds.child_lgd
-        FROM district_splits ds
-        WHERE UPPER(ds.state_name) = UPPER($1)
-        ORDER BY ds.split_year, ds.parent_district
-    """, state)
-
-    if not rows:
-        return []
-
-    # Build LGD lookup (only needed if any pre-resolved LGDs are NULL)
-    has_nulls = any(r["parent_lgd"] is None or r["child_lgd"]
-                    is None for r in rows)
-    lgd_lookup = {}
-    if has_nulls:
-        all_districts = await db.fetch(
-            "SELECT lgd_code, LOWER(district_name) as dn, LOWER(state_name) as sn FROM districts"
-        )
-        lgd_lookup = {(d["dn"], d["sn"]): d["lgd_code"] for d in all_districts}
-
-    # Check which LGDs have agri data
-    lgd_set = set()
-    for r in rows:
-        if r["parent_lgd"]:
-            lgd_set.add(r["parent_lgd"])
-        if r["child_lgd"]:
-            lgd_set.add(r["child_lgd"])
-
-    agri_lgds = set()
-    if lgd_set:
-        agri_rows = await db.fetch(
-            "SELECT DISTINCT district_lgd FROM agri_metrics WHERE district_lgd = ANY($1::int[])",
-            list(lgd_set),
-        )
-        agri_lgds = {r["district_lgd"] for r in agri_rows}
-
-    # Group by (parent_district, split_year) to build split events
-    groups: dict = defaultdict(lambda: {
-        "parent_district": "", "parent_cdk": None, "split_year": 0,
-        "state": "", "children_districts": [], "children_cdks": [],
-        "children_has_agri": [],
-    })
-
-    for row in rows:
-        key = (row["parent_district"], row["split_year"])
-        g = groups[key]
-        g["parent_district"] = row["parent_district"]
-
-        # Use ETL pre-resolved LGD; fallback via shared resolver
-        parent_lgd = row["parent_lgd"]
-        if parent_lgd is None and lgd_lookup:
-            parent_lgd = _resolve_lgd(
-                row["parent_district"],
-                row["state_name"],
-                lgd_lookup)
-        g["parent_cdk"] = str(parent_lgd) if parent_lgd else None
-        g["split_year"] = row["split_year"]
-        g["state"] = row["state_name"]
-
-        child_name = row["child_district"]
-        child_lgd = row["child_lgd"]
-        if child_lgd is None and lgd_lookup:
-            child_lgd = _resolve_lgd(child_name, row["state_name"], lgd_lookup)
-        child_cdk = str(child_lgd) if child_lgd else None
-
-        if child_name not in g["children_districts"]:
-            g["children_districts"].append(child_name)
-            g["children_cdks"].append(child_cdk)
-            g["children_has_agri"].append(
-                child_lgd in agri_lgds if child_lgd else False)
-
-    # Build response matching frontend SplitDistrict interface
-    results = []
-    for (parent, year), g in sorted(groups.items(), key=lambda x: -x[0][1]):
-        children_cdks = g["children_cdks"]
-        parent_lgd_int = int(g["parent_cdk"]) if g["parent_cdk"] else None
-        results.append({
-            "id": f"{parent}_{year}",
-            "parent_district": g["parent_district"],
-            "parent_name": g["parent_district"],
-            "parent_cdk": g["parent_cdk"],
-            "split_year": g["split_year"],
-            "children_districts": g["children_districts"],
-            "children_names": g["children_districts"],
-            "children_cdks": children_cdks,
-            "state": g["state"],
-            "resolved_count": sum(1 for c in children_cdks if c is not None),
-            "total_count": len(children_cdks),
-            "parent_has_agri": parent_lgd_int in agri_lgds if parent_lgd_int else False,
-            "children_has_agri": g["children_has_agri"],
-        })
-
-    return results
+    service = AnalysisService(db)
+    return await service.get_resolved_split_events_for_state(state)
 
 
 @router.get("/split-impact/analysis", response_model=SplitImpactResponse)

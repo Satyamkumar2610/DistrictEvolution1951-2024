@@ -2,6 +2,7 @@
 Analysis Service: Orchestrates split impact analysis.
 Coordinates between repositories and analytics engine.
 """
+from collections import defaultdict
 from datetime import UTC, datetime
 from typing import Any
 
@@ -16,6 +17,7 @@ from app.config import get_settings
 from app.repositories.district_repo import DistrictRepository
 from app.repositories.lineage_repo import LineageRepository
 from app.repositories.metric_repo import MetricRepository
+from app.repositories.split_repo import SplitRepository
 from app.schemas.analysis import (
     AdvancedStats,
     AnalysisMeta,
@@ -27,8 +29,11 @@ from app.schemas.analysis import (
     EffectSizeInfo,
     FragmentationInfo,
     SeriesMeta,
+    SplitImpactDistrictSummary,
     SplitImpactResponse,
     SplitInsightsInfo,
+    StateSummary,
+    SummaryResponse,
 )
 from app.schemas.common import ProvenanceMetadata
 from app.schemas.lineage import SplitEventSummary
@@ -47,9 +52,132 @@ class AnalysisService:
         self.district_repo = DistrictRepository(conn)
         self.metric_repo = MetricRepository(conn)
         self.lineage_repo = LineageRepository(conn)
+        self.split_repo = SplitRepository(conn)
         self.harmonizer = BoundaryHarmonizer()
         self.impact_analyzer = ImpactAnalyzer()
         self.insights_analyzer = get_insights_analyzer()
+
+    async def get_split_summary(self) -> SummaryResponse:
+        """Get split-impact summary stats for all states."""
+        states = await self.split_repo.get_state_district_counts()
+        split_counts = await self.split_repo.get_boundary_change_counts()
+
+        state_list: list[str] = []
+        stats: dict[str, StateSummary] = {}
+
+        for row in states:
+            state = str(row["state_name"])
+            total_districts = int(row["total_districts"])
+            changes = split_counts.get(state.strip().upper(), 0)
+
+            state_list.append(state)
+            stats[state] = StateSummary(
+                state=state,
+                total=total_districts,
+                total_districts=total_districts,
+                changed=changes,
+                boundary_changes=changes,
+                coverage=100,
+                data_coverage="High",
+                comparability="Active" if changes > 0 else "N/A",
+            )
+
+        return SummaryResponse(states=state_list, stats=stats)
+
+    async def get_resolved_split_events_for_state(
+        self,
+        state: str,
+    ) -> list[SplitImpactDistrictSummary]:
+        """Get split events for a state with LGD resolution and agri coverage flags."""
+        from app.services.name_resolver import resolve_lgd
+
+        rows = await self.split_repo.get_split_rows_for_state(state)
+        if not rows:
+            return []
+
+        has_nulls = any(
+            row["parent_lgd"] is None or row["child_lgd"] is None
+            for row in rows
+        )
+        lgd_lookup = await self.district_repo.get_lgd_lookup() if has_nulls else {}
+
+        lgd_set: set[int] = set()
+        for row in rows:
+            parent_lgd = row["parent_lgd"]
+            child_lgd = row["child_lgd"]
+            if isinstance(parent_lgd, int):
+                lgd_set.add(parent_lgd)
+            if isinstance(child_lgd, int):
+                lgd_set.add(child_lgd)
+
+        agri_lgds = await self.split_repo.get_agri_lgds(list(lgd_set))
+        groups: dict[tuple[str, int], dict[str, Any]] = defaultdict(
+            lambda: {
+                "parent_district": "",
+                "parent_cdk": None,
+                "split_year": 0,
+                "state": "",
+                "children_districts": [],
+                "children_cdks": [],
+                "children_has_agri": [],
+            }
+        )
+
+        for row in rows:
+            parent_district = str(row["parent_district"])
+            raw_split_year = row["split_year"]
+            if raw_split_year is None:
+                continue
+            split_year = raw_split_year if isinstance(raw_split_year, int) else int(str(raw_split_year))
+            state_name = str(row["state_name"])
+            key = (parent_district, split_year)
+
+            group = groups[key]
+            group["parent_district"] = parent_district
+            group["split_year"] = split_year
+            group["state"] = state_name
+
+            parent_lgd = row["parent_lgd"]
+            if parent_lgd is None and lgd_lookup:
+                parent_lgd = resolve_lgd(parent_district, state_name, lgd_lookup)
+            group["parent_cdk"] = str(parent_lgd) if parent_lgd is not None else None
+
+            child_name = str(row["child_district"])
+            child_lgd = row["child_lgd"]
+            if child_lgd is None and lgd_lookup:
+                child_lgd = resolve_lgd(child_name, state_name, lgd_lookup)
+            child_cdk = str(child_lgd) if child_lgd is not None else None
+
+            if child_name not in group["children_districts"]:
+                group["children_districts"].append(child_name)
+                group["children_cdks"].append(child_cdk)
+                group["children_has_agri"].append(
+                    child_lgd in agri_lgds if child_lgd is not None else False
+                )
+
+        results: list[SplitImpactDistrictSummary] = []
+        for (parent, year), group in sorted(groups.items(), key=lambda item: -item[0][1]):
+            parent_lgd_int = int(group["parent_cdk"]) if group["parent_cdk"] else None
+            children_cdks = group["children_cdks"]
+            results.append(
+                SplitImpactDistrictSummary(
+                    id=f"{parent}_{year}",
+                    parent_district=group["parent_district"],
+                    parent_name=group["parent_district"],
+                    parent_cdk=group["parent_cdk"],
+                    split_year=group["split_year"],
+                    children_districts=group["children_districts"],
+                    children_names=group["children_districts"],
+                    children_cdks=children_cdks,
+                    state=group["state"],
+                    resolved_count=sum(1 for child in children_cdks if child is not None),
+                    total_count=len(children_cdks),
+                    parent_has_agri=parent_lgd_int in agri_lgds if parent_lgd_int else False,
+                    children_has_agri=group["children_has_agri"],
+                )
+            )
+
+        return results
 
     @cached(ttl=CacheTTL.SUMMARY, prefix="state_summary")
     async def get_state_summary(self) -> dict[str, Any]:

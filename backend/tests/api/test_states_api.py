@@ -1,5 +1,7 @@
+from unittest.mock import AsyncMock
+
 import pytest
-from unittest.mock import AsyncMock, patch
+
 
 @pytest.mark.asyncio
 async def test_get_state_overview(client):
@@ -12,13 +14,13 @@ async def test_get_state_overview(client):
         2500.5, # avg_yield
         30, # districts_with_data
     ]
-    
+
     mock_db.fetchrow = AsyncMock()
     mock_db.fetchrow.side_effect = [
         {"min_year": 1990, "max_year": 2020}, # year_range
         {"total_area": 10000, "total_production": 50000}, # totals
     ]
-    
+
     mock_db.fetch = AsyncMock()
     mock_db.fetch.side_effect = [
         [{"district_name": "Dist1", "cdk": "D1", "yield_value": 3000}], # top
@@ -32,7 +34,7 @@ async def test_get_state_overview(client):
 
     app_dependency_overrides = client._transport.app.dependency_overrides
     client._transport.app.dependency_overrides[real_get_db] = mock_get_db_gen
-    
+
     try:
         response = await client.get("/api/v1/states/BIHAR/overview?crop=wheat&year=2020")
         assert response.status_code == 200
@@ -52,13 +54,13 @@ async def test_list_states(client):
     ]
 
     from app.database import get_db as real_get_db
-    
+
     async def mock_get_db_gen():
         yield mock_db
 
     app_dependency_overrides = client._transport.app.dependency_overrides
     client._transport.app.dependency_overrides[real_get_db] = mock_get_db_gen
-    
+
     try:
         response = await client.get("/api/v1/states/list")
         assert response.status_code == 200

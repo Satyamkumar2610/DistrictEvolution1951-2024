@@ -87,6 +87,16 @@ class DistrictRepository(BaseRepository):
                 "name": r["district_name"],
                 "state": r["state_name"]} for r in rows}
 
+    async def get_lgd_lookup(self) -> dict[tuple[str, str], int]:
+        """Get normalized district/state to LGD mapping for name resolution fallbacks."""
+        rows = await self.fetch_all(
+            """
+            SELECT lgd_code, LOWER(district_name) as dn, LOWER(state_name) as sn
+            FROM districts
+            """
+        )
+        return {(row["dn"], row["sn"]): row["lgd_code"] for row in rows}
+
     @cached(ttl=CacheTTL.STATES, prefix="states:all")
     async def get_states(self) -> list[str]:
         """Get list of all unique states."""
