@@ -1,5 +1,3 @@
-import { EfficiencyData, RiskData, DiversificationData, CorrelationData, YieldTrendData, YoyGrowthData, CropCorrelationData } from '../../../types/analysis';
-
 export type AnalysisMode = 'before_after' | 'entity_comparison';
 
 export interface SummaryStats {
@@ -219,6 +217,7 @@ export interface DistrictMetric {
     value: number;
     metric: string;
     method: string;
+    feature_id?: string;
     geo_key?: string;
 }
 

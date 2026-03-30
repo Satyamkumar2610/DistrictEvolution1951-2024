@@ -59,6 +59,9 @@ class AggregatedMetric(BaseModel):
     value: float
     metric: str
     method: str | None = Field(None, description="Backcast or Raw")
+    feature_id: str | None = Field(
+        None,
+        description="Stable map feature identifier resolved by the backend")
     geo_key: str | None = Field(
         None,
-        description="Pre-computed GeoJSON key (DISTRICT|STATE) for map visualization")
+        description="Deprecated alias for the resolved map feature identifier")

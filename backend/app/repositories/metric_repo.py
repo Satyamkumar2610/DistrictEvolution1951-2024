@@ -148,6 +148,7 @@ class MetricRepository(BaseRepository):
                 value=float(r["value"]) if r["value"] is not None else 0.0,
                 metric=variable.split("_")[-1],
                 method="Raw",
+                feature_id=geo_key,
                 geo_key=geo_key,
             )
             if geo_key:
@@ -179,6 +180,7 @@ class MetricRepository(BaseRepository):
                             str(p_lgd), p_dist, p_state
                         )
                         if geo_key:
+                            m.feature_id = geo_key
                             m.geo_key = geo_key
                             m.method = "SplitInherited"
                     results.append(m)

@@ -1,10 +1,11 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import Map, { Source, Layer, NavigationControl, Popup, MapRef } from 'react-map-gl/maplibre';
+import Map, { Source, Layer, NavigationControl, Popup, MapRef, type LayerProps } from 'react-map-gl/maplibre';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import type { MapLayerMouseEvent } from 'maplibre-gl';
-import { useDistrictMetrics, DistrictMetric } from '../hooks/useDistrictMetrics';
+import { useDistrictMetrics } from '../hooks/useDistrictMetrics';
+import type { DistrictMetric } from '../services/api/types';
 
 interface MapInterfaceProps {
     year: number;
@@ -144,7 +145,6 @@ export default function MapInterface({ year, crop = 'wheat', metric = 'yield', s
                     <Layer {...(layerStyle as any)} />
                     <Layer id="borders" type="line" paint={{ 'line-color': '#ffffff', 'line-width': 0.5, 'line-opacity': 0.2 }} />
                     {/* Dashed borders for harmonized (backcast) districts — boundary uncertainty */}
-                    {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                     <Layer {...({
                         id: 'harmonized-borders',
                         type: 'line',
@@ -171,7 +171,7 @@ export default function MapInterface({ year, crop = 'wheat', metric = 'yield', s
                             'line-opacity': 0.7,
                             'line-dasharray': [2, 2],
                         }
-                    } as any)} />
+                    } as LayerProps)} />
                 </Source>
 
                 {hoverInfo && hoverInfo.lngLat && (
