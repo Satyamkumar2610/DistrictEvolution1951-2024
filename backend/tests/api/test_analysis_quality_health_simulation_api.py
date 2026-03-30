@@ -11,7 +11,6 @@ from app.analytics.advanced import (
     ResilienceResult,
     RiskCategory,
     RiskProfile,
-    SimulationResult,
 )
 from app.api.deps import get_db as deps_get_db
 from app.database import get_db as database_get_db
@@ -218,88 +217,82 @@ async def test_spatial_contagion_endpoint(client):
 async def test_simulation_endpoints(client):
     # base simulation
     mock_db = AsyncMock()
-    mock_db.fetch.side_effect = [
-        [{"district_name": "Patna", "yield": 1000.0}, {"district_name": "Gaya", "yield": 1100.0}, {"district_name": "Nalanda", "yield": 1200.0}, {"district_name": "Munger", "yield": 1300.0}, {"district_name": "Bhagalpur", "yield": 1400.0}],
-        [{"district": "Patna", "annual": 900.0}, {"district": "Gaya", "annual": 920.0}, {"district": "Nalanda", "annual": 930.0}, {"district": "Munger", "annual": 940.0}, {"district": "Bhagalpur", "annual": 950.0}],
-    ]
-    cache = AsyncMock()
-    cache.get.return_value = None
-    analyzer = SimpleNamespace(
-        calculate_impact_simulation=lambda rain, yields, years: SimulationResult(
-            baseline_yield=1200.0,
-            slope=1.5,
-            intercept=0.0,
-            r_squared=0.7,
-            correlation=0.8,
-            confidence_interval=50.0,
-            data_points=[{"rain": 900.0, "yield": 1000.0}],
-            model_equation="yield = 1.5 * rain + 0",
-        )
-    )
+    service = AsyncMock()
+    service.get_simulation_response.return_value = {
+        "district": "Patna",
+        "state": "Bihar",
+        "crop": "wheat",
+        "result": {
+            "baseline_yield": 1200.0,
+            "slope": 1.5,
+            "intercept": 0.0,
+            "r_squared": 0.7,
+            "correlation": 0.8,
+            "confidence_interval": 50.0,
+            "data_points": [{"rain": 900.0, "yield": 1000.0}],
+            "model_equation": "yield = 1.5 * rain + 0",
+        },
+        "note": "Spatial Regression Proxy: Sensitivity derived from cross-district comparison within state.",
+        "validity": {
+            "climate_assumption": "stationary",
+            "baseline_period": "1951-2000",
+            "warning": "Simulation based on historic climate normals. Not valid for real-time weather impact.",
+        },
+    }
 
     client._transport.app.dependency_overrides[deps_get_db] = _override_db(mock_db)
     try:
-        with patch("app.api.v1.simulation.get_advanced_analyzer", return_value=analyzer), patch(
-            "app.cache.get_cache", return_value=cache
-        ):
+        with patch("app.api.v1.simulation.SimulationService", return_value=service):
             response = await client.get("/api/v1/simulation/?district=Patna&crop=wheat&year=2020&state=Bihar")
 
         assert response.status_code == 200
         assert response.json()["result"]["baseline_yield"] == 1200.0
+        service.get_simulation_response.assert_awaited_once_with("Patna", "wheat", 2020, "Bihar")
     finally:
         del client._transport.app.dependency_overrides[deps_get_db]
 
     # prediction v2
     mock_db = AsyncMock()
-    mock_db.fetch.side_effect = [
-        [{"district_name": "Patna", "yield": 1000.0}, {"district_name": "Gaya", "yield": 1100.0}, {"district_name": "Nalanda", "yield": 1200.0}, {"district_name": "Munger", "yield": 1300.0}, {"district_name": "Bhagalpur", "yield": 1400.0}],
-        [{"district": "Patna", "annual": 900.0, "jjas": 700.0}, {"district": "Gaya", "annual": 920.0, "jjas": 710.0}, {"district": "Nalanda", "annual": 930.0, "jjas": 720.0}, {"district": "Munger", "annual": 940.0, "jjas": 730.0}, {"district": "Bhagalpur", "annual": 950.0, "jjas": 740.0}],
-        [
-            {"district_name": "Patna", "year": 2018, "value": 950.0},
-            {"district_name": "Patna", "year": 2019, "value": 980.0},
-            {"district_name": "Gaya", "year": 2018, "value": 1050.0},
-            {"district_name": "Gaya", "year": 2019, "value": 1080.0},
-        ],
-        [{"district_name": "Patna", "area": 200.0}, {"district_name": "Gaya", "area": 220.0}],
-    ]
-    cache = AsyncMock()
-    cache.get.return_value = None
-    prediction_result = type(
-        "PredictionResult",
-        (),
-        {
-            "to_dict": lambda self: {
-                "predicted_yield": 1250.0,
-                "baseline_yield": 1200.0,
-                "confidence_lower": 1100.0,
-                "confidence_upper": 1400.0,
-                "slope_rain": 1.5,
-                "mean_rain": 920.0,
-                "r_squared": 0.7,
-                "adjusted_r_squared": 0.65,
-                "rmse": 40.0,
-                "sample_size": 5,
-                "feature_count": 3,
-                "method": "multi_factor_ridge",
-                "factors": [],
-                "model_equation": "y = a + bx",
-                "methodology": "ridge",
-                "data_quality_notes": [],
-                "data_points": [{"rain": 900.0, "yield": 1000.0, "district": "Patna"}],
-                "regression_line": [{"x": 900.0, "y": 1000.0}],
-            }
+    service = AsyncMock()
+    service.get_prediction_v2_response.return_value = {
+        "district": "Patna",
+        "state": "Bihar",
+        "crop": "wheat",
+        "year": 2020,
+        "prediction": {
+            "predicted_yield": 1250.0,
+            "baseline_yield": 1200.0,
+            "confidence_lower": 1100.0,
+            "confidence_upper": 1400.0,
+            "slope_rain": 1.5,
+            "mean_rain": 920.0,
+            "r_squared": 0.7,
+            "adjusted_r_squared": 0.65,
+            "rmse": 40.0,
+            "sample_size": 5,
+            "feature_count": 3,
+            "method": "multi_factor_ridge",
+            "factors": [],
+            "model_equation": "y = a + bx",
+            "methodology": "ridge",
+            "data_quality_notes": [],
+            "data_points": [{"rain": 900.0, "yield": 1000.0, "district": "Patna"}],
+            "regression_line": [{"x": 900.0, "y": 1000.0}],
         },
-    )()
+        "validity": {
+            "climate_assumption": "stationary",
+            "baseline_period": "1951-2000",
+            "warning": "Prediction based on historic climate normals and cross-sectional spatial regression. Not valid for real-time weather impact.",
+        },
+    }
 
     client._transport.app.dependency_overrides[deps_get_db] = _override_db(mock_db)
     try:
-        with patch("app.cache.get_cache", return_value=cache), patch(
-            "app.api.v1.simulation.PredictionEngine"
-        ) as engine_cls:
-            engine_cls.return_value.predict.return_value = prediction_result
+        with patch("app.api.v1.simulation.SimulationService", return_value=service):
             response = await client.get("/api/v1/simulation/v2?district=Patna&crop=wheat&year=2020&state=Bihar")
 
         assert response.status_code == 200
         assert response.json()["prediction"]["predicted_yield"] == 1250.0
+        service.get_prediction_v2_response.assert_awaited_once_with("Patna", "wheat", 2020, "Bihar")
     finally:
         del client._transport.app.dependency_overrides[deps_get_db]
