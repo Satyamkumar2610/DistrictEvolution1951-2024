@@ -1,61 +1,52 @@
+import json
 from typing import Any
 
 import asyncpg
 
+from app.exceptions import NotFoundError, ValidationError
+from app.repositories.spatial_repo import SpatialRepository
+from app.schemas.spatial import (
+    DistrictLineageResponse,
+    GenericStatusResponse,
+    SplitAreaCalculationResponse,
+)
+from app.services.geometry_service import GeometryService
+
 
 class SpatialService:
-    def __init__(self, db: asyncpg.Connection):
+    def __init__(self, db: asyncpg.Connection | None = None):
         self.db = db
+        self.repo = SpatialRepository(db) if db is not None else None
+        self.geometry_service = GeometryService()
+
+    def _require_db(self) -> asyncpg.Connection:
+        if self.db is None:
+            raise RuntimeError("Database connection is required for this spatial operation")
+        return self.db
+
+    def _require_repo(self) -> SpatialRepository:
+        if self.repo is None:
+            raise RuntimeError("Database connection is required for this spatial operation")
+        return self.repo
 
     async def get_neighbors(self, cdk: str) -> list[dict[str, Any]]:
         """
         Find all immediately adjacent neighboring districts using PostGIS ST_Touches.
         """
-        query = """
-            WITH target AS (
-                SELECT geometry, lgd_code, "DISTRICT" as district_name, "ST_NM" as state_name
-                FROM districts_geo
-                WHERE lgd_code = $1
-            )
-            SELECT
-                n.lgd_code as neighbor_cdk,
-                n."DISTRICT" as neighbor_name,
-                n."ST_NM" as neighbor_state
-            FROM districts_geo n
-            JOIN target t ON ST_Touches(t.geometry, n.geometry)
-            WHERE n.lgd_code != $1
-            ORDER BY n."DISTRICT"
-        """
-        # Convert cdk to float because lgd_code in districts_geo is double
-        # precision
-        try:
-            lgd_val = float(cdk)
-        except ValueError:
-            return []
-
-        rows = await self.db.fetch(query, lgd_val)
-        return [dict(r) for r in rows]
+        return await self._require_repo().get_neighbors(cdk)
 
     async def get_cagr(self, cdk: str, crop: str, start_year: int, end_year: int) -> float:
         """
         Helper method to get CAGR of a crop yield for a district.
         """
-        rows = await self.db.fetch("""
-            SELECT year, value
-            FROM agri_metrics
-            WHERE district_lgd::text = $1
-              AND variable_name = $2
-              AND year BETWEEN $3 AND $4
-              AND value > 0
-            ORDER BY year
-        """, cdk, f"{crop}_yield", start_year, end_year)
+        rows = await self._require_repo().get_crop_yield_series(cdk, crop, start_year, end_year)
 
         if len(rows) < 2:
             return 0.0
 
-        start_val = rows[0]['value']
-        end_val = rows[-1]['value']
-        n_years = rows[-1]['year'] - rows[0]['year']
+        start_val = float(rows[0]["value"])
+        end_val = float(rows[-1]["value"])
+        n_years = int(rows[-1]["year"]) - int(rows[0]["year"])
 
         if n_years > 0 and start_val > 0:
             return ((end_val / start_val) ** (1 / n_years)) - 1
@@ -72,12 +63,16 @@ class SpatialService:
         Calculates the spillover effect by comparing a district's growth
         to the average growth of its geographic neighbors.
         """
+        repo = self._require_repo()
+        if not await repo.district_exists(cdk):
+            raise NotFoundError("District", cdk)
+
         # Get the target district's growth
         target_cagr = await self.get_cagr(cdk, crop, start_year, end_year)
 
         # Get target name
-        target_meta = await self.db.fetchrow("SELECT district_name, state_name FROM districts WHERE lgd_code::text = $1", cdk)
-        target_name = target_meta["district_name"] if target_meta else cdk
+        target_meta = await repo.get_target_meta(cdk)
+        target_name = str(target_meta["district_name"]) if target_meta else cdk
 
         # Get neighbors
         neighbors = await self.get_neighbors(cdk)
@@ -126,3 +121,78 @@ class SpatialService:
                 neighbor_results,
                 key=lambda x: x["cagr"],
                 reverse=True)}
+
+    def calculate_split_areas(
+        self,
+        parent_content: bytes,
+        child_content: bytes,
+    ) -> SplitAreaCalculationResponse:
+        """Calculate transferred and remaining area from uploaded GeoJSON payloads."""
+        try:
+            parent_dict = json.loads(parent_content.decode("utf-8"))
+            child_dict = json.loads(child_content.decode("utf-8"))
+        except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+            raise ValidationError(detail="Invalid JSON format uploaded.") from exc
+
+        try:
+            result = self.geometry_service.calculate_split_areas(parent_dict, child_dict)
+        except ValueError as exc:
+            raise ValidationError(detail=str(exc)) from exc
+
+        return SplitAreaCalculationResponse.model_validate(result)
+
+    async def calculate_spatial_diff(self, split_event_id: int) -> GenericStatusResponse:
+        """Compute and persist spatial diff results for a split event."""
+        from app.analytics.harmonizer import BoundaryHarmonizer
+
+        harmonizer = BoundaryHarmonizer()
+        await harmonizer.compute_split_diff(self._require_db(), split_event_id)
+        return GenericStatusResponse(
+            status="success",
+            message=f"Calculated split diff for event {split_event_id}",
+        )
+
+    async def get_district_lineage(self, district_id: str) -> DistrictLineageResponse:
+        """Fetch split events and transfer records for a district."""
+        repo = self._require_repo()
+        events = await repo.get_split_events_for_district(district_id)
+        transfers = await repo.get_area_transfers_for_district(district_id)
+        return DistrictLineageResponse(
+            district_id=district_id,
+            split_events=events,
+            area_transfers=transfers,
+        )
+
+    async def upload_manual_geojson(
+        self,
+        district_id: str,
+        snapshot_year: int,
+        content: bytes,
+    ) -> GenericStatusResponse:
+        """Parse and persist a manual GeoJSON upload for a district snapshot."""
+        try:
+            parsed = json.loads(content.decode("utf-8"))
+        except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+            raise ValidationError(detail="Invalid JSON format uploaded.") from exc
+
+        if "features" in parsed and len(parsed["features"]) > 0:
+            geom = parsed["features"][0].get("geometry")
+        elif "geometry" in parsed:
+            geom = parsed["geometry"]
+        else:
+            geom = parsed
+
+        geometry_geojson = json.dumps(geom)
+        repo = self._require_repo()
+        district_name = await repo.get_district_name(district_id)
+        await repo.upsert_manual_geojson(
+            district_id=district_id,
+            snapshot_year=snapshot_year,
+            district_name=district_name or district_id,
+            geometry_geojson=geometry_geojson,
+        )
+
+        return GenericStatusResponse(
+            status="success",
+            message=f"Uploaded manual GeoJSON for {district_id} ({snapshot_year})",
+        )

@@ -33,6 +33,11 @@ class GenericStatusResponse(BaseModel):
     message: str
 
 
+class SplitAreaCalculationResponse(BaseModel):
+    transferred_area_sqkm: float
+    remaining_area_sqkm: float
+
+
 class DistrictLineageResponse(BaseModel):
     district_id: str
     split_events: list[dict[str, Any]]
