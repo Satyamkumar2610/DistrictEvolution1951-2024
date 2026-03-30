@@ -1,9 +1,11 @@
+import json
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, Mock, call, patch
 
 import pytest
 from fastapi import Response
 
+from app.analytics.advanced import SimulationResult
 from app.exceptions import NotFoundError, ValidationError
 from app.schemas.lineage import DistrictHistoryItem, TrackingCoverage, TrackingDistrict
 from app.services.advanced_analytics_service import AdvancedAnalyticsFacade
@@ -13,6 +15,8 @@ from app.services.forecast_service import ForecastService
 from app.services.lineage_service import LineageService
 from app.services.report_service import ReportService
 from app.services.search_service import SearchService
+from app.services.simulation_service import SimulationService
+from app.services.spatial_service import SpatialService
 from app.services.state_service import StateService
 
 
@@ -1170,3 +1174,497 @@ async def test_advanced_analytics_handles_resilience_and_yield_gap(mock_db):
 
     with pytest.raises(NotFoundError):
         await service.get_yield_gap_response("Missing", "rice", 2010, 2020)
+
+
+@pytest.mark.asyncio
+async def test_simulation_service_returns_cached_responses(mock_db):
+    service = SimulationService(mock_db)
+    cache = SimpleNamespace(
+        get=AsyncMock(
+            side_effect=[
+                {"status": "cached-simulation"},
+                {"status": "cached-prediction"},
+            ]
+        ),
+        set=AsyncMock(),
+    )
+
+    with patch("app.services.simulation_service.get_cache", return_value=cache):
+        simulation = await service.get_simulation_response("Patna", "rice", 2020, "Bihar")
+        prediction = await service.get_prediction_v2_response("Patna", "rice", 2020, "Bihar")
+
+    assert simulation == {"status": "cached-simulation"}
+    assert prediction == {"status": "cached-prediction"}
+    cache.set.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_simulation_service_builds_simulation_response_with_fallback_and_cache(mock_db):
+    service = SimulationService(mock_db)
+    service.repo = AsyncMock()
+    service.repo.get_state_yield_rows = AsyncMock(
+        side_effect=[
+            [
+                {"district_name": "A", "yield": 1800.0},
+                {"district_name": "B", "yield": 1900.0},
+                {"district_name": "C", "yield": 2000.0},
+            ],
+            [
+                {"district_name": "A", "yield": 1800.0},
+                {"district_name": "B", "yield": 1900.0},
+                {"district_name": "C", "yield": 2000.0},
+                {"district_name": "D", "yield": 2100.0},
+                {"district_name": "E", "yield": 2200.0},
+            ],
+        ]
+    )
+    service.repo.get_state_rainfall_rows = AsyncMock(
+        return_value=[
+            {"district": "A", "annual": 900.0},
+            {"district": "B", "annual": 910.0},
+            {"district": "C", "annual": 920.0},
+            {"district": "D", "annual": 930.0},
+            {"district": "E", "annual": 940.0},
+        ]
+    )
+    cache = SimpleNamespace(get=AsyncMock(return_value=None), set=AsyncMock())
+    analyzer = SimpleNamespace(
+        calculate_impact_simulation=Mock(
+            return_value=SimulationResult(
+                baseline_yield=2000.0,
+                slope=1.2,
+                intercept=850.0,
+                r_squared=0.76,
+                correlation=0.87,
+                confidence_interval=120.0,
+                data_points=[{"rainfall": 900.0, "yield": 1800.0}],
+                model_equation="yield = 1.2x + 850",
+            )
+        )
+    )
+
+    with patch("app.services.simulation_service.get_cache", return_value=cache), patch(
+        "app.services.simulation_service.get_advanced_analyzer",
+        return_value=analyzer,
+    ):
+        response = await service.get_simulation_response("Patna", "rice", 2020, "Bihar")
+
+    assert response.result.baseline_yield == 2000.0
+    assert response.validity is not None
+    assert service.repo.get_state_yield_rows.await_args_list == [
+        call("Bihar", "rice_yield", 2020),
+        call("Bihar", "rice_yield_kharif", 2020),
+    ]
+    cache.set.assert_awaited_once()
+
+
+@pytest.mark.asyncio
+async def test_simulation_service_rejects_insufficient_simulation_inputs(mock_db):
+    service = SimulationService(mock_db)
+    service.repo = AsyncMock()
+    cache = SimpleNamespace(get=AsyncMock(return_value=None), set=AsyncMock())
+
+    service.repo.get_state_yield_rows = AsyncMock(
+        return_value=[
+            {"district_name": "A", "yield": 1800.0},
+            {"district_name": "B", "yield": 1900.0},
+            {"district_name": "C", "yield": 2000.0},
+            {"district_name": "D", "yield": 2100.0},
+        ]
+    )
+
+    with patch("app.services.simulation_service.get_cache", return_value=cache), pytest.raises(
+        NotFoundError
+    ):
+        await service.get_simulation_response("Patna", "millet", 2020, "Bihar")
+
+    service.repo.get_state_yield_rows = AsyncMock(
+        return_value=[
+            {"district_name": "A", "yield": 1800.0},
+            {"district_name": "B", "yield": 1900.0},
+            {"district_name": "C", "yield": 2000.0},
+            {"district_name": "D", "yield": 2100.0},
+            {"district_name": "E", "yield": 2200.0},
+        ]
+    )
+    service.repo.get_state_rainfall_rows = AsyncMock(
+        return_value=[
+            {"district": "A", "annual": 900.0},
+            {"district": "B", "annual": 910.0},
+            {"district": "C", "annual": 920.0},
+            {"district": "D", "annual": 0.0},
+            {"district": "E", "annual": None},
+        ]
+    )
+
+    with patch("app.services.simulation_service.get_cache", return_value=cache), pytest.raises(
+        NotFoundError
+    ):
+        await service.get_simulation_response("Patna", "rice", 2020, "Bihar")
+
+
+def test_simulation_service_builds_prediction_district_data(mock_db):
+    service = SimulationService(mock_db)
+
+    district_data = service._build_prediction_district_data(
+        yield_rows=[
+            {"district_name": "A", "yield": 1800.0},
+            {"district_name": "B", "yield": 1900.0},
+        ],
+        rain_map={
+            "A": {"annual": 900.0, "monsoon_jjas": 700.0},
+            "B": {"annual": 0.0, "monsoon_jjas": 0.0},
+        },
+        hist_map={
+            "A": [
+                (2016, 1500.0),
+                (2017, 1600.0),
+                (2018, 1700.0),
+                (2019, 1800.0),
+                (2020, 1900.0),
+            ]
+        },
+        area_map={"A": 120.0},
+    )
+
+    assert len(district_data) == 1
+    assert district_data[0]["district"] == "A"
+    assert district_data[0]["yield_trend"] > 0
+    assert district_data[0]["yield_cv"] > 0
+    assert district_data[0]["crop_area"] == 120.0
+
+
+@pytest.mark.asyncio
+async def test_simulation_service_builds_prediction_v2_response_and_caches(mock_db):
+    service = SimulationService(mock_db)
+    service.repo = AsyncMock()
+    service.repo.get_state_yield_rows = AsyncMock(
+        return_value=[
+            {"district_name": "A", "yield": 1800.0},
+            {"district_name": "B", "yield": 1900.0},
+            {"district_name": "C", "yield": 2000.0},
+            {"district_name": "D", "yield": 2100.0},
+            {"district_name": "E", "yield": 2200.0},
+        ]
+    )
+    service.repo.get_state_rainfall_rows = AsyncMock(
+        return_value=[
+            {"district": "A", "annual": 900.0, "jjas": 700.0},
+            {"district": "B", "annual": 910.0, "jjas": 705.0},
+            {"district": "C", "annual": 920.0, "jjas": 710.0},
+            {"district": "D", "annual": 930.0, "jjas": 715.0},
+            {"district": "E", "annual": 940.0, "jjas": 720.0},
+        ]
+    )
+    service.repo.get_state_historical_yields = AsyncMock(
+        return_value=[
+            {"district_name": district, "year": year, "value": value}
+            for district, offset in zip(["A", "B", "C", "D", "E"], range(5), strict=True)
+            for year, value in [
+                (2016, 1500.0 + offset * 50),
+                (2017, 1600.0 + offset * 50),
+                (2018, 1700.0 + offset * 50),
+                (2019, 1800.0 + offset * 50),
+                (2020, 1900.0 + offset * 50),
+            ]
+        ]
+    )
+    service.repo.get_state_area_rows = AsyncMock(
+        return_value=[
+            {"district_name": "A", "area": 100.0},
+            {"district_name": "B", "area": 110.0},
+            {"district_name": "C", "area": 120.0},
+            {"district_name": "D", "area": 130.0},
+            {"district_name": "E", "area": 140.0},
+        ]
+    )
+    cache = SimpleNamespace(get=AsyncMock(return_value=None), set=AsyncMock())
+    engine = SimpleNamespace(
+        predict=Mock(
+            return_value=SimpleNamespace(
+                to_dict=lambda: {
+                    "predicted_yield": 2350.0,
+                    "baseline_yield": 2100.0,
+                    "confidence_lower": 2200.0,
+                    "confidence_upper": 2500.0,
+                    "slope_rain": 1.5,
+                    "mean_rain": 920.0,
+                    "r_squared": 0.82,
+                    "adjusted_r_squared": 0.76,
+                    "rmse": 115.0,
+                    "sample_size": 5,
+                    "feature_count": 5,
+                    "method": "multi_factor_ridge",
+                    "factors": [
+                        {
+                            "name": "Rainfall",
+                            "key": "rainfall",
+                            "importance": 0.52,
+                            "coefficient": 1.5,
+                            "contribution": 120.0,
+                            "direction": "positive",
+                            "description": "Annual rainfall normal (mm)",
+                        }
+                    ],
+                    "model_equation": "yield = 1.5 * rain + b",
+                    "methodology": "Cross-sectional ridge regression",
+                    "data_quality_notes": ["Uses climate normals"],
+                    "data_points": [{"rain": 900.0, "yield": 1800.0, "district": "A"}],
+                    "regression_line": [{"x": 900.0, "y": 1800.0}],
+                }
+            )
+        )
+    )
+
+    with patch("app.services.simulation_service.get_cache", return_value=cache), patch(
+        "app.services.simulation_service.PredictionEngine",
+        return_value=engine,
+    ):
+        response = await service.get_prediction_v2_response("Patna", "rice", 2020, "Bihar")
+
+    assert response.prediction.predicted_yield == 2350.0
+    assert response.prediction.factors[0].key == "rainfall"
+    cache.set.assert_awaited_once()
+    engine.predict.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_simulation_service_rejects_invalid_prediction_inputs(mock_db):
+    service = SimulationService(mock_db)
+    service.repo = AsyncMock()
+    cache = SimpleNamespace(get=AsyncMock(return_value=None), set=AsyncMock())
+
+    service.repo.get_state_yield_rows = AsyncMock(
+        return_value=[
+            {"district_name": "A", "yield": 1800.0},
+            {"district_name": "B", "yield": 1900.0},
+            {"district_name": "C", "yield": 2000.0},
+            {"district_name": "D", "yield": 2100.0},
+        ]
+    )
+
+    with patch("app.services.simulation_service.get_cache", return_value=cache), pytest.raises(
+        NotFoundError
+    ):
+        await service.get_prediction_v2_response("Patna", "millet", 2020, "Bihar")
+
+    service.repo.get_state_yield_rows = AsyncMock(
+        return_value=[
+            {"district_name": "A", "yield": 1800.0},
+            {"district_name": "B", "yield": 1900.0},
+            {"district_name": "C", "yield": 2000.0},
+            {"district_name": "D", "yield": 2100.0},
+            {"district_name": "E", "yield": 2200.0},
+        ]
+    )
+    service.repo.get_state_rainfall_rows = AsyncMock(return_value=[])
+    service.repo.get_state_historical_yields = AsyncMock(return_value=[])
+    service.repo.get_state_area_rows = AsyncMock(return_value=[])
+
+    with patch("app.services.simulation_service.get_cache", return_value=cache), pytest.raises(
+        NotFoundError
+    ):
+        await service.get_prediction_v2_response("Patna", "rice", 2020, "Bihar")
+
+    with patch(
+        "app.services.simulation_service.get_cache",
+        return_value=cache,
+    ), patch.object(
+        service,
+        "_resolve_yield_rows",
+        AsyncMock(
+            return_value=(
+                "rice_yield",
+                [
+                    {"district_name": "A", "yield": 1800.0},
+                    {"district_name": "B", "yield": 1900.0},
+                    {"district_name": "C", "yield": 2000.0},
+                    {"district_name": "D", "yield": 2100.0},
+                    {"district_name": "E", "yield": 2200.0},
+                ],
+            )
+        ),
+    ), patch.object(
+        service,
+        "_build_prediction_district_data",
+        return_value=[
+            {"district": "A", "yield_value": 1800.0, "rainfall": 900.0, "monsoon_jjas": 700.0}
+            for _ in range(5)
+        ],
+    ), patch(
+        "app.services.simulation_service.PredictionEngine",
+        return_value=SimpleNamespace(predict=Mock(return_value=None)),
+    ), pytest.raises(ValidationError):
+        await service.get_prediction_v2_response("Patna", "rice", 2020, "Bihar")
+
+
+def test_spatial_service_requires_database_connection():
+    service = SpatialService()
+
+    with pytest.raises(RuntimeError):
+        service._require_db()
+
+    with pytest.raises(RuntimeError):
+        service._require_repo()
+
+
+@pytest.mark.asyncio
+async def test_spatial_service_get_neighbors_and_cagr(mock_db):
+    service = SpatialService(mock_db)
+    service.repo = AsyncMock()
+    service.repo.get_neighbors = AsyncMock(return_value=[{"neighbor_cdk": 1}])
+    service.repo.get_crop_yield_series = AsyncMock(
+        side_effect=[
+            [{"year": 2019, "value": 100.0}],
+            [
+                {"year": 2018, "value": 100.0},
+                {"year": 2020, "value": 121.0},
+            ],
+        ]
+    )
+
+    neighbors = await service.get_neighbors("BR_patna_1991")
+    short_series_cagr = await service.get_cagr("BR_patna_1991", "rice", 2019, 2019)
+    growth_cagr = await service.get_cagr("BR_patna_1991", "rice", 2018, 2020)
+
+    assert neighbors == [{"neighbor_cdk": 1}]
+    assert short_series_cagr == 0.0
+    assert growth_cagr == pytest.approx(0.1)
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    ("target_cagr", "neighbor_cagrs", "expected"),
+    [
+        (0.2, [0.1, 0.08], "Outperformer"),
+        (0.12, [0.09, 0.1], "Clustered Growth"),
+        (-0.2, [-0.1, -0.08], "Underperformer"),
+        (-0.12, [-0.1, -0.08], "Clustered Decline"),
+        (0.12, [-0.1, -0.05], "Divergent"),
+    ],
+)
+async def test_spatial_service_builds_contagion_categories(
+    mock_db,
+    target_cagr,
+    neighbor_cagrs,
+    expected,
+):
+    service = SpatialService(mock_db)
+    service.repo = AsyncMock()
+    service.repo.district_exists = AsyncMock(return_value=True)
+    service.repo.get_target_meta = AsyncMock(return_value={"district_name": "Patna"})
+    service.get_neighbors = AsyncMock(
+        return_value=[
+            {"neighbor_cdk": 2, "neighbor_name": "Nalanda", "neighbor_state": "Bihar"},
+            {"neighbor_cdk": 3, "neighbor_name": "Gaya", "neighbor_state": "Bihar"},
+        ]
+    )
+    service.get_cagr = AsyncMock(side_effect=[target_cagr, *neighbor_cagrs])
+
+    result = await service.get_spatial_contagion("BR_patna_1991", "rice", 2018, 2020)
+
+    assert result["spillover_category"] == expected
+    assert result["neighbors"][0]["cagr"] >= result["neighbors"][1]["cagr"]
+
+
+@pytest.mark.asyncio
+async def test_spatial_service_raises_not_found_for_missing_contagion_district(mock_db):
+    service = SpatialService(mock_db)
+    service.repo = AsyncMock()
+    service.repo.district_exists = AsyncMock(return_value=False)
+
+    with pytest.raises(NotFoundError):
+        await service.get_spatial_contagion("missing", "rice", 2018, 2020)
+
+
+def test_spatial_service_calculates_split_areas_and_validates_input():
+    service = SpatialService()
+    service.geometry_service = Mock()
+    service.geometry_service.calculate_split_areas = Mock(
+        return_value={
+            "transferred_area_sqkm": 12.5,
+            "remaining_area_sqkm": 7.5,
+        }
+    )
+
+    response = service.calculate_split_areas(
+        b'{"type":"FeatureCollection","features":[]}',
+        b'{"type":"FeatureCollection","features":[]}',
+    )
+
+    assert response.transferred_area_sqkm == 12.5
+
+    with pytest.raises(ValidationError):
+        service.calculate_split_areas(b"not-json", b"{}")
+
+    service.geometry_service.calculate_split_areas.side_effect = ValueError("bad geometry")
+
+    with pytest.raises(ValidationError):
+        service.calculate_split_areas(b"{}", b"{}")
+
+
+@pytest.mark.asyncio
+async def test_spatial_service_calculates_diff_and_returns_lineage(mock_db):
+    service = SpatialService(mock_db)
+    service.repo = AsyncMock()
+    service.repo.get_split_events_for_district = AsyncMock(return_value=[{"id": 1}])
+    service.repo.get_area_transfers_for_district = AsyncMock(return_value=[{"from": "A"}])
+    harmonizer = SimpleNamespace(compute_split_diff=AsyncMock())
+
+    with patch(
+        "app.analytics.harmonizer.BoundaryHarmonizer",
+        return_value=harmonizer,
+    ):
+        status = await service.calculate_spatial_diff(7)
+
+    lineage = await service.get_district_lineage("BR_patna_1991")
+
+    assert status.status == "success"
+    harmonizer.compute_split_diff.assert_awaited_once_with(mock_db, 7)
+    assert lineage.area_transfers[0]["from"] == "A"
+
+
+@pytest.mark.asyncio
+async def test_spatial_service_uploads_manual_geojson_across_formats(mock_db):
+    service = SpatialService(mock_db)
+    service.repo = AsyncMock()
+    service.repo.get_district_name = AsyncMock(return_value="Patna")
+    service.repo.upsert_manual_geojson = AsyncMock()
+
+    response = await service.upload_manual_geojson(
+        "BR_patna_1991",
+        2020,
+        b'{"features":[{"geometry":{"type":"Point","coordinates":[1,2]}}]}',
+    )
+
+    first_upload = service.repo.upsert_manual_geojson.await_args.kwargs
+    assert response.status == "success"
+    assert json.loads(first_upload["geometry_geojson"]) == {
+        "type": "Point",
+        "coordinates": [1, 2],
+    }
+
+    await service.upload_manual_geojson(
+        "BR_patna_1991",
+        2021,
+        b'{"geometry":{"type":"Point","coordinates":[3,4]}}',
+    )
+    second_upload = service.repo.upsert_manual_geojson.await_args.kwargs
+    assert json.loads(second_upload["geometry_geojson"]) == {
+        "type": "Point",
+        "coordinates": [3, 4],
+    }
+
+    await service.upload_manual_geojson(
+        "BR_patna_1991",
+        2022,
+        b'{"type":"Point","coordinates":[5,6]}',
+    )
+    third_upload = service.repo.upsert_manual_geojson.await_args.kwargs
+    assert json.loads(third_upload["geometry_geojson"]) == {
+        "type": "Point",
+        "coordinates": [5, 6],
+    }
+
+    with pytest.raises(ValidationError):
+        await service.upload_manual_geojson("BR_patna_1991", 2023, b"not-json")
