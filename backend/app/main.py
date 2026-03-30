@@ -52,9 +52,10 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         logger.info("Database connection pool initialized")
 
     except Exception as e:
-        logger.error(f"Failed to initialize resources: {str(e)}")
-        # We might want to raise in production, but for now log and allow partial startup
-        # raise
+        logger.exception("Failed to initialize resources: %s", str(e))
+        if not settings.allow_partial_startup:
+            raise
+        logger.warning("Continuing with partial startup because allow_partial_startup=true")
 
     yield
 

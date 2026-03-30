@@ -1,5 +1,6 @@
-// Direct Render Backend URL - avoids Vercel proxy timeout issues
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_BASE_URL || 'https://i-ascap.onrender.com';
+import { resolvePublicApiOrigin, toApiV1Url } from './config';
+
+const BASE_URL = toApiV1Url(resolvePublicApiOrigin());
 
 export class ApiError extends Error {
     constructor(public status: number, message: string) {
@@ -38,7 +39,7 @@ async function fetchOnce<T>(url: string, options: RequestInit = {}): Promise<T> 
 
 export async function fetcher<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const cleanEndpoint = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint;
-    const url = `${BASE_URL}/api/v1/${cleanEndpoint}`;
+    const url = `${BASE_URL}/${cleanEndpoint}`;
 
     if (process.env.NODE_ENV === 'development') {
         console.log(`[API] Fetching: ${url}`);

@@ -9,6 +9,7 @@ Cache backend selection:
 """
 
 import hashlib
+import inspect
 import json
 import logging
 import time
@@ -216,6 +217,44 @@ def get_cache():
     return _cache
 
 
+def _normalize_cache_value(value: Any) -> Any:
+    """Normalize values into stable JSON-serializable cache key components."""
+    if isinstance(value, dict):
+        return {str(k): _normalize_cache_value(v) for k, v in sorted(value.items())}
+    if isinstance(value, (list, tuple)):
+        return [_normalize_cache_value(v) for v in value]
+    if isinstance(value, set):
+        return sorted(_normalize_cache_value(v) for v in value)
+    if hasattr(value, "model_dump"):
+        return _normalize_cache_value(value.model_dump(mode="json"))
+    if hasattr(value, "dict"):
+        return _normalize_cache_value(value.dict())
+    if isinstance(value, (str, int, float, bool)) or value is None:
+        return value
+    return repr(value)
+
+
+def _build_cache_payload(func: Callable[..., Any], *args, **kwargs) -> dict[str, Any]:
+    """Bind call arguments and drop instance/class references from cache keys."""
+    try:
+        signature = inspect.signature(func)
+        bound = signature.bind_partial(*args, **kwargs)
+        arguments = dict(bound.arguments)
+    except Exception:
+        arguments = {
+            "args": list(args),
+            "kwargs": kwargs,
+        }
+
+    arguments.pop("self", None)
+    arguments.pop("cls", None)
+
+    return {
+        key: _normalize_cache_value(value)
+        for key, value in sorted(arguments.items())
+    }
+
+
 def _generate_cache_key(prefix: str, *args, **kwargs) -> str:
     """Generate a cache key from function arguments."""
     try:
@@ -224,7 +263,7 @@ def _generate_cache_key(prefix: str, *args, **kwargs) -> str:
         key_data = f"{prefix}:{args_json}:{kwargs_json}"
     except Exception:
         key_data = f"{prefix}:{str(args)}:{str(kwargs)}"
-    return hashlib.md5(key_data.encode()).hexdigest()
+    return hashlib.sha256(key_data.encode()).hexdigest()
 
 
 # ==========================================================================
@@ -245,7 +284,8 @@ def cached(ttl: int = 3600, prefix: str = ""):
         async def wrapper(*args, **kwargs):
             cache = get_cache()
             key_prefix = prefix or func.__name__
-            cache_key = _generate_cache_key(key_prefix, *args, **kwargs)
+            cache_payload = _build_cache_payload(func, *args, **kwargs)
+            cache_key = _generate_cache_key(key_prefix, cache_payload)
 
             # Try cache
             try:

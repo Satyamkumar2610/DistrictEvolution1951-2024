@@ -63,6 +63,9 @@ export default function AIAnalyst({ onClose }: { onClose?: () => void }) {
       });
 
       const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Analyst request failed");
+      }
       setMessages([...updated, { role: "assistant", content: data.response }]);
     } catch {
       setMessages([

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { resolveServerApiOrigin } from '../../services/api/config';
 
-const API_URL = process.env.API_URL || 'https://i-ascap.onrender.com';
+const API_ORIGIN = resolveServerApiOrigin();
 
 async function handler(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
     // In Next.js 15+, params is a Promise and must be awaited.
@@ -13,7 +14,7 @@ async function handler(request: NextRequest, { params }: { params: Promise<{ pat
     // params.path: ['v1', 'some', 'endpoint']
     // Target: https://i-ascap.onrender.com/api/v1/some/endpoint
 
-    const targetUrl = `${API_URL}/api/${path}${request.nextUrl.search}`;
+    const targetUrl = `${API_ORIGIN}/api/${path}${request.nextUrl.search}`;
 
     console.log(`[API Proxy] ${request.method} ${targetUrl}`);
 

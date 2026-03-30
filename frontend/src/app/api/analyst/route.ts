@@ -1,197 +1,389 @@
-/**
- * I-ASCAP AI Analyst — Next.js API Route
- * File location: frontend/src/app/api/analyst/route.ts
- *
- * This route sits between your React frontend and the Anthropic API.
- * It defines all the tools Claude can call (which map to your FastAPI endpoints)
- * and handles the agentic loop — Claude calls a tool → we fetch real data →
- * we send it back → Claude synthesizes a final answer.
- *
- * Setup:
- *   Add to frontend/.env.local:
- *     ANTHROPIC_API_KEY=sk-ant-xxxxxxxx
- *     ASCAP_API_URL=http://localhost:8000   (or your deployed backend URL)
- */
-
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-const BACKEND = process.env.ASCAP_API_URL ?? "http://localhost:8000";
+import { resolveServerApiOrigin, toApiV1Url } from "../../services/api/config";
 
-// ── Tool definitions — mirrors your FastAPI endpoints ─────────────────────────
+export const runtime = "nodejs";
+
+const BACKEND_API_BASE = toApiV1Url(resolveServerApiOrigin());
+const MODEL = "claude-sonnet-4-20250514";
+const MAX_TOOL_LOOPS = 8;
+
+type ToolInput = Record<string, unknown>;
+type AnalystMessage = {
+  role: "user" | "assistant";
+  content: string;
+};
+
+function getAnthropicClient(): Anthropic | null {
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) {
+    return null;
+  }
+  return new Anthropic({ apiKey });
+}
+
+function toQueryString(params: Record<string, unknown>): string {
+  const searchParams = new URLSearchParams();
+
+  for (const [key, value] of Object.entries(params)) {
+    if (value === undefined || value === null || value === "") {
+      continue;
+    }
+    if (Array.isArray(value)) {
+      searchParams.set(key, value.join(","));
+      continue;
+    }
+    searchParams.set(key, String(value));
+  }
+
+  const query = searchParams.toString();
+  return query ? `?${query}` : "";
+}
+
+async function fetchBackend(path: string): Promise<unknown> {
+  const response = await fetch(`${BACKEND_API_BASE}${path}`, {
+    method: "GET",
+    cache: "no-store",
+  });
+
+  const contentType = response.headers.get("content-type") ?? "";
+
+  if (!response.ok) {
+    const detail = contentType.includes("application/json")
+      ? JSON.stringify(await response.json().catch(() => ({ error: "Unknown error" })))
+      : await response.text().catch(() => "Unknown error");
+    return {
+      error: `Backend error ${response.status}`,
+      detail,
+      path,
+    };
+  }
+
+  if (contentType.includes("application/json")) {
+    return response.json();
+  }
+
+  return {
+    data: await response.text(),
+    path,
+  };
+}
+
 const TOOLS: Anthropic.Tool[] = [
   {
-    name: "get_all_districts",
-    description: "Fetch all districts available in the I-ASCAP database.",
-    input_schema: { type: "object" as const, properties: {}, required: [] },
-  },
-  {
-    name: "get_crop_data",
+    name: "search_entities",
     description:
-      "Get crop yield / production / area data for a district across a year range.",
+      "Search districts and states by name. Use this first when the user does not know the district CDK or exact state spelling.",
     input_schema: {
-      type: "object" as const,
+      type: "object",
       properties: {
-        district: { type: "string" },
-        start_year: { type: "number" },
-        end_year: { type: "number" },
-        crop: { type: "string" },
-        metric: { type: "string", enum: ["yield", "production", "area"] },
+        q: { type: "string", description: "Search query such as Bihar or Patna." },
+        type: {
+          type: "string",
+          enum: ["all", "district", "state"],
+          description: "Filter result types when needed.",
+        },
+        limit: { type: "number", description: "Maximum number of matches to return." },
       },
-      required: ["district", "start_year", "end_year"],
+      required: ["q"],
     },
   },
   {
-    name: "get_district_lineage",
+    name: "get_metric_history",
     description:
-      "Get the boundary split/merge lineage of a district (e.g. Adilabad → Nirmal).",
+      "Get yearly area, production, and yield history for a district. Prefer cdk when available; otherwise supply district and optionally state.",
     input_schema: {
-      type: "object" as const,
-      properties: { district: { type: "string" } },
-      required: ["district"],
-    },
-  },
-  {
-    name: "compare_districts",
-    description:
-      "Compare agricultural performance across 2+ districts for a metric and year range.",
-    input_schema: {
-      type: "object" as const,
+      type: "object",
       properties: {
-        districts: { type: "array", items: { type: "string" } },
-        metric: { type: "string", enum: ["yield", "production", "area"] },
-        start_year: { type: "number" },
-        end_year: { type: "number" },
+        cdk: { type: "string" },
+        district: { type: "string" },
+        state: { type: "string" },
         crop: { type: "string" },
       },
-      required: ["districts", "metric", "start_year", "end_year"],
+      required: ["crop"],
     },
   },
   {
-    name: "get_climate_data",
+    name: "get_state_overview",
     description:
-      "Get rainfall and temperature data for a district — useful to correlate climate with yield.",
+      "Get a state-level overview for a crop, including district counts, benchmarks, and top/bottom performers.",
     input_schema: {
-      type: "object" as const,
+      type: "object",
       properties: {
-        district: { type: "string" },
-        start_year: { type: "number" },
-        end_year: { type: "number" },
+        state_name: { type: "string" },
+        crop: { type: "string" },
+        year: { type: "number" },
       },
-      required: ["district", "start_year", "end_year"],
+      required: ["state_name"],
     },
   },
   {
-    name: "get_state_summary",
-    description: "Aggregate agricultural data for an entire state across its districts.",
+    name: "get_split_events_for_state",
+    description:
+      "List district split events for a state, including parent and child CDKs needed for split-impact analysis.",
     input_schema: {
-      type: "object" as const,
+      type: "object",
       properties: {
         state: { type: "string" },
+      },
+      required: ["state"],
+    },
+  },
+  {
+    name: "analyze_split_impact",
+    description:
+      "Run before/after split-impact analysis for a parent district and child districts. Use split events first if the CDKs are not known.",
+    input_schema: {
+      type: "object",
+      properties: {
+        parent_cdk: { type: "string" },
+        child_cdks: {
+          type: "array",
+          items: { type: "string" },
+        },
+        split_year: { type: "number" },
+        crop: { type: "string" },
+        metric: {
+          type: "string",
+          enum: ["yield", "area", "production"],
+        },
+        mode: {
+          type: "string",
+          enum: ["before_after", "entity_comparison"],
+        },
+      },
+      required: ["parent_cdk", "child_cdks", "split_year"],
+    },
+  },
+  {
+    name: "get_yield_trend",
+    description:
+      "Get district yield trend analysis including CAGR and volatility over a year range.",
+    input_schema: {
+      type: "object",
+      properties: {
+        cdk: { type: "string" },
+        crop: { type: "string" },
         start_year: { type: "number" },
         end_year: { type: "number" },
-        metric: { type: "string", enum: ["yield", "production", "area"] },
       },
-      required: ["state", "start_year", "end_year"],
+      required: ["cdk"],
+    },
+  },
+  {
+    name: "get_rainfall",
+    description:
+      "Get historic rainfall normals for a district and state. Use for climate context, not real-time weather.",
+    input_schema: {
+      type: "object",
+      properties: {
+        state: { type: "string" },
+        district: { type: "string" },
+      },
+      required: ["state", "district"],
+    },
+  },
+  {
+    name: "get_district_report",
+    description:
+      "Fetch a comprehensive district profile report with historical yield, area, production, and state benchmark context.",
+    input_schema: {
+      type: "object",
+      properties: {
+        cdk: { type: "string" },
+        crop: { type: "string" },
+      },
+      required: ["cdk"],
     },
   },
 ];
 
-// ── Call the actual FastAPI backend ───────────────────────────────────────────
-async function callBackend(toolName: string, input: Record<string, unknown>): Promise<unknown> {
-  const routes: Record<string, () => Promise<Response>> = {
-    get_all_districts: () => fetch(`${BACKEND}/api/districts`),
-    get_crop_data: () =>
-      fetch(`${BACKEND}/api/crop-data?` + new URLSearchParams(input as Record<string, string>)),
-    get_district_lineage: () =>
-      fetch(`${BACKEND}/api/lineage/${input.district}`),
-    compare_districts: () =>
-      fetch(`${BACKEND}/api/compare`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(input),
-      }),
-    get_climate_data: () =>
-      fetch(`${BACKEND}/api/climate?` + new URLSearchParams(input as Record<string, string>)),
-    get_state_summary: () =>
-      fetch(`${BACKEND}/api/state-summary?` + new URLSearchParams(input as Record<string, string>)),
-  };
-
-  const fetcher = routes[toolName];
-  if (!fetcher) return { error: `Unknown tool: ${toolName}` };
-
-  try {
-    const res = await fetcher();
-    if (!res.ok) return { error: `Backend error ${res.status}: ${await res.text()}` };
-    return await res.json();
-  } catch (e) {
-    return { error: `Cannot reach backend at ${BACKEND}. Is it running?` };
+async function callBackend(toolName: string, input: ToolInput): Promise<unknown> {
+  switch (toolName) {
+    case "search_entities":
+      return fetchBackend(
+        `/search${toQueryString({
+          q: input.q,
+          type: input.type ?? "all",
+          limit: input.limit ?? 10,
+        })}`,
+      );
+    case "get_metric_history":
+      return fetchBackend(
+        `/metrics/history${toQueryString({
+          cdk: input.cdk,
+          district: input.district,
+          state: input.state,
+          crop: input.crop ?? "wheat",
+        })}`,
+      );
+    case "get_state_overview":
+      if (!input.state_name) {
+        return { error: "state_name is required" };
+      }
+      return fetchBackend(
+        `/states/${encodeURIComponent(String(input.state_name))}/overview${toQueryString({
+          crop: input.crop ?? "wheat",
+          year: input.year,
+        })}`,
+      );
+    case "get_split_events_for_state":
+      return fetchBackend(
+        `/analysis/split-impact/districts${toQueryString({
+          state: input.state,
+        })}`,
+      );
+    case "analyze_split_impact":
+      return fetchBackend(
+        `/analysis/split-impact/analysis${toQueryString({
+          parent: input.parent_cdk,
+          children: input.child_cdks,
+          splitYear: input.split_year,
+          crop: input.crop ?? "wheat",
+          metric: input.metric ?? "yield",
+          mode: input.mode ?? "before_after",
+        })}`,
+      );
+    case "get_yield_trend":
+      return fetchBackend(
+        `/analytics/yield-trend${toQueryString({
+          cdk: input.cdk,
+          crop: input.crop ?? "rice",
+          start_year: input.start_year ?? 1990,
+          end_year: input.end_year ?? 2020,
+        })}`,
+      );
+    case "get_rainfall":
+      return fetchBackend(
+        `/climate/rainfall${toQueryString({
+          state: input.state,
+          district: input.district,
+        })}`,
+      );
+    case "get_district_report":
+      return fetchBackend(
+        `/reports/district-profile${toQueryString({
+          cdk: input.cdk,
+          crop: input.crop ?? "wheat",
+          format: "json",
+        })}`,
+      );
+    default:
+      return { error: `Unknown tool: ${toolName}` };
   }
 }
 
-// ── Agentic loop ──────────────────────────────────────────────────────────────
+function normalizeMessages(messages: unknown): Anthropic.MessageParam[] {
+  if (!Array.isArray(messages)) {
+    return [];
+  }
+
+  return messages
+    .filter((message): message is AnalystMessage => {
+      return (
+        typeof message === "object" &&
+        message !== null &&
+        ("role" in message) &&
+        ("content" in message)
+      );
+    })
+    .map((message): Anthropic.MessageParam => {
+      const role: "user" | "assistant" =
+        message.role === "assistant" ? "assistant" : "user";
+
+      return {
+        role,
+        content:
+          typeof message.content === "string"
+            ? message.content
+            : String(message.content ?? ""),
+      };
+    })
+    .slice(-12);
+}
+
 export async function POST(req: NextRequest) {
-  const { messages } = await req.json();
+  const anthropic = getAnthropicClient();
+  if (!anthropic) {
+    return NextResponse.json(
+      { error: "AI analyst is unavailable because ANTHROPIC_API_KEY is not configured." },
+      { status: 503 },
+    );
+  }
 
-  const systemPrompt = `You are the I-ASCAP Agricultural Analyst — an expert in Indian agriculture 
-from 1966 to 2024. You have direct access to a geospatial database of district-level crop yield, 
-production, and area data across all Indian districts.
+  const body = await req.json().catch(() => ({}));
+  const currentMessages = normalizeMessages(body.messages);
 
-When answering questions:
-- Always use tools to fetch REAL data before drawing conclusions
-- If a district was split (e.g. Adilabad → Nirmal), use get_district_lineage first to understand the boundary history
-- Cite specific numbers and years from the data
-- Highlight trends, anomalies, and climate correlations where relevant
-- Be concise but data-driven
+  if (currentMessages.length === 0) {
+    return NextResponse.json(
+      { error: "At least one user message is required." },
+      { status: 400 },
+    );
+  }
 
-You are embedded in the I-ASCAP platform. Users are researchers, policymakers, and farmers.`;
+  const systemPrompt = `You are the I-ASCAP agricultural analyst.
 
-  let currentMessages: Anthropic.MessageParam[] = messages;
+You answer questions using only the live I-ASCAP API tools.
+
+Rules:
+- Use tools before making factual claims.
+- If a district CDK is unknown, call search_entities first.
+- For split questions, call get_split_events_for_state before analyze_split_impact unless the exact parent and child CDKs are already known.
+- Be explicit about years, crops, and whether a result is district-level, state-level, or split-event analysis.
+- Treat rainfall data as historic normals, not real-time weather.
+- When the data is insufficient or ambiguous, say so directly.`;
+
+  let conversation: Anthropic.MessageParam[] = currentMessages;
   let finalText = "";
 
-  // Agentic loop: keep going until Claude stops calling tools
-  for (let i = 0; i < 8; i++) {
+  for (let i = 0; i < MAX_TOOL_LOOPS; i += 1) {
     const response = await anthropic.messages.create({
-      model: "claude-sonnet-4-20250514",
+      model: MODEL,
       max_tokens: 2048,
       system: systemPrompt,
       tools: TOOLS,
-      messages: currentMessages,
+      messages: conversation,
     });
 
     if (response.stop_reason === "end_turn") {
       finalText = response.content
-        .filter((b) => b.type === "text")
-        .map((b) => (b as Anthropic.TextBlock).text)
-        .join("");
+        .filter((block) => block.type === "text")
+        .map((block) => block.text)
+        .join("\n")
+        .trim();
       break;
     }
 
-    if (response.stop_reason === "tool_use") {
-      // Execute all tool calls in parallel
-      const toolUseBlocks = response.content.filter(
-        (b): b is Anthropic.ToolUseBlock => b.type === "tool_use"
-      );
-
-      const toolResults = await Promise.all(
-        toolUseBlocks.map(async (block) => {
-          const result = await callBackend(block.name, block.input as Record<string, unknown>);
-          return {
-            type: "tool_result" as const,
-            tool_use_id: block.id,
-            content: JSON.stringify(result),
-          };
-        })
-      );
-
-      // Add assistant turn + tool results back into message history
-      currentMessages = [
-        ...currentMessages,
-        { role: "assistant" as const, content: response.content },
-        { role: "user" as const, content: toolResults },
-      ];
+    if (response.stop_reason !== "tool_use") {
+      continue;
     }
+
+    const toolUseBlocks = response.content.filter(
+      (block): block is Anthropic.ToolUseBlock => block.type === "tool_use",
+    );
+
+    const toolResults = await Promise.all(
+      toolUseBlocks.map(async (block) => {
+        const result = await callBackend(block.name, block.input as ToolInput);
+        return {
+          type: "tool_result" as const,
+          tool_use_id: block.id,
+          content: JSON.stringify(result),
+        };
+      }),
+    );
+
+    conversation = [
+      ...conversation,
+      { role: "assistant", content: response.content },
+      { role: "user", content: toolResults },
+    ];
+  }
+
+  if (!finalText) {
+    finalText =
+      "I could not complete the analysis loop. Please try a narrower question with a district, state, crop, or year range.";
   }
 
   return NextResponse.json({ response: finalText });

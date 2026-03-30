@@ -33,6 +33,7 @@ class Settings(BaseSettings):
 
     # Logging
     log_level: str = "INFO"
+    allow_partial_startup: bool = False
 
     # Rate Limiting
     rate_limit_per_minute: int = 100

@@ -1,19 +1,20 @@
 """
 Tests for the caching system (InMemoryCache + Redis fallback logic).
 """
-import pytest
 import time
 from unittest.mock import patch
 
+import pytest
+
 from app.cache import (
+    CacheTTL,
     InMemoryCache,
     RedisCache,
+    _build_cache_payload,
     _create_cache,
-    cached,
     _generate_cache_key,
-    CacheTTL,
+    cached,
 )
-
 
 # ---------------------------------------------------------------------------
 # InMemoryCache Tests
@@ -53,7 +54,7 @@ class TestInMemoryCache:
     async def test_ttl_expiry(self, cache):
         await cache.set("key1", "value1", ttl=1)
         assert await cache.get("key1") == "value1"
-        
+
         # Simulate expiry by manipulating the stored timestamp
         cache._store["key1"]["expires_at"] = time.time() - 1
         assert await cache.get("key1") is None
@@ -90,10 +91,12 @@ class TestCacheFactory:
 
     def test_auto_without_redis_package(self):
         """Auto mode should fall back to in-memory if redis package is missing."""
-        with patch.dict("sys.modules", {"redis.asyncio": None, "redis": None}):
-            with patch("builtins.__import__", side_effect=ImportError):
-                cache = _create_cache(backend="memory")
-                assert isinstance(cache, InMemoryCache)
+        with (
+            patch.dict("sys.modules", {"redis.asyncio": None, "redis": None}),
+            patch("builtins.__import__", side_effect=ImportError),
+        ):
+            cache = _create_cache(backend="memory")
+            assert isinstance(cache, InMemoryCache)
 
     def test_auto_with_redis_package(self):
         """Auto mode should return RedisCache if redis package is available."""
@@ -127,6 +130,19 @@ class TestCacheKeyGeneration:
         key2 = _generate_cache_key("forecast", "arg1")
         assert key1 != key2
 
+    def test_build_cache_payload_ignores_instance_identity(self):
+        class DemoService:
+            def __init__(self, label: str):
+                self.label = label
+
+            async def get(self, value: int, crop: str = "wheat"):
+                return f"{self.label}:{value}:{crop}"
+
+        payload1 = _build_cache_payload(DemoService.get, DemoService("a"), 7, crop="rice")
+        payload2 = _build_cache_payload(DemoService.get, DemoService("b"), 7, crop="rice")
+
+        assert payload1 == payload2 == {"crop": "rice", "value": 7}
+
 
 # ---------------------------------------------------------------------------
 # Cached Decorator Tests
@@ -153,7 +169,7 @@ class TestCachedDecorator:
         try:
             result1 = await expensive_fn(5)
             result2 = await expensive_fn(5)
-            
+
             assert result1 == 10
             assert result2 == 10
             assert call_count == 1  # Second call should be cached
@@ -178,6 +194,34 @@ class TestCachedDecorator:
             await fn(1)
             await fn(2)
             assert call_count == 2
+        finally:
+            cache_mod._cache = old_cache
+
+    @pytest.mark.asyncio
+    async def test_bound_methods_share_cache_entries(self):
+        call_count = 0
+
+        class DemoService:
+            def __init__(self, label: str):
+                self.label = label
+
+            @cached(ttl=60, prefix="bound")
+            async def compute(self, value: int):
+                nonlocal call_count
+                call_count += 1
+                return {"label": self.label, "value": value}
+
+        import app.cache as cache_mod
+        old_cache = cache_mod._cache
+        cache_mod._cache = InMemoryCache()
+
+        try:
+            first = await DemoService("one").compute(11)
+            second = await DemoService("two").compute(11)
+
+            assert first == {"label": "one", "value": 11}
+            assert second == {"label": "one", "value": 11}
+            assert call_count == 1
         finally:
             cache_mod._cache = old_cache
 
