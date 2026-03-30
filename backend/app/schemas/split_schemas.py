@@ -2,6 +2,7 @@
 Pydantic schemas for the District Split Area Transfer API.
 """
 
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -109,3 +110,172 @@ class UploadResponse(BaseModel):
     geometry_confidence: float
     area_sqkm: float | None = None
     message: str
+
+
+class EnrichmentMetric(BaseModel):
+    """Single enrichment metric attached to an area transfer."""
+
+    dataset: str
+    metric: str
+    value: float | None = None
+    unit: str | None = None
+    reference_year: int | None = None
+    source_url: str | None = None
+
+
+class EnrichmentTransfer(BaseModel):
+    """Grouped enrichment payload for a transfer."""
+
+    transfer_id: int
+    from_district: str
+    to_district: str
+    transfer_type: str
+    transfer_area_sqkm: float
+    metrics: list[EnrichmentMetric]
+
+
+class EnrichmentResponse(BaseModel):
+    """Response for GET /api/v1/spatial/enrichment/{event_id}."""
+
+    success: bool = True
+    event_id: int
+    parent_cdk: str
+    split_year: int
+    total_enrichment_rows: int
+    transfers: list[EnrichmentTransfer]
+
+
+class EnrichmentTriggerResponse(BaseModel):
+    """Response for POST /api/v1/spatial/enrichment/trigger."""
+
+    success: bool = True
+    message: str | None = None
+    result: dict[str, Any] | None = None
+
+
+class GazetteParsedEvent(BaseModel):
+    """Structured split event extracted from gazette text."""
+
+    parent_district: str
+    child_districts: list[str]
+    year: int
+    state: str | None = None
+    confidence: float
+    raw_text: str
+
+
+class GazetteParseResponse(BaseModel):
+    """Response for POST /api/v1/spatial/gazette/parse."""
+
+    success: bool = True
+    parsed_events: list[GazetteParsedEvent]
+    total: int
+
+
+class BatchImportSampleEvent(BaseModel):
+    """Dry-run preview sample event."""
+
+    parent: str
+    year: int
+    children: list[str]
+    state: str | None = None
+
+
+class BatchImportResponse(BaseModel):
+    """Response for POST /api/v1/spatial/lineage/batch-import."""
+
+    success: bool = True
+    dry_run: bool | None = None
+    source: str | None = None
+    total_csv_rows: int | None = None
+    unique_events: int | None = None
+    inserted: int | None = None
+    skipped: int | None = None
+    unresolved_parents: int | None = None
+    loaded: int | None = None
+    error: str | None = None
+    sample_events: list[BatchImportSampleEvent] | None = None
+
+
+class DriftTimelineItem(BaseModel):
+    """Pairwise drift metrics between two snapshots."""
+
+    year_a: int
+    year_b: int
+    hausdorff_km: float
+    area_a_sqkm: float
+    area_b_sqkm: float
+    area_change_pct: float
+    jaccard_index: float
+    centroid_shift_km: float
+    shape_similarity: float
+
+
+class DriftResponse(BaseModel):
+    """Response for GET /api/v1/spatial/drift/{district_cdk}."""
+
+    success: bool = True
+    district_cdk: str
+    timeline: list[DriftTimelineItem] | None = None
+    total_comparisons: int | None = None
+    year_a: int | None = None
+    year_b: int | None = None
+    hausdorff_km: float | None = None
+    area_a_sqkm: float | None = None
+    area_b_sqkm: float | None = None
+    area_change_pct: float | None = None
+    overlap_area_sqkm: float | None = None
+    jaccard_index: float | None = None
+    centroid_shift_km: float | None = None
+    shape_similarity: float | None = None
+    source_a: str | None = None
+    source_b: str | None = None
+
+
+class TransferTypeSummary(BaseModel):
+    """Aggregate transfer-type count/area breakdown."""
+
+    type: str
+    count: int
+    total_area_sqkm: float
+
+
+class DistrictQualityOverview(BaseModel):
+    """District geometry coverage summary."""
+
+    total: int
+    with_geometry: int
+    geometry_coverage_pct: float
+
+
+class SplitEventQualityOverview(BaseModel):
+    """Split-event status and confidence summary."""
+
+    total: int
+    by_status: dict[str, int]
+    confidence_distribution: dict[str, int]
+
+
+class TransferQualityOverview(BaseModel):
+    """Area transfer summary."""
+
+    total: int
+    by_type: list[TransferTypeSummary]
+
+
+class EnrichmentQualityOverview(BaseModel):
+    """Enrichment table summary."""
+
+    total_rows: int
+    events_enriched: int
+
+
+class QualityOverviewResponse(BaseModel):
+    """Response for GET /api/v1/spatial/quality/overview."""
+
+    success: bool = True
+    districts: DistrictQualityOverview
+    split_events: SplitEventQualityOverview
+    transfers: TransferQualityOverview
+    enrichment: EnrichmentQualityOverview
+    geometry_sources: dict[str, int]

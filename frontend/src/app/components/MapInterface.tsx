@@ -3,9 +3,11 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import Map, { Source, Layer, NavigationControl, Popup, MapRef, type LayerProps } from 'react-map-gl/maplibre';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import type { MapLayerMouseEvent } from 'maplibre-gl';
+import type { LngLat, MapGeoJSONFeature, MapLayerMouseEvent } from 'maplibre-gl';
 import { useDistrictMetrics } from '../hooks/useDistrictMetrics';
 import type { DistrictMetric } from '../services/api/types';
+import { getAgriColor, getRainfallColor } from '../utils/colors';
+import { MapLegend } from './MapLegend';
 
 interface MapInterfaceProps {
     year: number;
@@ -16,10 +18,22 @@ interface MapInterfaceProps {
     showRainfallLayer?: boolean;
 }
 
-import { getAgriColor, getRainfallColor } from '../utils/colors';
-import { MapLegend } from './MapLegend';
+type StyleExpression = unknown[];
 
+interface HoverInfo {
+    feature: MapGeoJSONFeature;
+    x: number;
+    y: number;
+    lngLat: LngLat;
+    data?: DistrictMetric;
+}
 
+const buildFeatureKeyExpression = (): StyleExpression => [
+    'concat',
+    ['coalesce', ['get', 'DISTRICT'], ['get', 'district_name']],
+    '|',
+    ['coalesce', ['get', 'STATE'], ['get', 'ST_NM']],
+];
 
 export default function MapInterface({ year, crop = 'wheat', metric = 'yield', selectedDistrict, onDistrictSelect, showRainfallLayer = false }: MapInterfaceProps) {
     const mapRef = useRef<MapRef>(null);
@@ -40,7 +54,7 @@ export default function MapInterface({ year, crop = 'wheat', metric = 'yield', s
                     id: 'district-data',
                     type: 'fill',
                     paint: { 'fill-color': '#374151', 'fill-opacity': 0.6 }
-                },
+                } as LayerProps,
                 min: 0,
                 max: 0
             };
@@ -52,13 +66,7 @@ export default function MapInterface({ year, crop = 'wheat', metric = 'yield', s
         const maxVal = Math.max(...values);
 
         // Construct Match Expression
-        // Use coalesce to handle variant property names in GeoJSON
-        const districtExpr = ['coalesce', ['get', 'DISTRICT'], ['get', 'district_name']];
-        const stateExpr = ['coalesce', ['get', 'STATE'], ['get', 'ST_NM']];
-        const keyExpr = ['concat', districtExpr, '|', stateExpr];
-
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const matchExpr: any[] = ['match', keyExpr];
+        const matchExpr: StyleExpression = ['match', buildFeatureKeyExpression()];
 
         // Use different color schemes based on layer mode
         const colorFn = showRainfallLayer ? getRainfallColor : getAgriColor;
@@ -79,7 +87,7 @@ export default function MapInterface({ year, crop = 'wheat', metric = 'yield', s
                     'fill-opacity': 0.7,
                     'fill-outline-color': '#000000'
                 }
-            },
+            } as LayerProps,
             min: minVal,
             max: maxVal
         };
@@ -91,8 +99,7 @@ export default function MapInterface({ year, crop = 'wheat', metric = 'yield', s
         // ... (Coordinate logic omitted for brevity in V1 POC)
     }, [selectedDistrict]);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [hoverInfo, setHoverInfo] = useState<{ feature: any, x: number, y: number, lngLat?: any, data?: DistrictMetric } | null>(null);
+    const [hoverInfo, setHoverInfo] = useState<HoverInfo | null>(null);
 
     const onHover = React.useCallback((event: MapLayerMouseEvent) => {
         const { features, point: { x, y } } = event;
@@ -109,8 +116,7 @@ export default function MapInterface({ year, crop = 'wheat', metric = 'yield', s
                 feature: feature,
                 x: x,
                 y: y,
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                lngLat: event.lngLat as any,
+                lngLat: event.lngLat,
                 data: metricData
             });
         } else {
@@ -141,8 +147,7 @@ export default function MapInterface({ year, crop = 'wheat', metric = 'yield', s
                 <NavigationControl position="top-right" />
 
                 <Source type="geojson" data="/data/districts.json">
-                    {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                    <Layer {...(layerStyle as any)} />
+                    <Layer {...layerStyle} />
                     <Layer id="borders" type="line" paint={{ 'line-color': '#ffffff', 'line-width': 0.5, 'line-opacity': 0.2 }} />
                     {/* Dashed borders for harmonized (backcast) districts — boundary uncertainty */}
                     <Layer {...({
@@ -151,11 +156,7 @@ export default function MapInterface({ year, crop = 'wheat', metric = 'yield', s
                         paint: {
                             'line-color': '#fbbf24',
                             'line-width': (() => {
-                                const districtExpr = ['coalesce', ['get', 'DISTRICT'], ['get', 'district_name']];
-                                const stateExpr = ['coalesce', ['get', 'STATE'], ['get', 'ST_NM']];
-                                const keyExpr = ['concat', districtExpr, '|', stateExpr];
-                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                const matchExpr: any[] = ['match', keyExpr];
+                                const matchExpr: StyleExpression = ['match', buildFeatureKeyExpression()];
                                 let hasHarmonized = false;
                                 Object.entries(joinedData).forEach(([geoKey, d]) => {
                                     if (d.method && d.method !== 'Raw') {

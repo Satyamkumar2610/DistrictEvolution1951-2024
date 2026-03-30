@@ -1,5 +1,5 @@
 import { fetcher } from './client';
-import { StateSummary, SplitDistrict, AnalysisResult, AnalyticsSummary, SplitImpactQueryParams, SplitImpactResult, SplitSpecializationResult } from './types';
+import { StateSummary, SplitDistrict, AnalysisResult, AnalyticsSummary, CropShiftResult, SplitImpactQueryParams, SplitImpactResult, SplitSpecializationResult, YieldGapResult } from './types';
 import { DiversificationData, YieldTrendData, YoyGrowthData, CropCorrelationData } from '../../../types/analysis';
 
 export const analyticsApi = {
@@ -23,10 +23,10 @@ export const analyticsApi = {
         fetcher<DiversificationData>(`analytics/diversification?cdk=${encodeURIComponent(cdk)}&year=${year}`),
 
     getCropShift: (cdk: string) =>
-        fetcher<{ cdk: string; timeline: Array<{ year: number; total_area: number; shannon_index: number; simpson_index: number; dominant_crop: string; dominant_share: number; crop_mix: Record<string, number> }> }>(`analytics/crop-shift?cdk=${cdk}`),
+        fetcher<CropShiftResult>(`analytics/crop-shift?cdk=${cdk}`),
 
     getYieldGap: (state: string, crop: string, startYear: number, endYear: number) =>
-        fetcher<{ state: string; crop: string; period: string; convergence_timeline: Array<{ year: number; frontier_yield: number; state_avg_yield: number; avg_gap: number }>; district_rankings: Array<{ cdk: string; district_name: string; avg_gap: number; latest_gap: number; avg_yield: number; gap_trend: number; status: string; rank: number }> }>(`analytics/yield-gap?state=${encodeURIComponent(state)}&crop=${crop}&start_year=${startYear}&end_year=${endYear}`),
+        fetcher<YieldGapResult>(`analytics/yield-gap?state=${encodeURIComponent(state)}&crop=${crop}&start_year=${startYear}&end_year=${endYear}`),
 
     getYieldTrend: (cdk: string, crop: string) =>
         fetcher<YieldTrendData>(`analytics/yield-trend?cdk=${cdk}&crop=${crop}`),

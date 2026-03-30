@@ -10,6 +10,14 @@ from fastapi import APIRouter, Depends, HTTPException, Query  # type: ignore
 
 from app.api.deps import get_db  # type: ignore
 from app.core.lineage_graph import LineageGraph  # type: ignore
+from app.schemas.lineage_reconstructor import (  # type: ignore
+    ReconstructionResponse,
+    ReconstructorAncestorsResponse,
+    ReconstructorDescendantsResponse,
+    ReconstructorGraphSummaryResponse,
+    ReconstructorLineageNode,
+    ReconstructorSearchResult,
+)
 from app.services.reconstructor_service import ReconstructorService  # type: ignore
 
 logger = logging.getLogger("app.api.v1.lineage_reconstructor")
@@ -33,7 +41,7 @@ async def _build_graph(db: asyncpg.Connection) -> LineageGraph:
 # Search
 # ------------------------------------------------------------------
 
-@router.get("/search")
+@router.get("/search", response_model=list[ReconstructorSearchResult])
 async def search_districts(
     q: str = Query(..., min_length=2),
     db: asyncpg.Connection = Depends(get_db),
@@ -91,7 +99,7 @@ async def search_districts(
 # Tree / Lineage
 # ------------------------------------------------------------------
 
-@router.get("/{cdk}/lineage")
+@router.get("/{cdk}/lineage", response_model=ReconstructorLineageNode)
 async def get_lineage(cdk: str, db: asyncpg.Connection = Depends(get_db)):
     """Returns the tree structure for the frontend."""
     try:
@@ -108,10 +116,10 @@ async def get_lineage(cdk: str, db: asyncpg.Connection = Depends(get_db)):
 # Ancestors / Descendants (new DAG-based endpoints)
 # ------------------------------------------------------------------
 
-@router.get("/{cdk}/ancestors")
+@router.get("/{cdk}/ancestors", response_model=ReconstructorAncestorsResponse)
 async def get_ancestors(
     cdk: str,
-    year: int = Query(None, description="Stop at this year"),
+    year: int | None = Query(None, description="Stop at this year"),
     db: asyncpg.Connection = Depends(get_db),
 ):
     """
@@ -132,10 +140,10 @@ async def get_ancestors(
         raise HTTPException(status_code=500, detail=str(e)) from e
 
 
-@router.get("/{cdk}/descendants")
+@router.get("/{cdk}/descendants", response_model=ReconstructorDescendantsResponse)
 async def get_descendants(
     cdk: str,
-    from_year: int = Query(None, description="Only events after this year"),
+    from_year: int | None = Query(None, description="Only events after this year"),
     db: asyncpg.Connection = Depends(get_db),
 ):
     """
@@ -162,7 +170,7 @@ async def get_descendants(
 # Graph summary
 # ------------------------------------------------------------------
 
-@router.get("/graph/summary")
+@router.get("/graph/summary", response_model=ReconstructorGraphSummaryResponse)
 async def graph_summary(db: asyncpg.Connection = Depends(get_db)):
     """Returns DAG statistics: node/event counts, root/leaf counts, event types."""
     try:
@@ -177,7 +185,7 @@ async def graph_summary(db: asyncpg.Connection = Depends(get_db)):
 # Full reconstruction
 # ------------------------------------------------------------------
 
-@router.get("/{cdk}")
+@router.get("/{cdk}", response_model=ReconstructionResponse)
 async def reconstruct_lineage(
     cdk: str,
     crop: str = "rice",

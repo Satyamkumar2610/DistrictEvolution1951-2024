@@ -5,6 +5,13 @@ import Map, { Source, Layer, NavigationControl, MapRef } from "react-map-gl/mapl
 import { Loader2, Search, Layers, TrendingUp, TrendingDown, Minus, BarChart3, MapPin, GitBranch, Calendar, ChevronRight } from "lucide-react";
 import "maplibre-gl/dist/maplibre-gl.css";
 
+import type {
+    LineageReconstructionEpoch,
+    LineageReconstructionMetric,
+    LineageReconstructionResponse,
+    LineageReconstructorSearchResult,
+} from "@/app/services/api/types";
+
 import EpochTimeline from "./EpochTimeline";
 import ReconstructedMapLayer from "./ReconstructedMapLayer";
 import YieldReconstructionChart from "./YieldReconstructionChart";
@@ -12,16 +19,8 @@ import EpochMetricsPanel from "./EpochMetricsPanel";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_BASE_URL || "https://i-ascap.onrender.com";
 
-interface SearchResult {
-    cdk: string;
-    display_name: string;
-    state: string;
-    era: number;
-    is_root: boolean;
-}
-
 /* ---------- 50+ Featured Districts grouped by state ---------- */
-const FEATURED_EXAMPLES: SearchResult[] = [
+const FEATURED_EXAMPLES: LineageReconstructorSearchResult[] = [
     // West Bengal
     { cdk: "WB_24parg_1961", display_name: "24 Parganas", state: "West Bengal", era: 1961, is_root: true },
     { cdk: "WB_medini_1951", display_name: "Medinipur", state: "West Bengal", era: 1951, is_root: true },
@@ -111,13 +110,21 @@ interface Insight {
     color: string;
 }
 
-function computeInsights(epochs: any[], crop: string): Insight[] {
+function hasYield(metric: LineageReconstructionMetric): metric is LineageReconstructionMetric & { collective_yield: number } {
+    return metric.collective_yield != null;
+}
+
+function getErrorMessage(error: unknown): string {
+    return error instanceof Error ? error.message : "Failed to fetch";
+}
+
+function computeInsights(epochs: LineageReconstructionEpoch[]): Insight[] {
     if (!epochs || epochs.length === 0) return [];
     const insights: Insight[] = [];
 
     // Flatten all metrics
-    const allMetrics = epochs.flatMap((ep: any) => ep.metrics || []);
-    const withYield = allMetrics.filter((m: any) => m.collective_yield != null);
+    const allMetrics = epochs.flatMap((epoch) => epoch.metrics);
+    const withYield = allMetrics.filter(hasYield);
 
     // 1. Total fragmentations
     const splitCount = epochs.length - 1;
@@ -131,7 +138,9 @@ function computeInsights(epochs: any[], crop: string): Insight[] {
 
     // 2. Peak yield
     if (withYield.length > 0) {
-        const peak = withYield.reduce((a: any, b: any) => a.collective_yield > b.collective_yield ? a : b);
+        const peak = withYield.reduce((best, candidate) =>
+            candidate.collective_yield > best.collective_yield ? candidate : best
+        );
         insights.push({
             icon: <TrendingUp className="w-4 h-4" />,
             label: "Peak Yield",
@@ -143,8 +152,8 @@ function computeInsights(epochs: any[], crop: string): Insight[] {
 
     // 3. Yield trend (first decade vs last decade)
     if (withYield.length >= 5) {
-        const first5 = withYield.slice(0, 5).reduce((s: number, m: any) => s + m.collective_yield, 0) / 5;
-        const last5 = withYield.slice(-5).reduce((s: number, m: any) => s + m.collective_yield, 0) / 5;
+        const first5 = withYield.slice(0, 5).reduce((sum, metric) => sum + metric.collective_yield, 0) / 5;
+        const last5 = withYield.slice(-5).reduce((sum, metric) => sum + metric.collective_yield, 0) / 5;
         const pctChange = ((last5 - first5) / first5) * 100;
         const trending = pctChange > 5 ? "Increasing" : pctChange < -5 ? "Decreasing" : "Stable";
         const trendIcon = pctChange > 5 ? <TrendingUp className="w-4 h-4" /> : pctChange < -5 ? <TrendingDown className="w-4 h-4" /> : <Minus className="w-4 h-4" />;
@@ -173,11 +182,11 @@ function computeInsights(epochs: any[], crop: string): Insight[] {
     if (epochs.length >= 2) {
         const preSplit = epochs[epochs.length - 2];
         const postSplit = epochs[epochs.length - 1];
-        const preMetrics = (preSplit.metrics || []).filter((m: any) => m.collective_yield != null);
-        const postMetrics = (postSplit.metrics || []).filter((m: any) => m.collective_yield != null);
+        const preMetrics = preSplit.metrics.filter(hasYield);
+        const postMetrics = postSplit.metrics.filter(hasYield);
         if (preMetrics.length > 0 && postMetrics.length > 0) {
-            const preAvg = preMetrics.slice(-3).reduce((s: number, m: any) => s + m.collective_yield, 0) / Math.min(preMetrics.length, 3);
-            const postAvg = postMetrics.slice(0, 3).reduce((s: number, m: any) => s + m.collective_yield, 0) / Math.min(postMetrics.length, 3);
+            const preAvg = preMetrics.slice(-3).reduce((sum, metric) => sum + metric.collective_yield, 0) / Math.min(preMetrics.length, 3);
+            const postAvg = postMetrics.slice(0, 3).reduce((sum, metric) => sum + metric.collective_yield, 0) / Math.min(postMetrics.length, 3);
             const impact = ((postAvg - preAvg) / preAvg) * 100;
             insights.push({
                 icon: <Calendar className="w-4 h-4" />,
@@ -193,33 +202,35 @@ function computeInsights(epochs: any[], crop: string): Insight[] {
 }
 
 /* ---------- Group featured examples by state ---------- */
-function groupByState(examples: SearchResult[]): Record<string, SearchResult[]> {
+function groupByState(
+    examples: LineageReconstructorSearchResult[]
+): Record<string, LineageReconstructorSearchResult[]> {
     return examples.reduce((acc, ex) => {
         if (!acc[ex.state]) acc[ex.state] = [];
         acc[ex.state].push(ex);
         return acc;
-    }, {} as Record<string, SearchResult[]>);
+    }, {} as Record<string, LineageReconstructorSearchResult[]>);
 }
 
 export default function ReconstructorDashboard() {
     const mapRef = useRef<MapRef>(null);
 
     const [searchQuery, setSearchQuery] = useState("");
-    const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+    const [searchResults, setSearchResults] = useState<LineageReconstructorSearchResult[]>([]);
     const [isSearching, setIsSearching] = useState(false);
     const [showResults, setShowResults] = useState(false);
 
     const [selectedCdk, setSelectedCdk] = useState("");
     const [selectedName, setSelectedName] = useState("");
     const [crop, setCrop] = useState("rice");
-    
-    const [epochs, setEpochs] = useState<any[]>([]);
+
+    const [epochs, setEpochs] = useState<LineageReconstructionEpoch[]>([]);
     const [activeEpochIndex, setActiveEpochIndex] = useState<number>(0);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
     const grouped = useMemo(() => groupByState(FEATURED_EXAMPLES), []);
-    const insights = useMemo(() => computeInsights(epochs, crop), [epochs, crop]);
+    const insights = useMemo(() => computeInsights(epochs), [epochs]);
 
     // Debounced search
     useEffect(() => {
@@ -228,7 +239,10 @@ export default function ReconstructorDashboard() {
             setIsSearching(true);
             try {
                 const res = await fetch(`${API_URL}/api/v1/reconstruct/search?q=${encodeURIComponent(searchQuery)}`);
-                if (res.ok) setSearchResults(await res.json());
+                if (res.ok) {
+                    const data: LineageReconstructorSearchResult[] = await res.json();
+                    setSearchResults(data);
+                }
             } catch { /* ignore */ } finally { setIsSearching(false); }
         }, 400);
         return () => clearTimeout(delay);
@@ -251,10 +265,10 @@ export default function ReconstructorDashboard() {
                 const errBody = await res.json().catch(() => null);
                 throw new Error(errBody?.detail || `Server ${res.status}`);
             }
-            const data = await res.json();
+            const data: LineageReconstructionResponse = await res.json();
             setEpochs(data.epochs || []); setActiveEpochIndex(0);
-        } catch (err: any) {
-            setError(err.message || "Failed to fetch");
+        } catch (err: unknown) {
+            setError(getErrorMessage(err));
         } finally { setLoading(false); }
     };
 

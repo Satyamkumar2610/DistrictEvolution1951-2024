@@ -1,11 +1,13 @@
 import React from 'react';
 
+import type { LineageReconstructionEpoch } from '@/app/services/api/types';
+
 export default function EpochTimeline({ 
     epochs, 
     activeEpochIndex, 
     onEpochChange 
 }: { 
-    epochs: any[], 
+    epochs: LineageReconstructionEpoch[], 
     activeEpochIndex: number, 
     onEpochChange: (index: number) => void 
 }) {

@@ -2,16 +2,66 @@
 
 import React, { useMemo } from "react";
 import dynamic from "next/dynamic";
+import type { PlotMouseEvent } from "plotly.js";
+
+import type { LineageReconstructionEpoch } from "@/app/services/api/types";
 
 // Dynamic import to avoid SSR issues with Plotly
 const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
+
+interface ChartTrace {
+    x: number[];
+    y: Array<number | null>;
+    type: "scatter";
+    mode: "lines";
+    name: string;
+    line: {
+        color: string;
+        width: number;
+        shape: "spline";
+    };
+    fill: "tozeroy" | "none";
+    fillcolor?: string;
+    hovertemplate: string[];
+    connectgaps: boolean;
+    showlegend: boolean;
+}
+
+interface ChartShape {
+    type: "line" | "rect";
+    x0: number;
+    x1: number;
+    y0: number;
+    y1: number;
+    yref: "paper";
+    line?: {
+        color?: string;
+        width: number;
+        dash?: "dot";
+    };
+    fillcolor?: string;
+    layer?: "below";
+}
+
+interface ChartAnnotation {
+    x: number;
+    y: number;
+    yref: "paper";
+    text: string;
+    showarrow: false;
+    font: {
+        size: number;
+        color: string;
+        family: string;
+    };
+}
 
 export default function YieldReconstructionChart({ 
     epochs, 
     activeEpochIndex,
     onEpochChange
 }: { 
-    epochs: any[],
+    epochs: LineageReconstructionEpoch[],
     activeEpochIndex: number,
     onEpochChange: (index: number) => void
 }) {
@@ -20,11 +70,11 @@ export default function YieldReconstructionChart({
             return { traces: [], shapes: [], annotations: [], yearToEpoch: {} as Record<number, number> };
         }
         const yearToEpochMap: Record<number, number> = {};
-        const splitShapes: any[] = [];
-        const splitAnnotations: any[] = [];
+        const splitShapes: ChartShape[] = [];
+        const splitAnnotations: ChartAnnotation[] = [];
 
         // Build one trace per epoch for distinct coloring
-        const epochTraces: any[] = [];
+        const epochTraces: ChartTrace[] = [];
 
         epochs.forEach((ep, idx) => {
             if (!ep.metrics) return;
@@ -33,14 +83,18 @@ export default function YieldReconstructionChart({
             const coverages: string[] = [];
             const productions: string[] = [];
 
-            ep.metrics.forEach((m: any) => {
-                years.push(m.year);
-                yields.push(m.collective_yield);
-                yearToEpochMap[m.year] = idx;
+            ep.metrics.forEach((metric) => {
+                years.push(metric.year);
+                yields.push(metric.collective_yield);
+                yearToEpochMap[metric.year] = idx;
 
-                const covPct = m.data_coverage != null ? `${(m.data_coverage * 100).toFixed(0)}%` : 'N/A';
+                const covPct = metric.data_coverage != null ? `${(metric.data_coverage * 100).toFixed(0)}%` : 'N/A';
                 coverages.push(covPct);
-                productions.push(m.collective_production ? `${m.collective_production.toLocaleString()} MT` : 'N/A');
+                productions.push(
+                    metric.collective_production != null
+                        ? `${metric.collective_production.toLocaleString()} MT`
+                        : 'N/A'
+                );
             });
 
             const isActive = idx === activeEpochIndex;
@@ -120,12 +174,18 @@ export default function YieldReconstructionChart({
         };
     }, [epochs, activeEpochIndex]);
 
-    const handleClick = (event: any) => {
-        if (event?.points?.[0]?.x) {
-            const yr = event.points[0].x;
-            const epochIdx = yearToEpoch[yr];
-            if (epochIdx !== undefined) onEpochChange(epochIdx);
-        }
+    const handleClick = (event: Readonly<PlotMouseEvent>) => {
+        const clickedYear = event.points?.[0]?.x;
+        const year =
+            typeof clickedYear === "number"
+                ? clickedYear
+                : typeof clickedYear === "string"
+                    ? Number(clickedYear)
+                    : NaN;
+        if (Number.isNaN(year)) return;
+
+        const epochIdx = yearToEpoch[year];
+        if (epochIdx !== undefined) onEpochChange(epochIdx);
     };
 
     if (traces.length === 0) return null;

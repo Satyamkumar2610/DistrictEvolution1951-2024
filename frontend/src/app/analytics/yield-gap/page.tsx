@@ -6,6 +6,13 @@ import { api } from '../../services/api';
 import { Activity, Target, TrendingUp, Maximize2, Minimize2, Info } from 'lucide-react';
 import ReactECharts from 'echarts-for-react';
 
+import type { YieldGapDistrictRanking } from '../../services/api';
+
+interface StateSelectOption {
+    value: string;
+    label: string;
+}
+
 export default function YieldGapPage() {
     const [selectedState, setSelectedState] = useState('');
     const [selectedCrop, setSelectedCrop] = useState('wheat');
@@ -16,10 +23,12 @@ export default function YieldGapPage() {
 
     // Queries
     const { data: summaryData } = useQuery({ queryKey: ['stateSummary'], queryFn: api.getSummary, staleTime: 3600000 });
-    const states = useMemo(() => {
+    const states = useMemo<StateSelectOption[]>(() => {
         if (!summaryData?.states) return [];
-        if (Array.isArray(summaryData.states)) return summaryData.states;
-        return Object.keys(summaryData.states).sort();
+        const values = Array.isArray(summaryData.states)
+            ? summaryData.states
+            : Object.keys(summaryData.states).sort();
+        return values.map((value) => ({ value, label: value }));
     }, [summaryData]);
 
     const { data: gapData, isLoading, isError } = useQuery({
@@ -42,8 +51,7 @@ export default function YieldGapPage() {
             xAxis: {
                 type: 'category',
                 boundaryGap: false,
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                data: gapData.convergence_timeline.map((t: any) => t.year)
+                data: gapData.convergence_timeline.map((point) => point.year)
             },
             yAxis: [
                 {
@@ -57,8 +65,7 @@ export default function YieldGapPage() {
                 {
                     name: '90th Percentile Frontier',
                     type: 'line',
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    data: gapData.convergence_timeline.map((t: any) => t.frontier_yield),
+                    data: gapData.convergence_timeline.map((point) => point.frontier_yield),
                     itemStyle: { color: '#8b5cf6' }, // Violet
                     lineStyle: { width: 3 },
                     smooth: true,
@@ -72,8 +79,7 @@ export default function YieldGapPage() {
                 {
                     name: 'State Average',
                     type: 'line',
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    data: gapData.convergence_timeline.map((t: any) => t.state_avg_yield),
+                    data: gapData.convergence_timeline.map((point) => point.state_avg_yield),
                     itemStyle: { color: '#10b981' }, // Emerald
                     lineStyle: { width: 3, type: 'dashed' },
                     smooth: true
@@ -81,8 +87,7 @@ export default function YieldGapPage() {
                 {
                     name: 'Average Gap',
                     type: 'bar',
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    data: gapData.convergence_timeline.map((t: any) => t.avg_gap),
+                    data: gapData.convergence_timeline.map((point) => point.avg_gap),
                     itemStyle: { color: '#f59e0b', opacity: 0.6 }, // Amber
                     barMaxWidth: 30
                 }
@@ -95,10 +100,8 @@ export default function YieldGapPage() {
         if (!hasData) return null;
         const ranks = gapData.district_rankings;
         const totalDistricts = ranks.length;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const closingCount = ranks.filter((r: any) => r.status === 'Closing').length;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const wideningCount = ranks.filter((r: any) => r.status === 'Widening').length;
+        const closingCount = ranks.filter((ranking) => ranking.status === 'Closing').length;
+        const wideningCount = ranks.filter((ranking) => ranking.status === 'Widening').length;
 
         const firstYear = gapData.convergence_timeline[0];
         const lastYear = gapData.convergence_timeline[gapData.convergence_timeline.length - 1];
@@ -137,7 +140,7 @@ export default function YieldGapPage() {
                         className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-indigo-500 outline-none"
                     >
                         <option value="">Select state...</option>
-                        {states.map((s) => <option key={s as string} value={s as string}>{s as string}</option>)}
+                        {states.map((state) => <option key={state.value} value={state.value}>{state.label}</option>)}
                     </select>
                 </div>
 
@@ -253,22 +256,21 @@ export default function YieldGapPage() {
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-slate-50">
-                                        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                                        {gapData.district_rankings.map((d: any) => (
-                                            <tr key={d.cdk} className="hover:bg-slate-50/80 transition-colors">
+                                        {gapData.district_rankings.map((district: YieldGapDistrictRanking) => (
+                                            <tr key={district.cdk} className="hover:bg-slate-50/80 transition-colors">
                                                 <td className="py-3 px-4">
-                                                    <div className="font-medium text-slate-800">{d.district_name}</div>
-                                                    <div className="text-[10px] text-slate-400">Yield: {Math.round(d.avg_yield)} kg/ha</div>
+                                                    <div className="font-medium text-slate-800">{district.district_name}</div>
+                                                    <div className="text-[10px] text-slate-400">Yield: {Math.round(district.avg_yield)} kg/ha</div>
                                                 </td>
                                                 <td className="py-3 px-4 text-right font-mono text-amber-600 font-bold">
-                                                    {Math.round(d.avg_gap)}
+                                                    {Math.round(district.avg_gap)}
                                                 </td>
                                                 <td className="py-3 px-4 text-center">
-                                                    {d.status === 'Closing' ? (
+                                                    {district.status === 'Closing' ? (
                                                         <div className="inline-flex items-center text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded" title="Gap is narrowing">
                                                             <Minimize2 size={12} />
                                                         </div>
-                                                    ) : d.status === 'Widening' ? (
+                                                    ) : district.status === 'Widening' ? (
                                                         <div className="inline-flex items-center text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded" title="Gap is widening">
                                                             <Maximize2 size={12} />
                                                         </div>

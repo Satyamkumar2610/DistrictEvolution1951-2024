@@ -22,9 +22,15 @@ from pydantic import BaseModel, Field  # type: ignore
 from app.api.deps import get_db  # type: ignore
 from app.core.geometry_resolver import GeometryResolver  # type: ignore
 from app.schemas.split_schemas import (  # type: ignore
+    BatchImportResponse,
+    DriftResponse,
+    EnrichmentResponse,
+    EnrichmentTriggerResponse,
+    GazetteParseResponse,
     GeoJsonUploadRequest,
     LineageNode,
     LineageResponse,
+    QualityOverviewResponse,
     SplitDiffRequest,
     SplitDiffResponse,
     TransferDetail,
@@ -316,6 +322,7 @@ async def get_lineage(
 
 @router.get(
     "/enrichment/{event_id}",
+    response_model=EnrichmentResponse,
     summary="Get enrichment data for a split event",
     description="Returns all enrichment metrics for the transfers in a split event.",
 )
@@ -391,6 +398,7 @@ async def get_enrichment(
 
 @router.post(
     "/enrichment/trigger",
+    response_model=EnrichmentTriggerResponse,
     summary="Trigger enrichment for a split event",
     description="Manually trigger enrichment workers for a previously computed split.",
 )
@@ -446,6 +454,7 @@ class GazetteParseRequest(BaseModel):
 
 @router.post(
     "/gazette/parse",
+    response_model=GazetteParseResponse,
     summary="Parse gazette/notification text for split events",
     description=(
         "Extracts district split events from gazette text using regex NLP. "
@@ -475,6 +484,7 @@ async def parse_gazette(
 
 @router.post(
     "/lineage/batch-import",
+    response_model=BatchImportResponse,
     summary="Batch import lineage from CSV files",
     description=(
         "Imports district lineage data from CSV files into split_events. "
@@ -505,6 +515,7 @@ async def batch_import_lineage(
 
 @router.get(
     "/drift/{district_cdk}",
+    response_model=DriftResponse,
     summary="Detect boundary drift for a district",
     description=(
         "Computes boundary drift metrics (Hausdorff distance, Jaccard index, "
@@ -569,6 +580,7 @@ async def get_drift(
 
 @router.get(
     "/quality/overview",
+    response_model=QualityOverviewResponse,
     summary="Data quality overview for the split analyzer",
     description=(
         "Returns aggregate quality metrics: geometry coverage, split event counts, "

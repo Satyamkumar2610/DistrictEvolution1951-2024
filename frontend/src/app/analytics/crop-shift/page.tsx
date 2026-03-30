@@ -6,7 +6,16 @@ import { api } from '../../services/api';
 import { Layers, AlertCircle, Info, Sparkles } from 'lucide-react';
 import ReactECharts from 'echarts-for-react';
 
+import type { CropShiftTimelinePoint, SplitDistrict } from '../../services/api';
+
 const STATE_COLORS = ['#6366f1', '#10b981', '#f59e0b', '#ec4899', '#06b6d4', '#8b5cf6', '#ef4444', '#14b8a6', '#f97316', '#64748b'];
+
+interface CropShiftTooltipParam {
+    name: string | number;
+    value: number;
+    color: string;
+    seriesName: string;
+}
 
 // Assign stable colors to specific crops so they look consistent across charts
 const getCropColor = (crop: string, index: number) => {
@@ -46,12 +55,14 @@ export default function CropShiftPage() {
     // We can extract all unique dists from Split Events (parents + children)
     const allDistricts = useMemo(() => {
         if (!districtsData) return [];
-        const distMap = new Map();
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        districtsData.forEach((event: any) => {
-            if (!distMap.has(event.parent_cdk)) distMap.set(event.parent_cdk, event.parent_district);
-            event.children_cdks.forEach((cId: string, i: number) => {
-                const cName = event.children_districts[i] || cId;
+        const distMap = new Map<string, string>();
+        districtsData.forEach((event: SplitDistrict) => {
+            if (event.parent_cdk && !distMap.has(event.parent_cdk)) {
+                distMap.set(event.parent_cdk, event.parent_district);
+            }
+            event.children_cdks.forEach((cId, i) => {
+                if (!cId) return;
+                const cName = event.children_districts[i] || event.children_names[i] || cId;
                 if (!distMap.has(cId)) distMap.set(cId, cName);
             });
         });
@@ -71,12 +82,12 @@ export default function CropShiftPage() {
     const chartOption = useMemo(() => {
         if (!hasData) return null;
 
-        const years = timeline.map(t => t.year);
+        const years = timeline.map((point) => point.year);
 
         // Find all unique crops that appear in any year's top 5
         const allUniqueCrops = new Set<string>();
-        timeline.forEach(t => {
-            Object.keys(t.crop_mix).forEach(c => allUniqueCrops.add(c));
+        timeline.forEach((point: CropShiftTimelinePoint) => {
+            Object.keys(point.crop_mix).forEach((crop) => allUniqueCrops.add(crop));
         });
         allUniqueCrops.delete('other'); // handle separately so it's always on top
         const cropList = Array.from(allUniqueCrops);
@@ -94,7 +105,7 @@ export default function CropShiftPage() {
             },
             showSymbol: false,
             // Extract the share (%) for this crop for every year.
-            data: timeline.map(t => parseFloat(((t.crop_mix[crop] || 0) * 100).toFixed(1))),
+            data: timeline.map((point) => parseFloat(((point.crop_mix[crop] || 0) * 100).toFixed(1))),
             color: getCropColor(crop, idx)
         }));
 
@@ -102,23 +113,19 @@ export default function CropShiftPage() {
             tooltip: {
                 trigger: 'axis',
                 axisPointer: { type: 'cross', label: { backgroundColor: '#6a7985' } },
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                formatter: function (params: any) {
+                formatter: function (params: CropShiftTooltipParam[]) {
                     let html = `<div class="font-bold text-slate-800 mb-1">${params[0].name} Crop Mix</div>`;
-                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                    let total = 0;
                     // Sort tooltip by largest share first
-                    const sortedParams = [...params].sort((a: any /* eslint-disable-line @typescript-eslint/no-explicit-any */, b: any /* eslint-disable-line @typescript-eslint/no-explicit-any */) => b.value - a.value);
-                    sortedParams.forEach((p: any /* eslint-disable-line @typescript-eslint/no-explicit-any */) => {
-                        if (p.value > 0) {
+                    const sortedParams = [...params].sort((left, right) => right.value - left.value);
+                    sortedParams.forEach((point) => {
+                        if (point.value > 0) {
                             html += `<div class="flex items-center justify-between gap-4 text-xs mt-1">
                                         <div class="flex items-center gap-1.5">
-                                            <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background-color:${p.color}"></span>
-                                            <span class="text-slate-600">${p.seriesName}</span>
+                                            <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background-color:${point.color}"></span>
+                                            <span class="text-slate-600">${point.seriesName}</span>
                                         </div>
-                                        <span class="font-bold font-mono text-slate-900">${p.value.toFixed(1)}%</span>
+                                        <span class="font-bold font-mono text-slate-900">${point.value.toFixed(1)}%</span>
                                     </div>`;
-                            total += p.value;
                         }
                     });
                     return html;
@@ -210,7 +217,7 @@ export default function CropShiftPage() {
                         className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-indigo-500 outline-none"
                     >
                         <option value="">Select state...</option>
-                        {states.map((s) => <option key={s as string} value={s as string}>{s as string}</option>)}
+                        {states.map((state) => <option key={state as string} value={state as string}>{state as string}</option>)}
                     </select>
                 </div>
 

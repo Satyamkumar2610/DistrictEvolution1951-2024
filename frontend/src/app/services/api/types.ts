@@ -1,3 +1,5 @@
+import type { Feature, Geometry } from "geojson";
+
 export type AnalysisMode = 'before_after' | 'entity_comparison';
 
 export interface SummaryStats {
@@ -248,6 +250,47 @@ export interface AnalyticsSummary {
     stats: Record<string, number>;
 }
 
+export interface CropShiftTimelinePoint {
+    year: number;
+    total_area: number;
+    shannon_index: number;
+    simpson_index: number;
+    dominant_crop: string;
+    dominant_share: number;
+    crop_mix: Record<string, number>;
+}
+
+export interface CropShiftResult {
+    cdk: string;
+    timeline: CropShiftTimelinePoint[];
+}
+
+export interface YieldGapTimelinePoint {
+    year: number;
+    frontier_yield: number;
+    state_avg_yield: number;
+    avg_gap: number;
+}
+
+export interface YieldGapDistrictRanking {
+    cdk: string;
+    district_name: string;
+    avg_gap: number;
+    latest_gap: number;
+    avg_yield: number;
+    gap_trend: number;
+    status: "Closing" | "Widening" | string;
+    rank: number;
+}
+
+export interface YieldGapResult {
+    state: string;
+    crop: string;
+    period: string;
+    convergence_timeline: YieldGapTimelinePoint[];
+    district_rankings: YieldGapDistrictRanking[];
+}
+
 export interface SimulationResult {
     result: {
         baseline_yield: number;
@@ -265,6 +308,68 @@ export interface PredictionFactor {
     contribution: number;
     direction: string;
     description: string;
+}
+
+export type LineageReconstructionDataQuality =
+    | "direct"
+    | "partial"
+    | "ancestor_fallback"
+    | "no_data";
+
+export type LineageReconstructionResolutionStatus =
+    | "direct"
+    | "ancestor"
+    | "missing";
+
+export interface LineageReconstructorSearchResult {
+    cdk: string;
+    display_name: string;
+    state: string;
+    era: number | null;
+    is_root: boolean;
+}
+
+export interface LineageReconstructionMetric {
+    year: number;
+    data_coverage: number;
+    collective_yield: number | null;
+    collective_production: number | null;
+    collective_area: number | null;
+    is_fallback: boolean;
+    data_quality: LineageReconstructionDataQuality;
+}
+
+export interface LineageReconstructionCdkResolution {
+    data_cdk: string | null;
+    status: LineageReconstructionResolutionStatus;
+}
+
+export type ReconstructedGeoJson = Feature<Geometry> | Geometry;
+
+export interface LineageReconstructionEpoch {
+    epoch_num: number;
+    year_start: number;
+    year_end: number | null;
+    event_label: string;
+    active_cdks: string[];
+    active_names: string[];
+    data_cdks: string[];
+    is_fallback: boolean;
+    data_quality: LineageReconstructionDataQuality;
+    confidence_score: number;
+    cdk_resolution: Record<string, LineageReconstructionCdkResolution>;
+    leaf_cdks: string[];
+    is_virtual: boolean;
+    reconstructed_geojson: ReconstructedGeoJson | null;
+    is_contiguous: boolean;
+    metrics: LineageReconstructionMetric[];
+}
+
+export interface LineageReconstructionResponse {
+    root_cdk: string;
+    root_name: string | null;
+    crop: string;
+    epochs: LineageReconstructionEpoch[];
 }
 
 export interface PredictionV2Data {

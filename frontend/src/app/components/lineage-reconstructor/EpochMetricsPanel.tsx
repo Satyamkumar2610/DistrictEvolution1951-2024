@@ -1,11 +1,13 @@
 import React from 'react';
 import { TrendingUp, TrendingDown, Minus, AlertTriangle, CheckCircle } from 'lucide-react';
 
+import type { LineageReconstructionEpoch } from '@/app/services/api/types';
+
 export default function EpochMetricsPanel({ 
     epoch, 
     crop 
 }: { 
-    epoch: any, 
+    epoch: LineageReconstructionEpoch | undefined, 
     crop: string 
 }) {
     if (!epoch) return null;

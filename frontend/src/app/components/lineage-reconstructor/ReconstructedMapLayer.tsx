@@ -1,16 +1,25 @@
 import React, { useEffect } from 'react';
+import type { Feature, Geometry } from 'geojson';
 import { Source, Layer, useMap } from 'react-map-gl/maplibre';
 import * as turf from '@turf/turf';
 
-export default function ReconstructedMapLayer({ epoch }: { epoch: any }) {
+import type { LineageReconstructionEpoch, ReconstructedGeoJson } from '@/app/services/api/types';
+
+function toFeature(geojson: ReconstructedGeoJson): Feature<Geometry> {
+    if (geojson.type === 'Feature') {
+        return geojson;
+    }
+
+    return turf.feature(geojson);
+}
+
+export default function ReconstructedMapLayer({ epoch }: { epoch: LineageReconstructionEpoch }) {
     const { current: map } = useMap();
 
     useEffect(() => {
         if (map && epoch?.reconstructed_geojson) {
             try {
-                const geom = epoch.reconstructed_geojson.type === 'Feature' 
-                    ? epoch.reconstructed_geojson 
-                    : turf.feature(epoch.reconstructed_geojson);
+                const geom = toFeature(epoch.reconstructed_geojson);
                 
                 const bbox = turf.bbox(geom);
                 map.fitBounds(
@@ -65,7 +74,7 @@ export default function ReconstructedMapLayer({ epoch }: { epoch: any }) {
                     "line-color": lineColor, 
                     "line-width": lineWidth,
                     "line-opacity": 0.8,
-                    ...(isVirtual ? { "line-dasharray": [4, 3] as any } : {}),
+                    ...(isVirtual ? { "line-dasharray": [4, 3] } : {}),
                 }} 
             />
             {/* Glow effect for boundaries */}
