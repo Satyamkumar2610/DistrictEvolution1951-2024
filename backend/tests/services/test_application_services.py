@@ -891,6 +891,29 @@ async def test_advanced_analytics_raises_not_found_for_missing_diversification_o
 
 
 @pytest.mark.asyncio
+async def test_advanced_analytics_wraps_crop_shift_timeline(mock_db):
+    service = AdvancedAnalyticsFacade(mock_db)
+    service.analytics = AsyncMock()
+    service.analytics.get_crop_shift = AsyncMock(
+        return_value=[
+            {
+                "year": 2020,
+                "total_area": 120.0,
+                "shannon_index": 1.1,
+                "simpson_index": 0.72,
+                "dominant_crop": "rice",
+                "dominant_share": 62.0,
+                "crop_mix": {"rice": 62.0, "wheat": 38.0},
+            }
+        ]
+    )
+
+    response = await service.get_crop_shift_response("BR_patna_1991")
+
+    assert response.timeline[0].dominant_crop == "rice"
+
+
+@pytest.mark.asyncio
 @pytest.mark.parametrize(
     ("volatility", "expected"),
     [
@@ -1520,16 +1543,22 @@ async def test_spatial_service_get_neighbors_and_cagr(mock_db):
                 {"year": 2018, "value": 100.0},
                 {"year": 2020, "value": 121.0},
             ],
+            [
+                {"year": 2020, "value": 0.0},
+                {"year": 2020, "value": 50.0},
+            ],
         ]
     )
 
     neighbors = await service.get_neighbors("BR_patna_1991")
     short_series_cagr = await service.get_cagr("BR_patna_1991", "rice", 2019, 2019)
     growth_cagr = await service.get_cagr("BR_patna_1991", "rice", 2018, 2020)
+    zero_cagr = await service.get_cagr("BR_patna_1991", "rice", 2020, 2020)
 
     assert neighbors == [{"neighbor_cdk": 1}]
     assert short_series_cagr == 0.0
     assert growth_cagr == pytest.approx(0.1)
+    assert zero_cagr == 0.0
 
 
 @pytest.mark.asyncio
