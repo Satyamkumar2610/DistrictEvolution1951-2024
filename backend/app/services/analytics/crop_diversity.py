@@ -42,7 +42,7 @@ class CropDiversityService(BaseAnalyticsService):
         Calculate Crop Diversification Index for a district-year.
         Uses Herfindahl-Hirschman Index (HHI) and Simpson's Diversity Index.
         """
-        rows = await self.db.fetch("""
+        rows = await self._fetch("""
             SELECT
                 SPLIT_PART(variable_name, '_', 1) as crop,
                 value as area
@@ -89,7 +89,7 @@ class CropDiversityService(BaseAnalyticsService):
         """
         Calculates the shifting mix of crops over a district's entire history.
         """
-        rows = await self.db.fetch("""
+        rows = await self._fetch("""
             SELECT
                 year,
                 SPLIT_PART(variable_name, '_', 1) as crop,
@@ -187,7 +187,7 @@ class CropDiversityService(BaseAnalyticsService):
                 WHERE district_lgd = ANY($1::float[])
                   AND year BETWEEN $2 AND $3
             """
-            row = await self.db.fetchrow(query, cdk_ints, start_yr, end_yr)
+            row = await self._fetchrow(query, cdk_ints, start_yr, end_yr)
 
             res = {}
             if row and row['total_area']:
@@ -207,11 +207,11 @@ class CropDiversityService(BaseAnalyticsService):
             if not cdk:
                 continue
             mix = await get_crop_mix([cdk], post_start, post_end)
-            name_row = await self.db.fetchrow("SELECT district_name FROM districts WHERE lgd_code::text = $1", str(cdk))
+            name_row = await self._fetchrow("SELECT district_name FROM districts WHERE lgd_code::text = $1", str(cdk))
             name = name_row['district_name'] if name_row else str(cdk)
             children_post_mix[name] = {"cdk": str(cdk), "mix": mix}
 
-        p_name_row = await self.db.fetchrow("SELECT district_name FROM districts WHERE lgd_code::text = $1", str(parent_cdk))
+        p_name_row = await self._fetchrow("SELECT district_name FROM districts WHERE lgd_code::text = $1", str(parent_cdk))
         parent_name = p_name_row['district_name'] if p_name_row else str(parent_cdk)
 
         divergence_scores = {}

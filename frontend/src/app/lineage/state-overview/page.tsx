@@ -35,7 +35,7 @@ export default function StatePage() {
         queryFn: () => api.getStatesList(),
     });
 
-    const { data: overview, isLoading } = useQuery({
+    const { data: overview, isLoading, isError } = useQuery({
         queryKey: ['state-overview', selectedState, selectedCrop, selectedYear],
         queryFn: () => api.getStateOverview(selectedState, selectedCrop, selectedYear),
         enabled: !!selectedState,
@@ -98,7 +98,15 @@ export default function StatePage() {
                 </div>
             )}
 
-            {overview && (
+            {isError && selectedState && !isLoading && (
+                <div className="text-center py-20 bg-white border border-rose-200 rounded-xl shadow-sm">
+                    <Layers className="mx-auto text-rose-300 mb-4" size={48} />
+                    <h3 className="text-lg font-bold text-slate-700">Failed to load state overview</h3>
+                    <p className="text-sm text-slate-500 mt-1">The backend did not return overview data for this state and crop selection.</p>
+                </div>
+            )}
+
+            {overview && !isError && (
                 <div className="space-y-8 animate-in">
                     {/* Stats Cards */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

@@ -109,7 +109,7 @@ class LineageRepository(BaseRepository):
     async def get_tracking_district(self, cdk: str) -> TrackingDistrict | None:
         """Get district metadata for provenance tracking."""
         query = """
-            SELECT lgd_code::text as cdk, district_name, state_name, start_year, end_year
+            SELECT lgd_code::text as cdk, district_name, state_name, NULL::int as start_year, NULL::int as end_year
             FROM districts
             WHERE lgd_code::text = $1
         """
@@ -147,15 +147,15 @@ class LineageRepository(BaseRepository):
             SELECT
                 d.lgd_code::text as cdk,
                 d.district_name,
-                d.start_year,
-                d.end_year,
+                NULL::int as start_year,
+                NULL::int as end_year,
                 COUNT(DISTINCT am.year) as years_with_data,
-                COUNT(am.id) as record_count,
+                COUNT(am.year) as record_count,
                 'original' as lineage_status
             FROM districts d
             LEFT JOIN agri_metrics am ON d.lgd_code = am.district_lgd
             WHERE d.state_name = $1
-            GROUP BY d.lgd_code, d.district_name, d.start_year, d.end_year
+            GROUP BY d.lgd_code, d.district_name
             ORDER BY d.district_name
         """
         rows = await self.fetch_all(query, state)

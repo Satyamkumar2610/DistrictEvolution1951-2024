@@ -487,27 +487,41 @@ export interface DistrictReport {
 }
 
 export interface AnomalyAnomaly {
-    type: string;
+    anomaly_type: string;
     severity: string;
     description: string;
+    year?: number | null;
+    variable?: string | null;
+    value?: number | null;
+    expected_range?: unknown;
     details?: Record<string, unknown>;
 }
 
 export interface DistrictAnomaliesData {
+    cdk?: string;
+    total_anomalies?: number;
+    anomalies_by_type?: Record<string, number>;
+    critical_count?: number;
+    high_count?: number;
     risk_alert?: {
+        cdk?: string;
         district_name: string;
         risk_level: string;
         risk_score: number;
         factors: string[];
+        recommendation?: string;
     };
     anomalies: AnomalyAnomaly[];
+    scan_timestamp?: string;
 }
 
 export interface StateAnomaliesData {
+    state: string;
     districts_scanned: number;
-    total_anomalies: number;
-    high_risk_count: number;
-    districts: { cdk: string; district_name: string; anomaly_count: number; risk_score: number; risk_level: string }[];
+    total_critical_anomalies: number;
+    total_high_anomalies: number;
+    high_risk_districts: { cdk: string; district_name: string; total_anomalies: number; critical: number; high: number; risk_score: number; risk_level: string }[];
+    all_districts: { cdk: string; district_name: string; total_anomalies: number; critical: number; high: number; risk_score: number; risk_level: string }[];
 }
 
 export type AnyApiResponse = 

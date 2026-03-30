@@ -17,8 +17,8 @@ class SearchRepository(BaseRepository):
                 lgd_code::text as cdk,
                 district_name as name,
                 state_name as state,
-                start_year,
-                end_year,
+                NULL::int as start_year,
+                NULL::int as end_year,
                 'district' as result_type,
                 CASE WHEN district_name ILIKE $2 THEN 0 ELSE 1 END as sort_order
             FROM districts

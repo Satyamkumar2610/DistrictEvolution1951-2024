@@ -91,11 +91,18 @@ class DistrictRepository(BaseRepository):
         """Get normalized district/state to LGD mapping for name resolution fallbacks."""
         rows = await self.fetch_all(
             """
-            SELECT lgd_code, LOWER(district_name) as dn, LOWER(state_name) as sn
+            SELECT lgd_code::text as cdk, LOWER(district_name) as dn, LOWER(state_name) as sn
             FROM districts
             """
         )
-        return {(row["dn"], row["sn"]): row["lgd_code"] for row in rows}
+
+        lookup: dict[tuple[str, str], int] = {}
+        for row in rows:
+            cdk = str(row["cdk"])
+            if cdk.isdigit():
+                lookup[(row["dn"], row["sn"])] = int(cdk)
+
+        return lookup
 
     @cached(ttl=CacheTTL.STATES, prefix="states:all")
     async def get_states(self) -> list[str]:

@@ -10,7 +10,7 @@ class StateRepository(BaseRepository):
 
     async def state_exists(self, state_name: str) -> bool:
         """Return whether the state exists in the districts table."""
-        count = await self.conn.fetchval(
+        count = await self.fetch_val(
             "SELECT COUNT(*) FROM districts WHERE state_name = $1",
             state_name,
         )
@@ -18,7 +18,7 @@ class StateRepository(BaseRepository):
 
     async def get_total_districts(self, state_name: str) -> int:
         """Return total districts for a state."""
-        count = await self.conn.fetchval(
+        count = await self.fetch_val(
             "SELECT COUNT(*) FROM districts WHERE state_name = $1",
             state_name,
         )
@@ -42,7 +42,7 @@ class StateRepository(BaseRepository):
 
     async def get_avg_yield(self, state_name: str, yield_var: str, year: int) -> float | None:
         """Return average yield for a state/crop/year."""
-        value = await self.conn.fetchval(
+        value = await self.fetch_val(
             """
             SELECT ROUND(AVG(m.value)::numeric, 2)
             FROM agri_metrics m
@@ -109,7 +109,7 @@ class StateRepository(BaseRepository):
 
     async def count_districts_with_data(self, state_name: str, yield_var: str, year: int) -> int:
         """Return number of districts with non-zero yield data for the state/crop/year."""
-        count = await self.conn.fetchval(
+        count = await self.fetch_val(
             """
             SELECT COUNT(DISTINCT d.lgd_code)
             FROM agri_metrics m

@@ -10,6 +10,7 @@ from fastapi import APIRouter, Depends, Query, Request
 
 from app.analytics import get_advanced_analyzer
 from app.api.deps import get_db
+from app.db_compat import fetch, fetchrow, fetchval
 from app.exceptions import NotFoundError, ValidationError
 from app.schemas.analysis import (
     DistrictRiskProfileResponse,
@@ -151,7 +152,7 @@ async def get_crop_diversification(
           AND (m.variable_name LIKE '%_area' OR m.variable_name LIKE '%_area_%')
           AND m.value IS NOT NULL AND m.value > 0
     """
-    rows = await db.fetch(query, state, year)
+    rows = await fetch(db, query, state, year)
 
     if not rows:
         raise NotFoundError(
@@ -197,7 +198,7 @@ async def get_yield_efficiency(
 
     # Check if base variable exists for this district/year
     check_query = "SELECT 1 FROM agri_metrics WHERE district_lgd::text=$1 AND variable_name=$2 AND year=$3"
-    exists = await db.fetchval(check_query, cdk, variable, year)
+    exists = await fetchval(db, check_query, cdk, variable, year)
 
     if not exists:
         # Fallback to seasonal
@@ -217,7 +218,7 @@ async def get_yield_efficiency(
         JOIN districts d ON m.district_lgd = d.lgd_code
         WHERE m.district_lgd::text = $1 AND m.variable_name = $2 AND m.year = $3
     """
-    district_row = await db.fetchrow(district_query, cdk, variable, year)
+    district_row = await fetchrow(db, district_query, cdk, variable, year)
 
     if not district_row:
         raise NotFoundError(
@@ -235,7 +236,7 @@ async def get_yield_efficiency(
         WHERE d.state_name = $1 AND m.variable_name = $2 AND m.year = $3
         AND m.value IS NOT NULL AND m.value > 0
     """
-    state_rows = await db.fetch(state_query, state_name, variable, year)
+    state_rows = await fetch(db, state_query, state_name, variable, year)
     state_yields = [float(r["yield_val"]) for r in state_rows]
 
     # Get historical yields for this district (last 10 years)
@@ -247,7 +248,7 @@ async def get_yield_efficiency(
         AND value IS NOT NULL AND value > 0
         ORDER BY year
     """
-    history_rows = await db.fetch(history_query, cdk, variable, year)
+    history_rows = await fetch(db, history_query, cdk, variable, year)
     historical_yields = [float(r["yield_val"]) for r in history_rows]
 
     analyzer = get_advanced_analyzer()
@@ -298,7 +299,7 @@ async def get_risk_profile(
 
     # Check if base variable exists
     check_query = "SELECT 1 FROM agri_metrics WHERE district_lgd::text=$1 AND variable_name=$2 LIMIT 1"
-    exists = await db.fetchval(check_query, cdk, variable)
+    exists = await fetchval(db, check_query, cdk, variable)
 
     if not exists:
         season_map = {
@@ -317,7 +318,7 @@ async def get_risk_profile(
         AND value IS NOT NULL AND value > 0
         ORDER BY year
     """
-    rows = await db.fetch(query, cdk, variable)
+    rows = await fetch(db, query, cdk, variable)
 
     if not rows or len(rows) < 3:
         raise ValidationError(

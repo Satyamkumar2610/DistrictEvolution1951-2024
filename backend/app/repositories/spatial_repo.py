@@ -4,6 +4,8 @@ Spatial repository: query support for spatial analytics and lineage workflows.
 
 from typing import Any
 
+import asyncpg
+
 from app.repositories.base import BaseRepository
 
 
@@ -12,7 +14,7 @@ class SpatialRepository(BaseRepository):
 
     async def district_exists(self, cdk: str) -> bool:
         """Check whether a district exists by LGD code."""
-        exists = await self.conn.fetchval(
+        exists = await self.fetch_val(
             "SELECT lgd_code FROM districts WHERE lgd_code::text = $1",
             cdk,
         )
@@ -32,29 +34,44 @@ class SpatialRepository(BaseRepository):
 
     async def get_neighbors(self, cdk: str) -> list[dict[str, Any]]:
         """Find spatially adjacent neighboring districts using PostGIS."""
-        try:
-            lgd_val = float(cdk)
-        except ValueError:
-            return []
-
-        rows = await self.fetch_all(
-            """
+        query = """
             WITH target AS (
                 SELECT geometry, lgd_code, "DISTRICT" as district_name, "ST_NM" as state_name
                 FROM districts_geo
-                WHERE lgd_code = $1
+                WHERE lgd_code::text = $1
             )
             SELECT
-                n.lgd_code as neighbor_cdk,
+                n.lgd_code::text as neighbor_cdk,
                 n."DISTRICT" as neighbor_name,
                 n."ST_NM" as neighbor_state
             FROM districts_geo n
             JOIN target t ON ST_Touches(t.geometry, n.geometry)
-            WHERE n.lgd_code != $1
+            WHERE n.lgd_code::text != $1
             ORDER BY n."DISTRICT"
-            """,
-            lgd_val,
-        )
+        """
+
+        try:
+            rows = await self.fetch_all(query, cdk)
+        except asyncpg.UndefinedColumnError:
+            rows = await self.fetch_all(
+                """
+                WITH target AS (
+                    SELECT geometry, cdk, "DISTRICT" as district_name, "ST_NM" as state_name
+                    FROM districts_geo
+                    WHERE cdk = $1
+                )
+                SELECT
+                    n.cdk as neighbor_cdk,
+                    n."DISTRICT" as neighbor_name,
+                    n."ST_NM" as neighbor_state
+                FROM districts_geo n
+                JOIN target t ON ST_Touches(t.geometry, n.geometry)
+                WHERE n.cdk != $1
+                ORDER BY n."DISTRICT"
+                """,
+                cdk,
+            )
+
         return [dict(row) for row in rows]
 
     async def get_crop_yield_series(
@@ -103,7 +120,7 @@ class SpatialRepository(BaseRepository):
 
     async def get_district_name(self, district_id: str) -> str | None:
         """Get district name for a district LGD code."""
-        name = await self.conn.fetchval(
+        name = await self.fetch_val(
             "SELECT district_name FROM districts WHERE lgd_code::text = $1 LIMIT 1",
             district_id,
         )

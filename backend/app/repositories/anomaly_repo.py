@@ -10,7 +10,7 @@ class AnomalyRepository(BaseRepository):
 
     async def district_exists(self, cdk: str) -> bool:
         """Check whether a district exists by LGD code."""
-        exists = await self.conn.fetchval(
+        exists = await self.fetch_val(
             "SELECT 1 FROM districts WHERE lgd_code::text = $1",
             cdk,
         )
@@ -21,7 +21,6 @@ class AnomalyRepository(BaseRepository):
         query = """
             SELECT lgd_code::text as cdk, state_name, district_name
             FROM districts
-            WHERE end_year IS NULL
             ORDER BY RANDOM()
             LIMIT $1
         """

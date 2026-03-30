@@ -114,13 +114,7 @@ class RedisCache:
     async def set(self, key: str, value: Any, ttl: int | None = None) -> None:
         """Set a value in Redis with TTL."""
         client = await self._get_client()
-        # Handle Pydantic models
-        if hasattr(value, "model_dump"):
-            value = value.model_dump()
-        elif hasattr(value, "dict"):
-            value = value.dict()
-
-        serialized = json.dumps(value, default=str)
+        serialized = json.dumps(_normalize_cache_value(value), default=str)
         await client.set(f"iascap:{key}", serialized, ex=(ttl or self._default_ttl))
 
     async def delete(self, key: str) -> bool:

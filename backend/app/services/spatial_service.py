@@ -79,7 +79,7 @@ class SpatialService:
 
         neighbor_results = []
         for n in neighbors:
-            n_cdk = str(int(n["neighbor_cdk"]))
+            n_cdk = str(n["neighbor_cdk"])
             n_cagr = await self.get_cagr(n_cdk, crop, start_year, end_year)
             neighbor_results.append({
                 "cdk": n_cdk,

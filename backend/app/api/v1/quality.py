@@ -8,6 +8,7 @@ from fastapi import APIRouter, Depends
 
 from app.analytics.data_quality import DataQualityScorer, get_state_quality_summary
 from app.database import get_db
+from app.db_compat import fetchval
 from app.exceptions import NotFoundError
 from app.schemas.quality import DataQualityDistrictResponse, StateQualitySummaryResponse
 
@@ -25,7 +26,7 @@ async def get_district_quality(
     Returns completeness, consistency, timeliness, and accuracy scores.
     """
     # Verify district exists
-    exists = await db.fetchval("SELECT 1 FROM districts WHERE lgd_code::text = $1", cdk)
+    exists = await fetchval(db, "SELECT 1 FROM districts WHERE lgd_code::text = $1", cdk)
     if not exists:
         raise NotFoundError("District", cdk)
 

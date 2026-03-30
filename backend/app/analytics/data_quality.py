@@ -9,6 +9,8 @@ from typing import Any
 
 import asyncpg
 
+from app.db_compat import fetch, fetchval
+
 
 class QualityLevel(StrEnum):
     """Data quality classification."""
@@ -118,7 +120,7 @@ class DataQualityScorer:
 
     async def _check_completeness(self, cdk: str) -> float:
         """Check % of years with data."""
-        result = await self.db.fetchval("""
+        result = await fetchval(self.db, """
             SELECT COUNT(DISTINCT year)
             FROM agri_metrics
             WHERE district_lgd::text = $1 AND year >= $2 AND year <= $3
@@ -133,7 +135,7 @@ class DataQualityScorer:
         E.g., production should roughly equal area * yield
         """
         # Check rice metrics as example
-        result = await self.db.fetch("""
+        result = await fetch(self.db, """
             SELECT year, variable_name, value
             FROM agri_metrics
             WHERE district_lgd::text = $1
@@ -177,7 +179,7 @@ class DataQualityScorer:
 
     async def _check_timeliness(self, cdk: str) -> float:
         """Check how recent the data is."""
-        result = await self.db.fetchval("""
+        result = await fetchval(self.db, """
             SELECT MAX(year)
             FROM agri_metrics
             WHERE district_lgd::text = $1
@@ -195,7 +197,7 @@ class DataQualityScorer:
         Returns 1.0 if no outliers, decreasing with more outliers.
         """
         # Get yield values
-        result = await self.db.fetch("""
+        result = await fetch(self.db, """
             SELECT value
             FROM agri_metrics
             WHERE district_lgd::text = $1 AND variable_name LIKE '%_yield' AND value > 0
@@ -226,7 +228,7 @@ async def get_state_quality_summary(
 ) -> dict[str, Any]:
     """Get aggregated quality metrics for a state."""
     # Get all CDKs in state
-    cdks = await db.fetch("""
+    cdks = await fetch(db, """
         SELECT lgd_code::text as cdk FROM districts WHERE state_name = $1
     """, state)
 

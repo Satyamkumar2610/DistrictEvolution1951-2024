@@ -28,18 +28,22 @@ export default function RiskMonitorPage() {
     });
 
     // State anomaly scan
-    const { data: stateAnomalies, isLoading: scanningState } = useQuery({
+    const { data: stateAnomalies, isLoading: scanningState, isError: stateScanError } = useQuery({
         queryKey: ['state-anomalies', selectedState],
         queryFn: () => api.getStateAnomalies(selectedState),
         enabled: !!selectedState,
     });
 
     // Individual district drill-down
-    const { data: districtAnomalies, isLoading: scanningDistrict } = useQuery({
+    const { data: districtAnomalies, isLoading: scanningDistrict, isError: districtScanError } = useQuery({
         queryKey: ['district-anomalies', selectedCdk],
         queryFn: () => api.getDistrictAnomalies(selectedCdk),
         enabled: !!selectedCdk,
     });
+
+    const scannerTotalAnomalies =
+        (stateAnomalies?.total_critical_anomalies || 0) +
+        (stateAnomalies?.total_high_anomalies || 0);
 
     return (
         <main className="page-container">
@@ -137,7 +141,13 @@ export default function RiskMonitorPage() {
                             </div>
                         )}
 
-                        {stateAnomalies && !scanningState && (
+                        {stateScanError && !scanningState && (
+                            <div className="py-4 text-sm text-rose-600 font-medium">
+                                Failed to scan {selectedState}. Please retry.
+                            </div>
+                        )}
+
+                        {stateAnomalies && !scanningState && !stateScanError && (
                             <div className="space-y-3">
                                 {/* Summary stats */}
                                 <div className="grid grid-cols-3 gap-3">
@@ -147,16 +157,16 @@ export default function RiskMonitorPage() {
                                     </div>
                                     <div className="stat-card text-center">
                                         <div className="text-xs text-slate-500">Total Anomalies</div>
-                                        <div className="text-lg font-bold text-amber-600">{stateAnomalies.total_anomalies}</div>
+                                        <div className="text-lg font-bold text-amber-600">{scannerTotalAnomalies}</div>
                                     </div>
                                     <div className="stat-card text-center">
                                         <div className="text-xs text-slate-500">High Risk</div>
-                                        <div className="text-lg font-bold text-red-600">{stateAnomalies.high_risk_count || 0}</div>
+                                        <div className="text-lg font-bold text-red-600">{stateAnomalies.high_risk_districts.length}</div>
                                     </div>
                                 </div>
 
                                 {/* District results */}
-                                {stateAnomalies.districts?.map((d: { cdk: string; district_name: string; anomaly_count: number; risk_score: number; risk_level: string }, i: number) => (
+                                {stateAnomalies.all_districts.map((d, i: number) => (
                                     <button
                                         key={i}
                                         onClick={() => setSelectedCdk(d.cdk)}
@@ -165,7 +175,7 @@ export default function RiskMonitorPage() {
                                         <div className="flex items-center gap-3">
                                             <Activity size={14} className="text-slate-600" />
                                             <span className="text-sm font-medium text-slate-800">{d.district_name || d.cdk}</span>
-                                            <span className="text-xs text-slate-500">{d.anomaly_count} anomalies</span>
+                                            <span className="text-xs text-slate-500">{d.total_anomalies} anomalies</span>
                                         </div>
                                         <div className="flex items-center gap-2">
                                             <RiskBadge level={d.risk_level || 'low'} />
@@ -192,7 +202,13 @@ export default function RiskMonitorPage() {
                                 </div>
                             )}
 
-                            {districtAnomalies && !scanningDistrict && (
+                            {districtScanError && !scanningDistrict && (
+                                <div className="py-4 text-sm text-rose-600 font-medium">
+                                    Failed to load the district anomaly report.
+                                </div>
+                            )}
+
+                            {districtAnomalies && !scanningDistrict && !districtScanError && (
                                 <div className="space-y-4">
                                     {/* Risk Alert */}
                                     {districtAnomalies.risk_alert && (
@@ -222,11 +238,11 @@ export default function RiskMonitorPage() {
                                     )}
 
                                     {/* Anomaly list */}
-                                    {districtAnomalies.anomalies?.map((a: { type: string; severity: string; description: string; details?: Record<string, unknown> }, i: number) => (
+                                    {districtAnomalies.anomalies?.map((a, i: number) => (
                                         <div key={i} className="p-3 rounded-lg bg-white shadow-sm border border-slate-200">
                                             <div className="flex items-center justify-between mb-1">
                                                 <span className="text-sm font-medium text-slate-800 capitalize">
-                                                    {a.type?.replace(/_/g, ' ')}
+                                                    {a.anomaly_type?.replace(/_/g, ' ')}
                                                 </span>
                                                 <span className={`text-xs font-medium ${a.severity === 'high' ? 'text-red-600' :
                                                     a.severity === 'medium' ? 'text-amber-600' : 'text-slate-500'

@@ -10,6 +10,8 @@ from typing import Any
 
 import asyncpg
 
+from app.db_compat import fetch, fetchrow, fetchval
+
 
 class AnomalyType(StrEnum):
     """Types of anomalies detected."""
@@ -150,7 +152,7 @@ class AnomalyDetector:
         anomalies: list[Anomaly] = []
 
         # Get district's state
-        state = await self.db.fetchval("""
+        state = await fetchval(self.db, """
             SELECT state_name FROM districts WHERE lgd_code::text = $1
         """, cdk)
 
@@ -158,7 +160,7 @@ class AnomalyDetector:
             return anomalies
 
         # Get state-level statistics for yield variables
-        state_stats = await self.db.fetch("""
+        state_stats = await fetch(self.db, """
             SELECT
                 am.variable_name,
                 AVG(am.value) as mean_val,
@@ -176,7 +178,7 @@ class AnomalyDetector:
                      for row in state_stats}
 
         # Check district values against state stats
-        district_yields = await self.db.fetch("""
+        district_yields = await fetch(self.db, """
             SELECT year, variable_name, value
             FROM agri_metrics
             WHERE district_lgd::text = $1 AND variable_name LIKE '%_yield' AND value > 0
@@ -218,7 +220,7 @@ class AnomalyDetector:
         anomalies = []
 
         # Get yield time series
-        yields = await self.db.fetch("""
+        yields = await fetch(self.db, """
             SELECT year, variable_name, value
             FROM agri_metrics
             WHERE district_lgd::text = $1 AND variable_name LIKE '%_yield' AND value > 0
@@ -279,7 +281,7 @@ class AnomalyDetector:
         anomalies: list[Anomaly] = []
 
         # Get years with data
-        result = await self.db.fetch("""
+        result = await fetch(self.db, """
             SELECT DISTINCT year FROM agri_metrics
             WHERE district_lgd::text = $1
             ORDER BY year
@@ -339,7 +341,7 @@ class AnomalyDetector:
         anomalies = []
 
         # Get all crop metrics
-        metrics = await self.db.fetch("""
+        metrics = await fetch(self.db, """
             SELECT year, variable_name, value
             FROM agri_metrics
             WHERE district_lgd::text = $1 AND value > 0
@@ -404,7 +406,7 @@ class AnomalyDetector:
         anomalies = []
 
         # Check for negative values (should never happen)
-        negatives = await self.db.fetch("""
+        negatives = await fetch(self.db, """
             SELECT year, variable_name, value
             FROM agri_metrics
             WHERE district_lgd::text = $1 AND value < 0
@@ -436,7 +438,7 @@ class AnomalyDetector:
             return None
 
         # Get district name
-        district_info = await self.db.fetchrow("""
+        district_info = await fetchrow(self.db, """
             SELECT district_name FROM districts WHERE lgd_code::text = $1
         """, cdk)
 
@@ -510,7 +512,7 @@ async def scan_state_anomalies(
 ) -> dict[str, Any]:
     """Scan all districts in a state for anomalies."""
     # Get districts in state
-    districts = await db.fetch("""
+    districts = await fetch(db, """
         SELECT lgd_code::text as cdk, district_name FROM districts
         WHERE state_name = $1
         LIMIT $2

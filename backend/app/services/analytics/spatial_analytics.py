@@ -107,12 +107,12 @@ class SpatialAnalyticsService(BaseAnalyticsService):
         year: int
     ) -> dict[str, Any]:
         """Compare Kharif vs Rabi season performance."""
-        kharif = await self.db.fetchrow("""
+        kharif = await self._fetchrow("""
             SELECT value FROM agri_metrics
             WHERE district_lgd::text = $1 AND year = $2 AND variable_name LIKE $3
         """, cdk, year, f"{crop}_yield_kharif")
 
-        rabi = await self.db.fetchrow("""
+        rabi = await self._fetchrow("""
             SELECT value FROM agri_metrics
             WHERE district_lgd::text = $1 AND year = $2 AND variable_name LIKE $3
         """, cdk, year, f"{crop}_yield_rabi")

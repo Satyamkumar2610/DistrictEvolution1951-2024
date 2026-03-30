@@ -328,6 +328,48 @@ export default function LineagePage() {
                     </div>
                 </div>
             )}
+
+            {selectedState && history && viewMode === 'table' && (
+                <div className="bg-white border border-slate-200 shadow-sm rounded-xl overflow-hidden flex-grow">
+                    <div className="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
+                        <div>
+                            <h2 className="text-sm font-bold text-slate-900">Raw Split Logs</h2>
+                            <p className="text-xs text-slate-500 mt-1">
+                                {history.length} split record{history.length === 1 ? '' : 's'} for {selectedState}
+                            </p>
+                        </div>
+                    </div>
+
+                    {history.length === 0 ? (
+                        <div className="p-10 text-center text-slate-500 text-sm">
+                            No split records were returned for {selectedState}.
+                        </div>
+                    ) : (
+                        <div className="overflow-auto h-full max-h-[520px]">
+                            <table className="w-full text-left text-sm">
+                                <thead className="sticky top-0 bg-slate-50 border-b border-slate-200 z-10">
+                                    <tr className="text-xs uppercase tracking-wide text-slate-500">
+                                        <th className="px-4 py-3 font-semibold">Year</th>
+                                        <th className="px-4 py-3 font-semibold">Parent</th>
+                                        <th className="px-4 py-3 font-semibold">Child</th>
+                                        <th className="px-4 py-3 font-semibold">Source</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-100">
+                                    {history.map((event: SplitEvent) => (
+                                        <tr key={`${event.parent_district}-${event.child_district}-${event.split_year}`} className="hover:bg-slate-50">
+                                            <td className="px-4 py-3 text-slate-700 font-medium">{event.split_year}</td>
+                                            <td className="px-4 py-3 text-slate-800">{event.parent_district}</td>
+                                            <td className="px-4 py-3 text-slate-800">{event.child_district}</td>
+                                            <td className="px-4 py-3 text-slate-500">{event.source}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
+                </div>
+            )}
         </main>
     );
 }

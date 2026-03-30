@@ -72,4 +72,14 @@ class SplitRepository(BaseRepository):
             """,
             lgds,
         )
-        return {row["district_lgd"] for row in rows}
+
+        resolved: set[int] = set()
+        for row in rows:
+            value = row["district_lgd"] if "district_lgd" in row else row["cdk"]
+            if value is None:
+                continue
+            value_str = str(value)
+            if value_str.isdigit():
+                resolved.add(int(value_str))
+
+        return resolved

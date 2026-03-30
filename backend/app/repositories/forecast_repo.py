@@ -52,7 +52,7 @@ class ForecastRepository(BaseRepository):
             AND m.value > 0
             AND m.year >= (SELECT MAX(year) - 5 FROM agri_metrics)
         """
-        avg = await self.conn.fetchval(query, state, f"{crop}_yield")
+        avg = await self.fetch_val(query, state, f"{crop}_yield")
         return float(avg) if avg is not None else None
 
     async def get_historical_yields(self, cdk: str, crop: str) -> dict[int, float]:

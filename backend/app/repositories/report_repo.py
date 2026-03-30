@@ -43,7 +43,7 @@ class ReportRepository(BaseRepository):
 
     async def get_state_average_yield(self, state_name: str, crop: str) -> float | None:
         """Get state-wide average yield for the crop."""
-        value = await self.conn.fetchval(
+        value = await self.fetch_val(
             """
             SELECT ROUND(AVG(m.value)::numeric, 2)
             FROM agri_metrics m
