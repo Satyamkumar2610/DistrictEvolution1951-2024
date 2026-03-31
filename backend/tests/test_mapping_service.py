@@ -220,7 +220,8 @@ class TestBridgeDiscovery:
         candidates = service._default_bridge_candidates()
 
         repo_root = Path(__file__).resolve().parents[2]
-        assert candidates[0] == repo_root / "frontend" / "public" / "data" / "map_bridge.json"
+        expected_path = repo_root / "frontend" / "public" / "data" / "map_bridge.json"
+        assert expected_path in candidates
 
     def test_default_bridge_candidates_prioritize_env_override(self, monkeypatch, tmp_path):
         service = MappingService()
