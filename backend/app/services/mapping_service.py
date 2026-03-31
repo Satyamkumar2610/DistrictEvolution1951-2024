@@ -96,7 +96,6 @@ class MappingService:
     def _default_bridge_candidates() -> list[Path]:
         """Return candidate locations for the map bridge in local and deployed layouts."""
         current_file = Path(__file__).resolve()
-        app_dir = current_file.parents[1]      # /app/app
         backend_dir = current_file.parents[2]  # /app
         repo_root = current_file.parents[3]    # fallback to /
 
