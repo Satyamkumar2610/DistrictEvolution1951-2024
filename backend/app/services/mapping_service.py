@@ -95,7 +95,11 @@ class MappingService:
     @staticmethod
     def _default_bridge_candidates() -> list[Path]:
         """Return candidate locations for the map bridge in local and deployed layouts."""
-        repo_root = Path(__file__).resolve().parents[3]
+        current_file = Path(__file__).resolve()
+        app_dir = current_file.parents[1]      # /app/app
+        backend_dir = current_file.parents[2]  # /app
+        repo_root = current_file.parents[3]    # fallback to /
+
         candidates: list[Path] = []
 
         env_path = os.getenv("MAP_BRIDGE_PATH")
@@ -103,8 +107,10 @@ class MappingService:
             candidates.append(Path(env_path))
 
         candidates.extend([
-            repo_root / "frontend" / "public" / "data" / "map_bridge.json",
-            repo_root / "backend" / "data" / "map_bridge.json",
+            Path("/app/data/map_bridge.json"),                   # Docker standard layout
+            backend_dir / "data" / "map_bridge.json",            # Relative to backend root
+            repo_root / "frontend" / "public" / "data" / "map_bridge.json", # Repo layout
+            repo_root / "backend" / "data" / "map_bridge.json",  # Repo layout fallback
         ])
 
         return candidates
