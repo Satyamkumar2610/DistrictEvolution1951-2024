@@ -81,6 +81,11 @@ export default function SplitReportPage() {
         staleTime: 3600000,
     });
 
+    const filteredUnmappedSplits = useMemo(() => {
+        if (!unmappedSplits || !selectedState) return [];
+        return unmappedSplits.filter(s => s.state === selectedState);
+    }, [unmappedSplits, selectedState]);
+
     const { data: splitEvents, isLoading: loadingEvents } = useQuery({
         queryKey: ['splitEvents', selectedState],
         queryFn: () => api.getSplitEvents(selectedState),
@@ -844,7 +849,7 @@ export default function SplitReportPage() {
                 )}
 
                 {/* ══════════════════ UNMAPPED DISTRICTS WARNING ══════════════════ */}
-                {!loadingUnmapped && unmappedSplits && unmappedSplits.length > 0 && (
+                {!loadingUnmapped && filteredUnmappedSplits.length > 0 && (
                     <div className="mt-12 bg-white border border-rose-200 rounded-xl shadow-sm overflow-hidden mb-8">
                         <div className="bg-rose-50 px-5 py-4 border-b border-rose-100 flex items-center justify-between">
                             <div className="flex items-center gap-3">
@@ -852,7 +857,7 @@ export default function SplitReportPage() {
                                 <div>
                                     <h3 className="text-sm font-bold text-slate-900">Data Integrity Warning: Unmapped Historical Districts</h3>
                                     <p className="text-xs text-slate-600 mt-0.5">
-                                        The following {unmappedSplits.length} district lineages could not be mapped to modern LGD codes due to missing spelling aliases or colonial name changes.
+                                        The following {filteredUnmappedSplits.length} district lineages could not be mapped to modern LGD codes due to missing spelling aliases or colonial name changes.
                                         Splits originating from or resulting in these districts will have no metrics.
                                     </p>
                                 </div>
@@ -869,7 +874,7 @@ export default function SplitReportPage() {
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-100">
-                                    {unmappedSplits.map((item, idx) => (
+                                    {filteredUnmappedSplits.map((item, idx) => (
                                         <tr key={idx} className="hover:bg-slate-50 transition">
                                             <td className="px-4 py-2.5 text-slate-700">{item.state}</td>
                                             <td className="px-4 py-2.5 font-medium text-slate-900">{item.district}</td>

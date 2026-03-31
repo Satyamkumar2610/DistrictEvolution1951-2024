@@ -191,15 +191,15 @@ export default function CropPortfolioPage() {
                                     <circle cx="60" cy="60" r="52" fill="none" stroke="#e2e8f0" strokeWidth="10" />
                                     <circle
                                         cx="60" cy="60" r="52" fill="none"
-                                        stroke={getCdiColor(diversification.cdi)}
+                                        stroke={getCdiColor(diversification.cdi || 0)}
                                         strokeWidth="10"
-                                        strokeDasharray={`${diversification.cdi * 327} 327`}
+                                        strokeDasharray={`${(diversification.cdi || 0) * 327} 327`}
                                         strokeLinecap="round"
                                         className="transition-all duration-1000"
                                     />
                                 </svg>
                                 <div className="absolute inset-0 flex flex-col items-center justify-center pt-1">
-                                    <span className="text-2xl font-bold text-slate-900">{(diversification.cdi * 100).toFixed(0)}%</span>
+                                    <span className="text-2xl font-bold text-slate-900">{((diversification.cdi || 0) * 100).toFixed(0)}%</span>
                                 </div>
                             </div>
                             <span className="text-xs px-3 py-1 rounded-full font-medium border" style={{
@@ -215,15 +215,15 @@ export default function CropPortfolioPage() {
                         <div className="stat-card text-center border-l-4 border-amber-500/50">
                             <div className="text-xs text-slate-500 uppercase mb-2 tracking-wider font-semibold">Dominant Crop</div>
                             <div className="text-2xl font-bold text-amber-600 capitalize mb-1 mt-4">
-                                {diversification.dominant_crop?.replace(/_/g, ' ')}
+                                {(diversification.dominant_crop || '').replace(/_/g, ' ')}
                             </div>
                             <div className="text-sm text-slate-500 font-medium">
-                                {(diversification.dominant_share * 100).toFixed(1)}% of total area
+                                {((diversification.dominant_share || 0) * 100).toFixed(1)}% of total area
                             </div>
                             <div className="w-3/4 mx-auto bg-slate-100 rounded-full h-2 mt-4 border border-slate-200">
                                 <div
                                     className="h-2 rounded-full bg-amber-500 transition-all duration-700 shadow-sm"
-                                    style={{ width: `${diversification.dominant_share * 100}%` }}
+                                    style={{ width: `${(diversification.dominant_share || 0) * 100}%` }}
                                 />
                             </div>
                         </div>
@@ -456,7 +456,7 @@ export default function CropPortfolioPage() {
                                     <tbody>
                                         {corrCrops.map((row: string) => (
                                             <tr key={row}>
-                                                <td className="p-2 text-slate-600 capitalize font-semibold text-right pr-3">{row.replace(/_/g, ' ')}</td>
+                                                <td className="p-2 text-slate-600 capitalize font-semibold text-right pr-3">{(row || '').replace(/_/g, ' ')}</td>
                                                 {corrCrops.map((col: string) => {
                                                     const val = corrMatrix[row]?.[col];
                                                     const isIdentity = row === col;
