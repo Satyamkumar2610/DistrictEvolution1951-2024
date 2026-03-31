@@ -121,12 +121,12 @@ async def test_get_split_impact_districts_returns_response_model_shape(client):
         ],
         [
             {
-                "lgd_code": 101,
+                "cdk": "101",
                 "dn": "old district",
                 "sn": "bihar",
             },
             {
-                "lgd_code": 201,
+                "cdk": "201",
                 "dn": "north district",
                 "sn": "bihar",
             },

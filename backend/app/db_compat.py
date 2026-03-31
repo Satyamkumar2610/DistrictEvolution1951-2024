@@ -36,6 +36,14 @@ _ARRAY_CAST_PATTERN = re.compile(
     r"((?:\w+\.)?cdk)\s*=\s*ANY\(\$(\d+)::(?:int|float)\[\]\)",
     re.IGNORECASE,
 )
+_SCALAR_CDK_PATTERN = re.compile(
+    r"(?:\w+\.)?(?:lgd_code(?:::text)?|district_lgd(?:::text)?)\s*=\s*\$(\d+)",
+    re.IGNORECASE,
+)
+_ARRAY_CDK_PATTERN = re.compile(
+    r"(?:\w+\.)?(?:lgd_code|district_lgd)\s*=\s*ANY\(\$(\d+)::(?:int|float)\[\]\)",
+    re.IGNORECASE,
+)
 
 
 def uses_lgd_schema(query: str) -> bool:
@@ -73,17 +81,28 @@ def adapt_legacy_args(query: str, args: tuple[Any, ...]) -> tuple[Any, ...]:
     if legacy_query == query:
         return args
 
+    scalar_indexes = {int(match.group(1)) - 1 for match in _SCALAR_CDK_PATTERN.finditer(query)}
+    array_indexes = {int(match.group(1)) - 1 for match in _ARRAY_CDK_PATTERN.finditer(query)}
+
     normalized: list[Any] = []
-    for value in args:
+    for index, value in enumerate(args):
+        if index in array_indexes and isinstance(value, Sequence) and not isinstance(value, (str, bytes, bytearray)):
+            normalized.append([_normalize_legacy_scalar(item) for item in value])
+            continue
+
+        if index in scalar_indexes:
+            normalized.append(_normalize_legacy_scalar(value))
+            continue
+
         if isinstance(value, (str, bytes, bytearray)):
             normalized.append(value)
             continue
 
         if isinstance(value, Sequence):
-            normalized.append([_normalize_legacy_scalar(item) for item in value])
+            normalized.append(list(value))
             continue
 
-        normalized.append(_normalize_legacy_scalar(value))
+        normalized.append(value)
 
     return tuple(normalized)
 
