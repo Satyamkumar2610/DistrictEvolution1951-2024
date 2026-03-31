@@ -96,41 +96,42 @@ class MetricRepository(BaseRepository):
         base_parts = variable.split("_")
         crop_name = base_parts[0] if len(base_parts) >= 2 else ""
 
-        # Fallback: If no data found, try seasonal crop
-        if not rows:
-            season_map = {
-                "rice": "kharif",
-                "wheat": "rabi",
-                "maize": "kharif",
-                "soyabean": "kharif",
-                "groundnut": "kharif",
-                "cotton": "kharif",
-                "pearl_millet": "kharif",
-                "sorghum": "kharif",
-                "chickpea": "rabi"}
-            season = season_map.get(crop_name)
+        existing_cdks = {r["cdk"] for r in rows}
 
-            if season:
-                seasonal_variable = f"{variable}_{season}"
-                rows = await self.fetch_all(query, year, seasonal_variable)
+        # Fallback: check seasonal crop for missing districts
+        season_map = {
+            "rice": "kharif",
+            "wheat": "rabi",
+            "maize": "kharif",
+            "soyabean": "kharif",
+            "groundnut": "kharif",
+            "cotton": "kharif",
+            "pearl_millet": "kharif",
+            "sorghum": "kharif",
+            "chickpea": "rabi"}
+        season = season_map.get(crop_name)
+
+        if season:
+            seasonal_variable = f"{variable}_{season}"
+            season_rows = await self.fetch_all(query, year, seasonal_variable)
+            for sr in season_rows:
+                if sr["cdk"] not in existing_cdks:
+                    rows.append(sr)
+                    existing_cdks.add(sr["cdk"])
 
         # Rice additive fallback: Merge other seasons for districts missing
-        # from primary
-        if crop_name == "rice" and rows:
-            existing_cdks = set(r["cdk"] for r in rows)
-
+        if crop_name == "rice":
             additional_seasons = ["winter", "autumn", "summer"]
             for s in additional_seasons:
                 s_var = f"{variable}_{s}"
                 s_rows = await self.fetch_all(query, year, s_var)
-
                 for sr in s_rows:
                     if sr["cdk"] not in existing_cdks:
                         rows.append(sr)
                         existing_cdks.add(sr["cdk"])
 
         # Yield Fallback: Compute yield if missing organically from DB
-        if not rows and "_yield" in variable:
+        if "_yield" in variable:
             area_var = variable.replace("_yield", "_area")
             prod_var = variable.replace("_yield", "_production")
             ap_query = """
@@ -146,6 +147,9 @@ class MetricRepository(BaseRepository):
                 cdk_map = {}
                 for r in ap_rows:
                     cdk = r["cdk"]
+                    if cdk in existing_cdks:
+                        continue
+
                     if cdk not in cdk_map:
                         cdk_map[cdk] = {"state_name": r["state_name"], "district_name": r["district_name"], "area": 0.0, "prod": 0.0}
                     if r["variable_name"] == area_var and r["value"] is not None:
@@ -153,17 +157,16 @@ class MetricRepository(BaseRepository):
                     elif r["variable_name"] == prod_var and r["value"] is not None:
                         cdk_map[cdk]["prod"] = float(r["value"])
 
-                new_rows = []
                 for cdk, data in cdk_map.items():
                     if data["area"] > 0:
                         yield_val = round((data["prod"] / data["area"]) * 1000, 2)
-                        new_rows.append({
+                        rows.append({
                             "cdk": cdk,
                             "state_name": data["state_name"],
                             "district_name": data["district_name"],
                             "value": yield_val
                         })
-                rows = new_rows
+                        existing_cdks.add(cdk)
 
         # Resolve geo_keys using MappingService
         from app.services.mapping_service import get_mapping_service
