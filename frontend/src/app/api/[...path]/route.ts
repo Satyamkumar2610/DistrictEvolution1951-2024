@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { resolveServerApiOrigin } from '../../services/api/config';
 
+export const dynamic = 'force-dynamic';
+
 const API_ORIGIN = resolveServerApiOrigin();
 
 async function handler(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
@@ -21,6 +23,7 @@ async function handler(request: NextRequest, { params }: { params: Promise<{ pat
     try {
         const response = await fetch(targetUrl, {
             method: request.method,
+            cache: 'no-store', // Disable Next.js aggressive Data Cache
             headers: {
                 'Content-Type': 'application/json',
                 // Forward auth if present
