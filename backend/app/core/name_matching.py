@@ -158,11 +158,20 @@ def resolve_district_name(district_name: str,
     """
     dn = district_name.lower().strip()
 
-    # Check map
+    # Exact map check
     if dn in NAME_CORRECTIONS:
         return NAME_CORRECTIONS[dn]
 
-    return dn
+    # Heuristic stripping for colonial names / complex split aliases
+    # Remove suffixes like "Rural", "MGR", "Anna", "District"
+    dn_clean = dn.replace(" mgr", "").replace(" anna", "").replace(" rural", "")
+    dn_clean = dn_clean.replace(" district", "").replace(" frontier tract", "").strip()
+    
+    # Re-check the map after heuristic stripping
+    if dn_clean in NAME_CORRECTIONS:
+        return NAME_CORRECTIONS[dn_clean]
+
+    return dn_clean
 
 
 DISTRICT_RESOLUTION = {

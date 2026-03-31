@@ -72,7 +72,7 @@ class MetricRepository(BaseRepository):
             for r in rows
         ]
 
-    @cached(ttl=CacheTTL.METRICS, prefix="metrics:year")
+    @cached(ttl=CacheTTL.METRICS, prefix="metrics:year_v2")
     async def get_by_year_and_variable(
         self,
         year: int,
@@ -128,6 +128,42 @@ class MetricRepository(BaseRepository):
                     if sr["cdk"] not in existing_cdks:
                         rows.append(sr)
                         existing_cdks.add(sr["cdk"])
+
+        # Yield Fallback: Compute yield if missing organically from DB
+        if not rows and "_yield" in variable:
+            area_var = variable.replace("_yield", "_area")
+            prod_var = variable.replace("_yield", "_production")
+            ap_query = """
+                SELECT m.district_lgd::text as cdk, d.state_name, d.district_name, m.variable_name, m.value
+                FROM agri_metrics m
+                JOIN districts d ON m.district_lgd = d.lgd_code
+                WHERE m.year = $1 AND m.variable_name = ANY($2)
+                AND d.district_name != 'State Average'
+            """
+            ap_rows = await self.fetch_all(ap_query, year, [area_var, prod_var])
+
+            if ap_rows:
+                cdk_map = {}
+                for r in ap_rows:
+                    cdk = r["cdk"]
+                    if cdk not in cdk_map:
+                        cdk_map[cdk] = {"state_name": r["state_name"], "district_name": r["district_name"], "area": 0.0, "prod": 0.0}
+                    if r["variable_name"] == area_var and r["value"] is not None:
+                        cdk_map[cdk]["area"] = float(r["value"])
+                    elif r["variable_name"] == prod_var and r["value"] is not None:
+                        cdk_map[cdk]["prod"] = float(r["value"])
+
+                new_rows = []
+                for cdk, data in cdk_map.items():
+                    if data["area"] > 0:
+                        yield_val = round((data["prod"] / data["area"]) * 1000, 2)
+                        new_rows.append({
+                            "cdk": cdk,
+                            "state_name": data["state_name"],
+                            "district_name": data["district_name"],
+                            "value": yield_val
+                        })
+                rows = new_rows
 
         # Resolve geo_keys using MappingService
         from app.services.mapping_service import get_mapping_service
