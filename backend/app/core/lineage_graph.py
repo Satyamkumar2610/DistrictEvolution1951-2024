@@ -10,6 +10,7 @@ Supports bidirectional traversal:
   get_canonical_ancestors(cdk, year)  → who contributed area to this district?
   get_canonical_descendants(cdk, year) → where did this district's area go?
 """
+
 from __future__ import annotations
 
 import logging
@@ -24,8 +25,10 @@ logger = logging.getLogger("app.core.lineage_graph")
 # Event Types
 # ---------------------------------------------------------------------------
 
+
 class EventType(StrEnum):
     """All possible administrative boundary change types."""
+
     SPLIT = "SPLIT"
     MERGE = "MERGE"
     RENAME = "RENAME"
@@ -39,17 +42,17 @@ class EventType(StrEnum):
 # Data Classes
 # ---------------------------------------------------------------------------
 
+
 @dataclass(frozen=True)
 class DistrictEvent:
     """A single administrative boundary change event."""
+
     event_type: EventType
     year: int
-    source_cdks: tuple[str, ...]     # parents / predecessor(s)
-    target_cdks: tuple[str, ...]     # children / successor(s)
+    source_cdks: tuple[str, ...]  # parents / predecessor(s)
+    target_cdks: tuple[str, ...]  # children / successor(s)
     confidence: float = 1.0
-    area_ratios: dict[str, float] | None = field(
-        default=None, hash=False, compare=False
-    )
+    area_ratios: dict[str, float] | None = field(default=None, hash=False, compare=False)
 
     @property
     def label(self) -> str:
@@ -70,6 +73,7 @@ class DistrictEvent:
 @dataclass
 class DistrictNode:
     """Metadata about a district at a point in time."""
+
     cdk: str
     name: str | None = None
     state_code: str | None = None
@@ -79,12 +83,14 @@ class DistrictNode:
     @property
     def state_name(self) -> str:
         from app.services.reconstructor_service import STATE_CODE_MAP  # type: ignore
+
         return STATE_CODE_MAP.get(self.state_code or "", self.state_code or "")
 
 
 # ---------------------------------------------------------------------------
 # Lineage Graph
 # ---------------------------------------------------------------------------
+
 
 class LineageGraph:
     """
@@ -119,12 +125,14 @@ class LineageGraph:
         and deduplicates events.
         """
         # Dedup key: (type, year, sources, targets)
-        dedup_key = frozenset([
-            event.event_type.value,
-            str(event.year),
-            "|".join(sorted(event.source_cdks)),
-            "|".join(sorted(event.target_cdks)),
-        ])
+        dedup_key = frozenset(
+            [
+                event.event_type.value,
+                str(event.year),
+                "|".join(sorted(event.source_cdks)),
+                "|".join(sorted(event.target_cdks)),
+            ]
+        )
         if dedup_key in self._event_set:
             return False
         self._event_set.add(dedup_key)
@@ -193,23 +201,24 @@ class LineageGraph:
 
             # Register nodes
             state_code = parent.split("_")[0] if "_" in parent else ""
-            graph.add_node(DistrictNode(
-                cdk=parent,
-                state_code=state_code,
-                valid_to=year,
-            ))
+            graph.add_node(
+                DistrictNode(
+                    cdk=parent,
+                    state_code=state_code,
+                    valid_to=year,
+                )
+            )
             for child in children:
                 child_state = child.split("_")[0] if "_" in child else ""
-                graph.add_node(DistrictNode(
-                    cdk=child,
-                    state_code=child_state,
-                    valid_from=year,
-                ))
+                graph.add_node(
+                    DistrictNode(
+                        cdk=child,
+                        state_code=child_state,
+                        valid_from=year,
+                    )
+                )
 
-        logger.info(
-            f"LineageGraph built: {len(graph._all_cdks)} nodes, "
-            f"{len(graph._events)} events (deduped)"
-        )
+        logger.info(f"LineageGraph built: {len(graph._all_cdks)} nodes, {len(graph._events)} events (deduped)")
         return graph
 
     @classmethod
@@ -261,10 +270,7 @@ class LineageGraph:
                 cs = c.split("_")[0] if "_" in c else ""
                 graph.add_node(DistrictNode(cdk=c, state_code=cs, valid_from=year))
 
-        logger.info(
-            f"LineageGraph from CSV: {len(graph._all_cdks)} nodes, "
-            f"{len(graph._events)} events"
-        )
+        logger.info(f"LineageGraph from CSV: {len(graph._all_cdks)} nodes, {len(graph._events)} events")
         return graph
 
     # --- Queries ---
@@ -306,9 +312,7 @@ class LineageGraph:
         """All CDKs that are leaf nodes (no children)."""
         return sorted([cdk for cdk in self._all_cdks if self.is_leaf(cdk)])
 
-    def get_canonical_ancestors(
-        self, cdk: str, target_year: int | None = None
-    ) -> list[str]:
+    def get_canonical_ancestors(self, cdk: str, target_year: int | None = None) -> list[str]:
         """
         All historical districts that contributed area to this district.
 
@@ -343,9 +347,7 @@ class LineageGraph:
 
         return ancestors
 
-    def get_canonical_descendants(
-        self, cdk: str, from_year: int | None = None
-    ) -> list[str]:
+    def get_canonical_descendants(self, cdk: str, from_year: int | None = None) -> list[str]:
         """
         All modern districts that inherited area from this district.
 
@@ -440,13 +442,13 @@ class LineageGraph:
         compat: dict[str, list[tuple[list[str], int]]] = defaultdict(list)
         for event in self._events:
             if event.event_type in (
-                EventType.SPLIT, EventType.RENAME,
-                EventType.MERGE, EventType.STATE_TRANSFER,
+                EventType.SPLIT,
+                EventType.RENAME,
+                EventType.MERGE,
+                EventType.STATE_TRANSFER,
             ):
                 for src in event.source_cdks:
-                    compat[src].append(
-                        (list(event.target_cdks), event.year)
-                    )
+                    compat[src].append((list(event.target_cdks), event.year))
         return dict(compat)
 
     def validate_acyclicity(self) -> bool:
@@ -462,9 +464,7 @@ class LineageGraph:
             for tgt in event.target_cdks:
                 in_degree[tgt] += 1
 
-        queue: deque = deque(
-            [cdk for cdk, deg in in_degree.items() if deg == 0]
-        )
+        queue: deque = deque([cdk for cdk, deg in in_degree.items() if deg == 0])
         visited = 0
         while queue:
             curr = queue.popleft()
@@ -477,9 +477,7 @@ class LineageGraph:
 
         is_dag = visited == len(self._all_cdks)
         if not is_dag:
-            logger.error(
-                f"Graph has cycles! Visited {visited}/{len(self._all_cdks)} nodes"
-            )
+            logger.error(f"Graph has cycles! Visited {visited}/{len(self._all_cdks)} nodes")
         return is_dag
 
     def summary(self) -> dict:

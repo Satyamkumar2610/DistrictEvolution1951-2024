@@ -2,6 +2,7 @@
 Dependency Injection for API Routes.
 Provides database connections, provenance generators, and common utilities.
 """
+
 import hashlib
 from collections.abc import AsyncGenerator
 from datetime import UTC, datetime
@@ -22,9 +23,7 @@ async def get_db() -> AsyncGenerator[asyncpg.Connection, None]:
         yield conn
 
 
-def generate_provenance(
-        request: Request,
-        method: str | None = None) -> ProvenanceMetadata:
+def generate_provenance(request: Request, method: str | None = None) -> ProvenanceMetadata:
     """
     Generate reproducibility metadata for API responses.
 

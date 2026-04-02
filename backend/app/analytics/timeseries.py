@@ -14,6 +14,7 @@ from app.analytics.statistics import StatisticalAnalyzer  # type: ignore
 @dataclass
 class AnomalyResult:
     """Result of anomaly detection."""
+
     index: int
     year: int
     value: float
@@ -25,6 +26,7 @@ class AnomalyResult:
 @dataclass
 class TimeSeriesAnalysis:
     """Complete time series analysis result."""
+
     start_year: int
     end_year: int
     data_points: int
@@ -113,16 +115,16 @@ class TimeSeriesAnalyzer:
             growth_rates=growth_rates,
             moving_averages=moving_avgs,
             anomalies=[
-                asdict(a) if hasattr(  # type: ignore
-                    a,
-                    '__dataclass_fields__') else a for a in anomalies],
+                asdict(a)
+                if hasattr(  # type: ignore
+                    a, "__dataclass_fields__"
+                )
+                else a
+                for a in anomalies
+            ],
         )
 
-    def _detect_anomalies(
-        self,
-        years: list[int],
-        values: list[float]
-    ) -> list[AnomalyResult]:
+    def _detect_anomalies(self, years: list[int], values: list[float]) -> list[AnomalyResult]:
         """
         Detect anomalies using multiple methods.
         """
@@ -132,8 +134,7 @@ class TimeSeriesAnalyzer:
         iqr_outliers = self.stats.detect_outliers_iqr(values)
 
         # Method 2: Z-score outliers
-        zscore_outliers = self.stats.detect_outliers_zscore(
-            values, threshold=2.5)
+        zscore_outliers = self.stats.detect_outliers_zscore(values, threshold=2.5)
 
         # Combine unique outliers
         all_outliers = set(iqr_outliers) | set(zscore_outliers)
@@ -159,14 +160,16 @@ class TimeSeriesAnalyzer:
             else:
                 severity = "mild"
 
-            anomalies.append(AnomalyResult(
-                index=idx,
-                year=years[idx],
-                value=round(float(values[idx]), 2),  # type: ignore
-                expected_value=round(float(expected), 2),  # type: ignore
-                deviation=round(float(deviation), 2),  # type: ignore
-                severity=severity,
-            ))
+            anomalies.append(
+                AnomalyResult(
+                    index=idx,
+                    year=years[idx],
+                    value=round(float(values[idx]), 2),  # type: ignore
+                    expected_value=round(float(expected), 2),  # type: ignore
+                    deviation=round(float(deviation), 2),  # type: ignore
+                    severity=severity,
+                )
+            )
 
         return sorted(anomalies, key=lambda a: a.year)
 
@@ -202,15 +205,19 @@ class TimeSeriesAnalyzer:
         data = dict(zip(years, values, strict=False))
 
         p1_values = [
-            data[y] for y in range(  # type: ignore
-                period1[0],
-                period1[1]
-                + 1) if y in data]  # type: ignore
+            data[y]
+            for y in range(  # type: ignore
+                period1[0], period1[1] + 1
+            )
+            if y in data
+        ]  # type: ignore
         p2_values = [
-            data[y] for y in range(  # type: ignore
-                period2[0],
-                period2[1]
-                + 1) if y in data]  # type: ignore
+            data[y]
+            for y in range(  # type: ignore
+                period2[0], period2[1] + 1
+            )
+            if y in data
+        ]  # type: ignore
 
         if not p1_values or not p2_values:
             return {"error": "Insufficient data for comparison"}
@@ -221,10 +228,7 @@ class TimeSeriesAnalyzer:
 
         # Calculate change
         absolute_change = p2_mean - p1_mean
-        percent_change = (
-            absolute_change
-            / p1_mean
-            * 100) if p1_mean != 0 else 0
+        percent_change = (absolute_change / p1_mean * 100) if p1_mean != 0 else 0
 
         # T-test for significant difference
         if len(p1_values) >= 2 and len(p2_values) >= 2:
@@ -252,7 +256,7 @@ class TimeSeriesAnalyzer:
                 "t_statistic": round(float(t_stat), 4),  # type: ignore
                 "p_value": round(float(p_value), 4),  # type: ignore
                 "significant": significant,
-            }
+            },
         }
 
     def calculate_cagr_over_period(
@@ -283,14 +287,26 @@ class TimeSeriesAnalyzer:
         cagr = self.stats.cagr(start_value, end_value, num_years)
 
         return {
-            "start_year": start, "end_year": end, "start_value": round(  # type: ignore
-                float(start_value), 4), "end_value": round(  # type: ignore
-                float(end_value), 4), "years": num_years, "cagr": round(  # type: ignore
-                float(cagr), 2), "total_growth_percent": round(  # type: ignore
-                    float((end_value / start_value - 1) * 100), 2) if start_value > 0 else 0.0, }
+            "start_year": start,
+            "end_year": end,
+            "start_value": round(  # type: ignore
+                float(start_value), 4
+            ),
+            "end_value": round(  # type: ignore
+                float(end_value), 4
+            ),
+            "years": num_years,
+            "cagr": round(  # type: ignore
+                float(cagr), 2
+            ),
+            "total_growth_percent": round(  # type: ignore
+                float((end_value / start_value - 1) * 100), 2
+            )
+            if start_value > 0
+            else 0.0,
+        }
 
 
-def get_time_series_analyzer(
-        confidence_level: float = 0.95) -> TimeSeriesAnalyzer:
+def get_time_series_analyzer(confidence_level: float = 0.95) -> TimeSeriesAnalyzer:
     """Get a time series analyzer instance."""
     return TimeSeriesAnalyzer(confidence_level)

@@ -2,6 +2,7 @@
 Analysis Service: Orchestrates split impact analysis.
 Coordinates between repositories and analytics engine.
 """
+
 from collections import defaultdict
 from datetime import UTC, datetime
 from typing import Any
@@ -95,10 +96,7 @@ class AnalysisService:
         if not rows:
             return []
 
-        has_nulls = any(
-            row["parent_lgd"] is None or row["child_lgd"] is None
-            for row in rows
-        )
+        has_nulls = any(row["parent_lgd"] is None or row["child_lgd"] is None for row in rows)
         lgd_lookup = await self.district_repo.get_lgd_lookup() if has_nulls else {}
 
         lgd_set: set[int] = set()
@@ -151,9 +149,7 @@ class AnalysisService:
             if child_name not in group["children_districts"]:
                 group["children_districts"].append(child_name)
                 group["children_cdks"].append(child_cdk)
-                group["children_has_agri"].append(
-                    child_lgd in agri_lgds if child_lgd is not None else False
-                )
+                group["children_has_agri"].append(child_lgd in agri_lgds if child_lgd is not None else False)
 
         results: list[SplitImpactDistrictSummary] = []
         for (parent, year), group in sorted(groups.items(), key=lambda item: -item[0][1]):
@@ -184,10 +180,7 @@ class AnalysisService:
         """Get summary statistics for all states."""
         states = await self.district_repo.get_states()
         counts = await self.district_repo.count_by_state()
-        cdk_to_state = {
-            cdk: meta["state"]
-            for cdk, meta in (await self.district_repo.get_cdk_to_meta_map()).items()
-        }
+        cdk_to_state = {cdk: meta["state"] for cdk, meta in (await self.district_repo.get_cdk_to_meta_map()).items()}
 
         # Count boundary changes per state from lineage
         events = await self.lineage_repo.get_all_events()
@@ -204,12 +197,12 @@ class AnalysisService:
         for state in states:
             state_str = str(state)
             stats[state_str] = {
-                "state": state_str, "total_districts": counts.get(
-                    state_str, 0), "boundary_changes": len(
-                    state_changes.get(
-                        state_str, set())), "data_coverage": "High", "comparability": "Active" if len(
-                    state_changes.get(
-                        state_str, set())) > 0 else "N/A", }
+                "state": state_str,
+                "total_districts": counts.get(state_str, 0),
+                "boundary_changes": len(state_changes.get(state_str, set())),
+                "data_coverage": "High",
+                "comparability": "Active" if len(state_changes.get(state_str, set())) > 0 else "N/A",
+            }
 
         return {"states": states, "stats": stats}
 
@@ -224,27 +217,22 @@ class AnalysisService:
 
         results = []
         for _key, group in groups.items():
-            parent_name = cdk_meta.get(
-                group["parent_cdk"], {}).get(
-                "name", group["parent_cdk"])
+            parent_name = cdk_meta.get(group["parent_cdk"], {}).get("name", group["parent_cdk"])
             children_list = list(group["children"])
-            children_names = [
-                cdk_meta.get(
-                    c,
-                    {}).get(
-                    "name",
-                    c) for c in children_list]
+            children_names = [cdk_meta.get(c, {}).get("name", c) for c in children_list]
 
-            results.append(SplitEventSummary(
-                id=f"{group['parent_cdk']}_{group['event_year']}",
-                parent_cdk=group["parent_cdk"],
-                parent_name=parent_name,
-                split_year=group["event_year"],
-                children_cdks=children_list,
-                children_names=children_names,
-                children_count=len(children_list),
-                coverage="High",
-            ))
+            results.append(
+                SplitEventSummary(
+                    id=f"{group['parent_cdk']}_{group['event_year']}",
+                    parent_cdk=group["parent_cdk"],
+                    parent_name=parent_name,
+                    split_year=group["event_year"],
+                    children_cdks=children_list,
+                    children_names=children_names,
+                    children_count=len(children_list),
+                    coverage="High",
+                )
+            )
 
         # Sort by year descending
         results.sort(key=lambda x: x.split_year, reverse=True)
@@ -291,10 +279,7 @@ class AnalysisService:
             base = variable.rsplit("_", 1)[0] if "_" in variable else variable
             suffix = ""
 
-        variables = [
-            f"{base}_area{suffix}",
-            f"{base}_production{suffix}",
-            f"{base}_yield{suffix}"]
+        variables = [f"{base}_area{suffix}", f"{base}_production{suffix}", f"{base}_yield{suffix}"]
 
         # Fetch data
         all_cdks = [parent_cdk] + children_cdks
@@ -313,7 +298,7 @@ class AnalysisService:
                 "cotton": "kharif",
                 "pearl_millet": "kharif",
                 "sorghum": "kharif",
-                "chickpea": "rabi"
+                "chickpea": "rabi",
             }
             # Extract crop name from base (e.g. "rice" from "rice")
             crop_name = base.split("_")[0]
@@ -324,7 +309,8 @@ class AnalysisService:
                 seasonal_variables = [
                     f"{base}_area{seasonal_suffix}",
                     f"{base}_production{seasonal_suffix}",
-                    f"{base}_yield{seasonal_suffix}"]
+                    f"{base}_yield{seasonal_suffix}",
+                ]
                 seasonal_data_map = await self.metric_repo.build_data_map(all_cdks, seasonal_variables)
 
                 # Merge seasonal data into main data_map (seasonal data takes
@@ -353,11 +339,13 @@ class AnalysisService:
 
         if mode == "before_after":
             # Longitudinal reconstruction
-            series_meta.append(SeriesMeta(
-                id="value",
-                label="Boundary Adjusted District",
-                style="solid",
-            ))
+            series_meta.append(
+                SeriesMeta(
+                    id="value",
+                    label="Boundary Adjusted District",
+                    style="solid",
+                )
+            )
 
             years = sorted(data_map.keys())
 
@@ -365,46 +353,36 @@ class AnalysisService:
             # 1. Get pre-split parent data
             metric_literal = metric_type if metric_type in ("area", "production", "yield") else "yield"
             parent_series = self.harmonizer.get_parent_series(
-                data_map, parent_cdk, metric_literal  # type: ignore[arg-type]
+                data_map,
+                parent_cdk,
+                metric_literal,  # type: ignore[arg-type]
             )
 
             # 2. Reconstruct post-split data from children
             # IMPORTANT: Only use post-split data for reconstruction
             # Children did not exist before split_year, any pre-split data is
             # invalid
-            post_split_data = {
-                year: data for year, data in data_map.items()
-                if year >= split_year
-            }
+            post_split_data = {year: data for year, data in data_map.items() if year >= split_year}
             reconstructed_series = self.harmonizer.reconstruct_parent_from_children(
-                post_split_data, children_cdks, metric_literal)  # type: ignore[arg-type]
+                post_split_data, children_cdks, metric_literal
+            )  # type: ignore[arg-type]
 
             # 3. Merge into single timeline
-            harmonized_points = self.harmonizer.merge_series(
-                parent_series, reconstructed_series, split_year
-            )
+            harmonized_points = self.harmonizer.merge_series(parent_series, reconstructed_series, split_year)
 
             # Convert to dictionary format expected by frontend
-            timeline = [
-                {"year": p.year, "value": round(p.value, 2)}
-                for p in harmonized_points
-            ]
+            timeline = [{"year": p.year, "value": round(p.value, 2)} for p in harmonized_points]
 
             # Calculate advanced statistics
             if timeline:
-                pre_values = [p["value"]
-                              for p in timeline if p["year"] < split_year]
-                post_values = [p["value"]
-                               for p in timeline if p["year"] >= split_year]
+                pre_values = [p["value"] for p in timeline if p["year"] < split_year]
+                post_values = [p["value"] for p in timeline if p["year"] >= split_year]
 
                 if pre_values and post_values:
-                    result = self.impact_analyzer.analyze_from_values(
-                        pre_values, post_values, split_year
-                    )
+                    result = self.impact_analyzer.analyze_from_values(pre_values, post_values, split_year)
 
                     # Calculate uncertainty
-                    uncertainty = calculate_impact_uncertainty(
-                        pre_values, post_values)
+                    uncertainty = calculate_impact_uncertainty(pre_values, post_values)
                     result.impact.uncertainty = uncertainty
 
                     # ============================================================
@@ -412,8 +390,7 @@ class AnalysisService:
                     # ============================================================
 
                     # Get pre/post years for counterfactual projection
-                    pre_years = [p["year"]
-                                 for p in timeline if p["year"] < split_year]
+                    pre_years = [p["year"] for p in timeline if p["year"] < split_year]
 
                     # Compute children's mean yields for divergence analysis
                     children_mean_yields: dict[str, list[float]] = {}
@@ -424,8 +401,7 @@ class AnalysisService:
                             if year not in yearly_children_yields:
                                 yearly_children_yields[year] = {}
                             for cdk in children_cdks:
-                                if cdk in year_data and year_data[cdk].get(
-                                        "yld", 0) > 0:
+                                if cdk in year_data and year_data[cdk].get("yld", 0) > 0:
                                     yld = year_data[cdk]["yld"]
                                     yearly_children_yields[year][cdk] = yld
                                     if cdk not in children_mean_yields:
@@ -434,33 +410,29 @@ class AnalysisService:
 
                     # Calculate mean yields per child
                     children_means = {
-                        cdk: sum(vals) / len(vals) if vals else 0
-                        for cdk, vals in children_mean_yields.items()
+                        cdk: sum(vals) / len(vals) if vals else 0 for cdk, vals in children_mean_yields.items()
                     }
 
                     # Compute insights
-                    fragmentation = self.insights_analyzer.calculate_fragmentation(
-                        len(children_cdks))
-                    divergence = self.insights_analyzer.calculate_divergence(
-                        children_means)
-                    convergence = self.insights_analyzer.calculate_convergence_trend(
-                        yearly_children_yields, split_year)
-                    effect_size = self.insights_analyzer.calculate_effect_size(
-                        pre_values, post_values)
+                    fragmentation = self.insights_analyzer.calculate_fragmentation(len(children_cdks))
+                    divergence = self.insights_analyzer.calculate_divergence(children_means)
+                    convergence = self.insights_analyzer.calculate_convergence_trend(yearly_children_yields, split_year)
+                    effect_size = self.insights_analyzer.calculate_effect_size(pre_values, post_values)
                     counterfactual = self.insights_analyzer.calculate_counterfactual(
                         pre_values, [int(y) for y in pre_years], result.post_stats.mean, split_year + 5
                     )
 
                     # Analyze child performance
                     children_performance = self.insights_analyzer.analyze_child_performance(
-                        data_map, children_cdks, None, split_year)
+                        data_map, children_cdks, None, split_year
+                    )
 
                     # Build insights schema objects
                     insights = SplitInsightsInfo(
                         fragmentation=FragmentationInfo(
                             index=fragmentation.index,
                             child_count=fragmentation.child_count,
-                            interpretation=fragmentation.interpretation
+                            interpretation=fragmentation.interpretation,
                         ),
                         divergence=DivergenceInfo(
                             score=divergence.score,
@@ -469,24 +441,22 @@ class AnalysisService:
                             best_yield=divergence.best_yield,
                             worst_performer=divergence.worst_performer,
                             worst_yield=divergence.worst_yield,
-                            spread=divergence.spread
+                            spread=divergence.spread,
                         ),
                         convergence=ConvergenceInfo(
-                            trend=convergence.trend,
-                            rate=convergence.rate,
-                            interpretation=convergence.interpretation
+                            trend=convergence.trend, rate=convergence.rate, interpretation=convergence.interpretation
                         ),
                         effect_size=EffectSizeInfo(
                             cohens_d=effect_size.cohens_d,
                             interpretation=effect_size.interpretation,
-                            confidence=effect_size.confidence
+                            confidence=effect_size.confidence,
                         ),
                         counterfactual=CounterfactualInfo(
                             projected_yield=counterfactual.projected_yield,
                             method=counterfactual.method,
                             actual_yield=counterfactual.actual_yield,
                             attribution_pct=counterfactual.attribution_pct,
-                            interpretation=counterfactual.interpretation
+                            interpretation=counterfactual.interpretation,
                         ),
                         children_performance=[
                             ChildPerformanceInfo(
@@ -496,11 +466,11 @@ class AnalysisService:
                                 cv=cp.cv,
                                 cagr=cp.cagr,
                                 observations=cp.observations,
-                                rank=cp.rank
+                                rank=cp.rank,
                             )
                             for cp in children_performance
                         ],
-                        warnings=[]
+                        warnings=[],
                     )
 
                     advanced_stats = AdvancedStats(
@@ -514,17 +484,9 @@ class AnalysisService:
 
         else:
             # Entity comparison mode
-            series_meta.append(
-                SeriesMeta(
-                    id="parent",
-                    label=f"Parent ({parent_cdk})",
-                    style="solid"))
+            series_meta.append(SeriesMeta(id="parent", label=f"Parent ({parent_cdk})", style="solid"))
             for cdk in children_cdks:
-                series_meta.append(
-                    SeriesMeta(
-                        id=cdk,
-                        label=f"Child ({cdk})",
-                        style="dashed"))
+                series_meta.append(SeriesMeta(id=cdk, label=f"Child ({cdk})", style="dashed"))
 
             years = sorted(data_map.keys())
 
@@ -536,8 +498,7 @@ class AnalysisService:
                 # split)
                 if parent_cdk in year_data:
                     d = year_data[parent_cdk]
-                    val = d.get("yld") if metric_type == "yield" else d.get(
-                        metric_type[:4], 0)
+                    val = d.get("yld") if metric_type == "yield" else d.get(metric_type[:4], 0)
                     if val:
                         row["parent"] = round(val, 2)
 
@@ -545,8 +506,7 @@ class AnalysisService:
                 for cdk in children_cdks:
                     if cdk in year_data:
                         d = year_data[cdk]
-                        val = d.get("yld") if metric_type == "yield" else d.get(
-                            metric_type[:4], 0)
+                        val = d.get("yld") if metric_type == "yield" else d.get(metric_type[:4], 0)
                         if val:
                             row[cdk] = round(val, 2)
 
@@ -556,9 +516,7 @@ class AnalysisService:
         # Fetch district metadata for labels
         cdk_map = await self.district_repo.get_cdk_to_meta_map()
 
-        parent_name = cdk_map.get(
-            str(parent_cdk), {}).get(
-            "name", f"Parent ({parent_cdk})")
+        parent_name = cdk_map.get(str(parent_cdk), {}).get("name", f"Parent ({parent_cdk})")
 
         # Build response
         meta = AnalysisMeta(
@@ -574,8 +532,7 @@ class AnalysisService:
             dataset_version=settings.dataset_version,
             boundary_version=settings.boundary_version,
             query_hash=query_hash,
-            generated_at=datetime.now(
-                UTC),
+            generated_at=datetime.now(UTC),
             harmonization_method="area_weighted" if mode == "before_after" else None,
             warnings=warnings,
         )
@@ -588,8 +545,7 @@ class AnalysisService:
             elif series.id == "parent":
                 series.label = f"{parent_name} ({parent_cdk})"
             elif series.id in children_cdks:
-                child_name = cdk_map.get(str(series.id), {}).get(
-                    "name", f"Child ({series.id})")
+                child_name = cdk_map.get(str(series.id), {}).get("name", f"Child ({series.id})")
                 series.label = f"{child_name} ({series.id})"
 
         return SplitImpactResponse(

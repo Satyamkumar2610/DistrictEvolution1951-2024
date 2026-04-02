@@ -117,9 +117,7 @@ class ClimateService:
         """Return water-stress mismatch analysis for a state."""
         results = await get_water_stress_index(self.conn, state, year)
         if not results:
-            raise NotFoundError(
-                detail=f"Insufficient data to compute water stress for {state} in {year}"
-            )
+            raise NotFoundError(detail=f"Insufficient data to compute water stress for {state} in {year}")
 
         return WaterStressResponse(
             state=state,

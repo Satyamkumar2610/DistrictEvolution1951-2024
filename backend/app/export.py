@@ -17,6 +17,7 @@ from fastapi.responses import StreamingResponse
 @dataclass
 class ExportMetadata:
     """Metadata for exported data."""
+
     exported_at: str
     source: str = "I-ASCAP API"
     version: str = "1.0"
@@ -32,11 +33,7 @@ class DataExporter:
     def __init__(self, source: str = "I-ASCAP API"):
         self.source = source
 
-    def _create_metadata(
-        self,
-        record_count: int,
-        filters: dict[str, Any] | None = None
-    ) -> ExportMetadata:
+    def _create_metadata(self, record_count: int, filters: dict[str, Any] | None = None) -> ExportMetadata:
         """Create export metadata."""
         return ExportMetadata(
             exported_at=datetime.now(UTC).isoformat().replace("+00:00", "Z"),
@@ -82,7 +79,7 @@ class DataExporter:
             media_type="application/json",
             headers={
                 "Content-Disposition": f'attachment; filename="{filename}"',
-            }
+            },
         )
 
     # -------------------------------------------------------------------------
@@ -103,10 +100,7 @@ class DataExporter:
             columns = list(data[0].keys())
 
         output = io.StringIO()
-        writer = csv.DictWriter(
-            output,
-            fieldnames=columns,
-            extrasaction='ignore')
+        writer = csv.DictWriter(output, fieldnames=columns, extrasaction="ignore")
         writer.writeheader()
 
         for row in data:
@@ -136,7 +130,7 @@ class DataExporter:
             media_type="text/csv",
             headers={
                 "Content-Disposition": f'attachment; filename="{filename}"',
-            }
+            },
         )
 
     # -------------------------------------------------------------------------
@@ -187,7 +181,7 @@ class DataExporter:
             media_type="application/geo+json",
             headers={
                 "Content-Disposition": f'attachment; filename="{filename}"',
-            }
+            },
         )
 
     # -------------------------------------------------------------------------
@@ -208,6 +202,7 @@ class DataExporter:
             columns: Column names for header
             filename: Download filename
         """
+
         async def generate():
             # Write header
             output = io.StringIO()
@@ -218,8 +213,7 @@ class DataExporter:
             # Stream rows
             async for row in data_generator:
                 output = io.StringIO()
-                writer = csv.DictWriter(
-                    output, fieldnames=columns, extrasaction='ignore')
+                writer = csv.DictWriter(output, fieldnames=columns, extrasaction="ignore")
                 cleaned_row: dict[str, Any] = {}
                 for key, value in row.items():
                     if key in columns:
@@ -235,7 +229,7 @@ class DataExporter:
             media_type="text/csv",
             headers={
                 "Content-Disposition": f'attachment; filename="{filename}"',
-            }
+            },
         )
 
 
@@ -252,21 +246,39 @@ class ExportColumns:
     DISTRICT_BASIC = ["cdk", "name", "state", "valid_from", "valid_to"]
 
     DISTRICT_FULL = [
-        "cdk", "name", "state", "valid_from", "valid_to",
-        "parent_cdk", "is_current", "area_km2",
+        "cdk",
+        "name",
+        "state",
+        "valid_from",
+        "valid_to",
+        "parent_cdk",
+        "is_current",
+        "area_km2",
     ]
 
     METRICS = [
-        "year", "cdk", "district_name", "state",
-        "crop", "area", "production", "yield",
+        "year",
+        "cdk",
+        "district_name",
+        "state",
+        "crop",
+        "area",
+        "production",
+        "yield",
     ]
 
     ANALYSIS = [
-        "year", "parent_value", "child_combined_value",
-        "difference", "percent_change",
+        "year",
+        "parent_value",
+        "child_combined_value",
+        "difference",
+        "percent_change",
     ]
 
     SUMMARY = [
-        "state", "total_districts", "boundary_changes",
-        "first_year", "last_year",
+        "state",
+        "total_districts",
+        "boundary_changes",
+        "first_year",
+        "last_year",
     ]

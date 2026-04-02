@@ -72,10 +72,7 @@ async def load_lineage_csv(
             "dry_run": True,
             "total_csv_rows": total_rows,
             "unique_events": len(events),
-            "sample_events": [
-                {"parent": k[0], "year": k[1], "children": v}
-                for k, v in list(events.items())[:5]
-            ],
+            "sample_events": [{"parent": k[0], "year": k[1], "children": v} for k, v in list(events.items())[:5]],
         }
 
     # Insert into split_events
@@ -84,7 +81,8 @@ async def load_lineage_csv(
 
     for (parent_cdk, year), child_cdks in events.items():
         try:
-            await db.execute("""
+            await db.execute(
+                """
                 INSERT INTO split_events
                     (parent_cdk, child_cdks, split_year, event_type,
                      geometry_status, source_notes)
@@ -93,7 +91,11 @@ async def load_lineage_csv(
                 ON CONFLICT (parent_cdk, split_year) DO UPDATE SET
                     child_cdks = EXCLUDED.child_cdks,
                     source_notes = EXCLUDED.source_notes
-            """, parent_cdk, child_cdks, year)
+            """,
+                parent_cdk,
+                child_cdks,
+                year,
+            )
             inserted += 1
         except Exception as e:
             logger.warning(f"Skip {parent_cdk}/{year}: {e}")
@@ -164,8 +166,7 @@ async def load_changes_csv(
             "total_csv_rows": total_rows,
             "unique_events": len(events),
             "sample_events": [
-                {"parent": k[0], "year": k[1], "state": k[2], "children": v}
-                for k, v in list(events.items())[:5]
+                {"parent": k[0], "year": k[1], "state": k[2], "children": v} for k, v in list(events.items())[:5]
             ],
         }
 
@@ -176,19 +177,25 @@ async def load_changes_csv(
 
     for (source_name, year, state), dest_names in events.items():
         # Try to find parent CDK
-        parent_cdk = await db.fetchval("""
+        parent_cdk = await db.fetchval(
+            """
             SELECT cdk FROM districts
             WHERE district_name ILIKE $1
             ORDER BY start_year DESC LIMIT 1
-        """, source_name)
+        """,
+            source_name,
+        )
 
         if not parent_cdk:
             # Try fuzzy match
-            parent_cdk = await db.fetchval("""
+            parent_cdk = await db.fetchval(
+                """
                 SELECT cdk FROM districts
                 WHERE district_name ILIKE $1
                 ORDER BY start_year DESC LIMIT 1
-            """, f"%{source_name}%")
+            """,
+                f"%{source_name}%",
+            )
 
         if not parent_cdk:
             unresolved += 1
@@ -197,18 +204,24 @@ async def load_changes_csv(
         # Resolve child CDKs
         child_cdks = []
         for dest_name in dest_names:
-            child_cdk = await db.fetchval("""
+            child_cdk = await db.fetchval(
+                """
                 SELECT cdk FROM districts
                 WHERE district_name ILIKE $1
                 ORDER BY start_year DESC LIMIT 1
-            """, dest_name)
+            """,
+                dest_name,
+            )
 
             if not child_cdk:
-                child_cdk = await db.fetchval("""
+                child_cdk = await db.fetchval(
+                    """
                     SELECT cdk FROM districts
                     WHERE district_name ILIKE $1
                     ORDER BY start_year DESC LIMIT 1
-                """, f"%{dest_name}%")
+                """,
+                    f"%{dest_name}%",
+                )
 
             if child_cdk:
                 child_cdks.append(child_cdk)
@@ -218,24 +231,26 @@ async def load_changes_csv(
             continue
 
         try:
-            await db.execute("""
+            await db.execute(
+                """
                 INSERT INTO split_events
                     (parent_cdk, child_cdks, split_year, event_type,
                      geometry_status, source_notes)
                 VALUES ($1, $2, $3, 'split', 'unknown',
                         $4)
                 ON CONFLICT (parent_cdk, split_year) DO NOTHING
-            """, parent_cdk, child_cdks, year,
-                f"Batch import from district_changes.csv (state={state})")
+            """,
+                parent_cdk,
+                child_cdks,
+                year,
+                f"Batch import from district_changes.csv (state={state})",
+            )
             inserted += 1
         except Exception as e:
             logger.warning(f"Skip {parent_cdk}/{year}: {e}")
             skipped += 1
 
-    logger.info(
-        f"Changes CSV loaded: {inserted} inserted, {skipped} skipped, "
-        f"{unresolved} unresolved"
-    )
+    logger.info(f"Changes CSV loaded: {inserted} inserted, {skipped} skipped, {unresolved} unresolved")
 
     return {
         "source": str(path),

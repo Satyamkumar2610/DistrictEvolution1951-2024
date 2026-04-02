@@ -15,25 +15,28 @@ from app.db_compat import fetch, fetchrow, fetchval
 
 class AnomalyType(StrEnum):
     """Types of anomalies detected."""
-    YIELD_OUTLIER = "yield_outlier"           # > 3 std from state mean
-    YOY_SPIKE = "yoy_spike"                   # Year-over-year change > 50%
-    MISSING_SEQUENCE = "missing_sequence"     # > 3 consecutive years missing
-    CONSISTENCY_ERROR = "consistency_error"   # Area * Yield != Production
-    ZERO_VALUE = "zero_value"                 # Unexpected zero values
-    NEGATIVE_VALUE = "negative_value"         # Should never happen
+
+    YIELD_OUTLIER = "yield_outlier"  # > 3 std from state mean
+    YOY_SPIKE = "yoy_spike"  # Year-over-year change > 50%
+    MISSING_SEQUENCE = "missing_sequence"  # > 3 consecutive years missing
+    CONSISTENCY_ERROR = "consistency_error"  # Area * Yield != Production
+    ZERO_VALUE = "zero_value"  # Unexpected zero values
+    NEGATIVE_VALUE = "negative_value"  # Should never happen
 
 
 class RiskLevel(StrEnum):
     """Risk assessment levels."""
-    CRITICAL = "critical"   # Immediate attention needed
-    HIGH = "high"           # Significant concern
-    MEDIUM = "medium"       # Worth monitoring
-    LOW = "low"             # Minor issue
+
+    CRITICAL = "critical"  # Immediate attention needed
+    HIGH = "high"  # Significant concern
+    MEDIUM = "medium"  # Worth monitoring
+    LOW = "low"  # Minor issue
 
 
 @dataclass
 class Anomaly:
     """Represents a detected anomaly."""
+
     anomaly_type: AnomalyType
     cdk: str
     year: int | None
@@ -45,14 +48,15 @@ class Anomaly:
 
     def to_dict(self) -> dict[str, Any]:
         result = asdict(self)
-        result['anomaly_type'] = self.anomaly_type.value
-        result['severity'] = self.severity.value
+        result["anomaly_type"] = self.anomaly_type.value
+        result["severity"] = self.severity.value
         return result
 
 
 @dataclass
 class RiskAlert:
     """Risk early warning alert."""
+
     cdk: str
     district_name: str
     risk_level: RiskLevel
@@ -62,13 +66,14 @@ class RiskAlert:
 
     def to_dict(self) -> dict[str, Any]:
         result = asdict(self)
-        result['risk_level'] = self.risk_level.value
+        result["risk_level"] = self.risk_level.value
         return result
 
 
 @dataclass
 class AnomalyReport:
     """Comprehensive anomaly report for a district."""
+
     cdk: str
     total_anomalies: int
     anomalies_by_type: dict[str, int]
@@ -85,10 +90,10 @@ class AnomalyReport:
             "anomalies_by_type": self.anomalies_by_type,
             "critical_count": self.critical_count,
             "high_count": self.high_count,
-            "anomalies": [
-                a.to_dict() for a in self.anomalies],
+            "anomalies": [a.to_dict() for a in self.anomalies],
             "risk_alert": self.risk_alert.to_dict() if self.risk_alert else None,
-            "scan_timestamp": self.scan_timestamp}
+            "scan_timestamp": self.scan_timestamp,
+        }
 
 
 class AnomalyDetector:
@@ -144,7 +149,7 @@ class AnomalyDetector:
             high_count=high_count,
             anomalies=anomalies[:50],  # Limit to 50 for response size
             risk_alert=risk_alert,
-            scan_timestamp=datetime.now(UTC).isoformat()
+            scan_timestamp=datetime.now(UTC).isoformat(),
         )
 
     async def _detect_yield_outliers(self, cdk: str) -> list[Anomaly]:
@@ -152,15 +157,21 @@ class AnomalyDetector:
         anomalies: list[Anomaly] = []
 
         # Get district's state
-        state = await fetchval(self.db, """
+        state = await fetchval(
+            self.db,
+            """
             SELECT state_name FROM districts WHERE lgd_code::text = $1
-        """, cdk)
+        """,
+            cdk,
+        )
 
         if not state:
             return anomalies
 
         # Get state-level statistics for yield variables
-        state_stats = await fetch(self.db, """
+        state_stats = await fetch(
+            self.db,
+            """
             SELECT
                 am.variable_name,
                 AVG(am.value) as mean_val,
@@ -172,44 +183,43 @@ class AnomalyDetector:
             AND am.value > 0
             GROUP BY am.variable_name
             HAVING STDDEV(am.value) > 0
-        """, state)
+        """,
+            state,
+        )
 
-        stats_map = {row['variable_name']: (row['mean_val'], row['std_val'])
-                     for row in state_stats}
+        stats_map = {row["variable_name"]: (row["mean_val"], row["std_val"]) for row in state_stats}
 
         # Check district values against state stats
-        district_yields = await fetch(self.db, """
+        district_yields = await fetch(
+            self.db,
+            """
             SELECT year, variable_name, value
             FROM agri_metrics
             WHERE district_lgd::text = $1 AND variable_name LIKE '%_yield' AND value > 0
-        """, cdk)
+        """,
+            cdk,
+        )
 
         for row in district_yields:
-            var = row['variable_name']
+            var = row["variable_name"]
             if var not in stats_map:
                 continue
 
             mean_val, std_val = stats_map[var]
-            z_score = abs((row['value'] - mean_val) / std_val)
+            z_score = abs((row["value"] - mean_val) / std_val)
 
             if z_score > self.z_score_threshold:
-                crop = var.replace('_yield', '')
+                crop = var.replace("_yield", "")
                 anomalies.append(
                     Anomaly(
                         anomaly_type=AnomalyType.YIELD_OUTLIER,
                         cdk=cdk,
-                        year=row['year'],
+                        year=row["year"],
                         variable=var,
-                        value=row['value'],
-                        expected_range=(
-                            round(
-                                mean_val - 2 * std_val,
-                                2),
-                            round(
-                                mean_val + 2 * std_val,
-                                2)),
+                        value=row["value"],
+                        expected_range=(round(mean_val - 2 * std_val, 2), round(mean_val + 2 * std_val, 2)),
                         severity=RiskLevel.HIGH if z_score > 4 else RiskLevel.MEDIUM,
-                        description=f"{crop.upper()} yield {row['value']:.1f} is {z_score:.1f} std deviations from state mean"
+                        description=f"{crop.upper()} yield {row['value']:.1f} is {z_score:.1f} std deviations from state mean",
                     )
                 )
 
@@ -220,20 +230,24 @@ class AnomalyDetector:
         anomalies = []
 
         # Get yield time series
-        yields = await fetch(self.db, """
+        yields = await fetch(
+            self.db,
+            """
             SELECT year, variable_name, value
             FROM agri_metrics
             WHERE district_lgd::text = $1 AND variable_name LIKE '%_yield' AND value > 0
             ORDER BY variable_name, year
-        """, cdk)
+        """,
+            cdk,
+        )
 
         # Group by variable
         by_var: dict[str, list[tuple[int, float]]] = {}
         for row in yields:
-            var = row['variable_name']
+            var = row["variable_name"]
             if var not in by_var:
                 by_var[var] = []
-            by_var[var].append((row['year'], row['value']))
+            by_var[var].append((row["year"], row["value"]))
 
         # Check consecutive years
         for var, series in by_var.items():
@@ -251,7 +265,7 @@ class AnomalyDetector:
                     pct_change = abs(curr_val - prev_val) / prev_val
 
                     if pct_change > self.yoy_threshold:
-                        crop = var.replace('_yield', '')
+                        crop = var.replace("_yield", "")
                         direction = "increase" if curr_val > prev_val else "decrease"
                         anomalies.append(
                             Anomaly(
@@ -260,17 +274,9 @@ class AnomalyDetector:
                                 year=curr_year,
                                 variable=var,
                                 value=curr_val,
-                                expected_range=(
-                                    round(
-                                        prev_val
-                                        * 0.5,
-                                        2),
-                                    round(
-                                        prev_val
-                                        * 1.5,
-                                        2)),
+                                expected_range=(round(prev_val * 0.5, 2), round(prev_val * 1.5, 2)),
                                 severity=RiskLevel.MEDIUM,
-                                description=f"{crop.upper()} yield {direction} {pct_change * 100:.0f}% from {prev_year} to {curr_year}"
+                                description=f"{crop.upper()} yield {direction} {pct_change * 100:.0f}% from {prev_year} to {curr_year}",
                             )
                         )
 
@@ -281,16 +287,20 @@ class AnomalyDetector:
         anomalies: list[Anomaly] = []
 
         # Get years with data
-        result = await fetch(self.db, """
+        result = await fetch(
+            self.db,
+            """
             SELECT DISTINCT year FROM agri_metrics
             WHERE district_lgd::text = $1
             ORDER BY year
-        """, cdk)
+        """,
+            cdk,
+        )
 
         if len(result) < 2:
             return anomalies
 
-        years_with_data = sorted([r['year'] for r in result])
+        years_with_data = sorted([r["year"] for r in result])
         min_year, max_year = years_with_data[0], years_with_data[-1]
 
         # Find gaps
@@ -313,7 +323,7 @@ class AnomalyDetector:
                             value=None,
                             expected_range=None,
                             severity=RiskLevel.HIGH if current_gap_length >= 5 else RiskLevel.MEDIUM,
-                            description=f"Missing data for {current_gap_length} consecutive years ({current_gap_start}-{current_gap_start + current_gap_length - 1})"  # type: ignore[operator]
+                            description=f"Missing data for {current_gap_length} consecutive years ({current_gap_start}-{current_gap_start + current_gap_length - 1})",  # type: ignore[operator]
                         )
                     )
                 current_gap_start = None
@@ -330,7 +340,7 @@ class AnomalyDetector:
                     value=None,
                     expected_range=None,
                     severity=RiskLevel.HIGH if current_gap_length >= 5 else RiskLevel.MEDIUM,
-                    description=f"Missing data for {current_gap_length} consecutive years ({current_gap_start}-{current_gap_start + current_gap_length - 1})"  # type: ignore[operator]
+                    description=f"Missing data for {current_gap_length} consecutive years ({current_gap_start}-{current_gap_start + current_gap_length - 1})",  # type: ignore[operator]
                 )
             )
 
@@ -341,29 +351,33 @@ class AnomalyDetector:
         anomalies = []
 
         # Get all crop metrics
-        metrics = await fetch(self.db, """
+        metrics = await fetch(
+            self.db,
+            """
             SELECT year, variable_name, value
             FROM agri_metrics
             WHERE district_lgd::text = $1 AND value > 0
             ORDER BY year
-        """, cdk)
+        """,
+            cdk,
+        )
 
         # Group by year and extract crop prefixes
         by_year: dict[int, dict[str, float]] = {}
         for row in metrics:
-            year = row['year']
+            year = row["year"]
             if year not in by_year:
                 by_year[year] = {}
-            by_year[year][row['variable_name']] = row['value']
+            by_year[year][row["variable_name"]] = row["value"]
 
         # Check consistency for each crop
-        crops = ['rice', 'wheat', 'maize', 'pulses', 'cotton']
+        crops = ["rice", "wheat", "maize", "pulses", "cotton"]
 
         for year, data in by_year.items():
             for crop in crops:
-                area_key = f'{crop}_area'
-                prod_key = f'{crop}_production'
-                yield_key = f'{crop}_yield'
+                area_key = f"{crop}_area"
+                prod_key = f"{crop}_production"
+                yield_key = f"{crop}_yield"
 
                 if all(k in data for k in [area_key, prod_key, yield_key]):
                     area = data[area_key]
@@ -387,15 +401,9 @@ class AnomalyDetector:
                                         year=year,
                                         variable=crop,
                                         value=prod,
-                                        expected_range=(
-                                            round(
-                                                expected_prod * 0.8,
-                                                2),
-                                            round(
-                                                expected_prod * 1.2,
-                                                2)),
+                                        expected_range=(round(expected_prod * 0.8, 2), round(expected_prod * 1.2, 2)),
                                         severity=RiskLevel.MEDIUM,
-                                        description=f"{crop.upper()} production {prod:.0f} doesn't match area×yield calculation"
+                                        description=f"{crop.upper()} production {prod:.0f} doesn't match area×yield calculation",
                                     )
                                 )
 
@@ -406,43 +414,47 @@ class AnomalyDetector:
         anomalies = []
 
         # Check for negative values (should never happen)
-        negatives = await fetch(self.db, """
+        negatives = await fetch(
+            self.db,
+            """
             SELECT year, variable_name, value
             FROM agri_metrics
             WHERE district_lgd::text = $1 AND value < 0
-        """, cdk)
+        """,
+            cdk,
+        )
 
         for row in negatives:
             anomalies.append(
                 Anomaly(
                     anomaly_type=AnomalyType.NEGATIVE_VALUE,
                     cdk=cdk,
-                    year=row['year'],
-                    variable=row['variable_name'],
-                    value=row['value'],
-                    expected_range=(0.0, float('inf')),
+                    year=row["year"],
+                    variable=row["variable_name"],
+                    value=row["value"],
+                    expected_range=(0.0, float("inf")),
                     severity=RiskLevel.CRITICAL,
-                    description=f"Negative value {row['value']} for {row['variable_name']} in {row['year']}"
+                    description=f"Negative value {row['value']} for {row['variable_name']} in {row['year']}",
                 )
             )
 
         return anomalies
 
-    async def _generate_risk_alert(
-        self,
-        cdk: str,
-        anomalies: list[Anomaly]
-    ) -> RiskAlert | None:
+    async def _generate_risk_alert(self, cdk: str, anomalies: list[Anomaly]) -> RiskAlert | None:
         """Generate risk early warning based on anomalies and rainfall."""
         if not anomalies:
             return None
 
         # Get district name
-        district_info = await fetchrow(self.db, """
+        district_info = await fetchrow(
+            self.db,
+            """
             SELECT district_name FROM districts WHERE lgd_code::text = $1
-        """, cdk)
+        """,
+            cdk,
+        )
 
-        district_name = district_info['district_name'] if district_info else cdk
+        district_name = district_info["district_name"] if district_info else cdk
 
         # Calculate risk score based on anomalies
         critical_weight = 30
@@ -451,10 +463,13 @@ class AnomalyDetector:
         low_weight = 1
 
         risk_score = sum(
-            critical_weight if a.severity == RiskLevel.CRITICAL else
-            high_weight if a.severity == RiskLevel.HIGH else
-            medium_weight if a.severity == RiskLevel.MEDIUM else
-            low_weight
+            critical_weight
+            if a.severity == RiskLevel.CRITICAL
+            else high_weight
+            if a.severity == RiskLevel.HIGH
+            else medium_weight
+            if a.severity == RiskLevel.MEDIUM
+            else low_weight
             for a in anomalies
         )
 
@@ -474,8 +489,7 @@ class AnomalyDetector:
         # Compile risk factors
         factors = []
         if any(a.anomaly_type == AnomalyType.YIELD_OUTLIER for a in anomalies):
-            factors.append(
-                "Yield values significantly deviate from state average")
+            factors.append("Yield values significantly deviate from state average")
         if any(a.anomaly_type == AnomalyType.YOY_SPIKE for a in anomalies):
             factors.append("Volatile year-over-year yield changes detected")
         if any(a.anomaly_type == AnomalyType.MISSING_SEQUENCE for a in anomalies):
@@ -501,22 +515,23 @@ class AnomalyDetector:
             risk_level=risk_level,
             risk_score=round(risk_score, 1),
             factors=factors,
-            recommendation=recommendation
+            recommendation=recommendation,
         )
 
 
-async def scan_state_anomalies(
-    db: asyncpg.Connection,
-    state: str,
-    limit: int = 20
-) -> dict[str, Any]:
+async def scan_state_anomalies(db: asyncpg.Connection, state: str, limit: int = 20) -> dict[str, Any]:
     """Scan all districts in a state for anomalies."""
     # Get districts in state
-    districts = await fetch(db, """
+    districts = await fetch(
+        db,
+        """
         SELECT lgd_code::text as cdk, district_name FROM districts
         WHERE state_name = $1
         LIMIT $2
-    """, state, limit)
+    """,
+        state,
+        limit,
+    )
 
     if not districts:
         return {"error": f"No districts found for state: {state}"}
@@ -527,28 +542,30 @@ async def scan_state_anomalies(
     total_high = 0
 
     for row in districts:
-        report = await detector.scan_district(row['cdk'])
+        report = await detector.scan_district(row["cdk"])
         total_critical += report.critical_count
         total_high += report.high_count
 
-        results.append({
-            "cdk": row['cdk'],
-            "district_name": row['district_name'],
-            "total_anomalies": report.total_anomalies,
-            "critical": report.critical_count,
-            "high": report.high_count,
-            "risk_level": report.risk_alert.risk_level.value if report.risk_alert else "none",
-            "risk_score": report.risk_alert.risk_score if report.risk_alert else 0
-        })
+        results.append(
+            {
+                "cdk": row["cdk"],
+                "district_name": row["district_name"],
+                "total_anomalies": report.total_anomalies,
+                "critical": report.critical_count,
+                "high": report.high_count,
+                "risk_level": report.risk_alert.risk_level.value if report.risk_alert else "none",
+                "risk_score": report.risk_alert.risk_score if report.risk_alert else 0,
+            }
+        )
 
     # Sort by risk score descending
-    results.sort(key=lambda x: -x['risk_score'])
+    results.sort(key=lambda x: -x["risk_score"])
 
     return {
         "state": state,
         "districts_scanned": len(results),
         "total_critical_anomalies": total_critical,
         "total_high_anomalies": total_high,
-        "high_risk_districts": [r for r in results if r['risk_score'] >= 40],
-        "all_districts": results
+        "high_risk_districts": [r for r in results if r["risk_score"] >= 40],
+        "all_districts": results,
     }

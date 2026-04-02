@@ -1,6 +1,7 @@
 """
 Climate and rainfall response schemas.
 """
+
 from pydantic import BaseModel, Field
 
 

@@ -2,6 +2,7 @@
 Research-Grade Spatio-Temporal Analytics Backend
 Configuration via Pydantic Settings
 """
+
 from functools import lru_cache
 
 from pydantic_settings import BaseSettings, SettingsConfigDict

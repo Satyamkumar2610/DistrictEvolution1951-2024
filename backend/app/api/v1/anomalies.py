@@ -19,10 +19,7 @@ router = APIRouter(prefix="/anomalies", tags=["Anomaly Detection"])
 
 
 @router.get("/district/{cdk}", response_model=DistrictAnomalyReportResponse)
-async def scan_district_anomalies(
-    cdk: str,
-    db: asyncpg.Connection = Depends(get_db)
-):
+async def scan_district_anomalies(cdk: str, db: asyncpg.Connection = Depends(get_db)):
     """
     Run full anomaly scan for a specific district.
 
@@ -41,11 +38,7 @@ async def scan_district_anomalies(
 
 
 @router.get("/state/{state_name}", response_model=StateAnomalySummaryResponse)
-async def scan_state(
-    state_name: str,
-    limit: int = Query(20, ge=1, le=100),
-    db: asyncpg.Connection = Depends(get_db)
-):
+async def scan_state(state_name: str, limit: int = Query(20, ge=1, le=100), db: asyncpg.Connection = Depends(get_db)):
     """
     Scan all districts in a state for anomalies.
 
@@ -58,10 +51,7 @@ async def scan_state(
 
 
 @router.get("/high-risk", response_model=HighRiskResponse)
-async def get_high_risk_districts(
-    limit: int = Query(10, ge=1, le=30),
-    db: asyncpg.Connection = Depends(get_db)
-):
+async def get_high_risk_districts(limit: int = Query(10, ge=1, le=30), db: asyncpg.Connection = Depends(get_db)):
     """
     Get districts with highest risk scores across all states.
 

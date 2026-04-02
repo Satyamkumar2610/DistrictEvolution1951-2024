@@ -54,9 +54,7 @@ class HTTPSRedirectMiddleware(BaseHTTPMiddleware):
         host = request.headers.get("host", "")
         if "localhost" not in host and "127.0.0.1" not in host:
             # Strict Transport Security (1 year)
-            response.headers["Strict-Transport-Security"] = (
-                "max-age=31536000; includeSubDomains; preload"
-            )
+            response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains; preload"
 
         return response
 

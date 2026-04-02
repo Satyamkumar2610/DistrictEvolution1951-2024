@@ -3,6 +3,7 @@ Lineage Reconstructor API — reconstructs historical district timelines
 across split events using epoch-based aggregation.
 v3: DAG-based LineageGraph with ancestor/descendant queries.
 """
+
 import logging
 
 import asyncpg  # type: ignore
@@ -29,17 +30,17 @@ router = APIRouter()
 # Helper: build LineageGraph from DB
 # ------------------------------------------------------------------
 
+
 async def _build_graph(db: asyncpg.Connection) -> LineageGraph:
     """Fetch split_events and construct a LineageGraph."""
-    rows = await db.fetch(
-        "SELECT parent_cdk, child_cdks, split_year FROM split_events"
-    )
+    rows = await db.fetch("SELECT parent_cdk, child_cdks, split_year FROM split_events")
     return LineageGraph.from_split_events([dict(r) for r in rows])
 
 
 # ------------------------------------------------------------------
 # Search
 # ------------------------------------------------------------------
+
 
 @router.get("/search", response_model=list[ReconstructorSearchResult])
 async def search_districts(
@@ -50,7 +51,8 @@ async def search_districts(
     Fuzzy search for districts in the split_events graph.
     """
     try:
-        results = await db.fetch("""
+        results = await db.fetch(
+            """
             WITH all_cdks AS (
                 SELECT DISTINCT parent_cdk AS cdk FROM split_events
                 UNION
@@ -75,20 +77,24 @@ async def search_districts(
             WHERE cn.display_name ILIKE $1 OR cn.cdk ILIKE $1
             ORDER BY cn.cdk, cn.snapshot_year
             LIMIT 15
-        """, f"%{q}%")
+        """,
+            f"%{q}%",
+        )
 
         out = []
         for r in results:
             cdk_str = r["cdk"]
             parts = cdk_str.split("_")
             state_prefix = parts[0] if parts else ""
-            out.append({
-                "cdk": cdk_str,
-                "display_name": r["display_name"],
-                "state": state_prefix,
-                "era": r["era"],
-                "is_root": r["is_root"],
-            })
+            out.append(
+                {
+                    "cdk": cdk_str,
+                    "display_name": r["display_name"],
+                    "state": state_prefix,
+                    "era": r["era"],
+                    "is_root": r["is_root"],
+                }
+            )
         return out
     except Exception as e:
         logger.error(f"Search failed: {e}")
@@ -99,6 +105,7 @@ async def search_districts(
 # Tree / Lineage
 # ------------------------------------------------------------------
 
+
 @router.get("/{cdk}/lineage", response_model=ReconstructorLineageNode)
 async def get_lineage(cdk: str, db: asyncpg.Connection = Depends(get_db)):
     """Returns the tree structure for the frontend."""
@@ -107,14 +114,13 @@ async def get_lineage(cdk: str, db: asyncpg.Connection = Depends(get_db)):
         return await svc.get_lineage_tree(cdk)
     except Exception as e:
         logger.error(f"Lineage tree failed for {cdk}: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Lineage tree failed: {str(e)}"
-        ) from e
+        raise HTTPException(status_code=500, detail=f"Lineage tree failed: {str(e)}") from e
 
 
 # ------------------------------------------------------------------
 # Ancestors / Descendants (new DAG-based endpoints)
 # ------------------------------------------------------------------
+
 
 @router.get("/{cdk}/ancestors", response_model=ReconstructorAncestorsResponse)
 async def get_ancestors(
@@ -170,6 +176,7 @@ async def get_descendants(
 # Graph summary
 # ------------------------------------------------------------------
 
+
 @router.get("/graph/summary", response_model=ReconstructorGraphSummaryResponse)
 async def graph_summary(db: asyncpg.Connection = Depends(get_db)):
     """Returns DAG statistics: node/event counts, root/leaf counts, event types."""
@@ -185,6 +192,7 @@ async def graph_summary(db: asyncpg.Connection = Depends(get_db)):
 # Full reconstruction
 # ------------------------------------------------------------------
 
+
 @router.get("/{cdk}", response_model=ReconstructionResponse)
 async def reconstruct_lineage(
     cdk: str,
@@ -199,14 +207,11 @@ async def reconstruct_lineage(
         if not result["epochs"]:
             raise HTTPException(
                 status_code=404,
-                detail="No split events found for this CDK. "
-                       "It may not be a root district.",
+                detail="No split events found for this CDK. It may not be a root district.",
             )
         return result
     except HTTPException:
         raise
     except Exception as e:
         logger.error(f"Reconstruction failed for {cdk}: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Reconstruction failed: {str(e)}"
-        ) from e
+        raise HTTPException(status_code=500, detail=f"Reconstruction failed: {str(e)}") from e

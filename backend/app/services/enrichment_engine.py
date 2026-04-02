@@ -96,6 +96,7 @@ async def query_overpass(poly_str: str, query_template: str) -> dict | None:
 
 # ─── Enrichment Workers ──────────────────────────────────────────────────
 
+
 async def enrich_transfer_osm(
     db: asyncpg.Connection,
     transfer_id: int,
@@ -115,42 +116,34 @@ async def enrich_transfer_osm(
     # 1. Settlements count
     result = await query_overpass(poly_str, OVERPASS_QUERIES["settlements"])
     if result and "elements" in result:
-        count = (
-            result["elements"][0].get("tags", {}).get("total", 0)
-            if result["elements"] else len(result["elements"])
-        )
+        count = result["elements"][0].get("tags", {}).get("total", 0) if result["elements"] else len(result["elements"])
         await _upsert_enrichment(
-            db, transfer_id, "osm_overpass", "settlement_count",
-            float(count), "count", None,
-            "https://overpass-api.de"
+            db, transfer_id, "osm_overpass", "settlement_count", float(count), "count", None, "https://overpass-api.de"
         )
         inserted += 1
 
     # 2. Schools count
     result = await query_overpass(poly_str, OVERPASS_QUERIES["schools"])
     if result and "elements" in result:
-        count = (
-            result["elements"][0].get("tags", {}).get("total", 0)
-            if result["elements"] else len(result["elements"])
-        )
+        count = result["elements"][0].get("tags", {}).get("total", 0) if result["elements"] else len(result["elements"])
         await _upsert_enrichment(
-            db, transfer_id, "osm_overpass", "school_count",
-            float(count), "count", None,
-            "https://overpass-api.de"
+            db, transfer_id, "osm_overpass", "school_count", float(count), "count", None, "https://overpass-api.de"
         )
         inserted += 1
 
     # 3. Hospitals count
     result = await query_overpass(poly_str, OVERPASS_QUERIES["hospitals"])
     if result and "elements" in result:
-        count = (
-            result["elements"][0].get("tags", {}).get("total", 0)
-            if result["elements"] else len(result["elements"])
-        )
+        count = result["elements"][0].get("tags", {}).get("total", 0) if result["elements"] else len(result["elements"])
         await _upsert_enrichment(
-            db, transfer_id, "osm_overpass", "hospital_clinic_count",
-            float(count), "count", None,
-            "https://overpass-api.de"
+            db,
+            transfer_id,
+            "osm_overpass",
+            "hospital_clinic_count",
+            float(count),
+            "count",
+            None,
+            "https://overpass-api.de",
         )
         inserted += 1
 
@@ -174,11 +167,15 @@ async def enrich_transfer_area_proportion(
     inserted = 0
 
     # Get parent area
-    parent_area = await db.fetchval("""
+    parent_area = await db.fetchval(
+        """
         SELECT area_sqkm FROM district_snapshots
         WHERE district_cdk = $1 AND geometry IS NOT NULL
         ORDER BY ABS(snapshot_year - $2) LIMIT 1
-    """, parent_cdk, split_year)
+    """,
+        parent_cdk,
+        split_year,
+    )
 
     if not parent_area or parent_area <= 0:
         return 0
@@ -186,40 +183,55 @@ async def enrich_transfer_area_proportion(
     ratio = transfer_area_sqkm / parent_area
 
     # Try to get crop metrics from our own database
-    metrics = await db.fetch("""
+    metrics = await db.fetch(
+        """
         SELECT crop, metric, value
         FROM district_metrics
         WHERE cdk = $1
           AND year = (SELECT MAX(year) FROM district_metrics WHERE cdk = $1 AND year <= $2)
         LIMIT 20
-    """, parent_cdk, split_year)
+    """,
+        parent_cdk,
+        split_year,
+    )
 
     for row in metrics:
         metric_name = f"{row['crop']}_{row['metric']}"
         estimated = float(row["value"]) * ratio
         await _upsert_enrichment(
-            db, transfer_id, "i_ascap_proportional", metric_name,
+            db,
+            transfer_id,
+            "i_ascap_proportional",
+            metric_name,
             round(estimated, 4),
             "estimated_proportional",
             split_year,
-            f"Proportional estimate: {ratio:.4f} of parent {parent_cdk}"
+            f"Proportional estimate: {ratio:.4f} of parent {parent_cdk}",
         )
         inserted += 1
 
     # Estimate total agricultural area (if available)
-    total_ag_area = await db.fetchval("""
+    total_ag_area = await db.fetchval(
+        """
         SELECT SUM(value) FROM district_metrics
         WHERE cdk = $1 AND metric = 'area'
           AND year = (SELECT MAX(year) FROM district_metrics WHERE cdk = $1 AND year <= $2)
-    """, parent_cdk, split_year)
+    """,
+        parent_cdk,
+        split_year,
+    )
 
     if total_ag_area and total_ag_area > 0:
         estimated_ag = float(total_ag_area) * ratio
         await _upsert_enrichment(
-            db, transfer_id, "i_ascap_proportional", "total_agricultural_area",
-            round(estimated_ag, 2), "hectares",
+            db,
+            transfer_id,
+            "i_ascap_proportional",
+            "total_agricultural_area",
+            round(estimated_ag, 2),
+            "hectares",
             split_year,
-            f"Proportional estimate: {ratio:.4f} of parent {parent_cdk}"
+            f"Proportional estimate: {ratio:.4f} of parent {parent_cdk}",
         )
         inserted += 1
 
@@ -239,10 +251,7 @@ async def enrich_transfer_land_stats(
     inserted = 0
 
     # Store the transfer area itself
-    await _upsert_enrichment(
-        db, transfer_id, "geometry_derived", "area_sqkm",
-        transfer_area_sqkm, "sq_km", None, None
-    )
+    await _upsert_enrichment(db, transfer_id, "geometry_derived", "area_sqkm", transfer_area_sqkm, "sq_km", None, None)
     inserted += 1
 
     # Compute bounding box area ratio (compactness proxy)
@@ -266,8 +275,7 @@ async def enrich_transfer_land_stats(
             if bbox_area_sqkm > 0:
                 compactness = transfer_area_sqkm / bbox_area_sqkm
                 await _upsert_enrichment(
-                    db, transfer_id, "geometry_derived", "compactness_ratio",
-                    round(compactness, 4), "ratio", None, None
+                    db, transfer_id, "geometry_derived", "compactness_ratio", round(compactness, 4), "ratio", None, None
                 )
                 inserted += 1
 
@@ -275,12 +283,10 @@ async def enrich_transfer_land_stats(
             avg_lon = sum(lons) / len(lons)
             avg_lat = sum(lats) / len(lats)
             await _upsert_enrichment(
-                db, transfer_id, "geometry_derived", "centroid_lon",
-                round(avg_lon, 6), "degrees", None, None
+                db, transfer_id, "geometry_derived", "centroid_lon", round(avg_lon, 6), "degrees", None, None
             )
             await _upsert_enrichment(
-                db, transfer_id, "geometry_derived", "centroid_lat",
-                round(avg_lat, 6), "degrees", None, None
+                db, transfer_id, "geometry_derived", "centroid_lat", round(avg_lat, 6), "degrees", None, None
             )
             inserted += 2
 
@@ -291,6 +297,7 @@ async def enrich_transfer_land_stats(
 
 
 # ─── Master Enrichment Orchestrator ───────────────────────────────────────
+
 
 async def enrich_split_event(
     db: asyncpg.Connection,
@@ -305,10 +312,13 @@ async def enrich_split_event(
     logger.info(f"Starting enrichment for split event {event_id}")
 
     # Get event details
-    event = await db.fetchrow("""
+    event = await db.fetchrow(
+        """
         SELECT parent_cdk, child_cdks, split_year
         FROM split_events WHERE id = $1
-    """, event_id)
+    """,
+        event_id,
+    )
 
     if not event:
         logger.error(f"Split event {event_id} not found")
@@ -318,13 +328,16 @@ async def enrich_split_event(
     split_year = event["split_year"]
 
     # Get all transfers for this event
-    transfers = await db.fetch("""
+    transfers = await db.fetch(
+        """
         SELECT id, from_district, to_district, area_sqkm,
                transfer_type::text,
                ST_AsGeoJSON(geometry)::json AS geojson
         FROM area_transfers
         WHERE event_id = $1
-    """, event_id)
+    """,
+        event_id,
+    )
 
     summary: dict[str, Any] = {
         "event_id": event_id,
@@ -344,9 +357,7 @@ async def enrich_split_event(
         enriched_counts["geometry_derived"] = count
 
         # 2. Area-proportional estimates from I-ASCAP DB
-        count = await enrich_transfer_area_proportion(
-            db, tid, area, parent_cdk, split_year
-        )
+        count = await enrich_transfer_area_proportion(db, tid, area, parent_cdk, split_year)
         enriched_counts["i_ascap_proportional"] = count
 
         # 3. OSM/Overpass enrichment (may timeout on large polygons)
@@ -360,20 +371,16 @@ async def enrich_split_event(
         summary["enrichments"][tid] = enriched_counts
 
     enrichments: dict[int, dict[str, int]] = summary["enrichments"]
-    total_rows = sum(
-        sum(v.values()) for v in enrichments.values()
-    )
+    total_rows = sum(sum(v.values()) for v in enrichments.values())
     summary["total_enrichment_rows"] = total_rows
 
-    logger.info(
-        f"Enrichment complete for event {event_id}: "
-        f"{total_rows} rows across {len(transfers)} transfers"
-    )
+    logger.info(f"Enrichment complete for event {event_id}: {total_rows} rows across {len(transfers)} transfers")
 
     return summary
 
 
 # ─── Helpers ──────────────────────────────────────────────────────────────
+
 
 async def _upsert_enrichment(
     db: asyncpg.Connection,
@@ -386,7 +393,8 @@ async def _upsert_enrichment(
     source_url: str | None,
 ) -> None:
     """Insert or update a single enrichment row."""
-    await db.execute("""
+    await db.execute(
+        """
         INSERT INTO split_enrichment
             (transfer_id, dataset_name, metric_name, value, unit,
              reference_year, source_url)
@@ -397,5 +405,12 @@ async def _upsert_enrichment(
             reference_year = EXCLUDED.reference_year,
             source_url = EXCLUDED.source_url,
             created_at = NOW()
-    """, transfer_id, dataset_name, metric_name, value, unit,
-        reference_year, source_url)
+    """,
+        transfer_id,
+        dataset_name,
+        metric_name,
+        value,
+        unit,
+        reference_year,
+        source_url,
+    )

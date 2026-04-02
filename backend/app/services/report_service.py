@@ -54,11 +54,7 @@ class ReportService:
             statistics=stats,
             state_benchmark=DistrictProfileStateBenchmark(
                 avg_yield=state_avg or 0.0,
-                efficiency=(
-                    round(mean_yield / state_avg, 3)
-                    if state_avg and mean_yield is not None
-                    else None
-                ),
+                efficiency=(round(mean_yield / state_avg, 3) if state_avg and mean_yield is not None else None),
             ),
             yearly_data=yearly_data,
         )
@@ -97,16 +93,8 @@ class ReportService:
         yearly_data: list[dict[str, float | int]],
     ) -> DistrictProfileStatistics:
         """Calculate basic summary statistics for the report."""
-        yields = [
-            float(item["yield"])
-            for item in yearly_data
-            if "yield" in item and float(item["yield"]) > 0
-        ]
-        areas = [
-            float(item["area"])
-            for item in yearly_data
-            if "area" in item and float(item["area"]) > 0
-        ]
+        yields = [float(item["yield"]) for item in yearly_data if "yield" in item and float(item["yield"]) > 0]
+        areas = [float(item["area"]) for item in yearly_data if "area" in item and float(item["area"]) > 0]
 
         stats = DistrictProfileStatistics()
         if yields:
@@ -120,7 +108,7 @@ class ReportService:
 
             if len(yields) > 1:
                 variance = sum((value - mean_yield) ** 2 for value in yields) / len(yields)
-                std_yield = variance ** 0.5
+                std_yield = variance**0.5
                 stats.std_yield = round(std_yield, 2)
                 stats.cv_yield = round((std_yield / mean_yield) * 100, 2) if mean_yield > 0 else 0.0
 

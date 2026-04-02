@@ -27,11 +27,7 @@ async def liveness() -> dict[str, Any]:
     Basic liveness check.
     Returns 200 if the service is running.
     """
-    return {
-        "status": "healthy",
-        "timestamp": datetime.now(UTC).isoformat(),
-        "service": "i-ascap-backend"
-    }
+    return {"status": "healthy", "timestamp": datetime.now(UTC).isoformat(), "service": "i-ascap-backend"}
 
 
 @router.get("/ready", response_model=ReadinessResponse)
@@ -52,9 +48,7 @@ async def readiness(db: asyncpg.Connection = Depends(get_db)) -> dict[str, Any]:
     return {
         "status": "ready" if is_ready else "not_ready",
         "timestamp": datetime.now(UTC).isoformat(),
-        "checks": {
-            "database": db_status
-        }
+        "checks": {"database": db_status},
     }
 
 
@@ -103,13 +97,13 @@ async def data_metrics(db: asyncpg.Connection = Depends(get_db)) -> dict[str, An
             "year_range": {
                 "min": year_stats["min_year"] if year_stats else None,
                 "max": year_stats["max_year"] if year_stats else None,
-                "count": year_stats["year_count"] if year_stats else 0
-            }
+                "count": year_stats["year_count"] if year_stats else 0,
+            },
         },
         "data_quality": {
             "orphan_metric_cdks": orphan_metrics,
-            "integrity_status": "good" if orphan_metrics == 0 else "issues_detected"
-        }
+            "integrity_status": "good" if orphan_metrics == 0 else "issues_detected",
+        },
     }
 
 
@@ -120,7 +114,4 @@ async def app_metrics() -> dict[str, Any]:
 
     Returns latency percentiles, cache stats, database stats, and more.
     """
-    return {
-        "timestamp": datetime.now(UTC).isoformat(),
-        **metrics.get_all_metrics()
-    }
+    return {"timestamp": datetime.now(UTC).isoformat(), **metrics.get_all_metrics()}

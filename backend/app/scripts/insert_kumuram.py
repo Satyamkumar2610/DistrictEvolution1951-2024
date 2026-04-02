@@ -30,7 +30,8 @@ async def main():
     conn = await asyncpg.connect(db_url)
     try:
         print("Inserting Kumuram Bheem...")
-        await conn.execute("""
+        await conn.execute(
+            """
             INSERT INTO district_snapshots
                 (district_cdk, snapshot_year, district_name, geometry_source, geometry_confidence, geometry)
             VALUES
@@ -39,7 +40,9 @@ async def main():
                 geometry = EXCLUDED.geometry,
                 geometry_source = EXCLUDED.geometry_source,
                 geometry_confidence = EXCLUDED.geometry_confidence;
-        """, kumuram_geom_json)
+        """,
+            kumuram_geom_json,
+        )
 
         await conn.execute("""
             UPDATE district_snapshots
@@ -68,6 +71,7 @@ async def main():
 
     finally:
         await conn.close()
+
 
 if __name__ == "__main__":
     asyncio.run(main())

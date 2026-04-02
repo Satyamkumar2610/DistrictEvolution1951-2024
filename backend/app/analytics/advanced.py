@@ -12,6 +12,7 @@ from app.analytics.statistics import get_analyzer  # type: ignore
 
 class RiskCategory(StrEnum):
     """Risk classification based on volatility."""
+
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"
@@ -21,6 +22,7 @@ class RiskCategory(StrEnum):
 @dataclass
 class DiversificationResult:
     """Result of crop diversification analysis."""
+
     cdi: float  # Crop Diversification Index (0-1)
     interpretation: str  # Human-readable interpretation
     dominant_crop: str | None  # Most grown crop
@@ -32,6 +34,7 @@ class DiversificationResult:
 @dataclass
 class EfficiencyResult:
     """Result of yield efficiency analysis."""
+
     efficiency_score: float  # 0-1, how close to potential
     district_yield: float
     potential_yield: float  # 95th percentile in state
@@ -43,6 +46,7 @@ class EfficiencyResult:
 @dataclass
 class RiskProfile:
     """Risk profile for a district."""
+
     risk_category: RiskCategory
     volatility_score: float  # CV percentage
     reliability_rating: str  # A/B/C/D/F
@@ -54,6 +58,7 @@ class RiskProfile:
 @dataclass
 class HistoricalEfficiencyResult:
     """Result of historical efficiency analysis."""
+
     efficiency_ratio: float  # current / historical_mean
     current_yield: float
     historical_mean: float  # 10-year mean
@@ -64,6 +69,7 @@ class HistoricalEfficiencyResult:
 @dataclass
 class ResilienceResult:
     """Result of resilience analysis."""
+
     resilience_score: float  # 0-1 composite score
     volatility_component: float  # normalized (1-CV)
     retention_component: float  # P10/Median ratio
@@ -74,6 +80,7 @@ class ResilienceResult:
 @dataclass
 class GrowthResult:
     """Result of growth matrix analysis."""
+
     cagr_5y: float
     cagr_historical: float
     mean_yield_5y: float
@@ -85,6 +92,7 @@ class GrowthResult:
 @dataclass
 class SimulationResult:
     """Result of impact simulation model."""
+
     baseline_yield: float
     slope: float  # kg/ha change per mm rainfall
     intercept: float
@@ -149,10 +157,8 @@ class AdvancedAnalyzer:
             )
 
         # Calculate proportions and sum of squares
-        proportions = {
-            crop: area / total_area for crop,
-            area in crop_areas.items()}
-        sum_of_squares = sum(p ** 2 for p in proportions.values())
+        proportions = {crop: area / total_area for crop, area in crop_areas.items()}
+        sum_of_squares = sum(p**2 for p in proportions.values())
 
         # Simpson's Diversity Index
         cdi = 1 - sum_of_squares
@@ -217,20 +223,14 @@ class AdvancedAnalyzer:
         potential_yield = self.stats.percentile(state_yields, 95)
 
         # Calculate efficiency
-        efficiency = min(
-            district_yield / potential_yield,
-            1.0) if potential_yield > 0 else 0
+        efficiency = min(district_yield / potential_yield, 1.0) if potential_yield > 0 else 0
 
         # Calculate gap
         yield_gap = potential_yield - district_yield
-        yield_gap_pct = (
-            yield_gap
-            / potential_yield
-            * 100) if potential_yield > 0 else 0
+        yield_gap_pct = (yield_gap / potential_yield * 100) if potential_yield > 0 else 0
 
         # Percentile rank within state
-        percentile_rank = self.stats.percentile_rank(
-            district_yield, state_yields)
+        percentile_rank = self.stats.percentile_rank(district_yield, state_yields)
 
         return EfficiencyResult(
             efficiency_score=round(float(efficiency), 4),  # type: ignore
@@ -285,7 +285,7 @@ class AdvancedAnalyzer:
             current_yield=round(float(current_yield), 2),  # type: ignore
             historical_mean=round(float(mean_yield), 2),  # type: ignore
             yield_diff=round(float(diff), 2),  # type: ignore
-            is_above_trend=bool(diff > 0)
+            is_above_trend=bool(diff > 0),
         )
 
     # -------------------------------------------------------------------------
@@ -328,9 +328,7 @@ class AdvancedAnalyzer:
         # Based on how often yield is within 20% of mean
         mean = self.stats.mean(values)
         if mean > 0:
-            consistent_years = sum(
-                1 for v in values if abs(
-                    v - mean) / mean <= 0.2)
+            consistent_years = sum(1 for v in values if abs(v - mean) / mean <= 0.2)
             consistency_ratio = consistent_years / len(values)
         else:
             consistency_ratio = 0
@@ -372,9 +370,7 @@ class AdvancedAnalyzer:
     # Resilience & Growth
     # -------------------------------------------------------------------------
 
-    def calculate_resilience(self,
-                             yearly_values: dict[int,
-                                                 float]) -> ResilienceResult:
+    def calculate_resilience(self, yearly_values: dict[int, float]) -> ResilienceResult:
         """
         Calculate resilience score.
         Score = 0.6 * (1 - CV_norm) + 0.4 * Retention_Ratio
@@ -414,11 +410,10 @@ class AdvancedAnalyzer:
             volatility_component=round(float(cv_norm), 2),  # type: ignore
             retention_component=round(float(retention), 2),  # type: ignore
             drought_risk=drought_risk,
-            reliability_rating=rating
+            reliability_rating=rating,
         )
 
-    def calculate_growth_matrix(
-            self, yearly_values: dict[int, float]) -> GrowthResult:
+    def calculate_growth_matrix(self, yearly_values: dict[int, float]) -> GrowthResult:
         """
         Calculate Compound Annual Growth Rate (CAGR) and classify matrix quadrant.
         """
@@ -435,8 +430,7 @@ class AdvancedAnalyzer:
         # CAGR Formula: (End/Start)^(1/n) - 1
         cagr = (end_val / start_val) ** (1 / years) - 1 if start_val > 0 and years > 0 else 0
 
-        mean_yield = sum(yearly_values[y]
-                         for y in recent_years) / len(recent_years)
+        mean_yield = sum(yearly_values[y] for y in recent_years) / len(recent_years)
 
         # Determine Quadrant (Thresholds need state context, but using generic for now)
         # Assuming "High Growth" > 2%, "High Yield" > ??? (Relative to what? Self-history?)
@@ -463,7 +457,7 @@ class AdvancedAnalyzer:
             cagr_historical=round(float(cagr_hist * 100), 2),  # type: ignore
             mean_yield_5y=round(float(mean_yield), 2),  # type: ignore
             matrix_quadrant=quadrant,
-            trend_direction="Positive" if cagr > 0 else "Negative"
+            trend_direction="Positive" if cagr > 0 else "Negative",
         )
 
     # -------------------------------------------------------------------------
@@ -500,16 +494,12 @@ class AdvancedAnalyzer:
     # -------------------------------------------------------------------------
 
     def calculate_impact_simulation(
-        self,
-        rainfall: list[float],
-        yields: list[float],
-        years: list[int]
+        self, rainfall: list[float], yields: list[float], years: list[int]
     ) -> SimulationResult:
         """
         Create a linear simulation model for Rainfall -> Yield.
         """
-        if not rainfall or not yields or len(
-                rainfall) != len(yields) or len(rainfall) < 5:
+        if not rainfall or not yields or len(rainfall) != len(yields) or len(rainfall) < 5:
             return SimulationResult(0, 0, 0, 0, 0, 0, [], "Insufficient Data")
 
         # 1. Regression
@@ -524,14 +514,10 @@ class AdvancedAnalyzer:
         # Using standard error of estimate for prediction interval would be better,
         # but for now we use std_err of slope * range as a proxy for visual
         # margin
-        ci = reg.std_err * 1.96 * \
-            (max(rainfall) - min(rainfall)) if reg.slope != 0 else 0
+        ci = reg.std_err * 1.96 * (max(rainfall) - min(rainfall)) if reg.slope != 0 else 0
 
         # 4. Data Points for Plotting
-        points = [
-            {"year": y, "rain": r, "yield": yld}
-            for y, r, yld in zip(years, rainfall, yields, strict=False)
-        ]
+        points = [{"year": y, "rain": r, "yield": yld} for y, r, yld in zip(years, rainfall, yields, strict=False)]
 
         return SimulationResult(
             baseline_yield=round(baseline_yield, 2),  # type: ignore
@@ -541,7 +527,7 @@ class AdvancedAnalyzer:
             correlation=round(corr.value, 4),  # type: ignore
             confidence_interval=round(ci, 2),  # type: ignore
             data_points=points,
-            model_equation=f"Yield = {reg.slope:.2f} * Rain + {reg.intercept:.2f}"
+            model_equation=f"Yield = {reg.slope:.2f} * Rain + {reg.intercept:.2f}",
         )
 
 

@@ -20,7 +20,7 @@ async def get_spatial_contagion(
     crop: str = Query("wheat", description="Crop name to analyze"),
     start_year: int = Query(2000, description="Start year of analysis window"),
     end_year: int = Query(2020, description="End year of analysis window"),
-    db: asyncpg.Connection = Depends(get_db)
+    db: asyncpg.Connection = Depends(get_db),
 ):
     """
     Calculate agricultural growth spillovers using geographic adjacency (PostGIS).
@@ -37,7 +37,7 @@ async def get_spatial_contagion(
 @router.post("/calculate-split", response_model=SplitAreaCalculationResponse)
 async def calculate_split(
     parent_geojson: UploadFile = File(..., description="Parent district GeoJSON"),
-    child_geojson: UploadFile = File(..., description="Child district GeoJSON")
+    child_geojson: UploadFile = File(..., description="Child district GeoJSON"),
 ):
     """
     Calculate the accurate Transferred Area and Remaining Area in square kilometers
@@ -48,11 +48,13 @@ async def calculate_split(
     child_content = await child_geojson.read()
     return service.calculate_split_areas(parent_content, child_content)
 
+
 @router.post("/diff", response_model=GenericStatusResponse)
 async def calculate_spatial_diff(split_event_id: int, db: asyncpg.Connection = Depends(get_db)):
     """Calculate and write spatial difference and transferred areas for a split event."""
     service = SpatialService(db)
     return await service.calculate_spatial_diff(split_event_id)
+
 
 @router.get("/lineage/{district_id}", response_model=DistrictLineageResponse)
 async def get_district_lineage(district_id: str, db: asyncpg.Connection = Depends(get_db)):
@@ -61,12 +63,13 @@ async def get_district_lineage(district_id: str, db: asyncpg.Connection = Depend
     service = SpatialService(db)
     return await service.get_district_lineage(district_id)
 
+
 @router.post("/upload-geojson", response_model=GenericStatusResponse)
 async def upload_manual_geojson(
     district_id: str = Form(...),
     snapshot_year: int = Form(...),
     geojson_file: UploadFile = File(...),
-    db: asyncpg.Connection = Depends(get_db)
+    db: asyncpg.Connection = Depends(get_db),
 ):
     """Parses GeoJSON and saves as manual_upload to district_snapshots."""
     district_id = validate_cdk(district_id)

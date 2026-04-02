@@ -11,11 +11,7 @@ from app.schemas.metric import AggregatedMetric, MetricPoint
 class MetricRepository(BaseRepository):
     """Repository for metric data access."""
 
-    async def get_by_cdk_and_variables(
-        self,
-        cdk: str,
-        variables: list[str]
-    ) -> list[MetricPoint]:
+    async def get_by_cdk_and_variables(self, cdk: str, variables: list[str]) -> list[MetricPoint]:
         """Get time series for a district and set of variables."""
         query = """
             SELECT district_lgd::text as cdk, year, variable_name, value
@@ -36,11 +32,7 @@ class MetricRepository(BaseRepository):
             for r in rows
         ]
 
-    async def get_by_cdks_and_variables(
-        self,
-        cdks: list[str],
-        variables: list[str]
-    ) -> list[MetricPoint]:
+    async def get_by_cdks_and_variables(self, cdks: list[str], variables: list[str]) -> list[MetricPoint]:
         """Get metrics for multiple districts and variables."""
         # Convert text CDKs to int array for efficient query
         int_cdks = []
@@ -73,11 +65,7 @@ class MetricRepository(BaseRepository):
         ]
 
     @cached(ttl=CacheTTL.METRICS, prefix="metrics:year_v2")
-    async def get_by_year_and_variable(
-        self,
-        year: int,
-        variable: str
-    ) -> list[AggregatedMetric]:
+    async def get_by_year_and_variable(self, year: int, variable: str) -> list[AggregatedMetric]:
         """Get all district values for a given year and variable.
 
         Includes split-lineage fallback: if a child district has data but
@@ -108,7 +96,8 @@ class MetricRepository(BaseRepository):
             "cotton": "kharif",
             "pearl_millet": "kharif",
             "sorghum": "kharif",
-            "chickpea": "rabi"}
+            "chickpea": "rabi",
+        }
         season = season_map.get(crop_name)
 
         if season:
@@ -151,7 +140,12 @@ class MetricRepository(BaseRepository):
                         continue
 
                     if cdk not in cdk_map:
-                        cdk_map[cdk] = {"state_name": r["state_name"], "district_name": r["district_name"], "area": 0.0, "prod": 0.0}
+                        cdk_map[cdk] = {
+                            "state_name": r["state_name"],
+                            "district_name": r["district_name"],
+                            "area": 0.0,
+                            "prod": 0.0,
+                        }
                     if r["variable_name"] == area_var and r["value"] is not None:
                         cdk_map[cdk]["area"] = float(r["value"])
                     elif r["variable_name"] == prod_var and r["value"] is not None:
@@ -160,16 +154,19 @@ class MetricRepository(BaseRepository):
                 for cdk, data in cdk_map.items():
                     if data["area"] > 0:
                         yield_val = round((data["prod"] / data["area"]) * 1000, 2)
-                        rows.append({
-                            "cdk": cdk,
-                            "state_name": data["state_name"],
-                            "district_name": data["district_name"],
-                            "value": yield_val
-                        })
+                        rows.append(
+                            {
+                                "cdk": cdk,
+                                "state_name": data["state_name"],
+                                "district_name": data["district_name"],
+                                "value": yield_val,
+                            }
+                        )
                         existing_cdks.add(cdk)
 
         # Resolve geo_keys using MappingService
         from app.services.mapping_service import get_mapping_service
+
         mapping_service = get_mapping_service()
 
         # Build results with geo_key resolution
@@ -177,9 +174,7 @@ class MetricRepository(BaseRepository):
         unmapped = []  # Track items needing split-lineage fallback
 
         for r in rows:
-            geo_key = mapping_service.resolve_geo_key(
-                r["cdk"], r["district_name"], r["state_name"]
-            )
+            geo_key = mapping_service.resolve_geo_key(r["cdk"], r["district_name"], r["state_name"])
             metric = AggregatedMetric(
                 cdk=r["cdk"],
                 state=r["state_name"] or "",
@@ -207,17 +202,14 @@ class MetricRepository(BaseRepository):
                 """
                 lineage_rows = await self.fetch_all(lineage_query, child_lgds)
                 parent_map = {
-                    r["child_lgd"]: (r["parent_lgd"], r["district_name"], r["state_name"])
-                    for r in lineage_rows
+                    r["child_lgd"]: (r["parent_lgd"], r["district_name"], r["state_name"]) for r in lineage_rows
                 }
 
                 for m in unmapped:
                     child_lgd = int(m.cdk) if m.cdk.isdigit() else None
                     if child_lgd and child_lgd in parent_map:
                         p_lgd, p_dist, p_state = parent_map[child_lgd]
-                        geo_key = mapping_service.resolve_geo_key(
-                            str(p_lgd), p_dist, p_state
-                        )
+                        geo_key = mapping_service.resolve_geo_key(str(p_lgd), p_dist, p_state)
                         if geo_key:
                             m.feature_id = geo_key
                             m.geo_key = geo_key
@@ -227,11 +219,7 @@ class MetricRepository(BaseRepository):
         return results
 
     @cached(ttl=CacheTTL.METRICS, prefix="metrics:ts")
-    async def get_time_series_pivoted(
-        self,
-        cdk: str,
-        crop: str
-    ) -> list[dict]:
+    async def get_time_series_pivoted(self, cdk: str, crop: str) -> list[dict]:
         """Get pivoted time series {year, area, production, yield} for a crop."""
         variables = [f"{crop}_area", f"{crop}_production", f"{crop}_yield"]
         query = """
@@ -256,20 +244,14 @@ class MetricRepository(BaseRepository):
             }
             season = season_map.get(crop.lower())
             if season:
-                variables = [
-                    f"{crop}_area_{season}",
-                    f"{crop}_production_{season}",
-                    f"{crop}_yield_{season}"]
+                variables = [f"{crop}_area_{season}", f"{crop}_production_{season}", f"{crop}_yield_{season}"]
                 rows = await self.fetch_all(query, cdk, variables)
 
             # Extended Fallback for Rice Time Series
             if not rows and crop.lower() == "rice":
                 for s in ["winter", "autumn", "summer"]:
                     if not rows:
-                        s_vars = [
-                            f"{crop}_area_{s}",
-                            f"{crop}_production_{s}",
-                            f"{crop}_yield_{s}"]
+                        s_vars = [f"{crop}_area_{s}", f"{crop}_production_{s}", f"{crop}_yield_{s}"]
                         rows = await self.fetch_all(query, cdk, s_vars)
                     else:
                         break
@@ -285,11 +267,9 @@ class MetricRepository(BaseRepository):
             if var_name.endswith("_area") or "_area_" in var_name:
                 timeline[year]["area"] = float(r["value"]) if r["value"] else 0
             elif var_name.endswith("_production") or "_production_" in var_name:
-                timeline[year]["production"] = float(
-                    r["value"]) if r["value"] else 0
+                timeline[year]["production"] = float(r["value"]) if r["value"] else 0
             elif var_name.endswith("_yield") or "_yield_" in var_name:
-                timeline[year]["yield"] = float(
-                    r["value"]) if r["value"] else 0
+                timeline[year]["yield"] = float(r["value"]) if r["value"] else 0
 
         # Post-process: Calculate yield if missing
         for _year, data in timeline.items():
@@ -310,11 +290,7 @@ class MetricRepository(BaseRepository):
         return list(timeline.values())
 
     @cached(ttl=CacheTTL.SUMMARY, prefix="metrics:map")
-    async def build_data_map(
-        self,
-        cdks: list[str],
-        variables: list[str]
-    ) -> dict[int, dict[str, dict[str, float]]]:
+    async def build_data_map(self, cdks: list[str], variables: list[str]) -> dict[int, dict[str, dict[str, float]]]:
         """
         Build nested map: year -> cdk -> {area, prod, yld}
         Used for boundary reconstruction calculations.
@@ -371,19 +347,13 @@ class MetricRepository(BaseRepository):
             }
             season = season_map.get(crop.lower())
             if season:
-                variables = [
-                    f"{crop}_area_{season}",
-                    f"{crop}_production_{season}",
-                    f"{crop}_yield_{season}"]
+                variables = [f"{crop}_area_{season}", f"{crop}_production_{season}", f"{crop}_yield_{season}"]
                 rows = await self.fetch_all(query, f"%{state}%", variables)
 
             if not rows and crop.lower() == "rice":
                 for s in ["winter", "autumn", "summer"]:
                     if not rows:
-                        s_vars = [
-                            f"{crop}_area_{s}",
-                            f"{crop}_production_{s}",
-                            f"{crop}_yield_{s}"]
+                        s_vars = [f"{crop}_area_{s}", f"{crop}_production_{s}", f"{crop}_yield_{s}"]
                         rows = await self.fetch_all(query, f"%{state}%", s_vars)
                     else:
                         break
@@ -392,11 +362,7 @@ class MetricRepository(BaseRepository):
         for r in rows:
             year = r["year"]
             if year not in timeline:
-                timeline[year] = {
-                    "year": year,
-                    "area": 0,
-                    "production": 0,
-                    "yield": 0}
+                timeline[year] = {"year": year, "area": 0, "production": 0, "yield": 0}
 
             var_name = r["variable_name"]
             val = float(r["value"]) if r["value"] else 0

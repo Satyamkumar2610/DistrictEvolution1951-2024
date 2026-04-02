@@ -24,6 +24,7 @@ logger = logging.getLogger("cache")
 # In-Memory Cache Backend
 # ==========================================================================
 
+
 class InMemoryCache:
     """
     Simple in-memory cache with TTL-based expiration.
@@ -76,6 +77,7 @@ class InMemoryCache:
 # Redis Cache Backend
 # ==========================================================================
 
+
 class RedisCache:
     """
     Redis-backed persistent cache.
@@ -91,6 +93,7 @@ class RedisCache:
         """Lazy-initialize Redis client."""
         if self._client is None:
             import redis.asyncio as aioredis  # type: ignore[import]
+
             self._client = aioredis.from_url(
                 self._redis_url,
                 decode_responses=True,
@@ -157,9 +160,7 @@ class RedisCache:
 _cache = None
 
 
-def _create_cache(
-        backend: str = "auto",
-        redis_url: str = "redis://localhost:6379/0"):
+def _create_cache(backend: str = "auto", redis_url: str = "redis://localhost:6379/0"):
     """
     Create the appropriate cache backend.
 
@@ -174,6 +175,7 @@ def _create_cache(
     if backend in ("redis", "auto"):
         try:
             import redis.asyncio  # noqa: F401  # type: ignore[import]
+
             cache = RedisCache(redis_url)
             logger.info(f"Using Redis cache: {redis_url.split('@')[-1] if '@' in redis_url else redis_url}")
             return cache
@@ -201,11 +203,12 @@ def get_cache():
     if _cache is None:
         try:
             from app.config import get_settings  # type: ignore[import]
+
             settings = get_settings()
             _cache = _create_cache(
-                backend=getattr(
-                    settings, "cache_backend", "auto"), redis_url=getattr(
-                    settings, "redis_url", "redis://localhost:6379/0"), )
+                backend=getattr(settings, "cache_backend", "auto"),
+                redis_url=getattr(settings, "redis_url", "redis://localhost:6379/0"),
+            )
         except Exception:
             _cache = InMemoryCache()
     return _cache
@@ -243,10 +246,7 @@ def _build_cache_payload(func: Callable[..., Any], *args, **kwargs) -> dict[str,
     arguments.pop("self", None)
     arguments.pop("cls", None)
 
-    return {
-        key: _normalize_cache_value(value)
-        for key, value in sorted(arguments.items())
-    }
+    return {key: _normalize_cache_value(value) for key, value in sorted(arguments.items())}
 
 
 def _generate_cache_key(prefix: str, *args, **kwargs) -> str:
@@ -264,6 +264,7 @@ def _generate_cache_key(prefix: str, *args, **kwargs) -> str:
 # Caching Decorator
 # ==========================================================================
 
+
 def cached(ttl: int = 3600, prefix: str = ""):
     """
     Decorator to cache async function results.
@@ -273,6 +274,7 @@ def cached(ttl: int = 3600, prefix: str = ""):
         async def get_metrics(year: int, crop: str):
             ...
     """
+
     def decorator(func: Callable):
         @wraps(func)
         async def wrapper(*args, **kwargs):
@@ -301,7 +303,9 @@ def cached(ttl: int = 3600, prefix: str = ""):
                 logger.warning(f"Cache set failed: {e}")
 
             return result
+
         return wrapper
+
     return decorator
 
 
@@ -309,19 +313,20 @@ def cached(ttl: int = 3600, prefix: str = ""):
 # Standard TTL Constants
 # ==========================================================================
 
+
 class CacheTTL:
     """Standard cache TTL values in seconds."""
 
     # Static/rarely changing data
     DISTRICTS = 86400  # 24 hours
-    STATES = 86400     # 24 hours
-    LINEAGE = 86400    # 24 hours
+    STATES = 86400  # 24 hours
+    LINEAGE = 86400  # 24 hours
 
     # Analytics results
-    SUMMARY = 3600     # 1 hour
+    SUMMARY = 3600  # 1 hour
     SPLIT_EVENTS = 3600  # 1 hour
-    ANALYSIS = 1800    # 30 minutes
+    ANALYSIS = 1800  # 30 minutes
 
     # Time-sensitive data
-    METRICS = 300      # 5 minutes
-    HEALTH = 60        # 1 minute
+    METRICS = 300  # 5 minutes
+    HEALTH = 60  # 1 minute

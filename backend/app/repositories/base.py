@@ -1,6 +1,7 @@
 """
 Base Repository: Abstract patterns for data access.
 """
+
 from typing import Generic, TypeVar
 
 import asyncpg

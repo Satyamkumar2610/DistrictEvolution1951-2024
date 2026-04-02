@@ -13,6 +13,7 @@ from scipy import stats as scipy_stats
 
 class TrendDirection(StrEnum):
     """Direction of a trend."""
+
     INCREASING = "increasing"
     DECREASING = "decreasing"
     STABLE = "stable"
@@ -21,6 +22,7 @@ class TrendDirection(StrEnum):
 @dataclass
 class StatisticResult:
     """Result of a statistical calculation with metadata."""
+
     value: float
     confidence_interval: tuple[float, float] | None = None
     p_value: float | None = None
@@ -31,6 +33,7 @@ class StatisticResult:
 @dataclass
 class TrendResult:
     """Result of trend analysis."""
+
     direction: TrendDirection
     slope: float
     intercept: float
@@ -43,6 +46,7 @@ class TrendResult:
 @dataclass
 class RegressionResult:
     """Result of linear regression analysis."""
+
     slope: float
     intercept: float
     r_squared: float
@@ -201,16 +205,13 @@ class StatisticalAnalyzer:
         """
         if len(values) < 3:
             return TrendResult(
-                direction=TrendDirection.STABLE,
-                slope=0, intercept=0, r_squared=0,
-                p_value=1.0, significant=False
+                direction=TrendDirection.STABLE, slope=0, intercept=0, r_squared=0, p_value=1.0, significant=False
             )
 
         x = np.arange(len(values))
-        slope, intercept, r_value, p_value, std_err = scipy_stats.linregress(
-            x, values)
+        slope, intercept, r_value, p_value, std_err = scipy_stats.linregress(x, values)
 
-        r_squared = r_value ** 2
+        r_squared = r_value**2
         significant = bool(p_value < self.alpha)
 
         # Determine direction
@@ -233,10 +234,7 @@ class StatisticalAnalyzer:
             significant=significant,
         )
 
-    def moving_average(
-            self,
-            values: list[float],
-            window: int = 3) -> list[float]:
+    def moving_average(self, values: list[float], window: int = 3) -> list[float]:
         """Calculate moving average with specified window."""
         if len(values) < window:
             return values
@@ -244,16 +242,12 @@ class StatisticalAnalyzer:
         result = []
         for i in range(len(values)):
             start = max(0, i - window + 1)
-            window_values = values[start:i + 1]
+            window_values = values[start : i + 1]
             result.append(round(self.mean(window_values), 4))
 
         return result
 
-    def detect_inflection_points(
-        self,
-        values: list[float],
-        threshold: float = 0.1
-    ) -> list[int]:
+    def detect_inflection_points(self, values: list[float], threshold: float = 0.1) -> list[int]:
         """
         Detect inflection points where trend direction changes significantly.
         Returns indices of inflection points.
@@ -269,8 +263,7 @@ class StatisticalAnalyzer:
             after_slope = smoothed[i + 2] - smoothed[i]
 
             # Check for sign change (direction reversal)
-            if before_slope * after_slope < 0 and abs(after_slope - before_slope) > threshold * \
-                    abs(smoothed[i]):
+            if before_slope * after_slope < 0 and abs(after_slope - before_slope) > threshold * abs(smoothed[i]):
                 inflection_points.append(i)
 
         return inflection_points
@@ -279,10 +272,7 @@ class StatisticalAnalyzer:
     # Correlation & Regression
     # -------------------------------------------------------------------------
 
-    def linear_regression(
-            self,
-            x: list[float],
-            y: list[float]) -> RegressionResult:
+    def linear_regression(self, x: list[float], y: list[float]) -> RegressionResult:
         """
         Perform linear regression of y on x.
         Returns detailed regression statistics.
@@ -291,8 +281,7 @@ class StatisticalAnalyzer:
             return RegressionResult(0, 0, 0, 1.0, 0, False)
 
         # scipy.stats.linregress(x, y)
-        slope, intercept, r_value, p_value, std_err = scipy_stats.linregress(
-            x, y)
+        slope, intercept, r_value, p_value, std_err = scipy_stats.linregress(x, y)
 
         return RegressionResult(
             slope=float(slope),
@@ -300,21 +289,13 @@ class StatisticalAnalyzer:
             r_squared=float(r_value**2),
             p_value=float(p_value),
             std_err=float(std_err),
-            significant=bool(p_value < self.alpha)
+            significant=bool(p_value < self.alpha),
         )
 
-    def pearson_correlation(
-        self,
-        x: list[float],
-        y: list[float]
-    ) -> StatisticResult:
+    def pearson_correlation(self, x: list[float], y: list[float]) -> StatisticResult:
         """Calculate Pearson correlation coefficient."""
         if len(x) != len(y) or len(x) < 3:
-            return StatisticResult(
-                value=0,
-                p_value=1.0,
-                significant=False,
-                method="pearson")
+            return StatisticResult(value=0, p_value=1.0, significant=False, method="pearson")
 
         r, p_value = scipy_stats.pearsonr(x, y)
 
@@ -325,18 +306,10 @@ class StatisticalAnalyzer:
             method="pearson",
         )
 
-    def spearman_correlation(
-        self,
-        x: list[float],
-        y: list[float]
-    ) -> StatisticResult:
+    def spearman_correlation(self, x: list[float], y: list[float]) -> StatisticResult:
         """Calculate Spearman rank correlation coefficient."""
         if len(x) != len(y) or len(x) < 3:
-            return StatisticResult(
-                value=0,
-                p_value=1.0,
-                significant=False,
-                method="spearman")
+            return StatisticResult(value=0, p_value=1.0, significant=False, method="spearman")
 
         rho, p_value = scipy_stats.spearmanr(x, y)
 
@@ -369,11 +342,7 @@ class StatisticalAnalyzer:
         Returns statistic and p-value.
         """
         if len(values) < 8:
-            return StatisticResult(
-                value=0,
-                p_value=1.0,
-                significant=False,
-                method="shapiro-wilk")
+            return StatisticResult(value=0, p_value=1.0, significant=False, method="shapiro-wilk")
 
         # Shapiro-Wilk has a sample size limit
         sample = values[:5000] if len(values) > 5000 else values
@@ -382,8 +351,7 @@ class StatisticalAnalyzer:
         return StatisticResult(
             value=round(float(stat), 4),
             p_value=round(float(p_value), 4),
-            significant=bool(
-                p_value >= self.alpha),
+            significant=bool(p_value >= self.alpha),
             # Significant means IS normal
             method="shapiro-wilk",
         )
@@ -415,11 +383,7 @@ class StatisticalAnalyzer:
 
         return outliers
 
-    def detect_outliers_zscore(
-        self,
-        values: list[float],
-        threshold: float = 3.0
-    ) -> list[int]:
+    def detect_outliers_zscore(self, values: list[float], threshold: float = 3.0) -> list[int]:
         """
         Detect outliers using Z-score method.
         Returns indices of outlier values.
@@ -445,10 +409,7 @@ class StatisticalAnalyzer:
     # Comparative Analysis
     # -------------------------------------------------------------------------
 
-    def rank_values(
-            self,
-            values: list[float],
-            descending: bool = True) -> list[int]:
+    def rank_values(self, values: list[float], descending: bool = True) -> list[int]:
         """
         Rank values from 1 to N.
         Higher values get rank 1 if descending=True.
@@ -456,11 +417,7 @@ class StatisticalAnalyzer:
         if not values:
             return []
 
-        sorted_indices = sorted(
-            range(len(values)),
-            key=lambda i: values[i],
-            reverse=descending
-        )
+        sorted_indices = sorted(range(len(values)), key=lambda i: values[i], reverse=descending)
 
         ranks = [0] * len(values)
         for rank, idx in enumerate(sorted_indices, 1):
@@ -468,10 +425,7 @@ class StatisticalAnalyzer:
 
         return ranks
 
-    def percentile_rank(
-            self,
-            value: float,
-            reference_values: list[float]) -> float:
+    def percentile_rank(self, value: float, reference_values: list[float]) -> float:
         """
         Calculate the percentile rank of a value within a reference set.
         Returns percentage of values that are lower.
@@ -482,20 +436,13 @@ class StatisticalAnalyzer:
         below_count = sum(1 for v in reference_values if v < value)
         return round((below_count / len(reference_values)) * 100, 2)
 
-    def compare_to_average(
-        self,
-        value: float,
-        reference_values: list[float]
-    ) -> dict[str, Any]:
+    def compare_to_average(self, value: float, reference_values: list[float]) -> dict[str, Any]:
         """
         Compare a value to the average of reference values.
         Returns absolute and percentage difference.
         """
         if not reference_values:
-            return {
-                "difference": 0,
-                "percent_difference": 0,
-                "above_average": False}
+            return {"difference": 0, "percent_difference": 0, "above_average": False}
 
         avg = self.mean(reference_values)
         difference = value - avg

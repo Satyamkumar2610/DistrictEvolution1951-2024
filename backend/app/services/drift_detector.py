@@ -20,17 +20,18 @@ logger = logging.getLogger("app.services.drift_detector")
 @dataclass
 class DriftResult:
     """Boundary drift metrics between two snapshots of the same district."""
+
     district_cdk: str
     year_a: int
     year_b: int
-    hausdorff_km: float          # Hausdorff distance in km
+    hausdorff_km: float  # Hausdorff distance in km
     area_a_sqkm: float
     area_b_sqkm: float
-    area_change_pct: float       # (B - A) / A × 100
-    overlap_area_sqkm: float     # ST_Intersection area
-    jaccard_index: float         # intersection / union
-    centroid_shift_km: float     # distance between centroids
-    shape_similarity: float      # 0–1 composite score
+    area_change_pct: float  # (B - A) / A × 100
+    overlap_area_sqkm: float  # ST_Intersection area
+    jaccard_index: float  # intersection / union
+    centroid_shift_km: float  # distance between centroids
+    shape_similarity: float  # 0–1 composite score
     source_a: str
     source_b: str
 
@@ -56,19 +57,19 @@ class DriftDetector:
         If year_a/year_b not specified, uses the two most recent snapshots.
         """
         # Get available snapshots
-        snapshots = await self.db.fetch("""
+        snapshots = await self.db.fetch(
+            """
             SELECT snapshot_year, geometry_source::text,
                    ST_Area(ST_Transform(geometry, 7755)) / 1000000.0 AS area_sqkm
             FROM district_snapshots
             WHERE district_cdk = $1 AND geometry IS NOT NULL
             ORDER BY snapshot_year ASC
-        """, district_cdk)
+        """,
+            district_cdk,
+        )
 
         if len(snapshots) < 2:
-            logger.info(
-                f"Need 2+ snapshots for drift detection, "
-                f"{district_cdk} has {len(snapshots)}"
-            )
+            logger.info(f"Need 2+ snapshots for drift detection, {district_cdk} has {len(snapshots)}")
             return None
 
         # Pick comparison years
@@ -85,7 +86,8 @@ class DriftDetector:
             year_a, year_b = year_b, year_a
 
         # Run all metrics in a single PostGIS query
-        result = await self.db.fetchrow("""
+        result = await self.db.fetchrow(
+            """
             WITH a AS (
                 SELECT geometry, geometry_source::text AS source
                 FROM district_snapshots
@@ -130,7 +132,11 @@ class DriftDetector:
                 b.source AS source_b
 
             FROM a, b
-        """, district_cdk, year_a, year_b)
+        """,
+            district_cdk,
+            year_a,
+            year_b,
+        )
 
         if not result:
             return None
@@ -150,14 +156,9 @@ class DriftDetector:
         # Weighted combination of Jaccard, area conservation, centroid stability
         area_conservation = 1 - min(abs(area_change_pct) / 100, 1)
         centroid_stability = max(0, 1 - centroid_shift / 50)  # 50km = fully drifted
-        hausdorff_score = max(0, 1 - hausdorff / 100)         # 100km = max drift
+        hausdorff_score = max(0, 1 - hausdorff / 100)  # 100km = max drift
 
-        shape_similarity = (
-            jaccard * 0.4 +
-            area_conservation * 0.25 +
-            centroid_stability * 0.2 +
-            hausdorff_score * 0.15
-        )
+        shape_similarity = jaccard * 0.4 + area_conservation * 0.25 + centroid_stability * 0.2 + hausdorff_score * 0.15
 
         return DriftResult(
             district_cdk=district_cdk,
@@ -183,12 +184,15 @@ class DriftDetector:
         Compute pairwise drift between consecutive snapshots.
         Returns a timeline of drift results.
         """
-        snapshots = await self.db.fetch("""
+        snapshots = await self.db.fetch(
+            """
             SELECT snapshot_year
             FROM district_snapshots
             WHERE district_cdk = $1 AND geometry IS NOT NULL
             ORDER BY snapshot_year ASC
-        """, district_cdk)
+        """,
+            district_cdk,
+        )
 
         if len(snapshots) < 2:
             return []

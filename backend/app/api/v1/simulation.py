@@ -20,7 +20,7 @@ async def get_simulation(
     crop: str = Query(..., description="Crop Name"),
     year: int = Query(..., description="Reference Year for Yield"),
     state: str = Query(..., description="State Name"),
-    db: asyncpg.Connection = Depends(get_db)
+    db: asyncpg.Connection = Depends(get_db),
 ):
     """
     Get simulation model for Rainfall vs Yield.

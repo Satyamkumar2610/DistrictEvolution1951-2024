@@ -8,6 +8,7 @@ analytics package structure.
 import asyncpg
 
 from app.exceptions import NotFoundError, ValidationError
+from app.ml.yield_backcaster import YieldBackcaster
 from app.schemas.advanced_analytics import (
     AnalyticsSummaryDiversification,
     AnalyticsSummaryResponse,
@@ -34,7 +35,6 @@ from app.schemas.advanced_analytics import (
 )
 from app.schemas.backcast import BackcastResponse
 from app.services.analytics import AdvancedAnalyticsService
-from app.ml.yield_backcaster import YieldBackcaster
 
 
 class AdvancedAnalyticsFacade:
@@ -161,11 +161,7 @@ class AdvancedAnalyticsFacade:
         end_year: int,
     ) -> YoyGrowthResponse:
         growth_data = await self.analytics.get_yoy_growth(cdk, crop, start_year, end_year)
-        yoy_values = [
-            point["yoy_growth"]
-            for point in growth_data
-            if point["yoy_growth"] is not None
-        ]
+        yoy_values = [point["yoy_growth"] for point in growth_data if point["yoy_growth"] is not None]
         avg_growth = float(sum(yoy_values) / len(yoy_values)) if yoy_values else 0.0
         positive_years = sum(1 for value in yoy_values if value > 0)
 
@@ -275,13 +271,9 @@ class AdvancedAnalyticsFacade:
             crop=str(result["crop"]),
             period=str(result["period"]),
             convergence_timeline=[
-                YieldGapTimelinePoint.model_validate(item)
-                for item in result["convergence_timeline"]
+                YieldGapTimelinePoint.model_validate(item) for item in result["convergence_timeline"]
             ],
-            district_rankings=[
-                YieldGapDistrictRanking.model_validate(item)
-                for item in result["district_rankings"]
-            ],
+            district_rankings=[YieldGapDistrictRanking.model_validate(item) for item in result["district_rankings"]],
         )
 
     async def get_split_specialization_response(
@@ -293,23 +285,14 @@ class AdvancedAnalyticsFacade:
         result = await self.analytics.get_split_specialization(parent_cdk, child_cdks, split_year)
         if not result or "error" in result:
             raise NotFoundError("Specialization data", parent_cdk)
-            
+
         return SplitSpecializationResponse(**result)
 
     async def get_backcast_response(
-        self,
-        parent_cdk: str,
-        child_cdks: list[str],
-        split_year: int,
-        crop: str,
-        start_year: int
+        self, parent_cdk: str, child_cdks: list[str], split_year: int, crop: str, start_year: int
     ) -> BackcastResponse:
         backcaster = YieldBackcaster()
         result = await backcaster.backcast_all_children(
-            parent_cdk=parent_cdk,
-            child_cdks=child_cdks,
-            split_year=split_year,
-            crop=crop,
-            start_year=start_year
+            parent_cdk=parent_cdk, child_cdks=child_cdks, split_year=split_year, crop=crop, start_year=start_year
         )
         return result

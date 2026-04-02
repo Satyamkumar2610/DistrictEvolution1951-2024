@@ -16,10 +16,7 @@ router = APIRouter(prefix="/quality", tags=["Data Quality"])
 
 
 @router.get("/district/{cdk}", response_model=DataQualityDistrictResponse)
-async def get_district_quality(
-    cdk: str,
-    db: asyncpg.Connection = Depends(get_db)
-):
+async def get_district_quality(cdk: str, db: asyncpg.Connection = Depends(get_db)):
     """
     Get data quality report for a specific district.
 
@@ -37,10 +34,7 @@ async def get_district_quality(
 
 
 @router.get("/state/{state_name}", response_model=StateQualitySummaryResponse)
-async def get_state_quality(
-    state_name: str,
-    db: asyncpg.Connection = Depends(get_db)
-):
+async def get_state_quality(state_name: str, db: asyncpg.Connection = Depends(get_db)):
     """
     Get aggregated data quality summary for a state.
 

@@ -11,7 +11,6 @@ Provides data science-driven insights including:
 Updated to use lgd_code/district_lgd schema.
 """
 
-
 import asyncpg
 from fastapi import APIRouter, Depends, Query
 
@@ -50,7 +49,7 @@ router = APIRouter(prefix="/analytics", tags=["Advanced Analytics"])
 async def get_crop_diversification(
     cdk: str = Query(..., description="District LGD code (as text)"),
     year: int = Query(2020, description="Year to analyze"),
-    db: asyncpg.Connection = Depends(get_db)
+    db: asyncpg.Connection = Depends(get_db),
 ):
     """
     Get Crop Diversification Index for a district.
@@ -69,8 +68,7 @@ async def get_crop_diversification(
 
 @router.get("/crop-shift", response_model=CropShiftResponse)
 async def get_crop_shift_timeline(
-    cdk: str = Query(..., description="District LGD code (as text)"),
-    db: asyncpg.Connection = Depends(get_db)
+    cdk: str = Query(..., description="District LGD code (as text)"), db: asyncpg.Connection = Depends(get_db)
 ):
     """
     Get full timeline of crop mix shifts and diversity for a district.
@@ -93,7 +91,7 @@ async def get_yield_trend(
     crop: str = Query("rice", description="Crop name"),
     start_year: int = Query(1990, description="Start year"),
     end_year: int = Query(2020, description="End year"),
-    db: asyncpg.Connection = Depends(get_db)
+    db: asyncpg.Connection = Depends(get_db),
 ):
     """
     Get yield trend analysis with CAGR and volatility.
@@ -113,7 +111,7 @@ async def get_split_impact(
     crop: str = Query("rice", description="Crop to analyze"),
     years_before: int = Query(5, description="Years before split"),
     years_after: int = Query(5, description="Years after split"),
-    db: asyncpg.Connection = Depends(get_db)
+    db: asyncpg.Connection = Depends(get_db),
 ):
     """
     Compare agricultural performance before/after district split.
@@ -143,7 +141,7 @@ async def get_crop_correlations(
     state: str = Query(..., description="State name"),
     year: int = Query(2015, description="Year"),
     crops: str | None = Query(None, description="Comma-separated crop list"),
-    db: asyncpg.Connection = Depends(get_db)
+    db: asyncpg.Connection = Depends(get_db),
 ):
     """
     Get correlation matrix between crop yields across districts.
@@ -169,7 +167,7 @@ async def get_district_rankings(
     crop: str = Query("rice", description="Crop to rank"),
     year: int = Query(2020, description="Year"),
     metric: str = Query("yield", description="Metric: yield, area, or production"),
-    db: asyncpg.Connection = Depends(get_db)
+    db: asyncpg.Connection = Depends(get_db),
 ):
     """
     Get district rankings by crop performance.
@@ -188,7 +186,7 @@ async def get_yoy_growth(
     crop: str = Query("rice", description="Crop name"),
     start_year: int = Query(2010, description="Start year"),
     end_year: int = Query(2020, description="End year"),
-    db: asyncpg.Connection = Depends(get_db)
+    db: asyncpg.Connection = Depends(get_db),
 ):
     """
     Get year-over-year yield growth rates.
@@ -205,7 +203,7 @@ async def get_seasonal_comparison(
     cdk: str = Query(..., description="District LGD code (as text)"),
     crop: str = Query("rice", description="Crop name"),
     year: int = Query(2015, description="Year"),
-    db: asyncpg.Connection = Depends(get_db)
+    db: asyncpg.Connection = Depends(get_db),
 ):
     """
     Compare Kharif vs Rabi season yields.
@@ -222,7 +220,7 @@ async def get_seasonal_comparison(
 async def get_analytics_summary(
     cdk: str = Query(..., description="District LGD code (as text)"),
     year: int = Query(2020, description="Year"),
-    db: asyncpg.Connection = Depends(get_db)
+    db: asyncpg.Connection = Depends(get_db),
 ):
     """
     Get comprehensive analytics summary for a district.
@@ -238,7 +236,7 @@ async def get_yield_forecast(
     cdk: str = Query(..., description="District LGD code (as text)"),
     crop: str = Query("rice", description="Crop name"),
     forecast_years: int = Query(5, description="Years to forecast"),
-    db: asyncpg.Connection = Depends(get_db)
+    db: asyncpg.Connection = Depends(get_db),
 ):
     """
     Project future yields based on historical trends.
@@ -253,7 +251,7 @@ async def get_yield_forecast(
 async def get_resilience_index(
     state: str = Query(..., description="State name"),
     crop: str = Query("rice", description="Crop name"),
-    db: asyncpg.Connection = Depends(get_db)
+    db: asyncpg.Connection = Depends(get_db),
 ):
     """
     Rank districts in a state by lowest yield volatility (highest climate resilience).
@@ -270,7 +268,7 @@ async def get_yield_gap_analysis(
     crop: str = Query(..., description="Crop name"),
     start_year: int = Query(2000, description="Start year"),
     end_year: int = Query(2020, description="End year"),
-    db: asyncpg.Connection = Depends(get_db)
+    db: asyncpg.Connection = Depends(get_db),
 ):
     """
     Get the yield gap analysis for a state and crop, comparing districts against the 90th percentile frontier.
@@ -288,7 +286,7 @@ async def get_split_specialization(
     parent_cdk: str = Query(..., description="Parent district LGD code"),
     child_cdks: str = Query(..., description="Comma-separated child CDKs"),
     split_year: int = Query(..., description="Year of the split"),
-    db: asyncpg.Connection = Depends(get_db)
+    db: asyncpg.Connection = Depends(get_db),
 ):
     """
     Get post-split economic specialization radar chart data.
@@ -307,7 +305,7 @@ async def get_yield_backcast(
     split_year: int = Query(..., description="Year of the split"),
     crop: str = Query("rice", description="Crop name to backcast"),
     start_year: int = Query(1966, description="Start year for backcasting"),
-    db: asyncpg.Connection = Depends(get_db)
+    db: asyncpg.Connection = Depends(get_db),
 ):
     """
     Backcast yields for newly formed child districts based on parent historical data.
@@ -317,12 +315,6 @@ async def get_yield_backcast(
     split_year = validate_year(split_year)
     crop = validate_crop(crop)
     start_year = validate_year(start_year)
-    
+
     service = AdvancedAnalyticsFacade(db)
-    return await service.get_backcast_response(
-        parent_cdk,
-        children,
-        split_year,
-        crop,
-        start_year
-    )
+    return await service.get_backcast_response(parent_cdk, children, split_year, crop, start_year)

@@ -18,6 +18,7 @@ logger = logging.getLogger("app.services.gazette_parser")
 @dataclass
 class ParsedSplitEvent:
     """A single split event extracted from gazette text."""
+
     parent_district: str
     child_districts: list[str]
     year: int
@@ -36,7 +37,7 @@ SPLIT_PATTERN = re.compile(
     r"(?:divided|bifurcated|split|carved|reorgani[sz]ed|trifurcated)\s+"
     r"(?:in)?to\s+"
     r"(.+?)(?:\s+(?:district|districts))?(?:\s*\.|\s*$)",
-    re.IGNORECASE | re.MULTILINE
+    re.IGNORECASE | re.MULTILINE,
 )
 
 # "Y was carved out of X"  /  "Y has been separated from X"
@@ -45,7 +46,7 @@ CARVED_PATTERN = re.compile(
     r"(?:was|has been|is)\s+"
     r"(?:carved\s+out\s+(?:of|from)|separated\s+from|detached\s+from)\s+"
     r"([A-Z][a-zA-Z\s\-']+)",
-    re.IGNORECASE | re.MULTILINE
+    re.IGNORECASE | re.MULTILINE,
 )
 
 # "With effect from October 11, 2016"  /  "w.e.f. 01.10.2016"  /  "in the year 2016"
@@ -55,27 +56,55 @@ YEAR_PATTERN = re.compile(
     r"(\d{4}))"
     r"|(?:(?:in|during|year)\s+(\d{4}))"
     r"|(?:(\d{4})[\s\-](?:\d{2})?)",
-    re.IGNORECASE
+    re.IGNORECASE,
 )
 
 # "State of Telangana"  /  "in Maharashtra"
 STATE_PATTERN = re.compile(
     r"(?:state\s+of|in|of)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)"
     r"(?:\s+(?:state|province))?",
-    re.IGNORECASE
+    re.IGNORECASE,
 )
 
 # Indian states for validation
 INDIAN_STATES = {
-    "andhra pradesh", "arunachal pradesh", "assam", "bihar", "chhattisgarh",
-    "goa", "gujarat", "haryana", "himachal pradesh", "jharkhand",
-    "karnataka", "kerala", "madhya pradesh", "maharashtra", "manipur",
-    "meghalaya", "mizoram", "nagaland", "odisha", "punjab",
-    "rajasthan", "sikkim", "tamil nadu", "telangana", "tripura",
-    "uttar pradesh", "uttarakhand", "west bengal",
-    "jammu and kashmir", "jammu & kashmir", "ladakh",
-    "delhi", "puducherry", "chandigarh", "lakshadweep",
-    "andaman and nicobar", "dadra and nagar haveli",
+    "andhra pradesh",
+    "arunachal pradesh",
+    "assam",
+    "bihar",
+    "chhattisgarh",
+    "goa",
+    "gujarat",
+    "haryana",
+    "himachal pradesh",
+    "jharkhand",
+    "karnataka",
+    "kerala",
+    "madhya pradesh",
+    "maharashtra",
+    "manipur",
+    "meghalaya",
+    "mizoram",
+    "nagaland",
+    "odisha",
+    "punjab",
+    "rajasthan",
+    "sikkim",
+    "tamil nadu",
+    "telangana",
+    "tripura",
+    "uttar pradesh",
+    "uttarakhand",
+    "west bengal",
+    "jammu and kashmir",
+    "jammu & kashmir",
+    "ladakh",
+    "delhi",
+    "puducherry",
+    "chandigarh",
+    "lakshadweep",
+    "andaman and nicobar",
+    "dadra and nagar haveli",
 }
 
 
@@ -133,6 +162,7 @@ def _extract_state(text: str) -> str | None:
 
 # ── Main Parser ────────────────────────────────────────────────────────────
 
+
 def parse_gazette_text(text: str) -> list[ParsedSplitEvent]:
     """
     Parse gazette/notification text and extract split events.
@@ -151,14 +181,16 @@ def parse_gazette_text(text: str) -> list[ParsedSplitEvent]:
         children = _split_list(children_text)
 
         if parent and len(children) >= 1:
-            events.append(ParsedSplitEvent(
-                parent_district=parent,
-                child_districts=children,
-                year=year or 2000,
-                state=state,
-                confidence=0.7 if year else 0.4,
-                raw_text=match.group(0).strip(),
-            ))
+            events.append(
+                ParsedSplitEvent(
+                    parent_district=parent,
+                    child_districts=children,
+                    year=year or 2000,
+                    state=state,
+                    confidence=0.7 if year else 0.4,
+                    raw_text=match.group(0).strip(),
+                )
+            )
 
     # Try pattern 2: "Y carved out of X"
     for match in CARVED_PATTERN.finditer(text):
@@ -172,14 +204,16 @@ def parse_gazette_text(text: str) -> list[ParsedSplitEvent]:
                 if child not in existing[0].child_districts:
                     existing[0].child_districts.append(child)
             else:
-                events.append(ParsedSplitEvent(
-                    parent_district=parent,
-                    child_districts=[child],
-                    year=year or 2000,
-                    state=state,
-                    confidence=0.6 if year else 0.3,
-                    raw_text=match.group(0).strip(),
-                ))
+                events.append(
+                    ParsedSplitEvent(
+                        parent_district=parent,
+                        child_districts=[child],
+                        year=year or 2000,
+                        state=state,
+                        confidence=0.6 if year else 0.3,
+                        raw_text=match.group(0).strip(),
+                    )
+                )
 
     # Deduplicate
     seen = set()

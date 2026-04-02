@@ -51,6 +51,7 @@ router = APIRouter(prefix="/spatial", tags=["Spatial - Split Analyzer"])
 # POST /diff — Run split diff computation
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 @router.post(
     "/diff",
     response_model=SplitDiffResponse,
@@ -78,11 +79,15 @@ async def compute_split_diff(
     event_id = None
     if result.transfers:
         # Find the event_id from the most recent split_events row
-        event_id = await db.fetchval("""
+        event_id = await db.fetchval(
+            """
             SELECT id FROM split_events
             WHERE parent_cdk = $1 AND split_year = $2
             ORDER BY created_at DESC LIMIT 1
-        """, request.parent_cdk, request.split_year)
+        """,
+            request.parent_cdk,
+            request.split_year,
+        )
         if event_id:
             background_tasks.add_task(_run_enrichment, event_id)
 
@@ -115,6 +120,7 @@ async def compute_split_diff(
 # POST /upload-geojson — Upload a district boundary
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 @router.post(
     "/upload-geojson",
     response_model=UploadResponse,
@@ -144,20 +150,18 @@ async def upload_geojson(
     elif geojson.get("type") in ("Polygon", "MultiPolygon"):
         geometry_dict = geojson
     else:
-        raise HTTPException(
-            400,
-            "Invalid GeoJSON. Must be a Polygon, MultiPolygon, Feature, "
-            "or FeatureCollection."
-        )
+        raise HTTPException(400, "Invalid GeoJSON. Must be a Polygon, MultiPolygon, Feature, or FeatureCollection.")
 
     if not geometry_dict:
         raise HTTPException(400, "No valid geometry found in GeoJSON")
 
     import json as _json
+
     geom_str = _json.dumps(geometry_dict)
 
     # Insert or update the geometry in district_snapshots
-    await db.execute("""
+    await db.execute(
+        """
         INSERT INTO district_snapshots
             (district_cdk, snapshot_year, district_name, geometry_source, geometry_confidence, geometry)
         VALUES
@@ -166,7 +170,11 @@ async def upload_geojson(
             geometry = EXCLUDED.geometry,
             geometry_source = EXCLUDED.geometry_source,
             geometry_confidence = EXCLUDED.geometry_confidence
-    """, request.district_cdk, request.snapshot_year, geom_str)
+    """,
+        request.district_cdk,
+        request.snapshot_year,
+        geom_str,
+    )
 
     # Resolve to get the full metadata
     result = await resolver.resolve(request.district_cdk, request.snapshot_year)
@@ -190,6 +198,7 @@ async def upload_geojson(
 # GET /lineage/{district_cdk} — Get lineage tree (recursive)
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 @router.get(
     "/lineage/{district_cdk}",
     response_model=LineageResponse,
@@ -205,21 +214,27 @@ async def get_lineage(
     db: asyncpg.Connection = Depends(get_db),
 ):
     # First check if the district exists
-    district = await db.fetchrow("""
+    district = await db.fetchrow(
+        """
         SELECT cdk, district_name, start_year, end_year
         FROM districts WHERE cdk = $1
-    """, district_cdk)
+    """,
+        district_cdk,
+    )
 
     if not district:
         raise HTTPException(404, f"District '{district_cdk}' not found")
 
     # Get geometry info if available
-    _snapshot = await db.fetchrow("""
+    _snapshot = await db.fetchrow(
+        """
         SELECT area_sqkm, geometry_source::text, geometry_confidence
         FROM district_snapshots
         WHERE district_cdk = $1 AND geometry IS NOT NULL
         ORDER BY snapshot_year DESC LIMIT 1
-    """, district_cdk)
+    """,
+        district_cdk,
+    )
 
     # Build tree recursively
     counters: dict[str, int] = {"nodes": 0, "events": 0}
@@ -227,10 +242,13 @@ async def get_lineage(
     async def build_tree(cdk: str, current_depth: int) -> LineageNode:
 
         # Get district info
-        dist = await db.fetchrow("""
+        dist = await db.fetchrow(
+            """
             SELECT cdk, district_name, start_year, end_year
             FROM districts WHERE cdk = $1
-        """, cdk)
+        """,
+            cdk,
+        )
 
         if not dist:
             counters["nodes"] += 1
@@ -240,12 +258,15 @@ async def get_lineage(
             )
 
         # Get geometry snapshot
-        snap = await db.fetchrow("""
+        snap = await db.fetchrow(
+            """
             SELECT area_sqkm, geometry_source::text, geometry_confidence
             FROM district_snapshots
             WHERE district_cdk = $1 AND geometry IS NOT NULL
             ORDER BY snapshot_year DESC LIMIT 1
-        """, cdk)
+        """,
+            cdk,
+        )
 
         node = LineageNode(
             district_cdk=dist["cdk"],
@@ -260,21 +281,27 @@ async def get_lineage(
 
         # Get children from split_events
         if current_depth < depth:
-            events = await db.fetch("""
+            events = await db.fetch(
+                """
                 SELECT id, child_cdks, split_year
                 FROM split_events
                 WHERE parent_cdk = $1
                 ORDER BY split_year ASC
-            """, cdk)
+            """,
+                cdk,
+            )
 
             # Also check lineage CSV data (district_splits table)
-            legacy_children = await db.fetch("""
+            legacy_children = await db.fetch(
+                """
                 SELECT child_district, split_year
                 FROM district_splits
                 WHERE parent_district = $1
                   OR parent_lgd::text = $1
                 ORDER BY split_year ASC
-            """, dist["district_name"])
+            """,
+                dist["district_name"],
+            )
 
             children_cdks = set()
 
@@ -284,26 +311,25 @@ async def get_lineage(
                     child_cdk_str = str(child_cdk)
                     if child_cdk_str not in children_cdks:
                         children_cdks.add(child_cdk_str)
-                        child_node = await build_tree(
-                            child_cdk_str, current_depth + 1
-                        )
+                        child_node = await build_tree(child_cdk_str, current_depth + 1)
                         node.children.append(child_node)
 
             # Fallback to legacy lineage data
             if not events and legacy_children:
                 for lc in legacy_children:
                     # Try to find CDK for the child district name
-                    child_dist = await db.fetchrow("""
+                    child_dist = await db.fetchrow(
+                        """
                         SELECT cdk FROM districts
                         WHERE district_name ILIKE $1
                         LIMIT 1
-                    """, lc["child_district"])
+                    """,
+                        lc["child_district"],
+                    )
                     if child_dist and str(child_dist["cdk"]) not in children_cdks:
                         children_cdks.add(str(child_dist["cdk"]))
                         counters["events"] += 1
-                        child_node = await build_tree(
-                            str(child_dist["cdk"]), current_depth + 1
-                        )
+                        child_node = await build_tree(str(child_dist["cdk"]), current_depth + 1)
                         node.children.append(child_node)
 
         return node
@@ -316,9 +342,11 @@ async def get_lineage(
         total_split_events=counters["events"],
     )
 
+
 # ─────────────────────────────────────────────────────────────────────────────
 # GET /enrichment/{event_id} — Get enrichment data for a split event
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 @router.get(
     "/enrichment/{event_id}",
@@ -331,17 +359,21 @@ async def get_enrichment(
     db: asyncpg.Connection = Depends(get_db),
 ):
     # Verify event exists
-    event = await db.fetchrow("""
+    event = await db.fetchrow(
+        """
         SELECT id, parent_cdk, child_cdks, split_year,
                parent_area_sqkm, total_child_area_sqkm
         FROM split_events WHERE id = $1
-    """, event_id)
+    """,
+        event_id,
+    )
 
     if not event:
         raise HTTPException(404, f"Split event {event_id} not found")
 
     # Get all enrichment data grouped by transfer
-    rows = await db.fetch("""
+    rows = await db.fetch(
+        """
         SELECT
             e.transfer_id,
             t.from_district,
@@ -358,7 +390,9 @@ async def get_enrichment(
         JOIN area_transfers t ON e.transfer_id = t.id
         WHERE t.event_id = $1
         ORDER BY e.transfer_id, e.dataset_name, e.metric_name
-    """, event_id)
+    """,
+        event_id,
+    )
 
     # Group by transfer
     transfers_enrichment = {}
@@ -373,14 +407,16 @@ async def get_enrichment(
                 "transfer_area_sqkm": float(row["transfer_area"]),
                 "metrics": [],
             }
-        transfers_enrichment[tid]["metrics"].append({
-            "dataset": row["dataset_name"],
-            "metric": row["metric_name"],
-            "value": float(row["value"]) if row["value"] else None,
-            "unit": row["unit"],
-            "reference_year": row["reference_year"],
-            "source_url": row["source_url"],
-        })
+        transfers_enrichment[tid]["metrics"].append(
+            {
+                "dataset": row["dataset_name"],
+                "metric": row["metric_name"],
+                "value": float(row["value"]) if row["value"] else None,
+                "unit": row["unit"],
+                "reference_year": row["reference_year"],
+                "source_url": row["source_url"],
+            }
+        )
 
     return {
         "success": True,
@@ -396,6 +432,7 @@ async def get_enrichment(
 # POST /enrichment/trigger — Manually trigger enrichment for an event
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 @router.post(
     "/enrichment/trigger",
     response_model=EnrichmentTriggerResponse,
@@ -407,9 +444,7 @@ async def trigger_enrichment(
     event_id: int = Query(..., description="Split event ID to enrich"),
     db: asyncpg.Connection = Depends(get_db),
 ):
-    event = await db.fetchrow(
-        "SELECT id FROM split_events WHERE id = $1", event_id
-    )
+    event = await db.fetchrow("SELECT id FROM split_events WHERE id = $1", event_id)
     if not event:
         raise HTTPException(404, f"Split event {event_id} not found")
 
@@ -422,6 +457,7 @@ async def trigger_enrichment(
     else:
         # Run synchronously if no background tasks available
         from app.database import get_connection  # type: ignore
+
         async with get_connection() as conn:
             result = await enrich_split_event(conn, event_id)
         return {"success": True, "result": result}
@@ -431,9 +467,11 @@ async def trigger_enrichment(
 # Background task helper
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 async def _run_enrichment(event_id: int) -> None:
     """Background task that runs enrichment in a fresh DB connection."""
     from app.database import get_connection  # type: ignore
+
     try:
         async with get_connection() as conn:
             result = await enrich_split_event(conn, event_id)
@@ -449,6 +487,7 @@ async def _run_enrichment(event_id: int) -> None:
 
 class GazetteParseRequest(BaseModel):
     """Request body for POST /gazette/parse"""
+
     text: str = Field(..., description="Gazette notification text to parse")
 
 
@@ -493,14 +532,8 @@ async def parse_gazette(
     ),
 )
 async def batch_import_lineage(
-    source: str = Query(
-        "lineage",
-        description="Source CSV: 'lineage' or 'changes'"
-    ),
-    dry_run: bool = Query(
-        True,
-        description="Preview without writing to DB"
-    ),
+    source: str = Query("lineage", description="Source CSV: 'lineage' or 'changes'"),
+    dry_run: bool = Query(True, description="Preview without writing to DB"),
     db: asyncpg.Connection = Depends(get_db),
 ):
     if source == "lineage":
@@ -555,10 +588,7 @@ async def get_drift(
 
     result = await detector.detect_drift(district_cdk, year_a, year_b)
     if not result:
-        raise HTTPException(
-            404,
-            f"Insufficient snapshots for drift detection on '{district_cdk}'"
-        )
+        raise HTTPException(404, f"Insufficient snapshots for drift detection on '{district_cdk}'")
 
     return {
         "success": True,
@@ -591,19 +621,15 @@ async def quality_overview(
     db: asyncpg.Connection = Depends(get_db),
 ):
     # Total districts
-    total_districts = await db.fetchval(
-        "SELECT COUNT(*) FROM districts"
-    ) or 0
+    total_districts = await db.fetchval("SELECT COUNT(*) FROM districts") or 0
 
     # Districts with geometry
-    districts_with_geom = await db.fetchval(
-        "SELECT COUNT(DISTINCT district_cdk) FROM district_snapshots WHERE geometry IS NOT NULL"
-    ) or 0
+    districts_with_geom = (
+        await db.fetchval("SELECT COUNT(DISTINCT district_cdk) FROM district_snapshots WHERE geometry IS NOT NULL") or 0
+    )
 
     # Total split events
-    total_events = await db.fetchval(
-        "SELECT COUNT(*) FROM split_events"
-    ) or 0
+    total_events = await db.fetchval("SELECT COUNT(*) FROM split_events") or 0
 
     # Events by geometry status
     status_counts = await db.fetch("""
@@ -627,21 +653,20 @@ async def quality_overview(
     """)
 
     # Total enrichment rows
-    total_enrichment = await db.fetchval(
-        "SELECT COUNT(*) FROM split_enrichment"
-    ) or 0
+    total_enrichment = await db.fetchval("SELECT COUNT(*) FROM split_enrichment") or 0
 
     # Events with enrichment
-    enriched_events = await db.fetchval("""
+    enriched_events = (
+        await db.fetchval("""
         SELECT COUNT(DISTINCT t.event_id)
         FROM split_enrichment e
         JOIN area_transfers t ON e.transfer_id = t.id
-    """) or 0
+    """)
+        or 0
+    )
 
     # Total area transfers
-    total_transfers = await db.fetchval(
-        "SELECT COUNT(*) FROM area_transfers"
-    ) or 0
+    total_transfers = await db.fetchval("SELECT COUNT(*) FROM area_transfers") or 0
 
     # Transfer type breakdown
     transfer_types = await db.fetch("""
@@ -664,16 +689,14 @@ async def quality_overview(
         "districts": {
             "total": total_districts,
             "with_geometry": districts_with_geom,
-            "geometry_coverage_pct": round(
-                float(districts_with_geom) / float(total_districts) * 100, 1
-            ) if total_districts > 0 else 0,
+            "geometry_coverage_pct": round(float(districts_with_geom) / float(total_districts) * 100, 1)
+            if total_districts > 0
+            else 0,
         },
         "split_events": {
             "total": total_events,
             "by_status": {r["geometry_status"]: r["count"] for r in status_counts},
-            "confidence_distribution": {
-                r["bucket"]: r["count"] for r in confidence_dist
-            },
+            "confidence_distribution": {r["bucket"]: r["count"] for r in confidence_dist},
         },
         "transfers": {
             "total": total_transfers,
@@ -690,7 +713,5 @@ async def quality_overview(
             "total_rows": total_enrichment,
             "events_enriched": enriched_events,
         },
-        "geometry_sources": {
-            r["geometry_source"]: r["count"] for r in source_counts
-        },
+        "geometry_sources": {r["geometry_source"]: r["count"] for r in source_counts},
     }

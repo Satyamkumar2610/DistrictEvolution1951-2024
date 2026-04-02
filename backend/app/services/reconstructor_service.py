@@ -4,6 +4,7 @@ Bridges split_events (text CDKs) with district_snapshots (geometries)
 and agri_metrics (yields via CDK keys).
 v4: Ancestor-fallback yield lookup — when children lack data, uses parent CDK.
 """
+
 import json
 import logging
 from typing import Any, Literal, cast
@@ -18,17 +19,38 @@ logger = logging.getLogger("app.services.reconstructor")
 
 # State code to state name mapping for display
 STATE_CODE_MAP: dict[str, str] = {
-    "WB": "West Bengal", "DL": "Delhi", "NC": "NCT of Delhi",
-    "UP": "Uttar Pradesh", "MH": "Maharashtra", "TN": "Tamil Nadu",
-    "KA": "Karnataka", "RJ": "Rajasthan", "GJ": "Gujarat",
-    "MP": "Madhya Pradesh", "HR": "Haryana", "PB": "Punjab",
-    "JH": "Jharkhand", "OD": "Odisha", "KL": "Kerala",
-    "HP": "Himachal Pradesh", "UK": "Uttarakhand", "JK": "Jammu and Kashmir",
-    "TG": "Telangana", "AP": "Andhra Pradesh", "BR": "Bihar",
-    "AS": "Assam", "SK": "Sikkim", "NL": "Nagaland",
-    "MZ": "Mizoram", "MN": "Manipur", "ML": "Meghalaya",
-    "TR": "Tripura", "GA": "Goa", "CG": "Chhattisgarh",
-    "LD": "Lakshadweep", "PY": "Puducherry",
+    "WB": "West Bengal",
+    "DL": "Delhi",
+    "NC": "NCT of Delhi",
+    "UP": "Uttar Pradesh",
+    "MH": "Maharashtra",
+    "TN": "Tamil Nadu",
+    "KA": "Karnataka",
+    "RJ": "Rajasthan",
+    "GJ": "Gujarat",
+    "MP": "Madhya Pradesh",
+    "HR": "Haryana",
+    "PB": "Punjab",
+    "JH": "Jharkhand",
+    "OD": "Odisha",
+    "KL": "Kerala",
+    "HP": "Himachal Pradesh",
+    "UK": "Uttarakhand",
+    "JK": "Jammu and Kashmir",
+    "TG": "Telangana",
+    "AP": "Andhra Pradesh",
+    "BR": "Bihar",
+    "AS": "Assam",
+    "SK": "Sikkim",
+    "NL": "Nagaland",
+    "MZ": "Mizoram",
+    "MN": "Manipur",
+    "ML": "Meghalaya",
+    "TR": "Tripura",
+    "GA": "Goa",
+    "CG": "Chhattisgarh",
+    "LD": "Lakshadweep",
+    "PY": "Puducherry",
 }
 
 
@@ -95,16 +117,14 @@ class ReconstructorService:
         """Resolve a text CDK to its human-readable district name."""
         # Try districts table first
         name = await self.db.fetchval(
-            "SELECT district_name FROM districts "
-            "WHERE cdk = $1 LIMIT 1",
+            "SELECT district_name FROM districts WHERE cdk = $1 LIMIT 1",
             cdk,
         )
         if name:
             return name
         # Try district_snapshots
         name = await self.db.fetchval(
-            "SELECT district_name FROM district_snapshots "
-            "WHERE district_cdk = $1 LIMIT 1",
+            "SELECT district_name FROM district_snapshots WHERE district_cdk = $1 LIMIT 1",
             cdk,
         )
         if name:
@@ -132,9 +152,7 @@ class ReconstructorService:
         except Exception:
             return set()
 
-    def _build_parent_map(
-        self, graph: dict[str, list[tuple[list[str], int]]]
-    ) -> dict[str, str]:
+    def _build_parent_map(self, graph: dict[str, list[tuple[list[str], int]]]) -> dict[str, str]:
         """Build child → parent mapping from the split graph."""
         parent_of: dict[str, str] = {}
         for parent, splits in graph.items():
@@ -184,9 +202,7 @@ class ReconstructorService:
                     ancestor_candidates.add(current)
             ancestor_candidates.add(base_cdk)
 
-            ancestors_with_data = await self._find_cdks_with_data(
-                list(ancestor_candidates)
-            )
+            ancestors_with_data = await self._find_cdks_with_data(list(ancestor_candidates))
 
             # Resolve each missing CDK to nearest ancestor with data
             for cdk in missing_cdks:
@@ -216,10 +232,7 @@ class ReconstructorService:
             return "direct"
         if all(s == "missing" for s in statuses):
             # Check if any have ancestor fallback
-            has_ancestor = any(
-                data_cdk is not None
-                for _, (data_cdk, _) in resolution_map.items()
-            )
+            has_ancestor = any(data_cdk is not None for _, (data_cdk, _) in resolution_map.items())
             return "ancestor_fallback" if has_ancestor else "no_data"
         if any(s == "ancestor" for s in statuses) and not any(s == "direct" for s in statuses):
             return "ancestor_fallback"
@@ -233,9 +246,7 @@ class ReconstructorService:
         parent_map: dict[str, str],
     ) -> tuple[list[str], bool]:
         """Backward-compatible wrapper around _resolve_data_cdks_v2."""
-        resolution = await self._resolve_data_cdks_v2(
-            active_cdks, base_cdk, parent_map
-        )
+        resolution = await self._resolve_data_cdks_v2(active_cdks, base_cdk, parent_map)
         data_cdks: set[str] = set()
         has_fallback = False
         for _, (data_cdk, status) in resolution.items():
@@ -301,7 +312,8 @@ class ReconstructorService:
             is_contiguous = True
             if leaves:
                 try:
-                    geom_row = await self.db.fetchrow("""
+                    geom_row = await self.db.fetchrow(
+                        """
                         WITH leaves AS (
                             SELECT geometry FROM district_snapshots
                             WHERE district_cdk = ANY($1) AND geometry IS NOT NULL
@@ -310,15 +322,13 @@ class ReconstructorService:
                             ST_AsGeoJSON(ST_Union(geometry)) as geojson,
                             GeometryType(ST_Union(geometry)) as type
                         FROM leaves
-                    """, list(leaves))
+                    """,
+                        list(leaves),
+                    )
 
                     if geom_row and geom_row["geojson"]:
                         geojson = json.loads(geom_row["geojson"])
-                        is_contiguous = (
-                            geom_row["type"] != "MULTIPOLYGON"
-                            if geom_row["type"]
-                            else True
-                        )
+                        is_contiguous = geom_row["type"] != "MULTIPOLYGON" if geom_row["type"] else True
                 except Exception as geo_err:
                     logger.warning(f"Geometry lookup failed for epoch {ep.epoch_num}: {geo_err}")
 
@@ -331,9 +341,7 @@ class ReconstructorService:
             num_active: int = len(active_cdks_list)
 
             # V2 resolution: per-CDK status tracking
-            resolution_map = await self._resolve_data_cdks_v2(
-                active_cdks_list, base_cdk, parent_map
-            )
+            resolution_map = await self._resolve_data_cdks_v2(active_cdks_list, base_cdk, parent_map)
             epoch_data_quality = self._classify_data_quality(resolution_map)
             is_fallback = epoch_data_quality in ("ancestor_fallback", "partial")
 
@@ -355,13 +363,20 @@ class ReconstructorService:
                 try:
                     prod_var: str = f"{crop}_production"
                     area_var: str = f"{crop}_area"
-                    rows = await self.db.fetch("""
+                    rows = await self.db.fetch(
+                        """
                         SELECT cdk, year, variable_name, value
                         FROM agri_metrics
                         WHERE cdk = ANY($1)
                           AND variable_name IN ($2, $3)
                           AND year >= $4 AND year <= $5
-                    """, data_cdks, prod_var, area_var, y_start, y_end)
+                    """,
+                        data_cdks,
+                        prod_var,
+                        area_var,
+                        y_start,
+                        y_end,
+                    )
 
                     for row in rows:
                         yr: int = int(row["year"])
@@ -395,11 +410,7 @@ class ReconstructorService:
                         cdks_with_data += 1
 
                 # Coverage = data CDKs with data this year / total active CDKs
-                coverage: float = (
-                    float(cdks_with_data) / float(num_active)
-                    if num_active > 0
-                    else 0.0
-                )
+                coverage: float = float(cdks_with_data) / float(num_active) if num_active > 0 else 0.0
                 yield_val = (
                     round((total_prod / total_area) * 1000.0, 2)  # type: ignore
                     if total_area > 0  # type: ignore
@@ -417,15 +428,17 @@ class ReconstructorService:
                 else:
                     year_quality = "direct" if cdks_with_data == num_active else "partial"
 
-                metrics_list.append({
-                    "year": year,
-                    "data_coverage": round(coverage, 3),  # type: ignore
-                    "collective_yield": yield_val,
-                    "collective_production": round(total_prod, 2) if cdks_with_data > 0 else None,  # type: ignore
-                    "collective_area": round(total_area, 2) if cdks_with_data > 0 else None,  # type: ignore
-                    "is_fallback": is_fallback,
-                    "data_quality": year_quality,
-                })
+                metrics_list.append(
+                    {
+                        "year": year,
+                        "data_coverage": round(coverage, 3),  # type: ignore
+                        "collective_yield": yield_val,
+                        "collective_production": round(total_prod, 2) if cdks_with_data > 0 else None,  # type: ignore
+                        "collective_area": round(total_area, 2) if cdks_with_data > 0 else None,  # type: ignore
+                        "is_fallback": is_fallback,
+                        "data_quality": year_quality,
+                    }
+                )
 
             # Epoch-level confidence score
             #   source_quality: direct=1.0, ancestor=0.6, missing=0.0  (40%)
@@ -433,23 +446,15 @@ class ReconstructorService:
             #   temporal: data years / epoch span                         (20%)
             source_quality: float = 0.0
             if num_active > 0:
-                source_quality = (
-                    direct_count * 1.0
-                    + ancestor_count * 0.6
-                    + missing_count * 0.0
-                ) / num_active
-            resolved_coverage: float = (
-                (direct_count + ancestor_count) / num_active
-                if num_active > 0 else 0.0
-            )
+                source_quality = (direct_count * 1.0 + ancestor_count * 0.6 + missing_count * 0.0) / num_active
+            resolved_coverage: float = (direct_count + ancestor_count) / num_active if num_active > 0 else 0.0
             temporal_coverage: float = (
                 data_years_count / epoch_span  # type: ignore[operator]
-                if epoch_span > 0 else 0.0
+                if epoch_span > 0
+                else 0.0
             )
             epoch_confidence: float = round(  # type: ignore[call-overload]
-                source_quality * 0.4
-                + resolved_coverage * 0.4
-                + temporal_coverage * 0.2,
+                source_quality * 0.4 + resolved_coverage * 0.4 + temporal_coverage * 0.2,
                 3,  # type: ignore[call-overload]
             )
 

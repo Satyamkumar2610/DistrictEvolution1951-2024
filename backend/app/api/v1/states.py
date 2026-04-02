@@ -2,6 +2,7 @@
 States API: Aggregate state-level endpoints.
 Provides overview statistics for each state.
 """
+
 import asyncpg
 from fastapi import APIRouter, Depends, Query
 

@@ -1,6 +1,7 @@
 """
 Yield Analysis Service.
 """
+
 import logging
 import math
 import warnings
@@ -15,6 +16,7 @@ from .base import BaseAnalyticsService
 @dataclass
 class YieldTrend:
     """Yield trend analysis results."""
+
     crop: str
     start_year: int
     end_year: int
@@ -47,11 +49,7 @@ class YieldAnalysisService(BaseAnalyticsService):
 
     @cached(ttl=CacheTTL.ANALYSIS, prefix="yield_trend")
     async def get_yield_trend(
-        self,
-        cdk: str,
-        crop: str,
-        start_year: int = 1990,
-        end_year: int = 2020
+        self, cdk: str, crop: str, start_year: int = 1990, end_year: int = 2020
     ) -> YieldTrend | None:
         """Calculate yield trend with CAGR and volatility."""
         query = """
@@ -68,8 +66,8 @@ class YieldAnalysisService(BaseAnalyticsService):
         if len(rows) < 3:
             return None
 
-        years = [r['year'] for r in rows]
-        yields = [r['value'] for r in rows]
+        years = [r["year"] for r in rows]
+        yields = [r["value"] for r in rows]
 
         n_years = years[-1] - years[0]
         cagr = (yields[-1] / yields[0]) ** (1 / n_years) - 1 if n_years > 0 and yields[0] > 0 else 0
@@ -100,16 +98,12 @@ class YieldAnalysisService(BaseAnalyticsService):
             end_yield=round(yields[-1], 2),
             cagr=round(cagr * 100, 2),
             volatility=round(volatility * 100, 2),
-            trend=trend
+            trend=trend,
         )
 
     @cached(ttl=CacheTTL.ANALYSIS, prefix="yoy_growth")
     async def get_yoy_growth(
-        self,
-        cdk: str,
-        crop: str,
-        start_year: int = 2010,
-        end_year: int = 2020
+        self, cdk: str, crop: str, start_year: int = 2010, end_year: int = 2020
     ) -> list[dict[str, Any]]:
         """Calculate year-over-year growth rates."""
         query = """
@@ -129,24 +123,15 @@ class YieldAnalysisService(BaseAnalyticsService):
         for r in rows:
             yoy = None
             if prev_value and prev_value > 0:
-                yoy = round((r['value'] - prev_value) / prev_value * 100, 2)
+                yoy = round((r["value"] - prev_value) / prev_value * 100, 2)
 
-            growth_data.append({
-                'year': r['year'],
-                'yield': round(r['value'], 2),
-                'yoy_growth': yoy
-            })
-            prev_value = r['value']
+            growth_data.append({"year": r["year"], "yield": round(r["value"], 2), "yoy_growth": yoy})
+            prev_value = r["value"]
 
         return growth_data
 
     @cached(ttl=CacheTTL.ANALYSIS, prefix="yield_forecast")
-    async def get_yield_forecast(
-        self,
-        cdk: str,
-        crop: str,
-        forecast_years: int = 5
-    ) -> dict[str, Any]:
+    async def get_yield_forecast(self, cdk: str, crop: str, forecast_years: int = 5) -> dict[str, Any]:
         """Produce a yield forecast using SARIMA or Simple Linear fallback."""
         query = """
             SELECT year, value FROM agri_metrics
@@ -161,8 +146,8 @@ class YieldAnalysisService(BaseAnalyticsService):
         if len(rows) < 5:
             return {"error": "Insufficient data to forecast. Need at least 5 years."}
 
-        years = [r['year'] for r in rows]
-        yields = [r['value'] for r in rows]
+        years = [r["year"] for r in rows]
+        yields = [r["value"] for r in rows]
         last_year = years[-1]
         forecast = []
         slope = 0.0
@@ -172,14 +157,9 @@ class YieldAnalysisService(BaseAnalyticsService):
             from statsmodels.tsa.statespace.sarimax import SARIMAX
 
             with warnings.catch_warnings():
-                warnings.simplefilter('ignore', ConvergenceWarning)
-                warnings.simplefilter('ignore', UserWarning)
-                model = SARIMAX(
-                    yields,
-                    order=(1, 1, 1),
-                    enforce_stationarity=False,
-                    enforce_invertibility=False
-                )
+                warnings.simplefilter("ignore", ConvergenceWarning)
+                warnings.simplefilter("ignore", UserWarning)
+                model = SARIMAX(yields, order=(1, 1, 1), enforce_stationarity=False, enforce_invertibility=False)
                 results = model.fit(disp=False)
                 forecast_result = results.get_forecast(steps=forecast_years)
                 pred_mean = forecast_result.predicted_mean
@@ -193,12 +173,14 @@ class YieldAnalysisService(BaseAnalyticsService):
                     pred_ci = pred_ci.values.tolist()
 
                 for i in range(forecast_years):
-                    forecast.append({
-                        "year": last_year + i + 1,
-                        "projected_yield": round(max(0, float(pred_mean[i])), 2),
-                        "confidence_interval_lower": round(max(0, float(pred_ci[i][0])), 2),
-                        "confidence_interval_upper": round(max(0, float(pred_ci[i][1])), 2)
-                    })
+                    forecast.append(
+                        {
+                            "year": last_year + i + 1,
+                            "projected_yield": round(max(0, float(pred_mean[i])), 2),
+                            "confidence_interval_lower": round(max(0, float(pred_ci[i][0])), 2),
+                            "confidence_interval_upper": round(max(0, float(pred_ci[i][1])), 2),
+                        }
+                    )
         except Exception as e:
             logging.getLogger("analytics").warning(f"SARIMA failed for {cdk} {crop}: {e}")
 
@@ -214,28 +196,26 @@ class YieldAnalysisService(BaseAnalyticsService):
         if not forecast:
             for i in range(1, forecast_years + 1):
                 f_yield = max(0, float(slope * (last_year + i) + c))
-                forecast.append({
-                    "year": last_year + i,
-                    "projected_yield": round(f_yield, 2),
-                    "confidence_interval_lower": round(f_yield * 0.9, 2),
-                    "confidence_interval_upper": round(f_yield * 1.1, 2)
-                })
+                forecast.append(
+                    {
+                        "year": last_year + i,
+                        "projected_yield": round(f_yield, 2),
+                        "confidence_interval_lower": round(f_yield * 0.9, 2),
+                        "confidence_interval_upper": round(f_yield * 1.1, 2),
+                    }
+                )
 
         return {
             "cdk": cdk,
             "crop": crop,
             "historical_trend": "increasing" if slope > 0.0 else "decreasing",
             "slope": round(slope, 4),
-            "forecast": forecast
+            "forecast": forecast,
         }
 
     @cached(ttl=CacheTTL.ANALYSIS, prefix="yield_gap")
     async def get_yield_gap(
-        self,
-        state: str,
-        crop: str,
-        start_year: int = 2000,
-        end_year: int = 2020
+        self, state: str, crop: str, start_year: int = 2000, end_year: int = 2020
     ) -> dict[str, Any]:
         """Quantifies the yield gap for each district against the state's 90th percentile 'frontier'."""
         query = """
@@ -255,7 +235,7 @@ class YieldAnalysisService(BaseAnalyticsService):
 
         yearly_data: dict[int, list[tuple[str, str, float]]] = {}
         for r in rows:
-            yearly_data.setdefault(r['year'], []).append((r['cdk'], r['district_name'], r['value']))
+            yearly_data.setdefault(r["year"], []).append((r["cdk"], r["district_name"], r["value"]))
 
         convergence_timeline = []
         district_gaps: dict[str, DistrictGapEntry] = {}
@@ -276,12 +256,14 @@ class YieldAnalysisService(BaseAnalyticsService):
                 dic_entry["gaps"].append(gap)
                 dic_entry["yields"].append(yld)
 
-            convergence_timeline.append({
-                "year": yr,
-                "frontier_yield": round(frontier_yield, 2),
-                "state_avg_yield": round(sum(yields) / len(yields), 2),
-                "avg_gap": round(total_gap / len(dist_vals), 2)
-            })
+            convergence_timeline.append(
+                {
+                    "year": yr,
+                    "frontier_yield": round(frontier_yield, 2),
+                    "state_avg_yield": round(sum(yields) / len(yields), 2),
+                    "avg_gap": round(total_gap / len(dist_vals), 2),
+                }
+            )
 
         rankings: list[YieldGapRankingEntry] = []
         for cdk, data in district_gaps.items():
@@ -295,20 +277,21 @@ class YieldAnalysisService(BaseAnalyticsService):
                 denom = n_years * sum(x_i * x_i for x_i in x) - sum(x) * sum(x)
                 if denom != 0:
                     gap_trend = (
-                        n_years * sum(x_i * y_i for x_i, y_i in zip(x, gaps, strict=True))
-                        - sum(x) * sum(gaps)
+                        n_years * sum(x_i * y_i for x_i, y_i in zip(x, gaps, strict=True)) - sum(x) * sum(gaps)
                     ) / denom
 
-            rankings.append({
-                "cdk": cdk,
-                "district_name": data["name"],
-                "avg_gap": round(sum(gaps) / len(gaps), 2),
-                "latest_gap": round(gaps[-1], 2),
-                "avg_yield": round(sum(yields) / len(yields), 2),
-                "gap_trend": round(gap_trend, 2),
-                "status": "Closing" if gap_trend < -1 else "Widening" if gap_trend > 1 else "Stagnant",
-                "rank": 0,
-            })
+            rankings.append(
+                {
+                    "cdk": cdk,
+                    "district_name": data["name"],
+                    "avg_gap": round(sum(gaps) / len(gaps), 2),
+                    "latest_gap": round(gaps[-1], 2),
+                    "avg_yield": round(sum(yields) / len(yields), 2),
+                    "gap_trend": round(gap_trend, 2),
+                    "status": "Closing" if gap_trend < -1 else "Widening" if gap_trend > 1 else "Stagnant",
+                    "rank": 0,
+                }
+            )
 
         rankings.sort(key=lambda x: x["avg_gap"], reverse=True)
         for i, r in enumerate(rankings, 1):
@@ -319,5 +302,5 @@ class YieldAnalysisService(BaseAnalyticsService):
             "crop": crop,
             "period": f"{start_year}-{end_year}",
             "convergence_timeline": convergence_timeline,
-            "district_rankings": rankings
+            "district_rankings": rankings,
         }

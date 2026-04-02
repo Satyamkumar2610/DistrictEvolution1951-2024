@@ -30,11 +30,7 @@ class DistrictRepository(BaseRepository):
             """
             rows = await self.fetch_all(query)
 
-        return [
-            District(
-                cdk=r["cdk"],
-                name=r["name"],
-                state=r["state"]) for r in rows]
+        return [District(cdk=r["cdk"], name=r["name"], state=r["state"]) for r in rows]
 
     async def get_by_cdk(self, cdk: str) -> District | None:
         """Get single district by LGD code (passed as text string)."""
@@ -45,10 +41,7 @@ class DistrictRepository(BaseRepository):
         """
         row = await self.fetch_one(query, cdk)
         if row:
-            return District(
-                cdk=row["cdk"],
-                name=row["name"],
-                state=row["state"])
+            return District(cdk=row["cdk"], name=row["name"], state=row["state"])
         return None
 
     async def search(self, query_text: str, state: str | None = None) -> list[District]:
@@ -72,20 +65,13 @@ class DistrictRepository(BaseRepository):
             """
             rows = await self.fetch_all(query, f"%{query_text}%")
 
-        return [
-            District(
-                cdk=r["cdk"],
-                name=r["name"],
-                state=r["state"]) for r in rows]
+        return [District(cdk=r["cdk"], name=r["name"], state=r["state"]) for r in rows]
 
     async def get_cdk_to_meta_map(self) -> dict[str, dict[str, str]]:
         """Get mapping of lgd_code (as text) to {name, state} for all districts."""
         query = "SELECT lgd_code::text as cdk, district_name, state_name FROM districts"
         rows = await self.fetch_all(query)
-        return {
-            r["cdk"]: {
-                "name": r["district_name"],
-                "state": r["state_name"]} for r in rows}
+        return {r["cdk"]: {"name": r["district_name"], "state": r["state_name"]} for r in rows}
 
     async def get_lgd_lookup(self) -> dict[tuple[str, str], int]:
         """Get normalized district/state to LGD mapping for name resolution fallbacks."""

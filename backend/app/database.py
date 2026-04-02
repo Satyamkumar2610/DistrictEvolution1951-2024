@@ -1,6 +1,7 @@
 """
 Async Database Connection Pool using asyncpg.
 """
+
 import os
 import ssl
 from collections.abc import AsyncGenerator
@@ -34,6 +35,7 @@ async def init_db_pool() -> asyncpg.Pool:
         # Add SSL for Neon/cloud databases (verify certificates properly)
         if "neon.tech" in dsn or "sslmode=require" in dsn:
             import certifi
+
             ssl_context = ssl.create_default_context(cafile=certifi.where())
             # Do NOT disable verification — CERT_REQUIRED is the default
             pool_kwargs["ssl"] = ssl_context

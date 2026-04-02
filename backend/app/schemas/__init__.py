@@ -1,4 +1,5 @@
 """Schemas package."""
+
 from app.schemas.analysis import (
     AdvancedStats,
     SeriesMeta,

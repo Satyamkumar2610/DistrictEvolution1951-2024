@@ -1,6 +1,7 @@
 """
 Forecast and recommendation response schemas.
 """
+
 from typing import Any
 
 from pydantic import BaseModel, ConfigDict

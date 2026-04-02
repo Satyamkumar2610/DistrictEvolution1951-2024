@@ -113,10 +113,7 @@ class SpatialRepository(BaseRepository):
             "SELECT * FROM area_transfers WHERE source_cdk = $1 OR dest_cdk = $1",
             district_id,
         )
-        return [
-            {key: value for key, value in dict(row).items() if key != "geometry"}
-            for row in rows
-        ]
+        return [{key: value for key, value in dict(row).items() if key != "geometry"} for row in rows]
 
     async def get_district_name(self, district_id: str) -> str | None:
         """Get district name for a district LGD code."""

@@ -35,10 +35,7 @@ class SplitRepository(BaseRepository):
             GROUP BY state_name
             """
         )
-        return {
-            row["state_name"].strip().upper(): row["boundary_changes"]
-            for row in rows
-        }
+        return {row["state_name"].strip().upper(): row["boundary_changes"] for row in rows}
 
     async def get_split_rows_for_state(self, state: str) -> list[dict[str, int | str | None]]:
         """Return split-event rows for a state using pre-resolved LGD columns when available."""

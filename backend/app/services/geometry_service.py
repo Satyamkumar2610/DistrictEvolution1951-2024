@@ -14,8 +14,7 @@ class GeometryService:
     def _dict_to_gdf(self, geojson_dict: dict[str, Any]) -> gpd.GeoDataFrame:
         features = geojson_dict.get("features", [])
         if not features:
-            if geojson_dict.get("type") in [
-                    "Feature", "Polygon", "MultiPolygon"]:
+            if geojson_dict.get("type") in ["Feature", "Polygon", "MultiPolygon"]:
                 features = [geojson_dict]
             else:
                 raise ValueError("Invalid GeoJSON provided.")
@@ -32,12 +31,7 @@ class GeometryService:
         gdf = gpd.GeoDataFrame(geometry=geometries, crs=self.SOURCE_CRS)
         return gdf
 
-    def calculate_split_areas(self,
-                              parent_geojson: dict[str,
-                                                   Any],
-                              child_geojson: dict[str,
-                                                  Any]) -> dict[str,
-                                                                float]:
+    def calculate_split_areas(self, parent_geojson: dict[str, Any], child_geojson: dict[str, Any]) -> dict[str, float]:
         """
         Calculates the transferred area and remaining parent area in square kilometers
         using high-precision Indian Equal Area projection.
@@ -77,5 +71,5 @@ class GeometryService:
 
         return {
             "transferred_area_sqkm": float(transferred_area_sqkm),
-            "remaining_area_sqkm": float(remaining_area_sqkm)
+            "remaining_area_sqkm": float(remaining_area_sqkm),
         }

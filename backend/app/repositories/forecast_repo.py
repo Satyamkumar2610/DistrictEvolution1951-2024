@@ -64,10 +64,7 @@ class ForecastRepository(BaseRepository):
             ORDER BY year
         """
         rows = await self.fetch_all(query, cdk, f"{crop}_yield")
-        return {
-            int(row["year"]): float(row["value"])
-            for row in rows
-        }
+        return {int(row["year"]): float(row["value"]) for row in rows}
 
     async def get_recent_variable_history(
         self,

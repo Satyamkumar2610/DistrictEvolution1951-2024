@@ -52,13 +52,7 @@ class SpatialService:
             return ((end_val / start_val) ** (1 / n_years)) - 1
         return 0.0
 
-    async def get_spatial_contagion(
-        self,
-        cdk: str,
-        crop: str,
-        start_year: int,
-        end_year: int
-    ) -> dict[str, Any]:
+    async def get_spatial_contagion(self, cdk: str, crop: str, start_year: int, end_year: int) -> dict[str, Any]:
         """
         Calculates the spillover effect by comparing a district's growth
         to the average growth of its geographic neighbors.
@@ -81,12 +75,9 @@ class SpatialService:
         for n in neighbors:
             n_cdk = str(n["neighbor_cdk"])
             n_cagr = await self.get_cagr(n_cdk, crop, start_year, end_year)
-            neighbor_results.append({
-                "cdk": n_cdk,
-                "name": n["neighbor_name"],
-                "state": n["neighbor_state"],
-                "cagr": round(n_cagr * 100, 2)
-            })
+            neighbor_results.append(
+                {"cdk": n_cdk, "name": n["neighbor_name"], "state": n["neighbor_state"], "cagr": round(n_cagr * 100, 2)}
+            )
 
         # Compute regional cluster average
         valid_cagrs = [n["cagr"] for n in neighbor_results if n["cagr"] != 0.0]
@@ -107,20 +98,13 @@ class SpatialService:
             spillover_category = "Divergent"
 
         return {
-            "target": {
-                "cdk": cdk,
-                "name": target_name,
-                "cagr": target_cagr_pct},
-            "regional_avg_cagr": round(
-                regional_avg_cagr,
-                2),
+            "target": {"cdk": cdk, "name": target_name, "cagr": target_cagr_pct},
+            "regional_avg_cagr": round(regional_avg_cagr, 2),
             "spillover_category": spillover_category,
             "period": f"{start_year}-{end_year}",
             "crop": crop,
-            "neighbors": sorted(
-                neighbor_results,
-                key=lambda x: x["cagr"],
-                reverse=True)}
+            "neighbors": sorted(neighbor_results, key=lambda x: x["cagr"], reverse=True),
+        }
 
     def calculate_split_areas(
         self,

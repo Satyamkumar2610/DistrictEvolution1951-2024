@@ -8,8 +8,10 @@ from pydantic import BaseModel, Field
 
 # ── Request Models ─────────────────────────────────────────────────────────
 
+
 class SplitDiffRequest(BaseModel):
     """Request body for POST /api/v1/spatial/diff"""
+
     parent_cdk: str = Field(
         ...,
         description="CDK of the parent district (before split)",
@@ -32,6 +34,7 @@ class SplitDiffRequest(BaseModel):
 
 class GeoJsonUploadRequest(BaseModel):
     """Request body for POST /api/v1/spatial/upload-geojson"""
+
     district_cdk: str = Field(
         ...,
         description="CDK of the district this geometry belongs to",
@@ -45,16 +48,17 @@ class GeoJsonUploadRequest(BaseModel):
     geojson: dict = Field(
         ...,
         description=(
-            "GeoJSON geometry or Feature or FeatureCollection. "
-            "Must contain valid Polygon or MultiPolygon geometry."
+            "GeoJSON geometry or Feature or FeatureCollection. Must contain valid Polygon or MultiPolygon geometry."
         ),
     )
 
 
 # ── Response Models ────────────────────────────────────────────────────────
 
+
 class TransferDetail(BaseModel):
     """A single classified sub-region from the diff."""
+
     from_district: str
     to_district: str
     transfer_type: str
@@ -64,6 +68,7 @@ class TransferDetail(BaseModel):
 
 class SplitDiffResponse(BaseModel):
     """Response for POST /api/v1/spatial/diff"""
+
     success: bool = True
     event_id: int | None = Field(None, description="ID of the created split_events row")
     parent_cdk: str
@@ -76,13 +81,12 @@ class SplitDiffResponse(BaseModel):
     geometry_status: str
     transfers: list[TransferDetail]
     warnings: list[str]
-    geojson: dict = Field(
-        description="GeoJSON FeatureCollection of all transfer polygons"
-    )
+    geojson: dict = Field(description="GeoJSON FeatureCollection of all transfer polygons")
 
 
 class LineageNode(BaseModel):
     """A node in the lineage tree."""
+
     district_cdk: str
     district_name: str
     year_created: int | None = None
@@ -95,6 +99,7 @@ class LineageNode(BaseModel):
 
 class LineageResponse(BaseModel):
     """Response for GET /api/v1/spatial/lineage/{district_cdk}"""
+
     success: bool = True
     root: LineageNode
     total_nodes: int
@@ -103,6 +108,7 @@ class LineageResponse(BaseModel):
 
 class UploadResponse(BaseModel):
     """Response for POST /api/v1/spatial/upload-geojson"""
+
     success: bool = True
     district_cdk: str
     snapshot_year: int

@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class ForecastPoint:
     """A single forecast point with confidence interval."""
+
     year: int
     predicted_yield: float
     lower_bound: float
@@ -25,6 +26,7 @@ class ForecastPoint:
 @dataclass
 class ForecastResult:
     """Complete forecast result with model details."""
+
     cdk: str
     crop: str
     historical_years: int
@@ -60,11 +62,11 @@ class YieldForecaster:
         """Check if statsmodels is available."""
         try:
             import statsmodels.tsa.statespace.sarimax  # noqa: F401
+
             return True
         except ImportError:
             logger.warning(
-                "statsmodels not installed — SARIMA forecasting disabled. "
-                "Install with: pip install statsmodels>=0.14.0"
+                "statsmodels not installed — SARIMA forecasting disabled. Install with: pip install statsmodels>=0.14.0"
             )
             return False
 
@@ -74,7 +76,7 @@ class YieldForecaster:
         crop: str,
         historical_yields: dict[int, float],
         horizon_years: int = 3,
-        confidence_level: float = 0.95
+        confidence_level: float = 0.95,
     ) -> ForecastResult | None:
         """
         Generate yield forecasts based on historical data.
@@ -83,9 +85,7 @@ class YieldForecaster:
         falls back to linear regression otherwise.
         """
         # Filter valid data
-        valid_data = {
-            y: v for y,
-            v in historical_yields.items() if v and v > 0}
+        valid_data = {y: v for y, v in historical_yields.items() if v and v > 0}
 
         if len(valid_data) < self.LINEAR_MIN_POINTS:
             return None
@@ -96,17 +96,13 @@ class YieldForecaster:
 
         # Try SARIMA first
         if self._sarima_available and n >= self.SARIMA_MIN_POINTS:
-            result = self._forecast_sarima(
-                cdk, crop, years, yields, horizon_years, confidence_level
-            )
+            result = self._forecast_sarima(cdk, crop, years, yields, horizon_years, confidence_level)
             if result is not None:
                 return result
             logger.info(f"SARIMA failed for {cdk}/{crop}, falling back to linear")
 
         # Fallback to linear
-        return self._forecast_linear(
-            cdk, crop, years, yields, horizon_years, confidence_level
-        )
+        return self._forecast_linear(cdk, crop, years, yields, horizon_years, confidence_level)
 
     # ------------------------------------------------------------------ #
     # SARIMA Forecasting
@@ -152,15 +148,9 @@ class YieldForecaster:
 
             for i in range(horizon_years):
                 forecast_year = last_year + i + 1
-                pred = float(
-                    predicted.iloc[i]) if hasattr(
-                    predicted,
-                    'iloc') else float(
-                    predicted[i])
-                lower = float(conf_int.iloc[i, 0]) if hasattr(
-                    conf_int, 'iloc') else float(conf_int[i, 0])
-                upper = float(conf_int.iloc[i, 1]) if hasattr(
-                    conf_int, 'iloc') else float(conf_int[i, 1])
+                pred = float(predicted.iloc[i]) if hasattr(predicted, "iloc") else float(predicted[i])
+                lower = float(conf_int.iloc[i, 0]) if hasattr(conf_int, "iloc") else float(conf_int[i, 0])
+                upper = float(conf_int.iloc[i, 1]) if hasattr(conf_int, "iloc") else float(conf_int[i, 1])
 
                 # Ensure non-negative yields
                 pred = max(0, pred)
@@ -170,23 +160,24 @@ class YieldForecaster:
                 # Confidence decreases with horizon
                 conf = max(0.5, confidence_level - 0.03 * (i + 1))
 
-                forecasts.append(ForecastPoint(
-                    year=forecast_year,
-                    predicted_yield=round(pred, 2),
-                    lower_bound=round(lower, 2),
-                    upper_bound=round(upper, 2),
-                    confidence=round(conf, 2),
-                ))
+                forecasts.append(
+                    ForecastPoint(
+                        year=forecast_year,
+                        predicted_yield=round(pred, 2),
+                        lower_bound=round(lower, 2),
+                        upper_bound=round(upper, 2),
+                        confidence=round(conf, 2),
+                    )
+                )
 
             # Model stats
-            aic = float(fit.aic) if hasattr(fit, 'aic') else 0.0
-            bic = float(fit.bic) if hasattr(fit, 'bic') else 0.0
+            aic = float(fit.aic) if hasattr(fit, "aic") else 0.0
+            bic = float(fit.bic) if hasattr(fit, "bic") else 0.0
 
             # Trend direction from first forecast vs last historical value
             last_yield = yields[-1]
             first_pred = forecasts[0].predicted_yield
-            pct_change = ((first_pred - last_yield)
-                          / last_yield * 100) if last_yield > 0 else 0
+            pct_change = ((first_pred - last_yield) / last_yield * 100) if last_yield > 0 else 0
             trend = self._classify_trend(pct_change)
 
             return ForecastResult(
@@ -225,8 +216,7 @@ class YieldForecaster:
         y_mean = sum(yields) / n
 
         # Calculate slope and intercept
-        numerator = sum((x - x_mean) * (y - y_mean)
-                        for x, y in zip(years, yields, strict=False))
+        numerator = sum((x - x_mean) * (y - y_mean) for x, y in zip(years, yields, strict=False))
         denominator = sum((x - x_mean) ** 2 for x in years)
 
         if denominator == 0:
@@ -242,14 +232,14 @@ class YieldForecaster:
 
         # Standard error of prediction
         if n > 2:
-            mse = sum(r ** 2 for r in residuals) / (n - 2)
+            mse = sum(r**2 for r in residuals) / (n - 2)
             se = math.sqrt(mse)
         else:
             se = sum(abs(r) for r in residuals) / n if residuals else 0
 
         # R-squared
         ss_tot = sum((y - y_mean) ** 2 for y in yields)
-        ss_res = sum(r ** 2 for r in residuals)
+        ss_res = sum(r**2 for r in residuals)
         r_squared = 1 - (ss_res / ss_tot) if ss_tot > 0 else 0
 
         # Generate forecasts
@@ -263,9 +253,7 @@ class YieldForecaster:
 
             # Wider interval further into future
             if denominator > 0:
-                interval_width = z * se * math.sqrt(
-                    1 + 1 / n + (forecast_year - x_mean)**2 / denominator
-                )
+                interval_width = z * se * math.sqrt(1 + 1 / n + (forecast_year - x_mean) ** 2 / denominator)
             else:
                 interval_width = z * se * (1 + 0.1 * i)
 
@@ -275,13 +263,15 @@ class YieldForecaster:
 
             conf = max(0.5, confidence_level - 0.05 * i)
 
-            forecasts.append(ForecastPoint(
-                year=forecast_year,
-                predicted_yield=round(predicted, 2),
-                lower_bound=round(lower, 2),
-                upper_bound=round(upper, 2),
-                confidence=round(conf, 2),
-            ))
+            forecasts.append(
+                ForecastPoint(
+                    year=forecast_year,
+                    predicted_yield=round(predicted, 2),
+                    lower_bound=round(lower, 2),
+                    upper_bound=round(upper, 2),
+                    confidence=round(conf, 2),
+                )
+            )
 
         pct_change = (slope / y_mean * 100) if y_mean > 0 else 0
         trend = self._classify_trend(pct_change)
@@ -322,16 +312,21 @@ class CropRecommender:
 
     def __init__(self):
         self.major_crops = [
-            "rice", "wheat", "maize", "sorghum", "pearl_millet",
-            "chickpea", "pigeonpea", "groundnut", "soyabean",
-            "sugarcane", "cotton"
+            "rice",
+            "wheat",
+            "maize",
+            "sorghum",
+            "pearl_millet",
+            "chickpea",
+            "pigeonpea",
+            "groundnut",
+            "soyabean",
+            "sugarcane",
+            "cotton",
         ]
 
     def recommend(
-        self,
-        crop_performances: dict[str, dict[str, float]],
-        state_benchmarks: dict[str, float],
-        top_n: int = 5
+        self, crop_performances: dict[str, dict[str, float]], state_benchmarks: dict[str, float], top_n: int = 5
     ) -> list[dict[str, Any]]:
         """
         Recommend crops based on efficiency and growth potential.
@@ -362,19 +357,20 @@ class CropRecommender:
             efficiency = district_yield / state_avg if state_avg > 0 else 1.0
 
             # Score: efficiency + trend bonus
-            score = efficiency * 0.7 + \
-                min(1.5, max(0.5, 1 + trend / 100)) * 0.3
+            score = efficiency * 0.7 + min(1.5, max(0.5, 1 + trend / 100)) * 0.3
 
-            recommendations.append({
-                "crop": crop,
-                "score": round(score, 3),
-                "efficiency": round(efficiency, 3),
-                "current_yield": round(district_yield, 2),
-                "state_average": round(state_avg, 2),
-                "current_area": round(district_area, 2),
-                "trend_pct": round(trend, 2),
-                "recommendation": "expand" if score > 1.1 else "maintain" if score > 0.9 else "review"
-            })
+            recommendations.append(
+                {
+                    "crop": crop,
+                    "score": round(score, 3),
+                    "efficiency": round(efficiency, 3),
+                    "current_yield": round(district_yield, 2),
+                    "state_average": round(state_avg, 2),
+                    "current_area": round(district_area, 2),
+                    "trend_pct": round(trend, 2),
+                    "recommendation": "expand" if score > 1.1 else "maintain" if score > 0.9 else "review",
+                }
+            )
 
         # Sort by score
         recommendations.sort(key=lambda x: -float(x.get("score", 0)))  # type: ignore[arg-type]

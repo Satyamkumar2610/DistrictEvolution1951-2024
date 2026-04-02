@@ -7,6 +7,7 @@ RULES (Non-Negotiable):
 - Always annotate method on derived values
 - Reject if coverage ratios don't sum to ~1.0
 """
+
 import json
 import logging
 from dataclasses import dataclass
@@ -24,6 +25,7 @@ logger = logging.getLogger("app.analytics.harmonizer")
 @dataclass
 class HarmonizedPoint:
     """A single harmonized data point with method annotation."""
+
     year: int
     value: float
     method: str  # 'raw', 'area_weighted', 'equal_split', etc.
@@ -62,7 +64,9 @@ class BoundaryHarmonizer:
             {target_cdk: {"value": float, "method": str, "confidence": float}}
         """
         apportioned = self.apportioner.apportion_to_modern(
-            historical_data, event, mode=mode,  # type: ignore[arg-type]
+            historical_data,
+            event,
+            mode=mode,  # type: ignore[arg-type]
             area_ratios=area_ratios,
             population_ratios=population_ratios,
         )
@@ -71,10 +75,7 @@ class BoundaryHarmonizer:
         after = {k: v.value for k, v in apportioned.items()}
         check = self.apportioner.validate_conservation(historical_data, after)
         if not check.is_valid:
-            logger.warning(
-                f"Conservation violation in apportionment: "
-                f"error={check.relative_error:.4%}"
-            )
+            logger.warning(f"Conservation violation in apportionment: error={check.relative_error:.4%}")
 
         return {
             cdk: {
@@ -86,10 +87,7 @@ class BoundaryHarmonizer:
             for cdk, av in apportioned.items()
         }
 
-    def validate_coverage_ratios(
-        self,
-        coverage_ratios: dict[str, float]
-    ) -> bool:
+    def validate_coverage_ratios(self, coverage_ratios: dict[str, float]) -> bool:
         """
         Validate that coverage ratios sum to ~1.0 (within tolerance).
 
@@ -111,7 +109,7 @@ class BoundaryHarmonizer:
         child_cdks: list[str],
         metric: Literal["area", "production", "yield"],
         coverage_ratios: dict[str, float] | None = None,
-        method: Literal["area_weighted", "equal_split"] = "area_weighted"
+        method: Literal["area_weighted", "equal_split"] = "area_weighted",
     ) -> list[HarmonizedPoint]:
         """
         Reconstruct parent district values from children's data.
@@ -166,11 +164,7 @@ class BoundaryHarmonizer:
             elif metric == "yield":
                 # Area-weighted average for intensive properties
                 if method == "area_weighted" and sum(child_areas) > 0:
-                    weighted_sum = sum(
-                        v * a for v,
-                        a in zip(
-                            child_values,
-                            child_areas, strict=False))
+                    weighted_sum = sum(v * a for v, a in zip(child_values, child_areas, strict=False))
                     value = weighted_sum / sum(child_areas)
                     used_method = "area_weighted"
                 else:
@@ -183,13 +177,15 @@ class BoundaryHarmonizer:
             # Calculate coverage (how many children contributed)
             coverage = len(active_cdks) / len(child_cdks) if child_cdks else 0
 
-            results.append(HarmonizedPoint(
-                year=year,
-                value=value,
-                method=used_method,
-                source_cdks=active_cdks,
-                coverage=coverage,
-            ))
+            results.append(
+                HarmonizedPoint(
+                    year=year,
+                    value=value,
+                    method=used_method,
+                    source_cdks=active_cdks,
+                    coverage=coverage,
+                )
+            )
 
         return results
 
@@ -232,13 +228,15 @@ class BoundaryHarmonizer:
             if value is None or value == 0:
                 continue
 
-            results.append(HarmonizedPoint(
-                year=year,
-                value=value,
-                method="raw",
-                source_cdks=[parent_cdk],
-                coverage=1.0,
-            ))
+            results.append(
+                HarmonizedPoint(
+                    year=year,
+                    value=value,
+                    method="raw",
+                    source_cdks=[parent_cdk],
+                    coverage=1.0,
+                )
+            )
 
         return results
 
@@ -278,10 +276,13 @@ class BoundaryHarmonizer:
 
     async def compute_split_diff(self, db: asyncpg.Connection, split_event_id: int):
         from app.core.geometry_resolver import GeometryResolver  # type: ignore
+
         logger = logging.getLogger(__name__)
 
         # 1. Fetch event
-        event = await db.fetchrow("SELECT parent_cdk, child_cdks, split_year FROM split_events WHERE id = $1", split_event_id)
+        event = await db.fetchrow(
+            "SELECT parent_cdk, child_cdks, split_year FROM split_events WHERE id = $1", split_event_id
+        )
         if not event:
             raise ValueError(f"Split event {split_event_id} not found")
 
@@ -316,11 +317,17 @@ class BoundaryHarmonizer:
             if intersect_res and intersect_res["area_sqkm"] is not None:
                 area = intersect_res["area_sqkm"]
                 if area > 0:
-                    await db.execute("""
+                    await db.execute(
+                        """
                         INSERT INTO area_transfers
                             (split_event_id, source_cdk, dest_cdk, transfer_type, area_sqkm, confidence_score, geometry)
                         VALUES
                             ($1, $2, $3, 'inherited', $4, 0.8, ST_SetSRID(ST_GeomFromGeoJSON($5), 4326))
-                    """, split_event_id, parent_cdk, child_cdk, area, intersect_res["geomj"])
+                    """,
+                        split_event_id,
+                        parent_cdk,
+                        child_cdk,
+                        area,
+                        intersect_res["geomj"],
+                    )
                     logger.info(f"Recorded area transfer {parent_cdk} -> {child_cdk}: {area:.2f} sqkm")
-

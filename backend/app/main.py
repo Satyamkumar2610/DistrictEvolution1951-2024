@@ -2,6 +2,7 @@
 Research-Grade Spatio-Temporal Analytics API
 FastAPI Application Entry Point
 """
+
 import hashlib
 import time
 from collections.abc import AsyncGenerator
@@ -31,20 +32,14 @@ from app.security import HTTPSRedirectMiddleware, SecurityHeadersMiddleware  # t
 settings = get_settings()
 
 # Initialize logging
-setup_logging(
-    log_level=settings.log_level if hasattr(
-        settings,
-        'log_level') else "INFO")
+setup_logging(log_level=settings.log_level if hasattr(settings, "log_level") else "INFO")
 logger = get_logger("main")
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """Application lifecycle: startup and shutdown."""
-    logger.info(
-        "Starting I-ASCAP API",
-        extra={
-            "version": settings.app_version})
+    logger.info("Starting I-ASCAP API", extra={"version": settings.app_version})
 
     # Startup
     try:
@@ -139,7 +134,7 @@ async def log_requests(request: Request, call_next):
             path=request.url.path,
             status_code=500,
             duration_ms=duration_ms,
-            client_ip=request.client.host if request.client else None
+            client_ip=request.client.host if request.client else None,
         )
         raise
 
@@ -152,7 +147,7 @@ async def log_requests(request: Request, call_next):
         path=request.url.path,
         status_code=response.status_code,
         duration_ms=duration_ms,
-        client_ip=request.client.host if request.client else None
+        client_ip=request.client.host if request.client else None,
     )
 
     # Add request ID to response headers
@@ -207,7 +202,7 @@ async def readiness_check():
                 "status": "not_ready",
                 "reason": "Database pool not initialized",
                 "timestamp": datetime.now(UTC).isoformat(),
-            }
+            },
         )
 
     # Test database connection
@@ -222,7 +217,7 @@ async def readiness_check():
                 "status": "not_ready",
                 "reason": f"Database connection failed: {str(e)}",
                 "timestamp": datetime.now(UTC).isoformat(),
-            }
+            },
         )
 
     return {
@@ -257,10 +252,7 @@ async def get_system_stats(request: Request):
     # Guard: only allow if admin key is configured and matches
     admin_key = request.headers.get("X-Admin-Key")
     if settings.api_key and admin_key != settings.api_key:
-        return JSONResponse(
-            status_code=403,
-            content={"error": "Forbidden: admin access required"}
-        )
+        return JSONResponse(status_code=403, content={"error": "Forbidden: admin access required"})
 
     from app.cache import get_cache  # type: ignore[import]
     from app.database import get_pool  # type: ignore[import]
@@ -296,8 +288,7 @@ app.include_router(api_router, prefix="/api/v1")
 async def api_error_handler(request: Request, exc: APIError):
     """Handle custom API errors."""
     logger.warning(
-        f"API Error: {exc.error_code} - {exc.detail}",
-        extra={"status_code": exc.status_code, "path": request.url.path}
+        f"API Error: {exc.error_code} - {exc.detail}", extra={"status_code": exc.status_code, "path": request.url.path}
     )
 
     return JSONResponse(
@@ -309,10 +300,7 @@ async def api_error_handler(request: Request, exc: APIError):
 @app.exception_handler(ValidationError)
 async def validation_error_handler(request: Request, exc: ValidationError):
     """Handle validation errors."""
-    logger.warning(
-        f"Validation Error: {exc.detail}",
-        extra={"status_code": exc.status_code, "path": request.url.path}
-    )
+    logger.warning(f"Validation Error: {exc.detail}", extra={"status_code": exc.status_code, "path": request.url.path})
 
     return JSONResponse(
         status_code=exc.status_code,
@@ -338,14 +326,11 @@ async def fastapi_validation_error_handler(request: Request, exc: RequestValidat
 async def global_exception_handler(request: Request, exc: Exception):
     """Catch-all exception handler with logging."""
     logger.error(
-        f"Unhandled exception: {type(exc).__name__} - {str(exc)}",
-        exc_info=True,
-        extra={"path": request.url.path}
+        f"Unhandled exception: {type(exc).__name__} - {str(exc)}", exc_info=True, extra={"path": request.url.path}
     )
 
     # Create generic error response
-    error = DatabaseError(
-        detail="An unexpected error occurred" if not settings.debug else str(exc))
+    error = DatabaseError(detail="An unexpected error occurred" if not settings.debug else str(exc))
 
     return JSONResponse(
         status_code=500,
@@ -360,6 +345,6 @@ async def global_exception_handler(request: Request, exc: Exception):
             "provenance": {
                 "query_hash": generate_query_hash(request),
                 "generated_at": datetime.now(UTC).isoformat(),
-            }
+            },
         },
     )

@@ -18,6 +18,7 @@ logger = logging.getLogger("app.services.split_engine")
 @dataclass
 class TransferResult:
     """A single classified sub-region from the diff."""
+
     from_district: str
     to_district: str
     transfer_type: str  # inherited | transferred_in | transferred_out | overlap | gap
@@ -29,6 +30,7 @@ class TransferResult:
 @dataclass
 class SplitDiffResult:
     """Complete result of a split diff computation."""
+
     parent_cdk: str
     child_cdks: list[str]
     split_year: int
@@ -71,6 +73,7 @@ class SplitEngine:
 
         if not parent_geom.is_known:
             from fastapi import HTTPException
+
             raise HTTPException(
                 status_code=422,
                 detail={
@@ -82,7 +85,7 @@ class SplitEngine:
                     "district_cdk": parent_cdk,
                     "geometry_source": "unknown",
                     "geometry_confidence": 0.0,
-                }
+                },
             )
 
         # Resolve children
@@ -110,18 +113,12 @@ class SplitEngine:
                 if inferred.is_known:
                     child_geoms.append(inferred)
                     known_children.append(unk_cdk)
-                    warnings.append(
-                        f"Geometry for '{unk_cdk}' was inferred via "
-                        f"ST_Difference (confidence=0.6)"
-                    )
+                    warnings.append(f"Geometry for '{unk_cdk}' was inferred via ST_Difference (confidence=0.6)")
                 else:
-                    warnings.append(
-                        f"Could not resolve geometry for child '{unk_cdk}'"
-                    )
+                    warnings.append(f"Could not resolve geometry for child '{unk_cdk}'")
             else:
                 warnings.append(
-                    f"Could not resolve geometry for child '{unk_cdk}' — "
-                    f"no siblings available for inference"
+                    f"Could not resolve geometry for child '{unk_cdk}' — no siblings available for inference"
                 )
 
         # Determine geometry status
@@ -134,6 +131,7 @@ class SplitEngine:
 
         if not child_geoms:
             from fastapi import HTTPException
+
             raise HTTPException(
                 status_code=422,
                 detail={
@@ -143,7 +141,7 @@ class SplitEngine:
                         "Upload boundaries via POST /api/v1/spatial/upload-geojson"
                     ),
                     "unknown_children": unknown_children,
-                }
+                },
             )
 
         # ── 2. Run PostGIS diff operations ────────────────────────────────
@@ -154,7 +152,8 @@ class SplitEngine:
             child_cdk = cg.district_cdk
 
             # 2a. Inherited area = ST_Intersection(parent, child)
-            inherited = await self.db.fetchrow("""
+            inherited = await self.db.fetchrow(
+                """
                 WITH p AS (
                     SELECT geometry FROM district_snapshots
                     WHERE district_cdk = $1 AND geometry IS NOT NULL
@@ -172,23 +171,27 @@ class SplitEngine:
                     )) / 1000000.0 AS area_sqkm
                 FROM p, c
                 WHERE ST_Intersects(p.geometry, c.geometry)
-            """, parent_cdk, child_cdk, split_year)
+            """,
+                parent_cdk,
+                child_cdk,
+                split_year,
+            )
 
             if inherited and inherited["area_sqkm"] and inherited["area_sqkm"] > 0.01:
-                transfers.append(TransferResult(
-                    from_district=parent_cdk,
-                    to_district=child_cdk,
-                    transfer_type="inherited",
-                    area_sqkm=float(inherited["area_sqkm"]),
-                    geojson=inherited["geojson"],
-                    confidence_score=min(
-                        parent_geom.geometry_confidence,
-                        cg.geometry_confidence
-                    ),
-                ))
+                transfers.append(
+                    TransferResult(
+                        from_district=parent_cdk,
+                        to_district=child_cdk,
+                        transfer_type="inherited",
+                        area_sqkm=float(inherited["area_sqkm"]),
+                        geojson=inherited["geojson"],
+                        confidence_score=min(parent_geom.geometry_confidence, cg.geometry_confidence),
+                    )
+                )
 
             # 2b. Externally acquired = ST_Difference(child, parent)
-            acquired = await self.db.fetchrow("""
+            acquired = await self.db.fetchrow(
+                """
                 WITH p AS (
                     SELECT geometry FROM district_snapshots
                     WHERE district_cdk = $1 AND geometry IS NOT NULL
@@ -205,26 +208,30 @@ class SplitEngine:
                         ST_Difference(c.geometry, p.geometry), 7755
                     )) / 1000000.0 AS area_sqkm
                 FROM p, c
-            """, parent_cdk, child_cdk, split_year)
+            """,
+                parent_cdk,
+                child_cdk,
+                split_year,
+            )
 
             if acquired and acquired["area_sqkm"] and acquired["area_sqkm"] > 0.01:
-                transfers.append(TransferResult(
-                    from_district="neighbor",
-                    to_district=child_cdk,
-                    transfer_type="transferred_in",
-                    area_sqkm=float(acquired["area_sqkm"]),
-                    geojson=acquired["geojson"],
-                    confidence_score=min(
-                        parent_geom.geometry_confidence,
-                        cg.geometry_confidence
-                    ),
-                ))
+                transfers.append(
+                    TransferResult(
+                        from_district="neighbor",
+                        to_district=child_cdk,
+                        transfer_type="transferred_in",
+                        area_sqkm=float(acquired["area_sqkm"]),
+                        geojson=acquired["geojson"],
+                        confidence_score=min(parent_geom.geometry_confidence, cg.geometry_confidence),
+                    )
+                )
 
             child_areas.append(cg.area_sqkm or 0.0)
 
         # 2c. Gap / transferred_out = ST_Difference(parent, ST_Union(all children))
         resolved_child_cdks = [cg.district_cdk for cg in child_geoms]
-        gap = await self.db.fetchrow("""
+        gap = await self.db.fetchrow(
+            """
             WITH p AS (
                 SELECT geometry FROM district_snapshots
                 WHERE district_cdk = $1 AND geometry IS NOT NULL
@@ -241,24 +248,31 @@ class SplitEngine:
                     ST_Difference(p.geometry, children.geom), 7755
                 )) / 1000000.0 AS area_sqkm
             FROM p, children
-        """, parent_cdk, resolved_child_cdks, split_year)
+        """,
+            parent_cdk,
+            resolved_child_cdks,
+            split_year,
+        )
 
         if gap and gap["area_sqkm"] and gap["area_sqkm"] > 0.01:
-            transfers.append(TransferResult(
-                from_district=parent_cdk,
-                to_district="unallocated",
-                transfer_type="gap",
-                area_sqkm=float(gap["area_sqkm"]),
-                geojson=gap["geojson"],
-                confidence_score=parent_geom.geometry_confidence * 0.5,
-            ))
+            transfers.append(
+                TransferResult(
+                    from_district=parent_cdk,
+                    to_district="unallocated",
+                    transfer_type="gap",
+                    area_sqkm=float(gap["area_sqkm"]),
+                    geojson=gap["geojson"],
+                    confidence_score=parent_geom.geometry_confidence * 0.5,
+                )
+            )
 
         # 2d. Overlap between children = pairwise ST_Intersection
         for i in range(len(child_geoms)):
             for j in range(i + 1, len(child_geoms)):
                 ci_cdk = child_geoms[i].district_cdk
                 cj_cdk = child_geoms[j].district_cdk
-                overlap = await self.db.fetchrow("""
+                overlap = await self.db.fetchrow(
+                    """
                     WITH ci AS (
                         SELECT geometry FROM district_snapshots
                         WHERE district_cdk = $1 AND geometry IS NOT NULL
@@ -276,44 +290,38 @@ class SplitEngine:
                         )) / 1000000.0 AS area_sqkm
                     FROM ci, cj
                     WHERE ST_Intersects(ci.geometry, cj.geometry)
-                """, ci_cdk, cj_cdk)
+                """,
+                    ci_cdk,
+                    cj_cdk,
+                )
 
                 if overlap and overlap["area_sqkm"] and overlap["area_sqkm"] > 0.01:
-                    transfers.append(TransferResult(
-                        from_district=ci_cdk,
-                        to_district=cj_cdk,
-                        transfer_type="overlap",
-                        area_sqkm=float(overlap["area_sqkm"]),
-                        geojson=overlap["geojson"],
-                        confidence_score=0.3,  # Overlap = low confidence
-                    ))
-                    warnings.append(
-                        f"Overlap detected between {ci_cdk} and {cj_cdk}: "
-                        f"{overlap['area_sqkm']:.2f} sq km"
+                    transfers.append(
+                        TransferResult(
+                            from_district=ci_cdk,
+                            to_district=cj_cdk,
+                            transfer_type="overlap",
+                            area_sqkm=float(overlap["area_sqkm"]),
+                            geojson=overlap["geojson"],
+                            confidence_score=0.3,  # Overlap = low confidence
+                        )
                     )
+                    warnings.append(f"Overlap detected between {ci_cdk} and {cj_cdk}: {overlap['area_sqkm']:.2f} sq km")
 
         # ── 3. Compute metrics ────────────────────────────────────────────
         parent_area = parent_geom.area_sqkm or 0.0
         total_child_area = sum(child_areas)
-        area_conservation_error = (
-            abs(parent_area - total_child_area) / parent_area
-            if parent_area > 0 else 0.0
-        )
+        area_conservation_error = abs(parent_area - total_child_area) / parent_area if parent_area > 0 else 0.0
 
         # Overlap and gap percentages
-        overlap_area = sum(
-            t.area_sqkm for t in transfers if t.transfer_type == "overlap"
-        )
-        gap_area = sum(
-            t.area_sqkm for t in transfers if t.transfer_type == "gap"
-        )
+        overlap_area = sum(t.area_sqkm for t in transfers if t.transfer_type == "overlap")
+        gap_area = sum(t.area_sqkm for t in transfers if t.transfer_type == "gap")
         overlap_pct = overlap_area / parent_area if parent_area > 0 else 0.0
         gap_pct = gap_area / parent_area if parent_area > 0 else 0.0
 
         # Composite confidence formula
         avg_source_confidence = (
-            sum(cg.geometry_confidence for cg in child_geoms)
-            + parent_geom.geometry_confidence
+            sum(cg.geometry_confidence for cg in child_geoms) + parent_geom.geometry_confidence
         ) / (len(child_geoms) + 1)
 
         composite_confidence = (
@@ -332,17 +340,19 @@ class SplitEngine:
         # ── 4. Build GeoJSON FeatureCollection ────────────────────────────
         features = []
         for t in transfers:
-            features.append({
-                "type": "Feature",
-                "geometry": t.geojson,
-                "properties": {
-                    "from_district": t.from_district,
-                    "to_district": t.to_district,
-                    "transfer_type": t.transfer_type,
-                    "area_sqkm": round(t.area_sqkm, 4),
-                    "confidence_score": round(t.confidence_score, 3),
+            features.append(
+                {
+                    "type": "Feature",
+                    "geometry": t.geojson,
+                    "properties": {
+                        "from_district": t.from_district,
+                        "to_district": t.to_district,
+                        "transfer_type": t.transfer_type,
+                        "area_sqkm": round(t.area_sqkm, 4),
+                        "confidence_score": round(t.confidence_score, 3),
+                    },
                 }
-            })
+            )
 
         geojson_fc = {
             "type": "FeatureCollection",
@@ -394,7 +404,8 @@ class SplitEngine:
         composite_confidence: float,
     ) -> int:
         """Insert or update split_events, return event_id."""
-        event_id = await self.db.fetchval("""
+        event_id = await self.db.fetchval(
+            """
             INSERT INTO split_events
                 (parent_cdk, child_cdks, split_year, event_type,
                  geometry_status, parent_area_sqkm, total_child_area_sqkm,
@@ -409,18 +420,25 @@ class SplitEngine:
                 area_conservation_error = EXCLUDED.area_conservation_error,
                 composite_confidence = EXCLUDED.composite_confidence
             RETURNING id
-        """, parent_cdk, child_cdks, split_year, geometry_status,
-            parent_area, total_child_area,
-            area_conservation_error, composite_confidence)
+        """,
+            parent_cdk,
+            child_cdks,
+            split_year,
+            geometry_status,
+            parent_area,
+            total_child_area,
+            area_conservation_error,
+            composite_confidence,
+        )
         return event_id
 
-    async def _persist_transfer(
-        self, event_id: int, transfer: TransferResult
-    ) -> None:
+    async def _persist_transfer(self, event_id: int, transfer: TransferResult) -> None:
         """Insert an area_transfers row."""
         import json
+
         geojson_str = json.dumps(transfer.geojson)
-        await self.db.execute("""
+        await self.db.execute(
+            """
             INSERT INTO area_transfers
                 (event_id, from_district, to_district, geometry,
                  area_sqkm, transfer_type, confidence_score)
@@ -429,6 +447,12 @@ class SplitEngine:
                 ST_Multi(ST_SetSRID(ST_GeomFromGeoJSON($4), 4326)),
                 $5, $6::transfer_type, $7
             )
-        """, event_id, transfer.from_district, transfer.to_district,
-            geojson_str, transfer.area_sqkm,
-            transfer.transfer_type, transfer.confidence_score)
+        """,
+            event_id,
+            transfer.from_district,
+            transfer.to_district,
+            geojson_str,
+            transfer.area_sqkm,
+            transfer.transfer_type,
+            transfer.confidence_score,
+        )

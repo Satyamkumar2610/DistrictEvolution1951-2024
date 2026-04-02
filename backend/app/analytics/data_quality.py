@@ -14,20 +14,22 @@ from app.db_compat import fetch, fetchval
 
 class QualityLevel(StrEnum):
     """Data quality classification."""
+
     EXCELLENT = "excellent"  # 90-100%
-    GOOD = "good"           # 70-89%
-    FAIR = "fair"           # 50-69%
-    POOR = "poor"           # <50%
+    GOOD = "good"  # 70-89%
+    FAIR = "fair"  # 50-69%
+    POOR = "poor"  # <50%
 
 
 @dataclass
 class DataQualityReport:
     """Comprehensive data quality report for a district."""
+
     cdk: str
     completeness_score: float  # % of years with data
-    consistency_score: float   # Cross-metric validation
-    timeliness_score: float    # How recent is data
-    accuracy_score: float      # Outlier/anomaly detection
+    consistency_score: float  # Cross-metric validation
+    timeliness_score: float  # How recent is data
+    accuracy_score: float  # Outlier/anomaly detection
     overall_score: float
     quality_level: QualityLevel
     issues: list[str]
@@ -72,8 +74,7 @@ class DataQualityScorer:
         consistency = await self._check_consistency(cdk)
         if consistency < 0.8:
             issues.append("Potential data inconsistencies detected")
-            recommendations.append(
-                "Review yield calculation: production/area mismatch")
+            recommendations.append("Review yield calculation: production/area mismatch")
 
         # 3. Timeliness Score
         timeliness = await self._check_timeliness(cdk)
@@ -85,16 +86,10 @@ class DataQualityScorer:
         accuracy = await self._check_accuracy(cdk)
         if accuracy < 0.8:
             issues.append("Potential outliers detected in yield values")
-            recommendations.append(
-                "Review extreme values for data entry errors")
+            recommendations.append("Review extreme values for data entry errors")
 
         # Calculate weighted overall score
-        overall = (
-            completeness * 0.35
-            + consistency * 0.25
-            + timeliness * 0.15
-            + accuracy * 0.25
-        )
+        overall = completeness * 0.35 + consistency * 0.25 + timeliness * 0.15 + accuracy * 0.25
 
         # Determine quality level
         if overall >= 0.9:
@@ -115,16 +110,22 @@ class DataQualityScorer:
             overall_score=round(overall, 3),
             quality_level=level,
             issues=issues,
-            recommendations=recommendations
+            recommendations=recommendations,
         )
 
     async def _check_completeness(self, cdk: str) -> float:
         """Check % of years with data."""
-        result = await fetchval(self.db, """
+        result = await fetchval(
+            self.db,
+            """
             SELECT COUNT(DISTINCT year)
             FROM agri_metrics
             WHERE district_lgd::text = $1 AND year >= $2 AND year <= $3
-        """, cdk, self.min_year, self.max_year)
+        """,
+            cdk,
+            self.min_year,
+            self.max_year,
+        )
 
         years_with_data = result or 0
         return min(1.0, years_with_data / self.expected_years)
@@ -135,13 +136,17 @@ class DataQualityScorer:
         E.g., production should roughly equal area * yield
         """
         # Check rice metrics as example
-        result = await fetch(self.db, """
+        result = await fetch(
+            self.db,
+            """
             SELECT year, variable_name, value
             FROM agri_metrics
             WHERE district_lgd::text = $1
             AND variable_name IN ('rice_area', 'rice_production', 'rice_yield')
             ORDER BY year, variable_name
-        """, cdk)
+        """,
+            cdk,
+        )
 
         if len(result) < 3:
             return 1.0  # Not enough data to check
@@ -149,25 +154,21 @@ class DataQualityScorer:
         # Group by year
         by_year: dict[int, dict[str, float]] = {}
         for row in result:
-            year = row['year']
+            year = row["year"]
             if year not in by_year:
                 by_year[year] = {}
-            by_year[year][row['variable_name']] = row['value']
+            by_year[year][row["variable_name"]] = row["value"]
 
         # Check consistency: yield ≈ production/area
         consistent_years = 0
         total_years = 0
 
         for _year, data in by_year.items():
-            if all(
-                k in data for k in [
-                    'rice_area',
-                    'rice_production',
-                    'rice_yield']):
+            if all(k in data for k in ["rice_area", "rice_production", "rice_yield"]):
                 total_years += 1
-                area = data['rice_area']
-                prod = data['rice_production']
-                yld = data['rice_yield']
+                area = data["rice_area"]
+                prod = data["rice_production"]
+                yld = data["rice_yield"]
 
                 if area > 0:
                     # Assuming production in '000 tonnes
@@ -179,11 +180,15 @@ class DataQualityScorer:
 
     async def _check_timeliness(self, cdk: str) -> float:
         """Check how recent the data is."""
-        result = await fetchval(self.db, """
+        result = await fetchval(
+            self.db,
+            """
             SELECT MAX(year)
             FROM agri_metrics
             WHERE district_lgd::text = $1
-        """, cdk)
+        """,
+            cdk,
+        )
 
         latest_year = result or self.min_year
         years_behind = self.max_year - latest_year
@@ -197,21 +202,25 @@ class DataQualityScorer:
         Returns 1.0 if no outliers, decreasing with more outliers.
         """
         # Get yield values
-        result = await fetch(self.db, """
+        result = await fetch(
+            self.db,
+            """
             SELECT value
             FROM agri_metrics
             WHERE district_lgd::text = $1 AND variable_name LIKE '%_yield' AND value > 0
-        """, cdk)
+        """,
+            cdk,
+        )
 
         if len(result) < 5:
             return 1.0  # Not enough data
 
-        values = [r['value'] for r in result]
+        values = [r["value"] for r in result]
 
         # Calculate mean and std
         mean_val = sum(values) / len(values)
         variance = sum((v - mean_val) ** 2 for v in values) / len(values)
-        std_val = variance ** 0.5
+        std_val = variance**0.5
 
         if std_val == 0:
             return 1.0
@@ -222,15 +231,16 @@ class DataQualityScorer:
         return max(0.0, 1.0 - (outliers / len(values)))
 
 
-async def get_state_quality_summary(
-    db: asyncpg.Connection,
-    state: str
-) -> dict[str, Any]:
+async def get_state_quality_summary(db: asyncpg.Connection, state: str) -> dict[str, Any]:
     """Get aggregated quality metrics for a state."""
     # Get all CDKs in state
-    cdks = await fetch(db, """
+    cdks = await fetch(
+        db,
+        """
         SELECT lgd_code::text as cdk FROM districts WHERE state_name = $1
-    """, state)
+    """,
+        state,
+    )
 
     if not cdks:
         return {"error": f"No districts found for state: {state}"}
@@ -239,7 +249,7 @@ async def get_state_quality_summary(
     reports = []
 
     for row in cdks[:20]:  # Limit to 20 for performance
-        report = await scorer.score_district(row['cdk'])
+        report = await scorer.score_district(row["cdk"])
         reports.append(report)
 
     # Aggregate
@@ -253,7 +263,7 @@ async def get_state_quality_summary(
         "districts_analyzed": len(reports),
         "average_quality_score": round(avg_score, 3),
         "quality_distribution": quality_dist,
-        "top_issues": _aggregate_issues(reports)
+        "top_issues": _aggregate_issues(reports),
     }
 
 
@@ -268,5 +278,4 @@ def _aggregate_issues(reports: list[DataQualityReport]) -> list[str]:
 
     # Return top 5 most common issues
     sorted_issues = sorted(issue_counts.items(), key=lambda x: -x[1])
-    return [f"{issue} ({count} districts)" for issue,
-            count in sorted_issues[:5]]
+    return [f"{issue} ({count} districts)" for issue, count in sorted_issues[:5]]

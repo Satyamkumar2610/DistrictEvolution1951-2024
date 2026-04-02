@@ -92,10 +92,7 @@ class RateLimiter:
     async def _cleanup_old_buckets(self, now: float) -> None:
         """Remove stale bucket entries."""
         stale_threshold = now - 300  # 5 minutes
-        stale_keys = [
-            ip for ip, (_, last_update) in self._buckets.items()
-            if last_update < stale_threshold
-        ]
+        stale_keys = [ip for ip, (_, last_update) in self._buckets.items() if last_update < stale_threshold]
         for key in stale_keys:
             self._buckets.pop(key, None)
 
@@ -108,14 +105,14 @@ class RateLimiter:
         return {
             "total_requests": self._total_requests,
             "blocked_requests": self._blocked_requests,
-            "block_rate": round(
-                float(self._blocked_requests) / self._total_requests * 100.0, 2
-            ) if self._total_requests > 0 else 0.0,  # type: ignore
+            "block_rate": round(float(self._blocked_requests) / self._total_requests * 100.0, 2)
+            if self._total_requests > 0
+            else 0.0,  # type: ignore
             "active_buckets": len(self._buckets),
             "config": {
                 "requests_per_minute": settings.rate_limit_per_minute,
                 "burst_size": settings.rate_limit_burst,
-            }
+            },
         }
 
 
@@ -137,12 +134,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
     """
 
     # Paths that bypass rate limiting
-    EXEMPT_PATHS = {
-        "/health",
-        "/health/ready",
-        "/docs",
-        "/redoc",
-        "/openapi.json"}
+    EXEMPT_PATHS = {"/health", "/health/ready", "/docs", "/redoc", "/openapi.json"}
 
     async def dispatch(self, request: Request, call_next):
         # Skip rate limiting for exempt paths
@@ -166,7 +158,8 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
                         "code": "RATE_LIMIT_EXCEEDED",
                         "message": f"Rate limit exceeded. Please retry after {headers.get('Retry-After', 60)} seconds.",
                         "status_code": 429,
-                    }},
+                    },
+                },
                 headers=headers,
             )
 

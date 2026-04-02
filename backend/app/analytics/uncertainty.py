@@ -1,6 +1,7 @@
 """
 Uncertainty Quantification: Bootstrap confidence intervals and error propagation.
 """
+
 import math
 import random
 
@@ -53,8 +54,7 @@ def calculate_bootstrap_ci(
         elif statistic == "median":
             sorted_sample = sorted(sample)
             mid = len(sorted_sample) // 2
-            stat = sorted_sample[mid] if len(sorted_sample) % 2 else (
-                sorted_sample[mid - 1] + sorted_sample[mid]) / 2
+            stat = sorted_sample[mid] if len(sorted_sample) % 2 else (sorted_sample[mid - 1] + sorted_sample[mid]) / 2
         else:
             stat = sum(sample) / len(sample)
 
@@ -115,10 +115,8 @@ def calculate_impact_uncertainty(
 
     for _ in range(n_iterations):
         # Resample both periods
-        pre_sample = [random.choice(pre_values)
-                      for _ in range(len(pre_values))]
-        post_sample = [random.choice(post_values)
-                       for _ in range(len(post_values))]
+        pre_sample = [random.choice(pre_values) for _ in range(len(pre_values))]
+        post_sample = [random.choice(post_values) for _ in range(len(post_values))]
 
         pre_mean = sum(pre_sample) / len(pre_sample)
         post_mean = sum(post_sample) / len(post_sample)
@@ -164,6 +162,6 @@ def propagate_harmonization_error(
     for cdk, weight in coverage_ratios.items():
         child_var = child_uncertainties.get(cdk, 0)
         # Variance of weighted sum: Var(w*X) = w^2 * Var(X)
-        total_variance += (weight ** 2) * child_var
+        total_variance += (weight**2) * child_var
 
     return math.sqrt(total_variance)

@@ -2,6 +2,7 @@
 Base Analytics Service.
 Provides database access and common helper methods.
 """
+
 import asyncpg
 
 from app.db_compat import execute_with_schema_fallback
@@ -22,13 +23,7 @@ class BaseAnalyticsService:
     async def _fetchval(self, query: str, *args):
         return await execute_with_schema_fallback(self.db, "fetchval", query, *args)
 
-    async def _fetch_with_fallback(
-        self,
-        query_template: str,
-        crop: str,
-        metric: str,
-        *args
-    ) -> list[asyncpg.Record]:
+    async def _fetch_with_fallback(self, query_template: str, crop: str, metric: str, *args) -> list[asyncpg.Record]:
         """
         Executes a query by substituting the variable_name parameter (always the last arg).
         If the primary crop_metric (e.g. 'wheat_yield') returns no data, it falls back
@@ -50,7 +45,7 @@ class BaseAnalyticsService:
                 "cotton": "kharif",
                 "pearl_millet": "kharif",
                 "sorghum": "kharif",
-                "chickpea": "rabi"
+                "chickpea": "rabi",
             }
             season = season_map.get(crop.lower())
             if season:

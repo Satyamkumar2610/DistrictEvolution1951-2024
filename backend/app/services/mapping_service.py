@@ -7,6 +7,7 @@ Handles:
 - Fuzzy matching when exact lookup fails
 - Split district scenarios: child data mapped to parent polygon
 """
+
 import json
 import logging
 import os
@@ -97,7 +98,7 @@ class MappingService:
         """Return candidate locations for the map bridge in local and deployed layouts."""
         current_file = Path(__file__).resolve()
         backend_dir = current_file.parents[2]  # /app
-        repo_root = current_file.parents[3]    # fallback to /
+        repo_root = current_file.parents[3]  # fallback to /
 
         candidates: list[Path] = []
 
@@ -105,12 +106,14 @@ class MappingService:
         if env_path:
             candidates.append(Path(env_path))
 
-        candidates.extend([
-            Path("/app/data/map_bridge.json"),                   # Docker standard layout
-            backend_dir / "data" / "map_bridge.json",            # Relative to backend root
-            repo_root / "frontend" / "public" / "data" / "map_bridge.json", # Repo layout
-            repo_root / "backend" / "data" / "map_bridge.json",  # Repo layout fallback
-        ])
+        candidates.extend(
+            [
+                Path("/app/data/map_bridge.json"),  # Docker standard layout
+                backend_dir / "data" / "map_bridge.json",  # Relative to backend root
+                repo_root / "frontend" / "public" / "data" / "map_bridge.json",  # Repo layout
+                repo_root / "backend" / "data" / "map_bridge.json",  # Repo layout fallback
+            ]
+        )
 
         return candidates
 
@@ -139,7 +142,7 @@ class MappingService:
 
         try:
             assert path is not None
-            with open(path, encoding='utf-8') as f:
+            with open(path, encoding="utf-8") as f:
                 self._bridge = json.load(f)
             logger.info(f"Loaded bridge with {len(self._bridge)} entries")
         except Exception as e:
@@ -196,19 +199,19 @@ class MappingService:
                 break
 
         # Remove special chars except spaces and alphanumeric
-        normalized = re.sub(r'[^a-z0-9\s]', '', normalized)
+        normalized = re.sub(r"[^a-z0-9\s]", "", normalized)
 
         # Collapse multiple spaces
-        normalized = re.sub(r'\s+', ' ', normalized).strip()
+        normalized = re.sub(r"\s+", " ", normalized).strip()
 
         return normalized
 
     def _normalize_geo_key(self, geo_key: str) -> str:
         """Normalize a DISTRICT|STATE geo key."""
-        if '|' not in geo_key:
+        if "|" not in geo_key:
             return self.normalize_name(geo_key)
 
-        parts = geo_key.split('|', 1)
+        parts = geo_key.split("|", 1)
         district = self.normalize_name(parts[0])
         state = self.normalize_name(parts[1]) if len(parts) > 1 else ""
 
@@ -216,18 +219,13 @@ class MappingService:
 
     def get_state_from_cdk(self, cdk: str) -> str | None:
         """Extract state name from CDK code prefix."""
-        if not cdk or '_' not in cdk:
+        if not cdk or "_" not in cdk:
             return None
 
-        state_code = cdk.split('_')[0]
+        state_code = cdk.split("_")[0]
         return self.STATE_CODES.get(state_code)
 
-    def resolve_geo_key(
-        self,
-        cdk: str,
-        district: str | None = None,
-        state: str | None = None
-    ) -> str | None:
+    def resolve_geo_key(self, cdk: str, district: str | None = None, state: str | None = None) -> str | None:
         """
         Resolve the GeoJSON key for a CDK with multiple fallback strategies.
 
@@ -289,12 +287,7 @@ class MappingService:
         logger.debug(f"No geo_key mapping found for CDK={cdk}, district={district}, state={state}")
         return None
 
-    def fuzzy_match_geo_key(
-        self,
-        district: str,
-        state: str | None = None,
-        threshold: float = 0.8
-    ) -> str | None:
+    def fuzzy_match_geo_key(self, district: str, state: str | None = None, threshold: float = 0.8) -> str | None:
         """
         Fuzzy match a district name against known GeoJSON keys.
 
@@ -320,7 +313,7 @@ class MappingService:
         best_score = 0.0
 
         for geo_key in bridge:
-            parts = geo_key.split('|', 1)
+            parts = geo_key.split("|", 1)
             key_district = parts[0]
             key_state = parts[1] if len(parts) > 1 else None
 

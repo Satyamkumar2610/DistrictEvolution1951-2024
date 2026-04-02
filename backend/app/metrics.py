@@ -17,6 +17,7 @@ from fastapi import Request
 @dataclass
 class MetricPoint:
     """Single metric data point."""
+
     timestamp: str
     value: float
     labels: dict[str, str] = field(default_factory=dict)
@@ -34,7 +35,7 @@ class MetricsCollector:
     - Quality scores over time
     """
 
-    _instance: Optional['MetricsCollector'] = None
+    _instance: Optional["MetricsCollector"] = None
     _lock = threading.Lock()
 
     def __new__(cls):
@@ -73,13 +74,7 @@ class MetricsCollector:
         # Start time for uptime
         self._start_time = datetime.now(UTC)
 
-    def record_request(
-        self,
-        path: str,
-        method: str,
-        status_code: int,
-        duration_ms: float
-    ) -> None:
+    def record_request(self, path: str, method: str, status_code: int, duration_ms: float) -> None:
         """Record an API request metric."""
         with self._lock:
             # Latency
@@ -90,8 +85,7 @@ class MetricsCollector:
             self._request_counts[key] = self._request_counts.get(key, 0) + 1
 
             # Status code distribution
-            self._status_counts[status_code] = self._status_counts.get(
-                status_code, 0) + 1
+            self._status_counts[status_code] = self._status_counts.get(status_code, 0) + 1
 
     def record_cache_hit(self) -> None:
         """Record a cache hit."""
@@ -112,11 +106,7 @@ class MetricsCollector:
     def record_quality_score(self, cdk: str, score: float) -> None:
         """Record a quality score measurement."""
         with self._lock:
-            self._quality_scores.append({
-                "timestamp": datetime.now(UTC).isoformat(),
-                "cdk": cdk,
-                "score": score
-            })
+            self._quality_scores.append({"timestamp": datetime.now(UTC).isoformat(), "cdk": cdk, "score": score})
 
     def record_anomaly(self, is_high_risk: bool = False) -> None:
         """Record an anomaly detection."""
@@ -138,7 +128,7 @@ class MetricsCollector:
                 "p50": sorted_latencies[int(n * 0.5)] if n > 0 else 0,
                 "p95": sorted_latencies[int(n * 0.95)] if n > 0 else 0,
                 "p99": sorted_latencies[int(n * 0.99)] if n > 0 else 0,
-                "avg": sum(sorted_latencies) / n if n > 0 else 0
+                "avg": sum(sorted_latencies) / n if n > 0 else 0,
             }
 
     def get_cache_stats(self) -> dict[str, Any]:
@@ -151,19 +141,18 @@ class MetricsCollector:
                 "hits": self._cache_hits,
                 "misses": self._cache_misses,
                 "total": total,
-                "hit_rate": round(hit_rate, 3)
+                "hit_rate": round(hit_rate, 3),
             }
 
     def get_db_stats(self) -> dict[str, Any]:
         """Get database query statistics."""
         with self._lock:
-            avg_time = self._db_total_time_ms / \
-                self._db_queries if self._db_queries > 0 else 0
+            avg_time = self._db_total_time_ms / self._db_queries if self._db_queries > 0 else 0
 
             return {
                 "total_queries": self._db_queries,
                 "total_time_ms": round(self._db_total_time_ms, 2),
-                "avg_query_time_ms": round(avg_time, 2)
+                "avg_query_time_ms": round(avg_time, 2),
             }
 
     def get_quality_stats(self) -> dict[str, Any]:
@@ -177,23 +166,17 @@ class MetricsCollector:
             return {
                 "avg_score": round(sum(scores) / len(scores), 3),
                 "measurements": len(scores),
-                "recent": list(self._quality_scores)[-5:]
+                "recent": list(self._quality_scores)[-5:],
             }
 
     def get_anomaly_stats(self) -> dict[str, int]:
         """Get anomaly detection statistics."""
         with self._lock:
-            return {
-                "total_detected": self._anomalies_detected,
-                "high_risk_alerts": self._high_risk_alerts
-            }
+            return {"total_detected": self._anomalies_detected, "high_risk_alerts": self._high_risk_alerts}
 
     def get_all_metrics(self) -> dict[str, Any]:
         """Get all metrics as a combined report."""
-        uptime = (
-            datetime.now(
-                UTC)
-            - self._start_time).total_seconds()
+        uptime = (datetime.now(UTC) - self._start_time).total_seconds()
 
         with self._lock:
             total_requests = sum(self._request_counts.values())
@@ -207,16 +190,12 @@ class MetricsCollector:
             "quality_scores": self.get_quality_stats(),
             "anomalies": self.get_anomaly_stats(),
             "status_distribution": dict(self._status_counts),
-            "top_endpoints": self._get_top_endpoints(10)
+            "top_endpoints": self._get_top_endpoints(10),
         }
 
     def _get_top_endpoints(self, n: int) -> list:
         """Get top N most-called endpoints."""
-        sorted_endpoints = sorted(
-            self._request_counts.items(),
-            key=lambda x: x[1],
-            reverse=True
-        )
+        sorted_endpoints = sorted(self._request_counts.items(), key=lambda x: x[1], reverse=True)
         return [{"endpoint": k, "count": v} for k, v in sorted_endpoints[:n]]
 
     def reset(self) -> None:
@@ -260,10 +239,7 @@ async def metrics_middleware(request: Request, call_next):
 
     # Record the request
     metrics.record_request(
-        path=request.url.path,
-        method=request.method,
-        status_code=response.status_code,
-        duration_ms=duration_ms
+        path=request.url.path, method=request.method, status_code=response.status_code, duration_ms=duration_ms
     )
 
     return response

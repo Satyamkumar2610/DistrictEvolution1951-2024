@@ -31,10 +31,7 @@ class SearchRepository(BaseRepository):
             limit,
         )
 
-        return [
-            {key: value for key, value in dict(row).items() if key != "sort_order"}
-            for row in rows
-        ]
+        return [{key: value for key, value in dict(row).items() if key != "sort_order"} for row in rows]
 
     async def search_states(self, query: str, limit: int) -> list[dict[str, object]]:
         """Search states by name."""

@@ -1,6 +1,7 @@
 """
 Metrics API: Endpoints for agricultural/domain metrics.
 """
+
 import logging
 
 import asyncpg
@@ -54,6 +55,7 @@ async def get_time_series(
     if not target_cdk and district:
         # Tring resolving name first
         from app.core.name_matching import resolve_district_name
+
         resolved_name = resolve_district_name(district)
 
         # 1. Try search with resolved name
@@ -66,8 +68,7 @@ async def get_time_series(
         if not target_cdk and state:
             # Try simple normalization locally if repository search failed
             # (repo uses ILIKE, so fuzzy logic already there)
-            logging.getLogger(__name__).debug(
-                "District '%s' not found in state '%s' via repo search", district, state)
+            logging.getLogger(__name__).debug("District '%s' not found in state '%s' via repo search", district, state)
 
     if not target_cdk:
         raise NotFoundError(detail=f"District not found: {district}")
@@ -92,7 +93,7 @@ async def get_state_time_series(
 
     # Construct State CDK
     # Must match ingestion logic: UPPER, space->_, &->AND
-    normalized_state = state.upper().replace(' ', '_').replace('&', 'AND')
+    normalized_state = state.upper().replace(" ", "_").replace("&", "AND")
     state_cdk = f"S_{normalized_state}"
 
     timeline = await metric_repo.get_time_series_pivoted(state_cdk, crop.lower())

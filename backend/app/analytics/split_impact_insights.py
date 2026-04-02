@@ -18,6 +18,7 @@ from app.analytics.statistics import get_analyzer
 @dataclass
 class FragmentationResult:
     """Result of fragmentation analysis."""
+
     index: float  # 1/child_count
     child_count: int
     interpretation: str
@@ -26,6 +27,7 @@ class FragmentationResult:
 @dataclass
 class DivergenceResult:
     """Result of child divergence analysis."""
+
     score: float  # CV across children
     interpretation: str
     best_performer: str | None
@@ -38,6 +40,7 @@ class DivergenceResult:
 @dataclass
 class ConvergenceResult:
     """Result of convergence trend analysis."""
+
     trend: str  # 'converging', 'diverging', 'stable', 'insufficient_data'
     rate: float  # Rate of change in divergence score over time
     interpretation: str
@@ -46,6 +49,7 @@ class ConvergenceResult:
 @dataclass
 class EffectSizeResult:
     """Result of effect size calculation."""
+
     cohens_d: float
     interpretation: str  # 'small', 'medium', 'large', 'very_large'
     confidence: float  # 0-1
@@ -54,6 +58,7 @@ class EffectSizeResult:
 @dataclass
 class CounterfactualResult:
     """Result of counterfactual analysis."""
+
     projected_yield: float
     method: str
     actual_yield: float
@@ -64,6 +69,7 @@ class CounterfactualResult:
 @dataclass
 class ChildPerformance:
     """Performance metrics for a single child district."""
+
     cdk: str
     name: str | None
     mean_yield: float
@@ -76,6 +82,7 @@ class ChildPerformance:
 @dataclass
 class SplitInsights:
     """Complete split impact insights."""
+
     fragmentation: FragmentationResult
     divergence: DivergenceResult
     convergence: ConvergenceResult
@@ -100,10 +107,7 @@ class SplitImpactInsightsAnalyzer:
     def __init__(self):
         self.stats = get_analyzer()
 
-    def calculate_fragmentation(
-        self,
-        child_count: int
-    ) -> FragmentationResult:
+    def calculate_fragmentation(self, child_count: int) -> FragmentationResult:
         """
         Calculate fragmentation index.
 
@@ -111,11 +115,7 @@ class SplitImpactInsightsAnalyzer:
         Lower index = more fragmented (0.33 = 3 successors)
         """
         if child_count <= 0:
-            return FragmentationResult(
-                index=0,
-                child_count=0,
-                interpretation="No children districts"
-            )
+            return FragmentationResult(index=0, child_count=0, interpretation="No children districts")
 
         index = 1.0 / child_count
 
@@ -128,16 +128,10 @@ class SplitImpactInsightsAnalyzer:
         else:
             interpretation = f"High fragmentation - {child_count} successors"
 
-        return FragmentationResult(
-            index=round(index, 4),
-            child_count=child_count,
-            interpretation=interpretation
-        )
+        return FragmentationResult(index=round(index, 4), child_count=child_count, interpretation=interpretation)
 
     def calculate_divergence(
-        self,
-        children_yields: dict[str, float],
-        children_names: dict[str, str] | None = None
+        self, children_yields: dict[str, float], children_names: dict[str, str] | None = None
     ) -> DivergenceResult:
         """
         Calculate divergence score across children.
@@ -153,7 +147,7 @@ class SplitImpactInsightsAnalyzer:
                 best_yield=0,
                 worst_performer=None,
                 worst_yield=0,
-                spread=0
+                spread=0,
             )
 
         yields = list(children_yields.values())
@@ -162,10 +156,7 @@ class SplitImpactInsightsAnalyzer:
         cv = self.stats.coefficient_of_variation(yields)
 
         # Find best and worst
-        sorted_children = sorted(
-            children_yields.items(),
-            key=lambda x: x[1],
-            reverse=True)
+        sorted_children = sorted(children_yields.items(), key=lambda x: x[1], reverse=True)
         best_cdk, best_yield = sorted_children[0]
         worst_cdk, worst_yield = sorted_children[-1]
 
@@ -188,13 +179,11 @@ class SplitImpactInsightsAnalyzer:
             best_yield=round(best_yield, 2),
             worst_performer=worst_cdk,
             worst_yield=round(worst_yield, 2),
-            spread=round(spread, 2)
+            spread=round(spread, 2),
         )
 
     def calculate_convergence_trend(
-        self,
-        yearly_children_data: dict[int, dict[str, float]],
-        split_year: int
+        self, yearly_children_data: dict[int, dict[str, float]], split_year: int
     ) -> ConvergenceResult:
         """
         Analyze if children are converging or diverging over time.
@@ -204,9 +193,8 @@ class SplitImpactInsightsAnalyzer:
         """
         if not yearly_children_data or len(yearly_children_data) < 3:
             return ConvergenceResult(
-                trend="insufficient_data",
-                rate=0,
-                interpretation="Need at least 3 post-split years for trend analysis")
+                trend="insufficient_data", rate=0, interpretation="Need at least 3 post-split years for trend analysis"
+            )
 
         # Calculate CV for each year
         yearly_cvs = {}
@@ -219,9 +207,8 @@ class SplitImpactInsightsAnalyzer:
 
         if len(yearly_cvs) < 3:
             return ConvergenceResult(
-                trend="insufficient_data",
-                rate=0,
-                interpretation="Insufficient post-split data with multiple children")
+                trend="insufficient_data", rate=0, interpretation="Insufficient post-split data with multiple children"
+            )
 
         # Calculate trend of CVs
         years = sorted(yearly_cvs.keys())
@@ -244,17 +231,9 @@ class SplitImpactInsightsAnalyzer:
             trend = "stable"
             interpretation = "No significant convergence or divergence trend"
 
-        return ConvergenceResult(
-            trend=trend,
-            rate=round(trend_result.slope, 4),
-            interpretation=interpretation
-        )
+        return ConvergenceResult(trend=trend, rate=round(trend_result.slope, 4), interpretation=interpretation)
 
-    def calculate_effect_size(
-        self,
-        pre_values: list[float],
-        post_values: list[float]
-    ) -> EffectSizeResult:
+    def calculate_effect_size(self, pre_values: list[float], post_values: list[float]) -> EffectSizeResult:
         """
         Calculate Cohen's d effect size.
 
@@ -266,13 +245,8 @@ class SplitImpactInsightsAnalyzer:
         - 0.8: Large effect
         - 1.2+: Very large effect
         """
-        if not pre_values or not post_values or len(
-                pre_values) < 2 or len(post_values) < 2:
-            return EffectSizeResult(
-                cohens_d=0,
-                interpretation="Insufficient data",
-                confidence=0
-            )
+        if not pre_values or not post_values or len(pre_values) < 2 or len(post_values) < 2:
+            return EffectSizeResult(cohens_d=0, interpretation="Insufficient data", confidence=0)
 
         mean_pre = self.stats.mean(pre_values)
         mean_post = self.stats.mean(post_values)
@@ -284,8 +258,7 @@ class SplitImpactInsightsAnalyzer:
         n_post = len(post_values)
 
         # Pooled standard deviation
-        pooled_var = ((n_pre - 1) * var_pre + (n_post - 1)
-                      * var_post) / (n_pre + n_post - 2)
+        pooled_var = ((n_pre - 1) * var_pre + (n_post - 1) * var_post) / (n_pre + n_post - 2)
         pooled_std = math.sqrt(pooled_var) if pooled_var > 1e-4 else 1e-2
 
         cohens_d = (mean_post - mean_pre) / pooled_std
@@ -308,17 +281,11 @@ class SplitImpactInsightsAnalyzer:
         confidence = min(0.95, 0.5 + (total_n / 50) * 0.45)
 
         return EffectSizeResult(
-            cohens_d=round(cohens_d, 4),
-            interpretation=interpretation,
-            confidence=round(confidence, 2)
+            cohens_d=round(cohens_d, 4), interpretation=interpretation, confidence=round(confidence, 2)
         )
 
     def calculate_counterfactual(
-        self,
-        pre_values: list[float],
-        pre_years: list[int],
-        post_mean: float,
-        projection_year: int
+        self, pre_values: list[float], pre_years: list[int], post_mean: float, projection_year: int
     ) -> CounterfactualResult:
         """
         Calculate counterfactual projection - what would have happened without split?
@@ -331,7 +298,7 @@ class SplitImpactInsightsAnalyzer:
                 method="insufficient_data",
                 actual_yield=post_mean,
                 attribution_pct=0,
-                interpretation="Insufficient pre-split data for projection"
+                interpretation="Insufficient pre-split data for projection",
             )
 
         # Fit linear trend to pre-split data
@@ -384,7 +351,7 @@ class SplitImpactInsightsAnalyzer:
             method=method,
             actual_yield=round(post_mean, 2),
             attribution_pct=round(attribution_pct, 2),
-            interpretation=interpretation
+            interpretation=interpretation,
         )
 
     def analyze_child_performance(
@@ -392,7 +359,7 @@ class SplitImpactInsightsAnalyzer:
         yearly_data: dict[int, dict[str, dict[str, float]]],
         child_cdks: list[str],
         child_names: dict[str, str] | None = None,
-        split_year: int = 0
+        split_year: int = 0,
     ) -> list[ChildPerformance]:
         """
         Analyze individual child district performance post-split.
@@ -414,21 +381,22 @@ class SplitImpactInsightsAnalyzer:
             values = list(yearly_values.values())
 
             mean_yield = self.stats.mean(values)
-            cv = self.stats.coefficient_of_variation(
-                values) if len(values) >= 2 else 0
+            cv = self.stats.coefficient_of_variation(values) if len(values) >= 2 else 0
 
             # Calculate CAGR
             cagr = self.stats.cagr(values[0], values[-1], len(values) - 1) if len(values) >= 2 else 0
 
-            children_stats.append(ChildPerformance(
-                cdk=cdk,
-                name=child_names.get(cdk) if child_names else None,
-                mean_yield=round(mean_yield, 2),
-                cv=round(cv, 2),
-                cagr=round(cagr, 2),
-                observations=len(values),
-                rank=0  # Will be filled after sorting
-            ))
+            children_stats.append(
+                ChildPerformance(
+                    cdk=cdk,
+                    name=child_names.get(cdk) if child_names else None,
+                    mean_yield=round(mean_yield, 2),
+                    cv=round(cv, 2),
+                    cagr=round(cagr, 2),
+                    observations=len(values),
+                    rank=0,  # Will be filled after sorting
+                )
+            )
 
         # Assign ranks
         children_stats.sort(key=lambda x: x.mean_yield, reverse=True)
@@ -447,7 +415,7 @@ class SplitImpactInsightsAnalyzer:
         yearly_children_data: dict[int, dict[str, float]],
         children_mean_yields: dict[str, float],
         child_names: dict[str, str] | None = None,
-        yearly_data: dict[int, dict[str, dict[str, float]]] | None = None
+        yearly_data: dict[int, dict[str, dict[str, float]]] | None = None,
     ) -> SplitInsights:
         """
         Compute complete split impact insights.
@@ -458,12 +426,10 @@ class SplitImpactInsightsAnalyzer:
         fragmentation = self.calculate_fragmentation(len(child_cdks))
 
         # Divergence
-        divergence = self.calculate_divergence(
-            children_mean_yields, child_names)
+        divergence = self.calculate_divergence(children_mean_yields, child_names)
 
         # Convergence trend
-        convergence = self.calculate_convergence_trend(
-            yearly_children_data, split_year)
+        convergence = self.calculate_convergence_trend(yearly_children_data, split_year)
 
         # Effect size
         effect_size = self.calculate_effect_size(pre_values, post_values)
@@ -471,27 +437,21 @@ class SplitImpactInsightsAnalyzer:
         # Counterfactual
         post_mean = self.stats.mean(post_values) if post_values else 0
         projection_year = split_year + 5  # Project 5 years ahead
-        counterfactual = self.calculate_counterfactual(
-            pre_values, pre_years, post_mean, projection_year)
+        counterfactual = self.calculate_counterfactual(pre_values, pre_years, post_mean, projection_year)
 
         # Child performance
         if yearly_data:
-            children_performance = self.analyze_child_performance(
-                yearly_data, child_cdks, child_names, split_year
-            )
+            children_performance = self.analyze_child_performance(yearly_data, child_cdks, child_names, split_year)
         else:
             children_performance = []
 
         # Add warnings
         if len(pre_values) < 5:
-            warnings.append(
-                f"Limited pre-split data ({len(pre_values)} years)")
+            warnings.append(f"Limited pre-split data ({len(pre_values)} years)")
         if len(post_values) < 5:
-            warnings.append(
-                f"Limited post-split data ({len(post_values)} years)")
+            warnings.append(f"Limited post-split data ({len(post_values)} years)")
         if len(child_cdks) < 2:
-            warnings.append(
-                "Single successor - divergence analysis not applicable")
+            warnings.append("Single successor - divergence analysis not applicable")
 
         return SplitInsights(
             fragmentation=fragmentation,
@@ -500,7 +460,7 @@ class SplitImpactInsightsAnalyzer:
             effect_size=effect_size,
             counterfactual=counterfactual,
             children_performance=children_performance,
-            warnings=warnings
+            warnings=warnings,
         )
 
 

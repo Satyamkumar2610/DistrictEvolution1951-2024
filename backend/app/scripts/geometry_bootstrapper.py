@@ -54,24 +54,30 @@ async def run_bootstrapper():
 
             async with pool.acquire() as conn:
                 # Match to district record
-                cdk = await conn.fetchval("""
+                cdk = await conn.fetchval(
+                    """
                     SELECT lgd_code::text FROM districts WHERE district_name ILIKE $1 ORDER BY start_year DESC LIMIT 1
-                """, dist_name)
+                """,
+                    dist_name,
+                )
 
                 if not cdk:
                     # Broader search: try matching individual words or handling known spellings
                     search_name = dist_name.upper().replace("KOMARRAM", "KUMURAM")
-                    cdk = await conn.fetchval("""
+                    cdk = await conn.fetchval(
+                        """
                         SELECT lgd_code::text FROM districts
                         WHERE district_name ILIKE $1
                            OR district_name ILIKE $2
                         ORDER BY start_year DESC LIMIT 1
-                    """, f"%{search_name}%", f"%{dist_name}%")
+                    """,
+                        f"%{search_name}%",
+                        f"%{dist_name}%",
+                    )
 
                 if not cdk:
                     unmatched_records.append({"district": dist_name})
                     continue
-
 
                 snapshot_year = child_to_year.get(cdk, 2024)
 
@@ -79,7 +85,8 @@ async def run_bootstrapper():
                 geom_json = json.dumps(feature.get("geometry"))
 
                 try:
-                    await conn.execute("""
+                    await conn.execute(
+                        """
                         INSERT INTO district_snapshots
                             (district_cdk, snapshot_year, district_name, geometry_source, geometry_confidence, geometry)
                         VALUES
@@ -88,14 +95,23 @@ async def run_bootstrapper():
                             geometry = EXCLUDED.geometry,
                             geometry_source = EXCLUDED.geometry_source,
                             geometry_confidence = EXCLUDED.geometry_confidence
-                    """, cdk, snapshot_year, dist_name, geom_json)
+                    """,
+                        cdk,
+                        snapshot_year,
+                        dist_name,
+                        geom_json,
+                    )
 
                     # calculate area_sqkm
-                    await conn.execute("""
+                    await conn.execute(
+                        """
                         UPDATE district_snapshots
                         SET area_sqkm = ST_Area(geometry::geography) / 1000000.0
                         WHERE district_cdk = $1 AND snapshot_year = $2
-                    """, cdk, snapshot_year)
+                    """,
+                        cdk,
+                        snapshot_year,
+                    )
 
                 except Exception as e:
                     logger.error(f"Error inserting modern geom for {dist_name}: {e}")
@@ -130,8 +146,7 @@ async def run_bootstrapper():
                 if len(parts) >= 3:
                     name_prefix = parts[1]
                     lgd_code_int = await conn.fetchval(
-                        "SELECT lgd_code FROM districts WHERE district_name ILIKE $1 LIMIT 1",
-                        f"{name_prefix}%"
+                        "SELECT lgd_code FROM districts WHERE district_name ILIKE $1 LIMIT 1", f"{name_prefix}%"
                     )
                 else:
                     lgd_code_int = None
@@ -140,14 +155,18 @@ async def run_bootstrapper():
             if lgd_code_int:
                 async with pool.acquire() as conn:
                     try:
-                        geom = await conn.fetchval("""
+                        geom = await conn.fetchval(
+                            """
                             SELECT ST_Union(v.geometry)
                             FROM shrug_villages v
                             WHERE v.district_code = $1 AND v.census_year = 2011
-                        """, int(lgd_code_int))
+                        """,
+                            int(lgd_code_int),
+                        )
 
                         if geom:
-                            await conn.execute("""
+                            await conn.execute(
+                                """
                                 INSERT INTO district_snapshots
                                     (district_cdk, snapshot_year, district_name, geometry_source, geometry_confidence, geometry)
                                 VALUES ($1, $2, $3, 'shrug_union', 0.9, $4)
@@ -155,7 +174,12 @@ async def run_bootstrapper():
                                     geometry = EXCLUDED.geometry,
                                     geometry_source = EXCLUDED.geometry_source,
                                     geometry_confidence = EXCLUDED.geometry_confidence
-                            """, parent_cdk, split_year, dist_name, geom)
+                            """,
+                                parent_cdk,
+                                split_year,
+                                dist_name,
+                                geom,
+                            )
                             geom_found = True
                     except asyncpg.exceptions.UndefinedTableError:
                         pass
@@ -165,12 +189,17 @@ async def run_bootstrapper():
             if not geom_found:
                 async with pool.acquire() as conn:
                     # Insert with geometry=NULL
-                    await conn.execute("""
+                    await conn.execute(
+                        """
                         INSERT INTO district_snapshots
                             (district_cdk, snapshot_year, district_name, geometry_source, geometry_confidence, geometry)
                         VALUES ($1, $2, $3, 'unknown', 0.0, NULL)
                         ON CONFLICT (district_cdk, snapshot_year) DO NOTHING
-                    """, parent_cdk, split_year, dist_name)
+                    """,
+                        parent_cdk,
+                        split_year,
+                        dist_name,
+                    )
                     missing_records.append({"parent_cdk": parent_cdk})
 
         with open(MISSING_CSV, "w") as f:
@@ -191,7 +220,7 @@ async def run_bootstrapper():
             """)
 
         try:
-            WebFeatureService('https://bhuvan-vec1.nrsc.gov.in/bhuvan/wfs', version='1.0.0')
+            WebFeatureService("https://bhuvan-vec1.nrsc.gov.in/bhuvan/wfs", version="1.0.0")
         except Exception:
             logger.warning("Bhuvan WFS unavailable.")
 
@@ -210,7 +239,7 @@ async def run_bootstrapper():
             for ev in events:
                 parent_valid = await conn.fetchval(
                     "SELECT 1 FROM district_snapshots WHERE district_cdk = $1 AND geometry IS NOT NULL LIMIT 1",
-                    ev["parent_cdk"]
+                    ev["parent_cdk"],
                 )
                 child_count = 0
                 for c in ev["child_cdks"]:
@@ -221,11 +250,11 @@ async def run_bootstrapper():
                         child_count += 1
 
                 if parent_valid and child_count == len(ev["child_cdks"]):
-                    status = 'complete'
+                    status = "complete"
                 elif parent_valid or child_count > 0:
-                    status = 'partial'
+                    status = "partial"
                 else:
-                    status = 'unknown'
+                    status = "unknown"
 
                 await conn.execute("UPDATE split_events SET geometry_status = $1 WHERE id = $2", status, ev["id"])
 
@@ -236,13 +265,14 @@ async def run_bootstrapper():
 
         async with pool.acquire() as conn:
             total_snaps = await conn.fetchval("SELECT COUNT(*) FROM district_snapshots")
-            src_stats = await conn.fetch("SELECT geometry_source::text, count FROM (SELECT geometry_source, COUNT(*) as count FROM district_snapshots GROUP BY geometry_source) sub")
-            evt_stats = await conn.fetch("SELECT geometry_status::text, count FROM (SELECT geometry_status, COUNT(*) as count FROM split_events GROUP BY geometry_status) sub")
+            src_stats = await conn.fetch(
+                "SELECT geometry_source::text, count FROM (SELECT geometry_source, COUNT(*) as count FROM district_snapshots GROUP BY geometry_source) sub"
+            )
+            evt_stats = await conn.fetch(
+                "SELECT geometry_status::text, count FROM (SELECT geometry_status, COUNT(*) as count FROM split_events GROUP BY geometry_status) sub"
+            )
 
-        report_lines = [
-            f"Total districts in district_snapshots : {total_snaps}",
-            "Geometry source breakdown:"
-        ]
+        report_lines = [f"Total districts in district_snapshots : {total_snaps}", "Geometry source breakdown:"]
 
         sources = {s["geometry_source"]: s["count"] for s in src_stats}
         report_lines.append(f"  shrug_union    : {sources.get('shrug_union', 0)}  (confidence 0.9)")

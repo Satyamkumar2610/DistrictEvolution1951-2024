@@ -1,6 +1,7 @@
 """
 Spatial and State-wide Analytics Service.
 """
+
 import math
 from typing import Any
 
@@ -13,15 +14,10 @@ class SpatialAnalyticsService(BaseAnalyticsService):
     """Analytics for state-wide comparisons, rankings, and correlations."""
 
     @cached(ttl=CacheTTL.ANALYSIS, prefix="crop_corr")
-    async def get_crop_correlations(
-        self,
-        state: str,
-        year: int,
-        crops: list[str] | None = None
-    ) -> dict[str, Any]:
+    async def get_crop_correlations(self, state: str, year: int, crops: list[str] | None = None) -> dict[str, Any]:
         """Calculate correlation between crop areas/yields across districts."""
         if crops is None:
-            crops = ['rice', 'wheat', 'maize', 'groundnut', 'cotton', 'sugarcane']
+            crops = ["rice", "wheat", "maize", "groundnut", "cotton", "sugarcane"]
 
         crop_data = {}
         for crop in crops:
@@ -35,7 +31,7 @@ class SpatialAnalyticsService(BaseAnalyticsService):
                   AND m.variable_name = $3
             """
             rows = await self._fetch_with_fallback(query, crop, "yield", state, year)
-            crop_data[crop] = {r['cdk']: r['value'] for r in rows}
+            crop_data[crop] = {r["cdk"]: r["value"] for r in rows}
 
         correlations: dict[str, dict[str, float | None]] = {}
         for _i, crop1 in enumerate(crops):
@@ -53,10 +49,7 @@ class SpatialAnalyticsService(BaseAnalyticsService):
                     vals2 = [crop_data[crop2][cdk] for cdk in common]
 
                     mean1, mean2 = sum(vals1) / len(vals1), sum(vals2) / len(vals2)
-                    cov = sum(
-                        (v1 - mean1) * (v2 - mean2)
-                        for v1, v2 in zip(vals1, vals2, strict=True)
-                    )
+                    cov = sum((v1 - mean1) * (v2 - mean2) for v1, v2 in zip(vals1, vals2, strict=True))
                     std1 = math.sqrt(sum((v - mean1) ** 2 for v in vals1))
                     std2 = math.sqrt(sum((v - mean2) ** 2 for v in vals2))
 
@@ -66,20 +59,11 @@ class SpatialAnalyticsService(BaseAnalyticsService):
                     else:
                         correlations[crop1][crop2] = None
 
-        return {
-            'state': state,
-            'year': year,
-            'crops': crops,
-            'correlations': correlations
-        }
+        return {"state": state, "year": year, "crops": crops, "correlations": correlations}
 
     @cached(ttl=CacheTTL.ANALYSIS, prefix="dist_rank")
     async def get_district_rankings(
-        self,
-        state: str,
-        crop: str,
-        year: int,
-        metric: str = 'yield'
+        self, state: str, crop: str, year: int, metric: str = "yield"
     ) -> list[dict[str, Any]]:
         """Rank districts by crop performance."""
         query = """
@@ -95,46 +79,48 @@ class SpatialAnalyticsService(BaseAnalyticsService):
         rows = await self._fetch_with_fallback(query, crop, metric, state, year)
 
         return [
-            {'rank': i, 'cdk': r['cdk'], 'district': r['district_name'], 'value': round(r['value'], 2)}
+            {"rank": i, "cdk": r["cdk"], "district": r["district_name"], "value": round(r["value"], 2)}
             for i, r in enumerate(rows, 1)
         ]
 
     @cached(ttl=CacheTTL.ANALYSIS, prefix="season_comp")
-    async def get_seasonal_comparison(
-        self,
-        cdk: str,
-        crop: str,
-        year: int
-    ) -> dict[str, Any]:
+    async def get_seasonal_comparison(self, cdk: str, crop: str, year: int) -> dict[str, Any]:
         """Compare Kharif vs Rabi season performance."""
-        kharif = await self._fetchrow("""
+        kharif = await self._fetchrow(
+            """
             SELECT value FROM agri_metrics
             WHERE district_lgd::text = $1 AND year = $2 AND variable_name LIKE $3
-        """, cdk, year, f"{crop}_yield_kharif")
+        """,
+            cdk,
+            year,
+            f"{crop}_yield_kharif",
+        )
 
-        rabi = await self._fetchrow("""
+        rabi = await self._fetchrow(
+            """
             SELECT value FROM agri_metrics
             WHERE district_lgd::text = $1 AND year = $2 AND variable_name LIKE $3
-        """, cdk, year, f"{crop}_yield_rabi")
+        """,
+            cdk,
+            year,
+            f"{crop}_yield_rabi",
+        )
 
-        kharif_val = kharif['value'] if kharif else None
-        rabi_val = rabi['value'] if rabi else None
+        kharif_val = kharif["value"] if kharif else None
+        rabi_val = rabi["value"] if rabi else None
 
         return {
-            'cdk': cdk,
-            'crop': crop,
-            'year': year,
-            'kharif_yield': round(kharif_val, 2) if kharif_val else None,
-            'rabi_yield': round(rabi_val, 2) if rabi_val else None,
-            'dominant_season': 'kharif' if (kharif_val or 0) > (rabi_val or 0) else 'rabi'
+            "cdk": cdk,
+            "crop": crop,
+            "year": year,
+            "kharif_yield": round(kharif_val, 2) if kharif_val else None,
+            "rabi_yield": round(rabi_val, 2) if rabi_val else None,
+            "dominant_season": "kharif" if (kharif_val or 0) > (rabi_val or 0) else "rabi",
         }
 
     @cached(ttl=CacheTTL.ANALYSIS, prefix="resilience_idx")
     async def get_resilience_index(
-        self,
-        state: str,
-        crop: str,
-        year_range: list[int] | None = None
+        self, state: str, crop: str, year_range: list[int] | None = None
     ) -> list[dict[str, Any]]:
         """
         Rank districts by true climate resilience, measured by the magnitude
@@ -156,10 +142,10 @@ class SpatialAnalyticsService(BaseAnalyticsService):
 
         district_data = {}
         for r in rows:
-            cdk = r['cdk']
+            cdk = r["cdk"]
             if cdk not in district_data:
-                district_data[cdk] = {"name": r['district_name'], "years": {}}
-            district_data[cdk]["years"][r['year']] = r['value']
+                district_data[cdk] = {"name": r["district_name"], "years": {}}
+            district_data[cdk]["years"][r["year"]] = r["value"]
 
         shock_years = [2002, 2004, 2009, 2014, 2015]
         results = []
@@ -198,15 +184,17 @@ class SpatialAnalyticsService(BaseAnalyticsService):
                 avg_recovery = sum(recovery_times) / len(recovery_times)
                 resilience = max(0.0, min(100.0, 100 - (avg_drop * 100) - ((avg_recovery - 1) * 12.5)))
 
-            results.append({
-                "cdk": cdk,
-                "district_name": data["name"],
-                "data_points": len(year_dict),
-                "avg_yield": round(mean_y, 2),
-                "avg_shock_drop_pct": round(avg_drop * 100, 1),
-                "avg_recovery_years": round(avg_recovery, 1),
-                "resilience_score": round(resilience, 1)
-            })
+            results.append(
+                {
+                    "cdk": cdk,
+                    "district_name": data["name"],
+                    "data_points": len(year_dict),
+                    "avg_yield": round(mean_y, 2),
+                    "avg_shock_drop_pct": round(avg_drop * 100, 1),
+                    "avg_recovery_years": round(avg_recovery, 1),
+                    "resilience_score": round(resilience, 1),
+                }
+            )
 
         results.sort(key=lambda x: x["resilience_score"], reverse=True)
         for i, r in enumerate(results, 1):

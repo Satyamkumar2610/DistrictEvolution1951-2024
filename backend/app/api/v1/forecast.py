@@ -18,7 +18,7 @@ router = APIRouter(prefix="/forecast", tags=["Forecasting"])
 async def get_crop_recommendations(
     cdk: str,
     top_n: int = Query(5, ge=1, le=10, description="Number of recommendations"),
-    db: asyncpg.Connection = Depends(get_db)
+    db: asyncpg.Connection = Depends(get_db),
 ):
     """
     Get crop recommendations for a district based on performance and efficiency.
@@ -33,7 +33,7 @@ async def get_yield_forecast(
     cdk: str,
     crop: str,
     horizon: int = Query(3, ge=1, le=10, description="Years to forecast"),
-    db: asyncpg.Connection = Depends(get_db)
+    db: asyncpg.Connection = Depends(get_db),
 ):
     """
     Get yield forecast for a specific district and crop.

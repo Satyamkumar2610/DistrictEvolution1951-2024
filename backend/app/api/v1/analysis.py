@@ -2,6 +2,7 @@
 Analysis API: Split impact and advanced analytics endpoints.
 Updated to use lgd_code/district_lgd schema.
 """
+
 import hashlib
 import logging
 
@@ -94,14 +95,14 @@ async def analyze_split_impact(
 
     # Check Cache
     from app.cache import CacheTTL, get_cache
+
     cache = get_cache()
     try:
         cached_result = await cache.get(query_hash)
         if cached_result:
             return cached_result
     except Exception:
-        logging.getLogger(__name__).debug(
-            "Cache get failed for %s", query_hash)
+        logging.getLogger(__name__).debug("Cache get failed for %s", query_hash)
 
     service = AnalysisService(db)
     result = await service.analyze_split_impact(
@@ -118,8 +119,7 @@ async def analyze_split_impact(
     try:
         await cache.set(query_hash, result, CacheTTL.ANALYSIS)
     except Exception:
-        logging.getLogger(__name__).debug(
-            "Cache set failed for %s", query_hash)
+        logging.getLogger(__name__).debug("Cache set failed for %s", query_hash)
     return result
 
 
@@ -155,8 +155,7 @@ async def get_crop_diversification(
     rows = await fetch(db, query, state, year)
 
     if not rows:
-        raise NotFoundError(
-            detail="No data found for specified state and year")
+        raise NotFoundError(detail="No data found for specified state and year")
 
     crop_areas: dict[str, float] = {}
     for row in rows:
@@ -203,9 +202,15 @@ async def get_yield_efficiency(
     if not exists:
         # Fallback to seasonal
         season_map = {
-            "rice": "kharif", "wheat": "rabi", "maize": "kharif",
-            "soyabean": "kharif", "groundnut": "kharif", "cotton": "kharif",
-            "pearl_millet": "kharif", "sorghum": "kharif", "chickpea": "rabi"
+            "rice": "kharif",
+            "wheat": "rabi",
+            "maize": "kharif",
+            "soyabean": "kharif",
+            "groundnut": "kharif",
+            "cotton": "kharif",
+            "pearl_millet": "kharif",
+            "sorghum": "kharif",
+            "chickpea": "rabi",
         }
         season = season_map.get(crop.lower())
         if season:
@@ -221,12 +226,10 @@ async def get_yield_efficiency(
     district_row = await fetchrow(db, district_query, cdk, variable, year)
 
     if not district_row:
-        raise NotFoundError(
-            detail="No data found for specified district, crop, and year")
+        raise NotFoundError(detail="No data found for specified district, crop, and year")
 
     state_name = district_row["state_name"]
-    district_yield = float(
-        district_row["yield_val"]) if district_row["yield_val"] else 0
+    district_yield = float(district_row["yield_val"]) if district_row["yield_val"] else 0
 
     # Get all state yields for this crop/year
     state_query = """
@@ -252,10 +255,8 @@ async def get_yield_efficiency(
     historical_yields = [float(r["yield_val"]) for r in history_rows]
 
     analyzer = get_advanced_analyzer()
-    relative_result = analyzer.calculate_efficiency(
-        district_yield, state_yields)
-    historical_result = analyzer.calculate_historical_efficiency(
-        district_yield, historical_yields)
+    relative_result = analyzer.calculate_efficiency(district_yield, state_yields)
+    historical_result = analyzer.calculate_historical_efficiency(district_yield, historical_yields)
 
     # Determine units based on metric
     YIELD_UNIT = "kg/ha"
@@ -276,8 +277,8 @@ async def get_yield_efficiency(
             "efficiency_score": "ratio (0-1, 1 = at state potential)",
             "efficiency_ratio": "ratio (1.0 = at 10y mean)",
             "yield_gap_pct": "%",
-            "percentile_rank": "percentile (0-100)"
-        }
+            "percentile_rank": "percentile (0-100)",
+        },
     }
 
 
@@ -303,9 +304,15 @@ async def get_risk_profile(
 
     if not exists:
         season_map = {
-            "rice": "kharif", "wheat": "rabi", "maize": "kharif",
-            "soyabean": "kharif", "groundnut": "kharif", "cotton": "kharif",
-            "pearl_millet": "kharif", "sorghum": "kharif", "chickpea": "rabi"
+            "rice": "kharif",
+            "wheat": "rabi",
+            "maize": "kharif",
+            "soyabean": "kharif",
+            "groundnut": "kharif",
+            "cotton": "kharif",
+            "pearl_millet": "kharif",
+            "sorghum": "kharif",
+            "chickpea": "rabi",
         }
         season = season_map.get(crop.lower())
         if season:
@@ -321,8 +328,7 @@ async def get_risk_profile(
     rows = await fetch(db, query, cdk, variable)
 
     if not rows or len(rows) < 3:
-        raise ValidationError(
-            detail="Insufficient historical data (need at least 3 years)")
+        raise ValidationError(detail="Insufficient historical data (need at least 3 years)")
 
     yearly_values = {row["year"]: float(row["value"]) for row in rows}
 
@@ -332,11 +338,7 @@ async def get_risk_profile(
     growth = analyzer.calculate_growth_matrix(yearly_values)
 
     # Determine units based on metric type
-    METRIC_UNITS = {
-        "yield": "kg/ha",
-        "area": "1000 ha",
-        "production": "1000 tonnes"
-    }
+    METRIC_UNITS = {"yield": "kg/ha", "area": "1000 ha", "production": "1000 tonnes"}
     unit = METRIC_UNITS.get(metric, "unit")
 
     return {

@@ -1,6 +1,7 @@
 """
 Data quality response schemas.
 """
+
 from pydantic import BaseModel
 
 

@@ -28,18 +28,20 @@ ApportionMethod = Literal[
 @dataclass
 class ApportionedValue:
     """Single data value with full provenance."""
+
     cdk: str
     year: int
     value: float
     method: ApportionMethod
     source_cdks: tuple[str, ...]
-    coverage: float              # 0.0–1.0: proportion of area covered by data
-    confidence: float = 1.0      # 0.0–1.0: confidence in the method used
+    coverage: float  # 0.0–1.0: proportion of area covered by data
+    confidence: float = 1.0  # 0.0–1.0: confidence in the method used
 
 
 @dataclass
 class ConservationResult:
     """Result of a conservation check comparing pre- and post-event totals."""
+
     is_valid: bool
     before_total: float
     after_total: float
@@ -88,9 +90,7 @@ class DataApportioner:
             {target_cdk: ApportionedValue}
         """
         results: dict[str, ApportionedValue] = {}
-        total_source = sum(
-            historical_data.get(src, 0.0) for src in event.source_cdks
-        )
+        total_source = sum(historical_data.get(src, 0.0) for src in event.source_cdks)
 
         # --- Handle renames (1:1 passthrough) ---
         if event.event_type == EventType.RENAME and len(event.source_cdks) == 1 and len(event.target_cdks) == 1:
@@ -98,17 +98,18 @@ class DataApportioner:
             tgt = event.target_cdks[0]
             val = historical_data.get(src, 0.0)
             results[tgt] = ApportionedValue(
-                cdk=tgt, year=event.year, value=val,
+                cdk=tgt,
+                year=event.year,
+                value=val,
                 method="rename_passthrough",
                 source_cdks=event.source_cdks,
-                coverage=1.0, confidence=1.0,
+                coverage=1.0,
+                confidence=1.0,
             )
             return results
 
         # --- Determine weights ---
-        weights = self._compute_weights(
-            event, mode, area_ratios, population_ratios
-        )
+        weights = self._compute_weights(event, mode, area_ratios, population_ratios)
 
         # --- Apply weights ---
         for tgt in event.target_cdks:
@@ -120,7 +121,9 @@ class DataApportioner:
                 actual_method = "exact_geometric" if str(tgt) in area_ratios else "area_weighted"  # type: ignore[operator]
 
             results[tgt] = ApportionedValue(
-                cdk=tgt, year=event.year, value=apportioned_val,
+                cdk=tgt,
+                year=event.year,
+                value=apportioned_val,
                 method=actual_method,
                 source_cdks=event.source_cdks,
                 coverage=w,
@@ -227,9 +230,7 @@ class DataApportioner:
                     if src in current_values:
                         src_val: float = current_values[src]  # type: ignore[index]
                         src_data: dict[str, float] = {str(src): src_val}
-                        apportioned = self.apportion_to_modern(
-                            src_data, event, mode
-                        )
+                        apportioned = self.apportion_to_modern(src_data, event, mode)
                         for tgt, av in apportioned.items():
                             new_values[tgt] = new_values.get(tgt, 0.0) + av.value
                         current_values.pop(str(src))
@@ -267,9 +268,7 @@ class DataApportioner:
         before_total = sum(before.values())
         after_total = sum(after.values())
         absolute_error = abs(after_total - before_total)
-        relative_error = (
-            absolute_error / before_total if before_total > 0 else 0.0
-        )
+        relative_error = absolute_error / before_total if before_total > 0 else 0.0
         is_valid = relative_error <= tol
 
         if not is_valid:
@@ -323,13 +322,11 @@ class DataApportioner:
                 total_area = total_area + float(area)  # type: ignore[operator]
                 cdks_with_data = cdks_with_data + 1  # type: ignore[operator]
 
-        coverage: float = (
-            float(cdks_with_data) / len(active_cdks)
-            if active_cdks else 0.0
-        )
+        coverage: float = float(cdks_with_data) / len(active_cdks) if active_cdks else 0.0
         yield_val: float | None = (
             float(int((total_prod / total_area) * 1000.0 * 100)) / 100.0  # type: ignore[operator]
-            if total_area > 0.0 else None
+            if total_area > 0.0
+            else None
         )
 
         result: dict[str, Any] = {
@@ -361,18 +358,10 @@ class DataApportioner:
             return 0.0
 
         missing_count = total_active - direct_count - fallback_count
-        source_quality = (
-            direct_count * 1.0
-            + fallback_count * 0.6
-            + missing_count * 0.0
-        ) / total_active
+        source_quality = (direct_count * 1.0 + fallback_count * 0.6 + missing_count * 0.0) / total_active
 
         resolved_coverage = (direct_count + fallback_count) / total_active
         temporal_coverage = data_years / epoch_span if epoch_span > 0 else 0.0
 
-        confidence = (
-            source_quality * 0.4
-            + resolved_coverage * 0.4
-            + temporal_coverage * 0.2
-        )
+        confidence = source_quality * 0.4 + resolved_coverage * 0.4 + temporal_coverage * 0.2
         return round(min(1.0, max(0.0, confidence)), 3)  # type: ignore[call-overload]

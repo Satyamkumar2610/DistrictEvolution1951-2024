@@ -29,23 +29,21 @@ class LineageRepository(BaseRepository):
 
         events = []
         for r in rows:
-            events.append(LineageEvent(
-                id=f"{r['parent_cdk']}_{r['event_year']}",
-                parent_cdk=r['parent_cdk'],
-                children_cdks=[r['child_cdk']],
-                children_names=[],
-                children_count=1,
-                event_year=r['event_year'],
-                event_type=EventType.SPLIT,
-                confidence=0.9,  # Default confidence
-            ))
+            events.append(
+                LineageEvent(
+                    id=f"{r['parent_cdk']}_{r['event_year']}",
+                    parent_cdk=r["parent_cdk"],
+                    children_cdks=[r["child_cdk"]],
+                    children_names=[],
+                    children_count=1,
+                    event_year=r["event_year"],
+                    event_type=EventType.SPLIT,
+                    confidence=0.9,  # Default confidence
+                )
+            )
         return events
 
-    async def get_events_by_state(
-        self,
-        state: str,
-        cdk_to_state: dict[str, str]
-    ) -> list[LineageEvent]:
+    async def get_events_by_state(self, state: str, cdk_to_state: dict[str, str]) -> list[LineageEvent]:
         """Filter events where parent belongs to given state using Python filtering.
 
         Cannot use SQL JOIN because lineage_events.parent_cdk (text like AR_balipa_1951)
@@ -62,10 +60,7 @@ class LineageRepository(BaseRepository):
 
         return events
 
-    def group_by_parent_year(
-        self,
-        events: list[LineageEvent]
-    ) -> dict[str, dict]:
+    def group_by_parent_year(self, events: list[LineageEvent]) -> dict[str, dict]:
         """
         Group events by parent_cdk|year to consolidate multi-child splits.
         Returns dict with grouped event info.

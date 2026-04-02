@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from app.core.lineage_graph import LineageGraph  # type: ignore[import-not-found]
 
+
 @dataclass
 class Epoch:
     epoch_num: int
@@ -34,9 +35,7 @@ def build_epochs_from_graph(
 
 
 def build_epochs(
-    root_cdk: str,
-    split_graph: dict[str, list[tuple[list[str], int]]],
-    min_year: int = 1950
+    root_cdk: str, split_graph: dict[str, list[tuple[list[str], int]]], min_year: int = 1950
 ) -> list[Epoch]:
     """
     Reverse-engineers a chronological list of epochs for a district's lineage.
@@ -87,30 +86,34 @@ def build_epochs(
 
     if not split_years:
         # No splits
-        epochs.append(Epoch(
-            epoch_num=1,
-            year_start=min_year,
-            year_end=None,
-            event_label=f"Unchanged since {min_year}",
-            active_cdks=[root_cdk],
-            leaf_cdks=leaf_cdks_list,
-            is_virtual=False
-        ))
+        epochs.append(
+            Epoch(
+                epoch_num=1,
+                year_start=min_year,
+                year_end=None,
+                event_label=f"Unchanged since {min_year}",
+                active_cdks=[root_cdk],
+                leaf_cdks=leaf_cdks_list,
+                is_virtual=False,
+            )
+        )
         return epochs
 
     # Loop through each distinct split year
     for _i, s_year in enumerate(split_years):
         if s_year > current_year:
             # Create an epoch for [current_year, s_year - 1]
-            epochs.append(Epoch(
-                epoch_num=epoch_num,
-                year_start=current_year,
-                year_end=s_year - 1,
-                event_label="Stable period" if epoch_num == 1 else "Post-split stable period",
-                active_cdks=sorted(list(active_cdks)),
-                leaf_cdks=leaf_cdks_list,
-                is_virtual=is_virtual
-            ))
+            epochs.append(
+                Epoch(
+                    epoch_num=epoch_num,
+                    year_start=current_year,
+                    year_end=s_year - 1,
+                    event_label="Stable period" if epoch_num == 1 else "Post-split stable period",
+                    active_cdks=sorted(list(active_cdks)),
+                    leaf_cdks=leaf_cdks_list,
+                    is_virtual=is_virtual,
+                )
+            )
             epoch_num += 1
 
         # Now apply ALL splits that happened in s_year
@@ -131,15 +134,17 @@ def build_epochs(
 
     final_label = " | ".join(event_labels) if event_labels else "Final state"
 
-    epochs.append(Epoch(
-        epoch_num=epoch_num,
-        year_start=current_year,
-        year_end=None,
-        event_label=final_label,
-        active_cdks=sorted(list(active_cdks)),
-        leaf_cdks=leaf_cdks_list,
-        is_virtual=is_virtual
-    ))
+    epochs.append(
+        Epoch(
+            epoch_num=epoch_num,
+            year_start=current_year,
+            year_end=None,
+            event_label=final_label,
+            active_cdks=sorted(list(active_cdks)),
+            leaf_cdks=leaf_cdks_list,
+            is_virtual=is_virtual,
+        )
+    )
 
     # Fix up epoch event labels: epoch N's label should be the split that started epoch N.
     for i, ep in enumerate(epochs):
@@ -163,4 +168,3 @@ def _format_event_label(parent: str, children: list[str]) -> str:
         return f"{parent} → {' + '.join(children)}"
     else:
         return f"{parent} → {len(children)} districts"
-

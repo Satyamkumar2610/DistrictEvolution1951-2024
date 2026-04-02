@@ -1,6 +1,7 @@
 """
 Impact Analyzer: Compare pre/post split periods with statistical rigor.
 """
+
 from dataclasses import dataclass
 
 from app.analytics.harmonizer import HarmonizedPoint
@@ -11,6 +12,7 @@ from app.schemas.common import ImpactStats, PeriodStats, UncertaintyBounds
 @dataclass
 class ImpactResult:
     """Complete impact analysis result."""
+
     pre_stats: PeriodStats
     post_stats: PeriodStats
     impact: ImpactStats
@@ -149,14 +151,10 @@ class ImpactAnalyzer:
         warnings = []
 
         if len(pre_values) < self.min_observations:
-            warnings.append(
-                f"Pre-split period has only {len(pre_values)} observations"
-            )
+            warnings.append(f"Pre-split period has only {len(pre_values)} observations")
 
         if len(post_values) < self.min_observations:
-            warnings.append(
-                f"Post-split period has only {len(post_values)} observations"
-            )
+            warnings.append(f"Post-split period has only {len(post_values)} observations")
 
         pre_stats = self._calculate_period_stats(pre_values)
         post_stats = self._calculate_period_stats(post_values)

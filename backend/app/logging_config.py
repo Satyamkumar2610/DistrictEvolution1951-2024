@@ -13,7 +13,7 @@ from datetime import UTC, datetime
 from functools import wraps
 
 # Context variable for request tracking
-request_id_var: ContextVar[str] = ContextVar('request_id', default='')
+request_id_var: ContextVar[str] = ContextVar("request_id", default="")
 
 
 class JSONFormatter(logging.Formatter):
@@ -33,17 +33,17 @@ class JSONFormatter(logging.Formatter):
             log_entry["request_id"] = request_id
 
         # Add extra fields
-        if hasattr(record, 'duration_ms'):
+        if hasattr(record, "duration_ms"):
             log_entry["duration_ms"] = record.duration_ms  # type: ignore
-        if hasattr(record, 'status_code'):
+        if hasattr(record, "status_code"):
             log_entry["status_code"] = record.status_code  # type: ignore
-        if hasattr(record, 'method'):
+        if hasattr(record, "method"):
             log_entry["method"] = record.method  # type: ignore
-        if hasattr(record, 'path'):
+        if hasattr(record, "path"):
             log_entry["path"] = record.path  # type: ignore
-        if hasattr(record, 'query_time_ms'):
+        if hasattr(record, "query_time_ms"):
             log_entry["query_time_ms"] = record.query_time_ms  # type: ignore
-        if hasattr(record, 'rows_affected'):
+        if hasattr(record, "rows_affected"):
             log_entry["rows_affected"] = record.rows_affected  # type: ignore
 
         # Add exception info if present
@@ -113,7 +113,7 @@ def log_database_query(query: str, duration_ms: float, rows: int = 0) -> None:
 
     extra = {
         "query_time_ms": round(float(duration_ms), 2),  # type: ignore
-        "rows_affected": rows
+        "rows_affected": rows,
     }
 
     if duration_ms > 1000:  # Slow query warning
@@ -122,13 +122,7 @@ def log_database_query(query: str, duration_ms: float, rows: int = 0) -> None:
         logger.debug(f"Query executed: {query_preview}", extra=extra)
 
 
-def log_api_request(
-    method: str,
-    path: str,
-    status_code: int,
-    duration_ms: float,
-    client_ip: str | None = None
-) -> None:
+def log_api_request(method: str, path: str, status_code: int, duration_ms: float, client_ip: str | None = None) -> None:
     """Log an API request with timing."""
     logger = get_logger("api")
 
@@ -136,7 +130,7 @@ def log_api_request(
         "method": method,
         "path": path,
         "status_code": status_code,
-        "duration_ms": round(float(duration_ms), 2)  # type: ignore
+        "duration_ms": round(float(duration_ms), 2),  # type: ignore
     }
 
     level = logging.INFO
@@ -150,6 +144,7 @@ def log_api_request(
 
 def timed_operation(operation_name: str):
     """Decorator to log operation timing."""
+
     def decorator(func):
         @wraps(func)
         async def async_wrapper(*args, **kwargs):
@@ -180,7 +175,9 @@ def timed_operation(operation_name: str):
                 raise
 
         import asyncio
+
         if asyncio.iscoroutinefunction(func):
             return async_wrapper
         return sync_wrapper
+
     return decorator

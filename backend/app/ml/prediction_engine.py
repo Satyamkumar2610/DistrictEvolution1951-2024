@@ -23,22 +23,25 @@ logger = logging.getLogger(__name__)
 # Data Classes
 # ──────────────────────────────────────────────────────────────────────────────
 
+
 @dataclass
 class FactorImportance:
     """Importance of a single feature in the model."""
-    name: str               # Human-readable name
-    key: str                # Machine key
-    importance: float       # Standardized coefficient magnitude (0-1 scale)
-    coefficient: float      # Raw model coefficient
+
+    name: str  # Human-readable name
+    key: str  # Machine key
+    importance: float  # Standardized coefficient magnitude (0-1 scale)
+    coefficient: float  # Raw model coefficient
     # Contribution to prediction (coeff * feature_value)
     contribution: float
-    direction: str          # "positive" or "negative"
-    description: str        # Plain-English explanation
+    direction: str  # "positive" or "negative"
+    description: str  # Plain-English explanation
 
 
 @dataclass
 class PredictionResult:
     """Full prediction result with explainability."""
+
     # Core prediction
     predicted_yield: float
     baseline_yield: float
@@ -46,8 +49,8 @@ class PredictionResult:
     confidence_upper: float
 
     # Interactive simulation
-    slope_rain: float                   # kg/ha per mm of rainfall deviation
-    mean_rain: float                    # Mean rainfall for slider baseline
+    slope_rain: float  # kg/ha per mm of rainfall deviation
+    mean_rain: float  # Mean rainfall for slider baseline
 
     # Model quality
     r_squared: float
@@ -55,13 +58,13 @@ class PredictionResult:
     rmse: float
     sample_size: int
     feature_count: int
-    method: str                         # "multi_factor_ridge" or "simple_ols"
+    method: str  # "multi_factor_ridge" or "simple_ols"
 
     # Explainability
-    factors: list[FactorImportance]     # Sorted by importance desc
-    model_equation: str                 # Human-readable equation
-    methodology: str                    # Explanation paragraph
-    data_quality_notes: list[str]       # Warnings / notes
+    factors: list[FactorImportance]  # Sorted by importance desc
+    model_equation: str  # Human-readable equation
+    methodology: str  # Explanation paragraph
+    data_quality_notes: list[str]  # Warnings / notes
 
     # Viz data
     data_points: list[dict[str, float]]  # [{rain, yield, district}]
@@ -75,6 +78,7 @@ class PredictionResult:
 # ──────────────────────────────────────────────────────────────────────────────
 # Prediction Engine
 # ──────────────────────────────────────────────────────────────────────────────
+
 
 class PredictionEngine:
     """
@@ -147,35 +151,23 @@ class PredictionEngine:
         rainfall = np.array([d["rainfall"] for d in data], dtype=float)
 
         # Optional features — use zeros if missing
-        monsoon_jjas = np.array(
-            [d.get("monsoon_jjas", 0) for d in data], dtype=float
-        )
+        monsoon_jjas = np.array([d.get("monsoon_jjas", 0) for d in data], dtype=float)
         has_monsoon = np.any(monsoon_jjas > 0)
-        monsoon_ratio = np.where(
-            rainfall > 0, monsoon_jjas / rainfall, 0.0
-        ) if has_monsoon else np.zeros(n)
+        monsoon_ratio = np.where(rainfall > 0, monsoon_jjas / rainfall, 0.0) if has_monsoon else np.zeros(n)
 
-        yield_trend = np.array(
-            [d.get("yield_trend", 0) for d in data], dtype=float
-        )
+        yield_trend = np.array([d.get("yield_trend", 0) for d in data], dtype=float)
         has_trend = np.any(yield_trend != 0)
 
-        yield_cv = np.array(
-            [d.get("yield_cv", 0) for d in data], dtype=float
-        )
+        yield_cv = np.array([d.get("yield_cv", 0) for d in data], dtype=float)
         has_cv = np.any(yield_cv > 0)
 
-        crop_area = np.array(
-            [d.get("crop_area", 0) for d in data], dtype=float
-        )
+        crop_area = np.array([d.get("crop_area", 0) for d in data], dtype=float)
         has_area = np.any(crop_area > 0)
 
         # Build feature matrix (only include features with actual data)
         feature_names = ["rainfall"]
         feature_keys = ["rainfall"]
-        feature_descriptions = [
-            "Annual rainfall normal (mm) — primary climate driver of crop yield"
-        ]
+        feature_descriptions = ["Annual rainfall normal (mm) — primary climate driver of crop yield"]
         raw_features = [rainfall]
 
         if has_monsoon:
@@ -205,9 +197,7 @@ class PredictionEngine:
         if has_area:
             feature_names.append("crop_area")
             feature_keys.append("crop_area")
-            feature_descriptions.append(
-                "Area under crop (hectares) — proxy for local agronomic suitability"
-            )
+            feature_descriptions.append("Area under crop (hectares) — proxy for local agronomic suitability")
             raw_features.append(crop_area)
 
         p = len(raw_features)
@@ -235,11 +225,10 @@ class PredictionEngine:
         # Predictions & residuals
         y_pred = X_raw @ beta_raw + intercept
         residuals = yields - y_pred
-        ss_res = np.sum(residuals ** 2)
+        ss_res = np.sum(residuals**2)
         ss_tot = np.sum((yields - y_mean) ** 2)
         r_squared = 1 - (ss_res / ss_tot) if ss_tot > 0 else 0.0
-        adj_r_sq = 1 - (1 - r_squared) * (n - 1) / \
-            (n - p - 1) if n > p + 1 else r_squared
+        adj_r_sq = 1 - (1 - r_squared) * (n - 1) / (n - p - 1) if n > p + 1 else r_squared
         rmse = math.sqrt(ss_res / n) if n > 0 else 0.0
 
         # Standard error for prediction interval
@@ -272,21 +261,22 @@ class PredictionEngine:
         # Factor importances & contributions
         abs_beta_z = np.abs(beta_z)
         beta_z_sum = abs_beta_z.sum()
-        importances = abs_beta_z / \
-            beta_z_sum if beta_z_sum > 0 else np.zeros(p)
+        importances = abs_beta_z / beta_z_sum if beta_z_sum > 0 else np.zeros(p)
 
         factors = []
         for i in range(p):
             contribution = float(beta_raw[i] * target_features[i])
-            factors.append(FactorImportance(
-                name=self._humanize(feature_names[i]),
-                key=feature_keys[i],
-                importance=round(float(importances[i]), 4),  # type: ignore
-                coefficient=round(float(beta_raw[i]), 6),  # type: ignore
-                contribution=round(contribution, 2),  # type: ignore
-                direction="positive" if beta_raw[i] > 0 else "negative",
-                description=feature_descriptions[i],
-            ))
+            factors.append(
+                FactorImportance(
+                    name=self._humanize(feature_names[i]),
+                    key=feature_keys[i],
+                    importance=round(float(importances[i]), 4),  # type: ignore
+                    coefficient=round(float(beta_raw[i]), 6),  # type: ignore
+                    contribution=round(contribution, 2),  # type: ignore
+                    direction="positive" if beta_raw[i] > 0 else "negative",
+                    description=feature_descriptions[i],
+                )
+            )
 
         factors.sort(key=lambda f: f.importance, reverse=True)
 
@@ -298,8 +288,7 @@ class PredictionEngine:
         # features at mean)
         rain_slope = float(beta_raw[0])  # Rainfall is always feature 0
         rain_line_y = [
-            max(0.0, float(intercept + rain_slope * r
-                         + sum(beta_raw[j] * X_mean[j] for j in range(1, p))))
+            max(0.0, float(intercept + rain_slope * r + sum(beta_raw[j] * X_mean[j] for j in range(1, p))))
             for r in rain_range
         ]
         regression_line = [
@@ -336,17 +325,15 @@ class PredictionEngine:
         # Data quality notes
         notes = []
         if n < 15:
-            notes.append(
-                f"Small sample ({n} districts) — predictions may be less reliable.")
+            notes.append(f"Small sample ({n} districts) — predictions may be less reliable.")
         if r_squared < 0.3:
             notes.append(
-                "Low R² — yield variance is poorly explained by available factors. Other unmeasured variables (soil, irrigation) may dominate.")
+                "Low R² — yield variance is poorly explained by available factors. Other unmeasured variables (soil, irrigation) may dominate."
+            )
         if not has_trend:
-            notes.append(
-                "Historical yield trend data was unavailable — temporal signal not included.")
+            notes.append("Historical yield trend data was unavailable — temporal signal not included.")
         if not has_monsoon:
-            notes.append(
-                "Monthly rainfall breakdown unavailable — monsoon seasonality not modeled.")
+            notes.append("Monthly rainfall breakdown unavailable — monsoon seasonality not modeled.")
 
         mean_rain = float(rainfall.mean())
 
@@ -400,7 +387,7 @@ class PredictionEngine:
 
         y_pred = slope * rainfall + intercept
         residuals = yields - y_pred
-        ss_res = float(np.sum(residuals ** 2))
+        ss_res = float(np.sum(residuals**2))
         ss_tot = float(np.sum((yields - y_mean) ** 2))
         r_squared = 1 - (ss_res / ss_tot) if ss_tot > 0 else 0.0
         rmse = math.sqrt(ss_res / n) if n > 0 else 0.0
@@ -418,15 +405,17 @@ class PredictionEngine:
 
         # Single factor
         contribution = float(slope * target_rain)  # type: ignore
-        factors = [FactorImportance(
-            name="Annual Rainfall",
-            key="rainfall",
-            importance=1.0,
-            coefficient=round(float(slope), 6),  # type: ignore
-            contribution=round(contribution, 2),  # type: ignore
-            direction="positive" if slope > 0 else "negative",
-            description="Annual rainfall normal (mm) — the only predictor in this simplified model",
-        )]
+        factors = [
+            FactorImportance(
+                name="Annual Rainfall",
+                key="rainfall",
+                importance=1.0,
+                coefficient=round(float(slope), 6),  # type: ignore
+                contribution=round(contribution, 2),  # type: ignore
+                direction="positive" if slope > 0 else "negative",
+                description="Annual rainfall normal (mm) — the only predictor in this simplified model",
+            )
+        ]
 
         # Regression line
         rain_min, rain_max = float(rainfall.min()), float(rainfall.max())
@@ -458,8 +447,7 @@ class PredictionEngine:
             "Additional factors (trend, volatility, area) require ≥ 8 districts.",
         ]
         if r_squared < 0.3:
-            notes.append(
-                "Low R² — rainfall alone poorly explains yield variation.")
+            notes.append("Low R² — rainfall alone poorly explains yield variation.")
 
         return PredictionResult(
             predicted_yield=round(predicted, 1),  # type: ignore
