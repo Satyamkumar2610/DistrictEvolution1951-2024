@@ -364,8 +364,8 @@ class AnalysisService:
             # invalid
             post_split_data = {year: data for year, data in data_map.items() if year >= split_year}
             reconstructed_series = self.harmonizer.reconstruct_parent_from_children(
-                post_split_data, children_cdks, metric_literal
-            )  # type: ignore[arg-type]
+                post_split_data, children_cdks, metric_literal  # type: ignore[arg-type]
+            )
 
             # 3. Merge into single timeline
             harmonized_points = self.harmonizer.merge_series(parent_series, reconstructed_series, split_year)

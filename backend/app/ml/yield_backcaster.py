@@ -75,7 +75,7 @@ class YieldBackcaster:
         relative_error = 0.0
 
         # Determine aggregate method used
-        method_counts = {}
+        method_counts: dict[str, int] = {}
         for res in child_results.values():
             for yp in res.backcasted_yields:
                 method_counts[yp.method] = method_counts.get(yp.method, 0) + 1
@@ -170,25 +170,25 @@ class YieldBackcaster:
             X_train.append(features)
             y_train.append(child_y)
 
-        X_train = np.array(X_train)
-        y_train = np.array(y_train)
+        X_arr = np.array(X_train)
+        y_arr = np.array(y_train)
 
         model = GradientBoostingRegressor(n_estimators=100, max_depth=3, random_state=42)
-        model.fit(X_train, y_train)
+        model.fit(X_arr, y_arr)
 
-        train_preds = model.predict(X_train)
-        r2 = r2_score(y_train, train_preds)
+        train_preds = model.predict(X_arr)
+        r2 = r2_score(y_arr, train_preds)
         rmse = root_mean_squared_error(y_train, train_preds)
         confidence = float(min(0.95, max(0.5, r2)))
 
         predicted_points = []
         for y in target_years:
             # We must have parent data for the target year
-            parent_y = data.parent_yields.get(y)
-            if parent_y is None:
+            t_parent_y = data.parent_yields.get(y)
+            if t_parent_y is None:
                 continue
 
-            x_target = np.array([[parent_y, data.area_ratio]])
+            x_target = np.array([[t_parent_y, data.area_ratio]])
             pred_y = float(model.predict(x_target)[0])
             pred_y = max(0.0, pred_y)
 
@@ -228,24 +228,24 @@ class YieldBackcaster:
             X_train.append(features)
             y_train.append(child_y)
 
-        X_train = np.array(X_train)
-        y_train = np.array(y_train)
+        X_arr = np.array(X_train)
+        y_arr = np.array(y_train)
 
         model = Ridge(alpha=self.RIDGE_ALPHA)
-        model.fit(X_train, y_train)
+        model.fit(X_arr, y_arr)
 
-        train_preds = model.predict(X_train)
-        r2 = r2_score(y_train, train_preds)
+        train_preds = model.predict(X_arr)
+        r2 = r2_score(y_arr, train_preds)
         rmse = root_mean_squared_error(y_train, train_preds)
         confidence = float(min(0.7, max(0.4, r2)))
 
         predicted_points = []
         for y in target_years:
-            parent_y = data.parent_yields.get(y)
-            if parent_y is None:
+            t_parent_y = data.parent_yields.get(y)
+            if t_parent_y is None:
                 continue
 
-            x_target = np.array([[parent_y]])
+            x_target = np.array([[t_parent_y]])
             pred_y = float(model.predict(x_target)[0])
             pred_y = max(0.0, pred_y)
 
@@ -289,17 +289,17 @@ class YieldBackcaster:
             if parent_y > 0:
                 ratios.append(child_y / parent_y)
 
-        avg_ratio = np.mean(ratios) if ratios else 1.0
+        avg_ratio: float = float(np.mean(ratios)) if ratios else 1.0
         confidence = 0.4
         rmse = 500.0  # High uncertainty
 
         predicted_points = []
         for y in target_years:
-            parent_y = data.parent_yields.get(y)
-            if parent_y is None:
+            t_parent_y = data.parent_yields.get(y)
+            if t_parent_y is None:
                 continue
 
-            pred_y = parent_y * avg_ratio
+            pred_y = t_parent_y * avg_ratio
             predicted_points.append(
                 BackcastYearPoint(
                     year=y,
@@ -314,7 +314,7 @@ class YieldBackcaster:
         return BackcastChildResult(
             child_cdk=child_cdk,
             backcasted_yields=predicted_points,
-            model_stats={"mean_ratio": float(avg_ratio), "rmse": rmse, "samples": len(ratios)},
+            model_stats={"mean_ratio": avg_ratio, "rmse": rmse, "samples": len(ratios)},
             features_used=["child_parent_ratio"],
             feature_importances={},
         )
@@ -329,11 +329,11 @@ class YieldBackcaster:
 
         predicted_points = []
         for y in target_years:
-            parent_y = data.parent_yields.get(y)
-            if parent_y is None:
+            t_parent_y = data.parent_yields.get(y)
+            if t_parent_y is None:
                 continue
 
-            pred_y = parent_y  # Yield is intensive property, remains same on area-split assuming uniformity
+            pred_y = float(t_parent_y)  # Yield is intensive property, remains same on area-split assuming uniformity
 
             predicted_points.append(
                 BackcastYearPoint(
