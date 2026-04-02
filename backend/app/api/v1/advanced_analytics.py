@@ -31,6 +31,7 @@ from app.schemas.advanced_analytics import (
     YieldTrendResponse,
     YoyGrowthResponse,
 )
+from app.schemas.backcast import BackcastResponse
 from app.services import AdvancedAnalyticsFacade
 from app.validators import (
     validate_cdk,
@@ -297,3 +298,31 @@ async def get_split_specialization(
     split_year = validate_year(split_year)
     service = AdvancedAnalyticsFacade(db)
     return await service.get_split_specialization_response(parent_cdk, children_list, split_year)
+
+
+@router.get("/backcast", response_model=BackcastResponse)
+async def get_yield_backcast(
+    parent_cdk: str = Query(..., description="Parent district CDK"),
+    child_cdks: str = Query(..., description="Comma-separated child CDKs"),
+    split_year: int = Query(..., description="Year of the split"),
+    crop: str = Query("rice", description="Crop name to backcast"),
+    start_year: int = Query(1966, description="Start year for backcasting"),
+    db: asyncpg.Connection = Depends(get_db)
+):
+    """
+    Backcast yields for newly formed child districts based on parent historical data.
+    """
+    parent_cdk = validate_cdk(parent_cdk)
+    children = validate_cdk_list(child_cdks)
+    split_year = validate_year(split_year)
+    crop = validate_crop(crop)
+    start_year = validate_year(start_year)
+    
+    service = AdvancedAnalyticsFacade(db)
+    return await service.get_backcast_response(
+        parent_cdk,
+        children,
+        split_year,
+        crop,
+        start_year
+    )

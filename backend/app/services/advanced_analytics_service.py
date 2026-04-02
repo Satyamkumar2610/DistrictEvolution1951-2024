@@ -32,7 +32,9 @@ from app.schemas.advanced_analytics import (
     YoyGrowthResponse,
     YoyGrowthSummary,
 )
+from app.schemas.backcast import BackcastResponse
 from app.services.analytics import AdvancedAnalyticsService
+from app.ml.yield_backcaster import YieldBackcaster
 
 
 class AdvancedAnalyticsFacade:
@@ -288,9 +290,26 @@ class AdvancedAnalyticsFacade:
         child_cdks: list[str],
         split_year: int,
     ) -> SplitSpecializationResponse:
-        result = await self.analytics.get_post_split_specialization(
-            parent_cdk,
-            child_cdks,
-            split_year,
+        result = await self.analytics.get_split_specialization(parent_cdk, child_cdks, split_year)
+        if not result or "error" in result:
+            raise NotFoundError("Specialization data", parent_cdk)
+            
+        return SplitSpecializationResponse(**result)
+
+    async def get_backcast_response(
+        self,
+        parent_cdk: str,
+        child_cdks: list[str],
+        split_year: int,
+        crop: str,
+        start_year: int
+    ) -> BackcastResponse:
+        backcaster = YieldBackcaster()
+        result = await backcaster.backcast_all_children(
+            parent_cdk=parent_cdk,
+            child_cdks=child_cdks,
+            split_year=split_year,
+            crop=crop,
+            start_year=start_year
         )
-        return SplitSpecializationResponse.model_validate(result)
+        return result
