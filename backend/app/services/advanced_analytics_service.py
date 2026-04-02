@@ -286,7 +286,7 @@ class AdvancedAnalyticsFacade:
         if not result or "error" in result:
             raise NotFoundError("Specialization data", parent_cdk)
 
-        return SplitSpecializationResponse(**result)
+        return SplitSpecializationResponse.model_validate(result)
 
     async def get_backcast_response(
         self, parent_cdk: str, child_cdks: list[str], split_year: int, crop: str, start_year: int

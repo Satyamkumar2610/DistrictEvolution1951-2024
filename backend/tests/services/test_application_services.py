@@ -1015,7 +1015,7 @@ async def test_advanced_analytics_wraps_structured_responses(mock_db):
             "dominant_season": "kharif",
         }
     )
-    service.analytics.get_post_split_specialization = AsyncMock(
+    service.analytics.get_split_specialization = AsyncMock(
         return_value={
             "split_year": 2001,
             "crops": ["rice", "wheat"],
