@@ -8,7 +8,7 @@ Exposes the advanced analytics modules that were built in Phases 2 and 3:
   - PCA Composite Resilience
 
 All queries go through db_compat.execute_with_schema_fallback so they
-work on both the LGD-based and legacy CDK-based schema.
+work on both the LGD-based and legacy CDK-based schemas.
 """
 
 import logging
