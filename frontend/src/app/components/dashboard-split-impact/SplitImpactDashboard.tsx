@@ -112,10 +112,12 @@ export function SplitImpactDashboard() {
                                 setSelectedEvent(null);
                                 setMobileView('list');
                             }}
-                            className="bg-slate-50 border border-slate-300 rounded-lg px-2 md:px-3 py-1.5 text-sm focus:ring-1 focus:ring-indigo-500 outline-none text-slate-900 w-full transition shadow-sm"
-                            disabled={isLoadingSummary}
+                            className="bg-slate-50 border border-slate-300 rounded-lg px-2 md:px-3 py-1.5 text-sm focus:ring-1 focus:ring-indigo-500 outline-none text-slate-900 w-full transition shadow-sm disabled:opacity-60"
+                            disabled={isLoadingSummary || states.length === 0}
                         >
-                            <option value="" className="text-slate-900">Select state...</option>
+                            <option value="" className="text-slate-900">
+                                {isLoadingSummary ? "Loading states..." : "Select state..."}
+                            </option>
                             {states.map((s) => <option key={s as string} value={s as string} className="text-slate-900">{s as string}</option>)}
                         </select>
                     </div>
