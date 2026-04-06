@@ -6,7 +6,8 @@ import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import {
     Map, Shield, GitBranch, Wheat, FileText, BookOpen, Menu, X,
-    Layers, Droplet, Network, Target, Home, BarChart3, Globe2, Database
+    Layers, Droplet, Network, Target, Home, BarChart3, Globe2, Database,
+    IndianRupee
 } from 'lucide-react';
 import { buildPublicOriginUrl } from '../services/api/config';
 
@@ -22,6 +23,7 @@ const NAV_GROUPS = [
     {
         name: "Analytics",
         items: [
+            { href: '/market', label: 'Market Economics', icon: IndianRupee },
             { href: '/analytics/crop-portfolio', label: 'Crop Portfolio', icon: Wheat },
             { href: '/analytics/crop-shift', label: 'Crop Shift', icon: Layers },
             { href: '/analytics/yield-gap', label: 'Yield Gap', icon: Target },
