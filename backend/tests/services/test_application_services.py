@@ -1335,8 +1335,8 @@ def test_simulation_service_builds_prediction_district_data(mock_db):
             {"district_name": "B", "yield": 1900.0},
         ],
         rain_map={
-            "A": {"annual": 900.0, "monsoon_jjas": 700.0},
-            "B": {"annual": 0.0, "monsoon_jjas": 0.0},
+            "A": {"annual": 900.0, "monsoon_jjas": 700.0, "temperature": 25.0, "soil_moisture": 45.0},
+            "B": {"annual": 0.0, "monsoon_jjas": 0.0, "temperature": 24.0, "soil_moisture": 40.0},
         },
         hist_map={
             "A": [
@@ -1372,11 +1372,11 @@ async def test_simulation_service_builds_prediction_v2_response_and_caches(mock_
     )
     service.repo.get_state_rainfall_rows = AsyncMock(
         return_value=[
-            {"district": "A", "annual": 900.0, "jjas": 700.0},
-            {"district": "B", "annual": 910.0, "jjas": 705.0},
-            {"district": "C", "annual": 920.0, "jjas": 710.0},
-            {"district": "D", "annual": 930.0, "jjas": 715.0},
-            {"district": "E", "annual": 940.0, "jjas": 720.0},
+            {"district": "A", "annual": 900.0, "jjas": 700.0, "temperature_c": 25.0, "soil_moisture_index": 45.0},
+            {"district": "B", "annual": 910.0, "jjas": 705.0, "temperature_c": 25.0, "soil_moisture_index": 45.0},
+            {"district": "C", "annual": 920.0, "jjas": 710.0, "temperature_c": 25.0, "soil_moisture_index": 45.0},
+            {"district": "D", "annual": 930.0, "jjas": 715.0, "temperature_c": 25.0, "soil_moisture_index": 45.0},
+            {"district": "E", "annual": 940.0, "jjas": 720.0, "temperature_c": 25.0, "soil_moisture_index": 45.0},
         ]
     )
     service.repo.get_state_historical_yields = AsyncMock(
