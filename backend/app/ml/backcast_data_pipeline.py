@@ -78,7 +78,12 @@ class BackcastDataPipeline:
 
             # 3. Fetch Climate (placeholder for actual climate queries)
             # Currently falling back to safe defaults that the engine will recognize as missing
-            climate: dict[str, float] = {"annual_rainfall": 0.0, "monsoon_ratio": 0.0}
+            climate: dict[str, float] = {
+                "annual_rainfall": 0.0, 
+                "monsoon_ratio": 0.0, 
+                "temperature": 0.0, 
+                "soil_moisture": 0.0
+            }
 
             # 4. Area Ratio fallback
             # In a full implementation, this comes from DataApportioner or spatial_analytics.

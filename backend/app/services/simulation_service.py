@@ -111,6 +111,8 @@ class SimulationService:
             str(row["district"]).upper(): {
                 "annual": float(row["annual"] or 0),
                 "monsoon_jjas": float(row["jjas"] or 0),
+                "temperature": float(row["temperature_c"] or 0),
+                "soil_moisture": float(row["soil_moisture_index"] or 0),
             }
             for row in rain_rows
         }
@@ -207,6 +209,8 @@ class SimulationService:
                     "yield_value": district_yield,
                     "rainfall": rain_info["annual"],
                     "monsoon_jjas": rain_info["monsoon_jjas"],
+                    "temperature": rain_info["temperature"],
+                    "soil_moisture": rain_info["soil_moisture"],
                     "yield_trend": yield_trend,
                     "yield_cv": yield_cv,
                     "crop_area": area_map.get(district_name.upper(), 0.0),

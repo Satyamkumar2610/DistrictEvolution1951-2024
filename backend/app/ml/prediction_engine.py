@@ -164,6 +164,12 @@ class PredictionEngine:
         crop_area = np.array([d.get("crop_area", 0) for d in data], dtype=float)
         has_area = np.any(crop_area > 0)
 
+        temperature = np.array([d.get("temperature", 0) for d in data], dtype=float)
+        has_temp = np.any(temperature > 0)
+
+        soil_moisture = np.array([d.get("soil_moisture", 0) for d in data], dtype=float)
+        has_moisture = np.any(soil_moisture > 0)
+
         # Build feature matrix (only include features with actual data)
         feature_names = ["rainfall"]
         feature_keys = ["rainfall"]
@@ -199,6 +205,18 @@ class PredictionEngine:
             feature_keys.append("crop_area")
             feature_descriptions.append("Area under crop (hectares) — proxy for local agronomic suitability")
             raw_features.append(crop_area)
+
+        if has_temp:
+            feature_names.append("temperature")
+            feature_keys.append("temperature")
+            feature_descriptions.append("Annual average temperature (°C) — influences evapotranspiration and heat stress")
+            raw_features.append(temperature)
+
+        if has_moisture:
+            feature_names.append("soil_moisture")
+            feature_keys.append("soil_moisture")
+            feature_descriptions.append("Soil moisture index (0-100) — represents root-zone water availability")
+            raw_features.append(soil_moisture)
 
         p = len(raw_features)
         X_raw = np.column_stack(raw_features)  # (n, p)
@@ -480,5 +498,7 @@ class PredictionEngine:
             "yield_stability": "Yield Stability",
             "yield_cv": "Yield Variability",
             "crop_area": "Crop Area",
+            "temperature": "Mean Temperature",
+            "soil_moisture": "Soil Moisture Index",
         }
         return mapping.get(key, key.replace("_", " ").title())

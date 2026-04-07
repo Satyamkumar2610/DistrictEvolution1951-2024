@@ -41,13 +41,13 @@ class SimulationRepository(BaseRepository):
         """Get rainfall normals for a state."""
         if include_jjas:
             query = """
-                SELECT district, annual, jjas
+                SELECT district, annual, jjas, temperature_c, soil_moisture_index
                 FROM rainfall_normals
                 WHERE UPPER(state_ut) = UPPER($1)
             """
         else:
             query = """
-                SELECT district, annual
+                SELECT district, annual, temperature_c, soil_moisture_index
                 FROM rainfall_normals
                 WHERE UPPER(state_ut) = UPPER($1)
             """
