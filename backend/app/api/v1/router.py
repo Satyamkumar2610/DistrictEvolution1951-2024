@@ -12,7 +12,6 @@ from app.api.v1 import (
     health,
     lineage,
     lineage_reconstructor,
-    market,
     metrics,
     quality,
     reports,
@@ -50,6 +49,3 @@ api_router.include_router(states.router)  # self-prefixed /states
 api_router.include_router(search.router)  # self-prefixed /search
 api_router.include_router(reports.router)  # self-prefixed /reports
 api_router.include_router(lineage_reconstructor.router, prefix="/reconstruct", tags=["Lineage"])
-
-# --- Market Data (Scraped) ---
-api_router.include_router(market.router, prefix="/market", tags=["Market"])
