@@ -1,11 +1,6 @@
 {
-  "css.lint.unknownAtRules": "ignore",
-  "python.analysis.extraPaths": ["./backend", "./db_export"],
-  "python.defaultInterpreterPath": "./backend/venv/bin/python",
-  "python.analysis.typeCheckingMode": "off",
-  "python.analysis.diagnosticSeverityOverrides": {
-    "reportMissingImports": "none",
-    "reportMissingModuleSource": "none",
-    "reportGeneralTypeIssues": "none"
-  }
+  "python.defaultInterpreterPath": "${workspaceFolder}/backend/venv/bin/python",
+  "python.analysis.extraPaths": [
+    "${workspaceFolder}/backend"
+  ]
 }
