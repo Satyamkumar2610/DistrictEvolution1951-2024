@@ -6,7 +6,19 @@
 
 ## Overview
 
-I-ASCAP is a research-grade geospatial platform designed to visualize and analyze the evolution of Indian agriculture at the district level from 1966 to 2024. It solves the "Modifiable Areal Unit Problem" (MAUP) through a lineage-aware harmonization engine that tracks district splits and merges over 60 years.
+I-ASCAP is a research-grade geospatial platform designed to visualize and analyze the evolution of Indian agriculture at the district level. It solves the "Modifiable Areal Unit Problem" (MAUP) through a lineage-aware harmonization engine that tracks district splits and merges over 60 years.
+
+## Data Coverage
+
+| Source         | Years         | Metrics                        |
+|----------------|---------------|--------------------------------|
+| ICRISAT VDSA   | 1966 – 2017   | Crop area, yield, production   |
+| Census of India| 1971, 81, 91, 2001, 2011 | Population, land use |
+
+Coverage is uneven before 1980. Districts created after 1966 have
+historical values estimated via area-weighted apportionment from
+parent units. All estimates are tagged with a confidence score
+visible in the district panel and the AI analyst responses.
 
 ## Key Features
 

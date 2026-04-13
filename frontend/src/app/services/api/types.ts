@@ -219,6 +219,7 @@ export interface DistrictMetric {
     value: number;
     metric: string;
     method: string;
+    confidence?: number;
     feature_id?: string;
     geo_key?: string;
 }

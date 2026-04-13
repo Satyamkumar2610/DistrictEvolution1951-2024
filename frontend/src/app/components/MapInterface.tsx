@@ -87,15 +87,32 @@ export default function MapInterface({ year, crop = 'wheat', metric = 'yield', s
         // Construct Match Expression
         const matchExpr: StyleExpression = ['match', buildFeatureKeyExpression()];
 
+        // Confidence-based opacity: direct measurements get full opacity,
+        // harmonized values get reduced opacity based on confidence
+        const opacityExpr: StyleExpression = ['match', buildFeatureKeyExpression()];
+
         // Use different color schemes based on layer mode
         const colorFn = showRainfallLayer ? getRainfallColor : getAgriColor;
 
         Object.entries(joinedData).forEach(([geoKey, d]) => {
             matchExpr.push(geoKey);
             matchExpr.push(colorFn(d.value, minVal, maxVal));
+
+            // Uncertainty shading: reduce opacity for harmonized/low-confidence data
+            opacityExpr.push(geoKey);
+            if (!d.method || d.method === 'Raw') {
+                opacityExpr.push(0.85); // Direct measurement
+            } else if (d.confidence !== undefined && d.confidence >= 0.8) {
+                opacityExpr.push(0.70); // High-confidence harmonized
+            } else if (d.confidence !== undefined && d.confidence >= 0.5) {
+                opacityExpr.push(0.50); // Medium-confidence harmonized
+            } else {
+                opacityExpr.push(0.30); // Low-confidence harmonized
+            }
         });
 
         matchExpr.push('#374151'); // Default color (gray-700)
+        opacityExpr.push(0.6); // Default opacity
 
         return {
             layerStyle: {
@@ -103,7 +120,7 @@ export default function MapInterface({ year, crop = 'wheat', metric = 'yield', s
                 type: 'fill',
                 paint: {
                     'fill-color': matchExpr,
-                    'fill-opacity': 0.7,
+                    'fill-opacity': opacityExpr,
                     'fill-outline-color': '#000000'
                 }
             } as LayerProps,
@@ -112,6 +129,7 @@ export default function MapInterface({ year, crop = 'wheat', metric = 'yield', s
         };
 
     }, [joinedData, loading, showRainfallLayer]);
+
 
     // Fly to selection
     useEffect(() => {

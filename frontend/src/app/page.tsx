@@ -102,7 +102,7 @@ const STATS = [
     { label: 'Districts', value: '928+', icon: Database },
     { label: 'Metrics', value: '1M+', icon: BarChart3 },
     { label: 'Boundary Changes', value: '399', icon: GitBranch },
-    { label: 'Years Covered', value: '1966–2024', icon: TrendingUp },
+    { label: 'Years Covered', value: '1966–2017', icon: TrendingUp },
 ];
 
 const colorMap: Record<string, { bg: string; border: string; text: string; badge: string; hover: string }> = {

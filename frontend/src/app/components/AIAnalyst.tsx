@@ -50,23 +50,59 @@ export default function AIAnalyst({ onClose }: { onClose?: () => void }) {
     setInput("");
     setLoading(true);
 
+    let accumulated = "";
+
     try {
-      const res = await fetch("/api/analyst", {
+      const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+      const res = await fetch(`${apiBase}/api/analyst`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          messages: updated.map((m) => ({
-            role: m.role,
-            content: m.content,
-          })),
-        }),
+        body: JSON.stringify({ query, context: {} }),
       });
 
-      const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.error || "Analyst request failed");
+        throw new Error(`HTTP ${res.status}`);
       }
-      setMessages([...updated, { role: "assistant", content: data.response }]);
+
+      const reader = res.body!.getReader();
+      const decoder = new TextDecoder();
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value);
+        const lines = chunk.split("\n");
+
+        for (const line of lines) {
+          if (!line.startsWith("data: ")) continue;
+          try {
+            const event = JSON.parse(line.slice(6));
+            if (event.type === "text") {
+              accumulated += event.delta;
+              setMessages([
+                ...updated,
+                { role: "assistant", content: accumulated },
+              ]);
+            } else if (event.type === "done") {
+              break;
+            } else if (event.type === "error") {
+              accumulated += `\n\n⚠️ ${event.message}`;
+              setMessages([
+                ...updated,
+                { role: "assistant", content: accumulated },
+              ]);
+            }
+          } catch {
+            // Skip malformed SSE lines
+          }
+        }
+      }
+
+      // Ensure final message is set
+      if (accumulated) {
+        setMessages([...updated, { role: "assistant", content: accumulated }]);
+      }
     } catch {
       setMessages([
         ...updated,
@@ -79,6 +115,41 @@ export default function AIAnalyst({ onClose }: { onClose?: () => void }) {
     } finally {
       setLoading(false);
     }
+  }
+
+  /** Render message content with inline estimate badges */
+  function renderContent(content: string) {
+    // Split on words that indicate harmonized/estimated data
+    const parts = content.split(/(\bestimate[ds]?\b|\bharmonized\b|\barea-weighted\b)/gi);
+    return parts.map((part, i) => {
+      const lower = part.toLowerCase();
+      if (
+        lower === "estimate" ||
+        lower === "estimated" ||
+        lower === "estimates" ||
+        lower === "harmonized" ||
+        lower === "area-weighted"
+      ) {
+        return (
+          <span
+            key={i}
+            style={{
+              background: "#FAEEDA",
+              color: "#633806",
+              padding: "1px 5px",
+              borderRadius: "4px",
+              fontSize: "11px",
+              fontWeight: 600,
+              marginLeft: "2px",
+              marginRight: "2px",
+            }}
+          >
+            {part}
+          </span>
+        );
+      }
+      return <span key={i}>{part}</span>;
+    });
   }
 
   return (
@@ -125,9 +196,13 @@ export default function AIAnalyst({ onClose }: { onClose?: () => void }) {
               {m.role === "user" ? "You" : "Analyst"}
             </div>
             <div className="analyst-msg-content">
-              {m.content.split("\n").map((line, j) => (
-                <p key={j}>{line}</p>
-              ))}
+              {m.role === "assistant"
+                ? m.content.split("\n").map((line, j) => (
+                    <p key={j}>{renderContent(line)}</p>
+                  ))
+                : m.content.split("\n").map((line, j) => (
+                    <p key={j}>{line}</p>
+                  ))}
             </div>
           </div>
         ))}
