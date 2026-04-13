@@ -25,9 +25,7 @@ from app.tools.metrics import query_metric
 
 router = APIRouter()
 
-DATABASE_URL = os.environ.get(
-    "DATABASE_URL", "postgresql://user:password@localhost:5432/i_ascap"
-)
+DATABASE_URL = os.environ.get("DATABASE_URL", "postgresql://user:password@localhost:5432/i_ascap")
 
 TOOL_HANDLERS = {
     "query_metric": query_metric,
@@ -83,9 +81,8 @@ async def analyst(req: AnalystRequest):
                 ) as s:
                     # Stream text deltas to the client
                     async for event in s:
-                        if event.type == "content_block_delta":
-                            if hasattr(event.delta, "text"):
-                                yield f"data: {json.dumps({'type': 'text', 'delta': event.delta.text})}\n\n"
+                        if event.type == "content_block_delta" and hasattr(event.delta, "text"):
+                            yield f"data: {json.dumps({'type': 'text', 'delta': event.delta.text})}\n\n"
 
                     msg = await s.get_final_message()
 
@@ -114,9 +111,7 @@ async def analyst(req: AnalystRequest):
                                     {
                                         "type": "tool_result",
                                         "tool_use_id": block.id,
-                                        "content": json.dumps(
-                                            {"error": f"Unknown tool: {block.name}"}
-                                        ),
+                                        "content": json.dumps({"error": f"Unknown tool: {block.name}"}),
                                     }
                                 )
                                 continue
@@ -125,15 +120,11 @@ async def analyst(req: AnalystRequest):
                                 result = await handler(conn, **block.input)
                                 # Serialize Pydantic models
                                 if isinstance(result, list):
-                                    content = json.dumps(
-                                        [r.model_dump() for r in result]
-                                    )
+                                    content = json.dumps([r.model_dump() for r in result])
                                 else:
                                     content = json.dumps(result.model_dump())
                             except Exception as e:
-                                content = json.dumps(
-                                    {"error": f"Tool execution failed: {str(e)}"}
-                                )
+                                content = json.dumps({"error": f"Tool execution failed: {str(e)}"})
 
                             tool_results.append(
                                 {

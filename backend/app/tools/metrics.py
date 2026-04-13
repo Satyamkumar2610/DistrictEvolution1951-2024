@@ -7,9 +7,8 @@ from the district_metrics table, including harmonization metadata.
 
 from __future__ import annotations
 
-from pydantic import BaseModel
-
 import asyncpg
+from pydantic import BaseModel
 
 
 class MetricRow(BaseModel):

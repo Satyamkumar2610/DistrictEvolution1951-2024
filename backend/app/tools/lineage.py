@@ -8,9 +8,8 @@ area weights, and confidence scores.
 
 from __future__ import annotations
 
-from pydantic import BaseModel
-
 import asyncpg
+from pydantic import BaseModel
 
 
 class TransitionEvent(BaseModel):

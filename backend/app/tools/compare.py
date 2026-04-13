@@ -7,9 +7,8 @@ with harmonization disclosure for each data point.
 
 from __future__ import annotations
 
-from pydantic import BaseModel
-
 import asyncpg
+from pydantic import BaseModel
 
 
 class ComparisonRow(BaseModel):
@@ -47,9 +46,7 @@ async def compare_metrics(
     # Build placeholders for the IN clauses
     unit_placeholders = ", ".join(f"${i + 1}" for i in range(len(unit_ids)))
     year_offset = len(unit_ids) + 1
-    year_placeholders = ", ".join(
-        f"${year_offset + i}" for i in range(len(years))
-    )
+    year_placeholders = ", ".join(f"${year_offset + i}" for i in range(len(years)))
     metric_param = f"${year_offset + len(years)}"
 
     query = f"""
