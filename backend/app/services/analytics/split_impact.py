@@ -183,4 +183,3 @@ class SplitImpactService(BaseAnalyticsService):
             },
             "divergence_scores": divergence_scores,
         }
-

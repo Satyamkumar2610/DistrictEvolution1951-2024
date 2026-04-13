@@ -209,7 +209,9 @@ class PredictionEngine:
         if has_temp:
             feature_names.append("temperature")
             feature_keys.append("temperature")
-            feature_descriptions.append("Annual average temperature (°C) — influences evapotranspiration and heat stress")
+            feature_descriptions.append(
+                "Annual average temperature (°C) — influences evapotranspiration and heat stress"
+            )
             raw_features.append(temperature)
 
         if has_moisture:

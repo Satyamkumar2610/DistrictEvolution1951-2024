@@ -25,10 +25,7 @@ TOOL_SCHEMAS = [
                 },
                 "metric": {
                     "type": "string",
-                    "description": (
-                        "Metric name, e.g. 'wheat_yield_kg_ha', 'rice_area_ha', "
-                        "'wheat_production_tonnes'"
-                    ),
+                    "description": ("Metric name, e.g. 'wheat_yield_kg_ha', 'rice_area_ha', 'wheat_production_tonnes'"),
                 },
                 "year_start": {"type": "integer"},
                 "year_end": {"type": "integer"},
