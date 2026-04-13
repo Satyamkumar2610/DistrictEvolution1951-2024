@@ -280,6 +280,11 @@ async def get_system_stats(request: Request):
 # -----------------------------------------------------------------------------
 app.include_router(api_router, prefix="/api/v1")
 
+# AI Analyst SSE endpoint (Phase 3)
+from app.routes.analyst import router as analyst_router  # type: ignore[import]
+
+app.include_router(analyst_router)
+
 
 # -----------------------------------------------------------------------------
 # Exception Handlers
