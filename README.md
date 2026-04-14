@@ -1,4 +1,4 @@
-# I-ASCAP: Indian Agri-Spatial Comparative Analytics Platform
+# I-ASCAP: Indian Agri-Spatial Comparative Analytics Platform (v1.0)
 
 [![CI](https://github.com/Satyamkumar2610/I-ASCAP/actions/workflows/ci.yml/badge.svg)](https://github.com/Satyamkumar2610/I-ASCAP/actions/workflows/ci.yml)
 [![Deploy Status](https://img.shields.io/badge/Deployment-Live-success)](https://i-ascap.onrender.com)
