@@ -1,23 +1,24 @@
 {
-  "venvPath": "./backend",
+  "venvPath": "backend",
   "venv": "venv",
   "pythonVersion": "3.13",
   "typeCheckingMode": "basic",
   "extraPaths": [
-    "./backend",
-    "./db_export"
+    "./backend"
   ],
   "executionEnvironments": [
     {
       "root": "backend",
-      "extraPaths": ["."]
+      "extraPaths": [
+        "."
+      ]
     },
     {
       "root": "scripts",
-      "extraPaths": ["../backend"]
-    },
-    {
-      "root": "db_export"
+      "extraPaths": [
+        "../backend"
+      ]
     }
   ]
 }
+
