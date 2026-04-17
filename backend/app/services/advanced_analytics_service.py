@@ -192,8 +192,18 @@ class AdvancedAnalyticsFacade:
         year: int,
     ) -> AnalyticsSummaryResponse:
         diversification = await self.analytics.get_crop_diversification(cdk, year)
-        rice_trend = await self.analytics.get_yield_trend(cdk, "rice", year - 10, year)
-        wheat_trend = await self.analytics.get_yield_trend(cdk, "wheat", year - 10, year)
+        
+        # Dynamic crop trends based on top area shares
+        top_crops = await self.analytics.get_top_crops(cdk, year, limit=2)
+        crop_trends = {}
+        
+        for crop in top_crops:
+            trend = await self.analytics.get_yield_trend(cdk, crop, year - 10, year)
+            if trend:
+                crop_trends[crop] = AnalyticsSummaryTrend(
+                    cagr=trend.cagr,
+                    trend=trend.trend,
+                )
 
         return AnalyticsSummaryResponse(
             cdk=cdk,
@@ -207,24 +217,7 @@ class AdvancedAnalyticsFacade:
                 if diversification
                 else None
             ),
-            trends=AnalyticsSummaryTrends(
-                rice=(
-                    AnalyticsSummaryTrend(
-                        cagr=rice_trend.cagr,
-                        trend=rice_trend.trend,
-                    )
-                    if rice_trend
-                    else None
-                ),
-                wheat=(
-                    AnalyticsSummaryTrend(
-                        cagr=wheat_trend.cagr,
-                        trend=wheat_trend.trend,
-                    )
-                    if wheat_trend
-                    else None
-                ),
-            ),
+            trends=AnalyticsSummaryTrends(crops=crop_trends),
             data_source="Hybrid (ICRISAT 1966-1997 + DES 1998-2021)",
         )
 

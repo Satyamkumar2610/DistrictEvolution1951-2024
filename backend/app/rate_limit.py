@@ -74,6 +74,7 @@ class RateLimiter:
                     "X-RateLimit-Limit": str(settings.rate_limit_per_minute),
                     "X-RateLimit-Remaining": str(int(tokens)),
                     "X-RateLimit-Reset": str(int(now + (self.burst_size - tokens) / self.rate)),
+                    "X-RateLimit-Burst": str(self.burst_size),
                 }
             else:
                 self._blocked_requests += 1
@@ -83,6 +84,7 @@ class RateLimiter:
                     "X-RateLimit-Limit": str(settings.rate_limit_per_minute),
                     "X-RateLimit-Remaining": "0",
                     "X-RateLimit-Reset": str(int(now + retry_after)),
+                    "X-RateLimit-Burst": str(self.burst_size),
                     "Retry-After": str(retry_after),
                 }
 
@@ -149,7 +151,9 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         allowed, headers = await rate_limiter.is_allowed(client_ip)
 
         if not allowed:
-            logger.warning(f"Rate limit exceeded for {client_ip}")
+            logger.warning(
+                f"Rate limit exceeded: {client_ip} | Path: {request.url.path} | Method: {request.method}"
+            )
             return JSONResponse(
                 status_code=429,
                 content={
@@ -167,6 +171,9 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         response = await call_next(request)
         for key, value in headers.items():
             response.headers[key] = value
+
+        # Add client IP for debugging/transparency
+        response.headers["X-Client-IP"] = client_ip
 
         return response
 

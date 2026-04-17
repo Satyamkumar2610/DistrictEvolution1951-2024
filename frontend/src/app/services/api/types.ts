@@ -246,9 +246,27 @@ export interface HistoryItem {
     [key: string]: number;
 }
 
+export interface AnalyticsSummaryTrend {
+    cagr: number | null;
+    trend: string | null;
+}
+
+export interface AnalyticsSummaryTrends {
+    crops: Record<string, AnalyticsSummaryTrend>;
+}
+
+export interface AnalyticsSummaryDiversification {
+    index: number | null;
+    num_crops: number;
+    dominant_crop: string | null;
+}
+
 export interface AnalyticsSummary {
-    summary: string;
-    stats: Record<string, number>;
+    cdk: string;
+    year: number;
+    diversification: AnalyticsSummaryDiversification | null;
+    trends: AnalyticsSummaryTrends;
+    data_source: string;
 }
 
 export interface CropShiftTimelinePoint {

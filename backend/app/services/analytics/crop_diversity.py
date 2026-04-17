@@ -83,6 +83,31 @@ class CropDiversityService(BaseAnalyticsService):
             breakdown=breakdown,
         )
 
+    @cached(ttl=CacheTTL.ANALYSIS, prefix="top_crops")
+    async def get_top_crops(self, cdk: str, year: int, limit: int = 2) -> list[str]:
+        """
+        Get the most prominent crops for a district-year by area.
+        """
+        rows = await self._fetch(
+            """
+            SELECT
+                SPLIT_PART(variable_name, '_', 1) as crop
+            FROM agri_metrics
+            WHERE district_lgd::text = $1
+              AND year = $2
+              AND variable_name LIKE '%_area%'
+              AND variable_name NOT LIKE '%_kharif%'
+              AND variable_name NOT LIKE '%_rabi%'
+              AND value > 0
+            ORDER BY value DESC
+            LIMIT $3
+        """,
+            cdk,
+            year,
+            limit,
+        )
+        return [r["crop"] for r in rows]
+
     @cached(ttl=CacheTTL.ANALYSIS, prefix="crop_shift")
     async def get_crop_shift(
         self,

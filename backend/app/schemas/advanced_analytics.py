@@ -134,8 +134,7 @@ class AnalyticsSummaryTrend(BaseModel):
 
 
 class AnalyticsSummaryTrends(BaseModel):
-    rice: AnalyticsSummaryTrend | None = None
-    wheat: AnalyticsSummaryTrend | None = None
+    crops: dict[str, AnalyticsSummaryTrend] = Field(default_factory=dict)
 
 
 class AnalyticsSummaryResponse(BaseModel):
