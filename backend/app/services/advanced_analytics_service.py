@@ -192,11 +192,11 @@ class AdvancedAnalyticsFacade:
         year: int,
     ) -> AnalyticsSummaryResponse:
         diversification = await self.analytics.get_crop_diversification(cdk, year)
-        
+
         # Dynamic crop trends based on top area shares
         top_crops = await self.analytics.get_top_crops(cdk, year, limit=2)
         crop_trends = {}
-        
+
         for crop in top_crops:
             trend = await self.analytics.get_yield_trend(cdk, crop, year - 10, year)
             if trend:

@@ -20,6 +20,8 @@ interface ComparisonData {
     risk: RiskData | null;
 }
 
+const COLORS = ['#6366f1', '#10b981', '#f59e0b', '#ef4444'];
+
 function CompareContent() {
     const searchParams = useSearchParams();
     const initialCdks = useMemo(() => {
@@ -87,8 +89,6 @@ function CompareContent() {
         setSelectedCdks(prev => prev.filter(c => c !== cdk));
     };
 
-    const colors = ['#6366f1', '#10b981', '#f59e0b', '#ef4444'];
-
     // Radar chart
     const radarOption = useMemo(() => {
         if (data.length === 0) return null;
@@ -130,13 +130,13 @@ function CompareContent() {
                             Math.round(Math.min(100, Math.max(0, 50 + (hist - 1) * 200))),
                         ],
                         name: d.cdk,
-                        itemStyle: { color: colors[i % colors.length] },
-                        areaStyle: { color: colors[i % colors.length], opacity: 0.2 },
+                        itemStyle: { color: COLORS[i % COLORS.length] },
+                        areaStyle: { color: COLORS[i % COLORS.length], opacity: 0.2 },
                     };
                 }),
             }],
         };
-    }, [data, colors]);
+    }, [data]);
 
     return (
         <main className="page-container">
@@ -218,9 +218,9 @@ function CompareContent() {
                                 key={cdk}
                                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium border"
                                 style={{
-                                    backgroundColor: colors[i % colors.length] + '10',
-                                    borderColor: colors[i % colors.length] + '40',
-                                    color: colors[i % colors.length],
+                                    backgroundColor: COLORS[i % COLORS.length] + '10',
+                                    borderColor: COLORS[i % COLORS.length] + '40',
+                                    color: COLORS[i % COLORS.length],
                                 }}
                             >
                                 {cdk}
@@ -268,16 +268,16 @@ function CompareContent() {
                                 <div
                                     key={item.cdk}
                                     className="bg-white border border-slate-200 shadow-sm rounded-xl p-5 relative overflow-hidden"
-                                    style={{ borderColor: colors[idx % colors.length] + '40' }}
+                                    style={{ borderColor: COLORS[idx % COLORS.length] + '40' }}
                                 >
-                                    <div className="absolute top-0 left-0 w-full h-1" style={{ backgroundColor: colors[idx % colors.length] }} />
+                                    <div className="absolute top-0 left-0 w-full h-1" style={{ backgroundColor: COLORS[idx % COLORS.length] }} />
 
                                     <div className="flex justify-between items-start mb-4">
                                         <div>
                                             <h2 className="text-lg font-bold text-slate-900">{item.cdk}</h2>
                                             <div className="text-xs text-slate-500">{item.year} • <span className="capitalize">{item.crop}</span></div>
                                         </div>
-                                        <div className="text-2xl font-bold" style={{ color: colors[idx % colors.length] }}>
+                                        <div className="text-2xl font-bold" style={{ color: COLORS[idx % COLORS.length] }}>
                                             {String.fromCharCode(65 + idx)}
                                         </div>
                                     </div>
@@ -356,7 +356,7 @@ function CompareContent() {
                                     <tr>
                                         <th className="px-6 py-3">Metric</th>
                                         {data.map((d, i) => (
-                                            <th key={i} className="px-6 py-3" style={{ color: colors[i % colors.length] }}>
+                                            <th key={i} className="px-6 py-3" style={{ color: COLORS[i % COLORS.length] }}>
                                                 {d.cdk}
                                             </th>
                                         ))}

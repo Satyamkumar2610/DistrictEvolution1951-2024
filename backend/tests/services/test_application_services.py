@@ -1086,9 +1086,10 @@ async def test_advanced_analytics_builds_summary_response(mock_db):
             dominant_crop="rice",
         )
     )
+    service.analytics.get_top_crops = AsyncMock(return_value=["rice", "wheat"])
     service.analytics.get_yield_trend = AsyncMock(
         side_effect=[
-            SimpleNamespace(cagr=2.4, trend="increasing"),
+            SimpleNamespace(cagr=2.4, trend="increasing", crop="rice", start_year=2010, end_year=2020, start_yield=1000, end_yield=1200, volatility=5.0),
             None,
         ]
     )
@@ -1097,9 +1098,9 @@ async def test_advanced_analytics_builds_summary_response(mock_db):
 
     assert response.diversification is not None
     assert response.diversification.num_crops == 4
-    assert response.trends.rice is not None
-    assert response.trends.rice.cagr == 2.4
-    assert response.trends.wheat is None
+    assert response.trends.crops.get("rice") is not None
+    assert response.trends.crops["rice"].cagr == 2.4
+    assert response.trends.crops.get("wheat") is None
 
 
 @pytest.mark.asyncio

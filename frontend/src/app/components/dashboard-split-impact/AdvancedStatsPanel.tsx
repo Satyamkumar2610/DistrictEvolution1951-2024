@@ -14,7 +14,7 @@ interface AdvancedStatsPanelProps {
     metric: string;
 }
 
-export function AdvancedStatsPanel({ stats, metric: _metric }: AdvancedStatsPanelProps) {
+export function AdvancedStatsPanel({ stats }: AdvancedStatsPanelProps) {
     if (!stats) return null;
 
     // unit variable removed as it was unused (stats cards have hardcoded formatting for now)

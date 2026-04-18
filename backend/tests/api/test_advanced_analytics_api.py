@@ -191,8 +191,10 @@ async def test_yoy_growth_and_summary_endpoints(client):
             "dominant_crop": "rice",
         },
         "trends": {
-            "rice": {"cagr": 1.5, "trend": "increasing"},
-            "wheat": {"cagr": 0.5, "trend": "stable"},
+            "crops": {
+                "rice": {"cagr": 1.5, "trend": "increasing"},
+                "wheat": {"cagr": 0.5, "trend": "stable"},
+            }
         },
         "data_source": "Hybrid (ICRISAT 1966-1997 + DES 1998-2021)",
     }
@@ -207,7 +209,7 @@ async def test_yoy_growth_and_summary_endpoints(client):
         assert yoy_response.json()["summary"]["positive_growth_years"] == 1
         assert summary_response.status_code == 200
         assert summary_response.json()["diversification"]["dominant_crop"] == "rice"
-        assert summary_response.json()["trends"]["rice"]["trend"] == "increasing"
+        assert summary_response.json()["trends"]["crops"]["rice"]["trend"] == "increasing"
     finally:
         del client._transport.app.dependency_overrides[get_db]
 
