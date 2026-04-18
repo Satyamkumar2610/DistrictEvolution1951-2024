@@ -1,6 +1,6 @@
 {
-  "venvPath": "backend",
-  "venv": "venv",
+  "venvPath": ".",
+  "venv": "backend/venv",
   "pythonVersion": "3.13",
   "typeCheckingMode": "basic",
   "extraPaths": [
@@ -10,13 +10,13 @@
     {
       "root": "backend",
       "extraPaths": [
-        "."
+        "./backend"
       ]
     },
     {
       "root": "scripts",
       "extraPaths": [
-        "../backend"
+        "./backend"
       ]
     }
   ]
