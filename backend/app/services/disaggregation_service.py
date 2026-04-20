@@ -24,8 +24,8 @@ from app.schemas.disaggregation import (
     SplitEventWeight,
 )
 from app.services.disaggregation_artifacts import (
-    DEFAULT_PANEL_PATH,
     DEFAULT_PACKET_PATH,
+    DEFAULT_PANEL_PATH,
     DEFAULT_WEIGHT_PATH,
     load_packets,
     load_panel_index,
