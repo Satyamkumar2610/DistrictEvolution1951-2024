@@ -2,6 +2,7 @@ import { fetcher, ApiError } from './client';
 import { analyticsApi } from './analytics';
 import { metricsApi } from './metrics';
 import { lineageApi } from './lineage';
+import { intelligenceApi } from './intelligence';
 import { 
     SimulationResult, PredictionV2Result, SearchResult, HighRiskResult, RainfallData, DistrictReport, DistrictAnomaliesData, StateAnomaliesData, YieldForecastResult, CropRecommendationsResult
 } from './types';
@@ -15,6 +16,7 @@ export const api = {
     ...analyticsApi,
     ...metricsApi,
     ...lineageApi,
+    ...intelligenceApi,
 
     // --- Search ---
     getDistrictsByState: (state: string) =>

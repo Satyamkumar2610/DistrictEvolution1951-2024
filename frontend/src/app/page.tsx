@@ -5,7 +5,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import {
     Map, GitBranch, Wheat, Layers, Droplet, Network, Target, Shield,
-    ArrowRight, BarChart3, Database, Globe2, TrendingUp
+    ArrowRight, BarChart3, Database, Globe2, TrendingUp,
+    CloudLightning, FlaskConical, ShieldCheck, CheckCircle2
 } from 'lucide-react';
 
 const FEATURE_SECTIONS = [
@@ -96,6 +97,37 @@ const FEATURE_SECTIONS = [
             },
         ],
     },
+    {
+        title: "Intelligence",
+        description: "Phase 2-3 advanced models — frontier analysis, climate attribution, and model validation",
+        color: "amber",
+        items: [
+            {
+                href: '/analytics/climate-shocks',
+                icon: CloudLightning,
+                title: 'Climate Shock Atlas',
+                description: 'Auto-attribute yield drops to drought, flood, heat/cold waves with confidence scores',
+            },
+            {
+                href: '/analytics/yield-frontier',
+                icon: FlaskConical,
+                title: 'Yield Frontier (SFA)',
+                description: 'Stochastic Frontier Analysis for true production potential and technical efficiency',
+            },
+            {
+                href: '/analytics/resilience-composite',
+                icon: ShieldCheck,
+                title: 'Resilience Composite',
+                description: '8-variable PCA composite resilience score with A-F grading per district',
+            },
+            {
+                href: '/analytics/forecast-validation',
+                icon: CheckCircle2,
+                title: 'Forecast Backtesting',
+                description: 'Walk-forward validation with RMSE, MAPE, coverage, and trustworthiness grade',
+            },
+        ],
+    },
 ];
 
 const STATS = [
@@ -117,6 +149,10 @@ const colorMap: Record<string, { bg: string; border: string; text: string; badge
     violet: {
         bg: 'bg-violet-50/50', border: 'border-violet-200', text: 'text-violet-700',
         badge: 'bg-violet-100 text-violet-700', hover: 'hover:border-violet-300 hover:shadow-violet-100/50',
+    },
+    amber: {
+        bg: 'bg-amber-50/50', border: 'border-amber-200', text: 'text-amber-700',
+        badge: 'bg-amber-100 text-amber-700', hover: 'hover:border-amber-300 hover:shadow-amber-100/50',
     },
 };
 
