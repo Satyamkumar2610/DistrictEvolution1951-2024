@@ -4,7 +4,7 @@ Metric Schemas: Domain-agnostic observation data.
 
 from enum import StrEnum
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 
 class MetricDomain(StrEnum):
@@ -26,7 +26,18 @@ class MetricPoint(BaseModel):
     unit: str | None = Field(default=None, description="Measurement unit")
     source: str | None = Field(default=None, description="Dataset source")
     method: str | None = Field(default=None, description="Harmonization method if derived")
+    data_quality: str | None = Field(default=None, description="Data quality classification: measured, imputed, harmonized")
 
+    @model_validator(mode='after')
+    def compute_data_quality(self) -> 'MetricPoint':
+        if self.data_quality is None:
+            if not self.method or self.method == "Raw" or self.method.lower() == "measured" or self.method == "None":
+                self.data_quality = "measured"
+            elif any(x in self.method.lower() for x in ["predict", "fallback", "extrapolat", "impute", "estimate", "interp"]):
+                self.data_quality = "imputed"
+            else:
+                self.data_quality = "harmonized"
+        return self
 
 class MetricTimeSeries(BaseModel):
     """Time series for a single district and variable."""
@@ -65,3 +76,15 @@ class AggregatedMetric(BaseModel):
     method: str | None = Field(None, description="Backcast or Raw")
     feature_id: str | None = Field(None, description="Stable map feature identifier resolved by the backend")
     geo_key: str | None = Field(None, description="Deprecated alias for the resolved map feature identifier")
+    data_quality: str | None = Field(default=None, description="Data quality classification: measured, imputed, harmonized")
+
+    @model_validator(mode='after')
+    def compute_data_quality(self) -> 'AggregatedMetric':
+        if self.data_quality is None:
+            if not self.method or self.method == "Raw" or self.method.lower() == "measured" or self.method == "None":
+                self.data_quality = "measured"
+            elif any(x in self.method.lower() for x in ["predict", "fallback", "extrapolat", "impute", "estimate", "interp"]):
+                self.data_quality = "imputed"
+            else:
+                self.data_quality = "harmonized"
+        return self
