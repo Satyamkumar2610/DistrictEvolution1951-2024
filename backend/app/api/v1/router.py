@@ -11,6 +11,7 @@ from app.api.v1 import (
     districts,
     forecast,
     health,
+    intelligence,
     lineage,
     lineage_reconstructor,
     metrics,
@@ -45,6 +46,7 @@ api_router.include_router(spatial.router)  # self-prefixed /spatial
 api_router.include_router(splits.router)  # self-prefixed /spatial (split analyzer)
 api_router.include_router(forecast.router)  # self-prefixed /forecast
 api_router.include_router(anomalies.router)  # self-prefixed /anomalies
+api_router.include_router(intelligence.router)  # self-prefixed /intelligence (Phase 2-3)
 
 # --- Discovery & Reports ---
 api_router.include_router(states.router)  # self-prefixed /states
