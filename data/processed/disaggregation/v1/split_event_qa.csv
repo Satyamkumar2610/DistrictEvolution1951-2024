@@ -1,0 +1,786 @@
+event_id,issue_code,severity,message
+WB_24parg_1961:1971,duplicate_row,medium,Duplicate lineage row for WB_south2_1971
+WB_barddh_1951:1981,cycle_rejected,high,Parent and child are identical (WB_barddh_1951)
+WB_barddh_1951:1981,duplicate_row,medium,Duplicate lineage row for WB_barddh_1951
+WB_barddh_1951:1981,duplicate_row,medium,Duplicate lineage row for WB_barddh_1951
+WB_kolkat_1951:2001,cycle_rejected,high,Parent and child are identical (WB_kolkat_1951)
+WB_kochbi_1971:1981,cycle_rejected,high,Parent and child are identical (WB_kochbi_1971)
+WB_darjil_1971:1981,cycle_rejected,high,Parent and child are identical (WB_darjil_1971)
+WB_darjil_1971:1981,duplicate_row,medium,Duplicate lineage row for WB_darjil_1971
+WB_haora_1971:1981,cycle_rejected,high,Parent and child are identical (WB_haora_1971)
+WB_medini_1951:2011,duplicate_row,medium,Duplicate lineage row for WB_paschi_2011
+WB_medini_1951:1981,cycle_rejected,high,Parent and child are identical (WB_medini_1951)
+WB_medini_1951:1981,duplicate_row,medium,Duplicate lineage row for WB_medini_1951
+WB_medini_1951:1981,duplicate_row,medium,Duplicate lineage row for WB_medini_1951
+WB_medini_1951:1961,cycle_rejected,high,Parent and child are identical (WB_medini_1951)
+WB_medini_1951:1961,duplicate_row,medium,Duplicate lineage row for WB_medini_1951
+WB_medini_1951:1961,duplicate_row,medium,Duplicate lineage row for WB_medini_1951
+WB_puruli_1971:1981,cycle_rejected,high,Parent and child are identical (WB_puruli_1971)
+WB_dakshi_1991:2001,cycle_rejected,high,Parent and child are identical (WB_dakshi_1991)
+UK_almora_1951:1961,duplicate_row,medium,Duplicate lineage row for UK_pithor_1961
+UK_dehrad_1991:2001,cycle_rejected,high,Parent and child are identical (UK_dehrad_1991)
+UK_garhwa_1951:1961,duplicate_row,medium,Duplicate lineage row for UK_chamol_1961
+UK_nainit_1971:1981,cycle_rejected,high,Parent and child are identical (UK_nainit_1971)
+UK_nainit_1971:1981,duplicate_row,medium,Duplicate lineage row for UK_nainit_1971
+UK_uttark_1961:1981,cycle_rejected,high,Parent and child are identical (UK_uttark_1961)
+UK_uttark_1961:2001,cycle_rejected,high,Parent and child are identical (UK_uttark_1961)
+UK_uttark_1961:1991,cycle_rejected,high,Parent and child are identical (UK_uttark_1961)
+UP_varana_1951:1961,cycle_rejected,high,Parent and child are identical (UP_varana_1951)
+UP_varana_1951:1961,duplicate_row,medium,Duplicate lineage row for UP_varana_1951
+UP_varana_1951:1961,duplicate_row,medium,Duplicate lineage row for UP_varana_1951
+UP_baraba_1991:2001,cycle_rejected,high,Parent and child are identical (UP_baraba_1991)
+UP_baraba_1991:2011,cycle_rejected,high,Parent and child are identical (UP_baraba_1991)
+UP_buland_1971:1981,duplicate_row,medium,Duplicate lineage row for UP_ghazia_1981
+UP_etawah_1991:2001,cycle_rejected,high,Parent and child are identical (UP_etawah_1991)
+UP_etawah_1991:2011,cycle_rejected,high,Parent and child are identical (UP_etawah_1991)
+UP_ayodhy_1991:2024,cycle_rejected,high,Parent and child are identical (UP_ayodhy_1991)
+UP_hathra_2001:2011,cycle_rejected,high,Parent and child are identical (UP_hathra_2001)
+UP_amroha_2001:2024,cycle_rejected,high,Parent and child are identical (UP_amroha_2001)
+UP_kanpur_1951:1991,cycle_rejected,high,Parent and child are identical (UP_kanpur_1951)
+UP_kanpur_1951:1991,duplicate_row,medium,Duplicate lineage row for UP_kanpur_1951
+UP_hathra_2001:2024,cycle_rejected,high,Parent and child are identical (UP_hathra_2001)
+UP_meerut_1951:1981,duplicate_row,medium,Duplicate lineage row for UP_ghazia_1981
+UP_bhadoh_2001:2011,cycle_rejected,high,Parent and child are identical (UP_bhadoh_2001)
+UP_bhadoh_2001:2024,cycle_rejected,high,Parent and child are identical (UP_bhadoh_2001)
+TR_tripur_1951:1971,duplicate_row,medium,Duplicate lineage row for TR_northt_1971
+TR_tripur_1951:1971,duplicate_row,medium,Duplicate lineage row for TR_southt_1971
+TR_tripur_1951:1971,duplicate_row,medium,Duplicate lineage row for TR_westtr_1971
+TR_tripur_1951:1971,duplicate_row,medium,Duplicate lineage row for TR_westtr_1971
+TR_tripur_1951:1971,duplicate_row,medium,Duplicate lineage row for TR_northt_1971
+TG_hydera_1971:1981,duplicate_row,medium,Duplicate lineage row for TG_rangar_1981
+TG_hydera_1971:1981,duplicate_row,medium,Duplicate lineage row for TG_rangar_1981
+TG_rangar_1981:2011,cycle_rejected,high,Parent and child are identical (TG_rangar_1981)
+TG_rangar_1981:2011,duplicate_row,medium,Duplicate lineage row for TG_rangar_1981
+TG_rangar_1981:2011,duplicate_row,medium,Duplicate lineage row for TG_rangar_1981
+TG_warang_1951:1961,duplicate_row,medium,Duplicate lineage row for TG_khamma_1961
+TG_warang_1951:1961,duplicate_row,medium,Duplicate lineage row for TG_khamma_1961
+TG_warang_1951:1961,duplicate_row,medium,Duplicate lineage row for TG_khamma_1961
+TG_warang_1951:2024,cycle_rejected,high,Parent and child are identical (TG_warang_1951)
+TG_warang_1951:2024,duplicate_row,medium,Duplicate lineage row for TG_warang_1951
+TN_chenga_1951:1991,cycle_rejected,high,Parent and child are identical (TN_chenga_1951)
+TN_chenga_1951:1991,duplicate_row,medium,Duplicate lineage row for TN_chenga_1951
+TN_chenga_1951:1991,duplicate_row,medium,Duplicate lineage row for TN_chenga_1951
+TN_chenga_1951:2001,cycle_rejected,high,Parent and child are identical (TN_chenga_1951)
+TN_chenga_1951:2001,duplicate_row,medium,Duplicate lineage row for TN_chenga_1951
+TN_chenga_1951:1971,cycle_rejected,high,Parent and child are identical (TN_chenga_1951)
+TN_chenga_1951:1971,duplicate_row,medium,Duplicate lineage row for TN_chenga_1951
+TN_chenga_1951:1971,duplicate_row,medium,Duplicate lineage row for TN_chenga_1951
+TN_coimba_1951:1981,duplicate_row,medium,Duplicate lineage row for TN_periya_1981
+TN_dindig_1991:2001,cycle_rejected,high,Parent and child are identical (TN_dindig_1991)
+TN_chenga_1951:2024,cycle_rejected,high,Parent and child are identical (TN_chenga_1951)
+TN_kanniy_1961:1971,cycle_rejected,high,Parent and child are identical (TN_kanniy_1961)
+TN_chenna_1991:2001,cycle_rejected,high,Parent and child are identical (TN_chenna_1991)
+TN_nilgir_1951:1971,cycle_rejected,high,Parent and child are identical (TN_nilgir_1951)
+TN_nilgir_1951:2001,cycle_rejected,high,Parent and child are identical (TN_nilgir_1951)
+TN_nilgir_1951:1961,cycle_rejected,high,Parent and child are identical (TN_nilgir_1951)
+TN_nilgir_1951:1981,cycle_rejected,high,Parent and child are identical (TN_nilgir_1951)
+TN_narcot_1981:1991,cycle_rejected,high,Parent and child are identical (TN_narcot_1981)
+TN_narcot_1981:1991,duplicate_row,medium,Duplicate lineage row for TN_narcot_1981
+TN_narcot_1981:1991,duplicate_row,medium,Duplicate lineage row for TN_narcot_1981
+TN_narcot_1981:2001,duplicate_row,medium,Duplicate lineage row for TN_vellor_2001
+TN_narcot_1981:2001,duplicate_row,medium,Duplicate lineage row for TN_vellor_2001
+TN_periya_1981:2001,duplicate_row,medium,Duplicate lineage row for TN_erode_2001
+TN_salem_1961:1971,duplicate_row,medium,Duplicate lineage row for TN_dharma_1971
+TN_cuddal_1991:2001,cycle_rejected,high,Parent and child are identical (TN_cuddal_1991)
+TN_cuddal_1991:2001,duplicate_row,medium,Duplicate lineage row for TN_vilupp_2001
+TN_thanja_1951:1961,cycle_rejected,high,Parent and child are identical (TN_thanja_1951)
+TN_thanja_1951:1961,duplicate_row,medium,Duplicate lineage row for TN_thanja_1951
+TN_thanja_1951:1961,duplicate_row,medium,Duplicate lineage row for TN_thanja_1951
+TN_thanja_1951:1961,duplicate_row,medium,Duplicate lineage row for TN_thanja_1951
+TN_thanja_1951:1961,duplicate_row,medium,Duplicate lineage row for TN_thanja_1951
+TN_thanja_1951:2001,duplicate_row,medium,Duplicate lineage row for TN_nagapa_2001
+TN_tiruch_1971:2001,duplicate_row,medium,Duplicate lineage row for TN_peramb_2001
+TN_tiruch_1971:2011,cycle_rejected,high,Parent and child are identical (TN_tiruch_1971)
+TN_tiruch_1971:1981,cycle_rejected,high,Parent and child are identical (TN_tiruch_1971)
+TN_tiruch_1971:1981,duplicate_row,medium,Duplicate lineage row for TN_tiruch_1971
+TN_tiruch_1971:1981,duplicate_row,medium,Duplicate lineage row for TN_tiruch_1971
+TN_tiruch_1971:1981,duplicate_row,medium,Duplicate lineage row for TN_tiruch_1971
+TN_tirune_1981:1991,cycle_rejected,high,Parent and child are identical (TN_tirune_1981)
+TN_tirune_1981:1991,duplicate_row,medium,Duplicate lineage row for TN_tirune_1981
+TN_tirune_1981:2001,cycle_rejected,high,Parent and child are identical (TN_tirune_1981)
+TN_tirune_1981:2001,duplicate_row,medium,Duplicate lineage row for TN_tirune_1981
+TN_tiruva_1991:2011,cycle_rejected,high,Parent and child are identical (TN_tiruva_1991)
+TN_tiruva_1991:2001,cycle_rejected,high,Parent and child are identical (TN_tiruva_1991)
+TN_thooth_2001:2011,cycle_rejected,high,Parent and child are identical (TN_thooth_2001)
+SK_eastdi_1981:2001,duplicate_row,medium,Duplicate lineage row for SK_east_2001
+SK_sikkim_1971:1981,duplicate_row,medium,Duplicate lineage row for SK_eastdi_1981
+SK_sikkim_1971:1981,duplicate_row,medium,Duplicate lineage row for SK_westdi_1981
+SK_westdi_1981:2001,duplicate_row,medium,Duplicate lineage row for SK_west_2001
+RJ_chitto_1951:1971,cycle_rejected,high,Parent and child are identical (RJ_chitto_1951)
+RJ_chitto_1951:1971,duplicate_row,medium,Duplicate lineage row for RJ_chitto_1951
+RJ_chitto_1951:1961,cycle_rejected,high,Parent and child are identical (RJ_chitto_1951)
+RJ_chitto_1951:1961,duplicate_row,medium,Duplicate lineage row for RJ_chitto_1951
+RJ_jalore_1951:1961,cycle_rejected,high,Parent and child are identical (RJ_jalore_1951)
+RJ_jhunjh_1961:1971,cycle_rejected,high,Parent and child are identical (RJ_jhunjh_1961)
+RJ_kotah_1951:1961,duplicate_row,medium,Duplicate lineage row for RJ_kota_1951
+RJ_sawaim_1951:1961,cycle_rejected,high,Parent and child are identical (RJ_sawaim_1951)
+RJ_sawaim_1951:1961,duplicate_row,medium,Duplicate lineage row for RJ_sawaim_1951
+PB_bhatin_1951:1981,duplicate_row,medium,Duplicate lineage row for PB_faridk_1981
+PB_bhatin_1951:1981,duplicate_row,medium,Duplicate lineage row for PB_faridk_1981
+PB_bhatin_1951:1981,cycle_rejected,high,Parent and child are identical (PB_bhatin_1951)
+PB_bhatin_1951:1981,duplicate_row,medium,Duplicate lineage row for PB_bhatin_1951
+PB_firozp_1951:1971,cycle_rejected,high,Parent and child are identical (PB_firozp_1951)
+PB_firozp_1951:1971,duplicate_row,medium,Duplicate lineage row for PB_firozp_1951
+PB_firozp_1951:1971,duplicate_row,medium,Duplicate lineage row for PB_firozp_1951
+PB_hoshia_1961:1971,duplicate_row,medium,Duplicate lineage row for PB_ropar_1971
+PB_jaland_1971:1981,cycle_rejected,high,Parent and child are identical (PB_jaland_1971)
+PB_jaland_1971:1981,duplicate_row,medium,Duplicate lineage row for PB_jaland_1971
+PB_srimuk_2001:2024,cycle_rejected,high,Parent and child are identical (PB_srimuk_2001)
+PB_shahid_2001:2011,cycle_rejected,high,Parent and child are identical (PB_shahid_2001)
+PB_shahid_2001:2011,duplicate_row,medium,Duplicate lineage row for PB_shahid_2001
+PB_ropar_1971:1981,duplicate_row,medium,Duplicate lineage row for PB_rupnag_1981
+PY_puduch_2001:2011,cycle_rejected,high,Parent and child are identical (PY_puduch_2001)
+OD_balaso_1971:1981,duplicate_row,medium,Duplicate lineage row for OD_balesh_1981
+OD_baudh_1951:1981,cycle_rejected,high,Parent and child are identical (OD_baudh_1951)
+OD_baudh_1951:1981,duplicate_row,medium,Duplicate lineage row for OD_baudh_1951
+OD_bolang_1971:1981,duplicate_row,medium,Duplicate lineage row for OD_balang_1981
+OD_baudh_1951:2001,cycle_rejected,high,Parent and child are identical (OD_baudh_1951)
+OD_baudh_1951:1961,cycle_rejected,high,Parent and child are identical (OD_baudh_1951)
+OD_baudh_1951:1961,duplicate_row,medium,Duplicate lineage row for OD_baudh_1951
+NL_kohima_1951:2001,duplicate_row,medium,Duplicate lineage row for NL_dimapu_2001
+NL_kohima_1951:2001,duplicate_row,medium,Duplicate lineage row for NL_dimapu_2001
+NL_kohima_1951:1961,cycle_rejected,high,Parent and child are identical (NL_kohima_1951)
+NL_kohima_1951:1961,duplicate_row,medium,Duplicate lineage row for NL_kohima_1951
+NL_kohima_1951:1961,duplicate_row,medium,Duplicate lineage row for NL_kohima_1951
+NL_kohima_1951:1961,duplicate_row,medium,Duplicate lineage row for NL_kohima_1951
+NL_kohima_1951:1961,duplicate_row,medium,Duplicate lineage row for NL_kohima_1951
+NL_kohima_1951:1961,duplicate_row,medium,Duplicate lineage row for NL_kohima_1951
+NL_kohima_1951:1961,duplicate_row,medium,Duplicate lineage row for NL_kohima_1951
+NL_tuensa_1951:1961,duplicate_row,medium,Duplicate lineage row for NL_mokokc_1961
+NL_tuensa_1951:1961,duplicate_row,medium,Duplicate lineage row for NL_mokokc_1961
+MZ_aizawl_1981:2001,duplicate_row,medium,Duplicate lineage row for MZ_champh_2001
+MZ_mizora_1951:1961,cycle_rejected,high,Parent and child are identical (MZ_mizora_1951)
+MZ_mizora_1951:1961,duplicate_row,medium,Duplicate lineage row for MZ_mizora_1951
+MZ_mizora_1951:1961,duplicate_row,medium,Duplicate lineage row for MZ_mizora_1951
+MZ_mizora_1951:1961,duplicate_row,medium,Duplicate lineage row for MZ_mizora_1951
+MZ_mizora_1951:1961,duplicate_row,medium,Duplicate lineage row for MZ_mizora_1951
+MZ_mizora_1951:1961,duplicate_row,medium,Duplicate lineage row for MZ_mizora_1951
+MZ_mizora_1951:1961,duplicate_row,medium,Duplicate lineage row for MZ_mizora_1951
+MZ_mizora_1951:1961,duplicate_row,medium,Duplicate lineage row for MZ_mizora_1951
+MZ_mizora_1951:1961,duplicate_row,medium,Duplicate lineage row for MZ_mizora_1951
+MZ_mizora_1951:1961,duplicate_row,medium,Duplicate lineage row for MZ_mizora_1951
+MZ_mizora_1951:1961,duplicate_row,medium,Duplicate lineage row for MZ_mizora_1951
+MZ_mizora_1951:1971,cycle_rejected,high,Parent and child are identical (MZ_mizora_1951)
+MZ_mizora_1951:1971,duplicate_row,medium,Duplicate lineage row for MZ_mizora_1951
+MZ_mizora_1951:1971,duplicate_row,medium,Duplicate lineage row for MZ_mizora_1951
+MZ_mizora_1951:1971,duplicate_row,medium,Duplicate lineage row for MZ_mizora_1951
+MZ_mizora_1951:1971,duplicate_row,medium,Duplicate lineage row for MZ_mizora_1951
+MZ_mizora_1951:1971,duplicate_row,medium,Duplicate lineage row for MZ_mizora_1951
+MZ_mizora_1951:1971,duplicate_row,medium,Duplicate lineage row for MZ_mizora_1951
+MZ_mizora_1951:1971,duplicate_row,medium,Duplicate lineage row for MZ_mizora_1951
+MZ_mizora_1951:1971,duplicate_row,medium,Duplicate lineage row for MZ_mizora_1951
+MZ_mizora_1951:1971,duplicate_row,medium,Duplicate lineage row for MZ_mizora_1951
+MZ_mizora_1951:1971,duplicate_row,medium,Duplicate lineage row for MZ_mizora_1951
+MZ_mizora_1951:1981,duplicate_row,medium,Duplicate lineage row for MZ_aizawl_1981
+MZ_mizora_1951:1981,duplicate_row,medium,Duplicate lineage row for MZ_aizawl_1981
+MZ_mizora_1951:1981,duplicate_row,medium,Duplicate lineage row for MZ_aizawl_1981
+MZ_mizora_1951:1981,duplicate_row,medium,Duplicate lineage row for MZ_aizawl_1981
+MZ_mizora_1951:1981,duplicate_row,medium,Duplicate lineage row for MZ_chhimt_1981
+MZ_mizora_1951:1981,duplicate_row,medium,Duplicate lineage row for MZ_aizawl_1981
+MZ_mizora_1951:1981,duplicate_row,medium,Duplicate lineage row for MZ_lungle_1981
+MZ_mizora_1951:1981,duplicate_row,medium,Duplicate lineage row for MZ_aizawl_1981
+ML_garohi_1971:1981,duplicate_row,medium,Duplicate lineage row for ML_westga_1981
+ML_garohi_1971:1981,duplicate_row,medium,Duplicate lineage row for ML_eastga_1981
+ML_ekhasi_1971:1981,duplicate_row,medium,Duplicate lineage row for ML_eastkh_1981
+ML_ekhasi_1971:1981,duplicate_row,medium,Duplicate lineage row for ML_jainti_1981
+ML_ekhasi_1971:1981,duplicate_row,medium,Duplicate lineage row for ML_jainti_1981
+ML_ekhasi_1971:1981,duplicate_row,medium,Duplicate lineage row for ML_westkh_1981
+ML_ekhasi_1971:1981,duplicate_row,medium,Duplicate lineage row for ML_westkh_1981
+MN_tengno_1951:2024,cycle_rejected,high,Parent and child are identical (MN_tengno_1951)
+MN_imphal_1991:2001,cycle_rejected,high,Parent and child are identical (MN_imphal_1991)
+MN_imphal_1991:2001,duplicate_row,medium,Duplicate lineage row for MN_imphal_1991
+MN_imphal_1991:2001,duplicate_row,medium,Duplicate lineage row for MN_imphal_1991
+MN_manipu_1951:1971,cycle_rejected,high,Parent and child are identical (MN_manipu_1951)
+MN_manipu_1951:1971,duplicate_row,medium,Duplicate lineage row for MN_manipu_1951
+MN_manipu_1951:1971,duplicate_row,medium,Duplicate lineage row for MN_manipu_1951
+MN_manipu_1951:1971,duplicate_row,medium,Duplicate lineage row for MN_manipu_1951
+MN_manipu_1951:1971,duplicate_row,medium,Duplicate lineage row for MN_manipu_1951
+MN_manipu_1951:1971,duplicate_row,medium,Duplicate lineage row for MN_manipu_1951
+MN_manipu_1951:1971,duplicate_row,medium,Duplicate lineage row for MN_manipu_1951
+MN_manipu_1951:1971,duplicate_row,medium,Duplicate lineage row for MN_manipu_1951
+MN_manipu_1951:1971,duplicate_row,medium,Duplicate lineage row for MN_manipu_1951
+MN_manipu_1951:1971,duplicate_row,medium,Duplicate lineage row for MN_manipu_1951
+MN_manipu_1951:1971,duplicate_row,medium,Duplicate lineage row for MN_manipu_1951
+MN_manipu_1951:1971,duplicate_row,medium,Duplicate lineage row for MN_manipu_1951
+MN_manipu_1951:1971,duplicate_row,medium,Duplicate lineage row for MN_manipu_1951
+MN_manipu_1951:1971,duplicate_row,medium,Duplicate lineage row for MN_manipu_1951
+MN_manipu_1951:1971,duplicate_row,medium,Duplicate lineage row for MN_manipu_1951
+MN_manipu_1951:1971,duplicate_row,medium,Duplicate lineage row for MN_manipu_1951
+MN_manipu_1951:1981,duplicate_row,medium,Duplicate lineage row for MN_tengno_1951
+MN_manipu_1951:1991,duplicate_row,medium,Duplicate lineage row for MN_imphal_1991
+MN_manipu_1951:1991,duplicate_row,medium,Duplicate lineage row for MN_imphal_1991
+MN_manipu_1951:1991,duplicate_row,medium,Duplicate lineage row for MN_thouba_1991
+MN_manipu_1951:1991,duplicate_row,medium,Duplicate lineage row for MN_ukhrul_1991
+MN_manipu_1951:1991,duplicate_row,medium,Duplicate lineage row for MN_senapa_1991
+MN_manipu_1951:1991,duplicate_row,medium,Duplicate lineage row for MN_churac_1991
+MN_manipu_1951:1991,duplicate_row,medium,Duplicate lineage row for MN_tameng_1991
+MN_tengno_1951:1991,cycle_rejected,high,Parent and child are identical (MN_tengno_1951)
+MN_tengno_1951:1991,duplicate_row,medium,Duplicate lineage row for MN_tengno_1951
+MH_ahmedn_1951:1971,cycle_rejected,high,Parent and child are identical (MH_ahmedn_1951)
+MH_ahmedn_1951:1961,cycle_rejected,high,Parent and child are identical (MH_ahmedn_1951)
+MH_ahmedn_1951:1981,cycle_rejected,high,Parent and child are identical (MH_ahmedn_1951)
+MH_buldan_1951:1961,cycle_rejected,high,Parent and child are identical (MH_buldan_1951)
+MH_buldan_1951:1981,cycle_rejected,high,Parent and child are identical (MH_buldan_1951)
+MH_chandr_1961:1971,cycle_rejected,high,Parent and child are identical (MH_chandr_1961)
+MH_chandr_1961:1971,duplicate_row,medium,Duplicate lineage row for MH_chandr_1961
+MH_dhule_1951:1981,cycle_rejected,high,Parent and child are identical (MH_dhule_1951)
+MH_dhule_1951:1981,duplicate_row,medium,Duplicate lineage row for MH_dhule_1951
+MH_jalgao_1951:1961,cycle_rejected,high,Parent and child are identical (MH_jalgao_1951)
+MH_greate_1991:2001,duplicate_row,medium,Duplicate lineage row for MH_mumbai_1951
+MH_mumbai_1951:2011,cycle_rejected,high,Parent and child are identical (MH_mumbai_1951)
+MH_dharas_1981:2024,cycle_rejected,high,Parent and child are identical (MH_dharas_1981)
+MH_pune_1951:1981,cycle_rejected,high,Parent and child are identical (MH_pune_1951)
+MH_satara_1951:1961,cycle_rejected,high,Parent and child are identical (MH_satara_1951)
+MH_thane_1971:1981,cycle_rejected,high,Parent and child are identical (MH_thane_1971)
+MH_thane_1971:1981,duplicate_row,medium,Duplicate lineage row for MH_thane_1971
+MH_dhule_1951:1961,cycle_rejected,high,Parent and child are identical (MH_dhule_1951)
+MH_dhule_1951:1961,duplicate_row,medium,Duplicate lineage row for MH_dhule_1951
+MP_khandw_1961:1971,cycle_rejected,high,Parent and child are identical (MP_khandw_1961)
+MP_khandw_1961:1971,duplicate_row,medium,Duplicate lineage row for MP_khandw_1961
+MP_khandw_1961:2011,cycle_rejected,high,Parent and child are identical (MP_khandw_1961)
+MP_goona_1951:1961,duplicate_row,medium,Duplicate lineage row for MP_guna_1961
+MP_narmad_1951:2024,cycle_rejected,high,Parent and child are identical (MP_narmad_1951)
+MP_khandw_1961:1981,cycle_rejected,high,Parent and child are identical (MP_khandw_1961)
+MP_khandw_1961:1981,duplicate_row,medium,Duplicate lineage row for MP_khandw_1961
+MP_khargo_1961:1981,cycle_rejected,high,Parent and child are identical (MP_khargo_1961)
+MP_khargo_1961:1981,duplicate_row,medium,Duplicate lineage row for MP_khargo_1961
+MP_nimar_1951:1961,duplicate_row,medium,Duplicate lineage row for MP_khargo_1961
+MP_nimar_1951:1961,duplicate_row,medium,Duplicate lineage row for MP_khandw_1961
+MP_khargo_1961:1971,cycle_rejected,high,Parent and child are identical (MP_khargo_1961)
+MP_khargo_1961:1971,duplicate_row,medium,Duplicate lineage row for MP_khargo_1961
+MP_khargo_1961:2011,cycle_rejected,high,Parent and child are identical (MP_khargo_1961)
+LD_laksha_1971:1981,cycle_rejected,high,Parent and child are identical (LD_laksha_1971)
+KL_alappu_1961:1991,cycle_rejected,high,Parent and child are identical (KL_alappu_1961)
+KL_kannur_1961:1991,cycle_rejected,high,Parent and child are identical (KL_kannur_1961)
+KL_kottay_1951:1981,duplicate_row,medium,Duplicate lineage row for KL_idukki_1981
+KL_malapp_1951:1961,duplicate_row,medium,Duplicate lineage row for KL_kannur_1961
+KL_malapp_1951:1961,duplicate_row,medium,Duplicate lineage row for KL_kannur_1961
+KL_malapp_1951:1961,duplicate_row,medium,Duplicate lineage row for KL_kozhik_1961
+KL_malapp_1951:1961,duplicate_row,medium,Duplicate lineage row for KL_kozhik_1961
+KL_malapp_1951:1961,duplicate_row,medium,Duplicate lineage row for KL_palgha_1961
+KL_kollam_1951:1991,cycle_rejected,high,Parent and child are identical (KL_kollam_1951)
+KL_thriss_1951:1991,cycle_rejected,high,Parent and child are identical (KL_thriss_1951)
+KL_thiruv_1951:1991,cycle_rejected,high,Parent and child are identical (KL_thiruv_1951)
+KA_bangal_1981:1991,cycle_rejected,high,Parent and child are identical (KA_bangal_1981)
+KA_bangal_1981:1991,duplicate_row,medium,Duplicate lineage row for KA_bangal_1981
+KA_belgau_2011:2024,cycle_rejected,high,Parent and child are identical (KA_belgau_2011)
+KA_bellar_2011:2024,cycle_rejected,high,Parent and child are identical (KA_bellar_2011)
+KA_bijapu_1991:2024,cycle_rejected,high,Parent and child are identical (KA_bijapu_1991)
+KA_chitra_1951:1961,cycle_rejected,high,Parent and child are identical (KA_chitra_1951)
+KA_chitra_1951:1961,duplicate_row,medium,Duplicate lineage row for KA_chitra_1951
+KA_kodagu_1971:1981,cycle_rejected,high,Parent and child are identical (KA_kodagu_1971)
+KA_dakshi_1971:1991,cycle_rejected,high,Parent and child are identical (KA_dakshi_1971)
+KA_dakshi_1971:1991,duplicate_row,medium,Duplicate lineage row for KA_dakshi_1971
+KA_dharwa_1971:1981,cycle_rejected,high,Parent and child are identical (KA_dharwa_1971)
+KA_dharwa_1971:1981,duplicate_row,medium,Duplicate lineage row for KA_dharwa_1971
+KA_dharwa_1971:1981,duplicate_row,medium,Duplicate lineage row for KA_dharwa_1971
+KA_uttark_1951:1961,cycle_rejected,high,Parent and child are identical (KA_uttark_1951)
+KA_mysuru_1991:2024,cycle_rejected,high,Parent and child are identical (KA_mysuru_1991)
+KA_uttark_1951:1981,cycle_rejected,high,Parent and child are identical (KA_uttark_1951)
+KA_shivam_2011:2024,cycle_rejected,high,Parent and child are identical (KA_shivam_2011)
+KA_dakshi_1971:1981,cycle_rejected,high,Parent and child are identical (KA_dakshi_1971)
+KA_dakshi_1971:1981,duplicate_row,medium,Duplicate lineage row for KA_dakshi_1971
+KA_tumaku_2011:2024,cycle_rejected,high,Parent and child are identical (KA_tumaku_2011)
+KA_uttark_1951:1991,cycle_rejected,high,Parent and child are identical (KA_uttark_1951)
+JH_hazari_1971:2011,cycle_rejected,high,Parent and child are identical (JH_hazari_1971)
+JH_hazari_1971:1981,cycle_rejected,high,Parent and child are identical (JH_hazari_1971)
+JH_hazari_1971:1981,duplicate_row,medium,Duplicate lineage row for JH_hazari_1971
+JH_hazari_1971:1981,duplicate_row,medium,Duplicate lineage row for JH_hazari_1971
+JH_hazari_1971:1981,duplicate_row,medium,Duplicate lineage row for JH_hazari_1971
+JH_hazari_1971:1981,duplicate_row,medium,Duplicate lineage row for JH_giridi_1981
+JH_palamu_1971:1981,cycle_rejected,high,Parent and child are identical (JH_palamu_1971)
+JH_palamu_1971:1981,duplicate_row,medium,Duplicate lineage row for JH_palamu_1971
+JH_palamu_1971:1981,duplicate_row,medium,Duplicate lineage row for JH_palamu_1971
+JH_ranchi_1981:1991,duplicate_row,medium,Duplicate lineage row for JH_gumla_1991
+JH_santha_1971:1981,cycle_rejected,high,Parent and child are identical (JH_santha_1971)
+JH_santha_1971:1981,duplicate_row,medium,Duplicate lineage row for JH_santha_1971
+JH_santha_1971:1981,duplicate_row,medium,Duplicate lineage row for JH_santha_1971
+JH_santha_1971:1981,duplicate_row,medium,Duplicate lineage row for JH_santha_1971
+JH_santha_1971:1981,duplicate_row,medium,Duplicate lineage row for JH_santha_1971
+JH_santha_1971:1981,duplicate_row,medium,Duplicate lineage row for JH_santha_1971
+JH_santha_1971:1991,duplicate_row,medium,Duplicate lineage row for JH_sahibg_1991
+JH_santha_1971:1991,duplicate_row,medium,Duplicate lineage row for JH_dumka_1991
+JH_psingh_1981:1991,cycle_rejected,high,Parent and child are identical (JH_psingh_1981)
+JH_psingh_1981:1991,duplicate_row,medium,Duplicate lineage row for JH_psingh_1981
+JK_baramu_1961:1971,cycle_rejected,high,Parent and child are identical (JK_baramu_1961)
+JK_baramu_1961:1971,duplicate_row,medium,Duplicate lineage row for JK_baramu_1961
+JK_baramu_1961:1971,duplicate_row,medium,Duplicate lineage row for JK_baramu_1961
+JK_baramu_1961:1971,duplicate_row,medium,Duplicate lineage row for JK_baramu_1961
+JK_jammua_1951:1961,duplicate_row,medium,Duplicate lineage row for JK_ladakh_1961
+JK_jammua_1951:1961,duplicate_row,medium,Duplicate lineage row for JK_poonch_1961
+JK_jammua_1951:1961,duplicate_row,medium,Duplicate lineage row for JK_baramu_1961
+JK_jammua_1951:1961,duplicate_row,medium,Duplicate lineage row for JK_baramu_1961
+JK_jammua_1951:1961,duplicate_row,medium,Duplicate lineage row for JK_srinag_1961
+JK_jammua_1951:1961,duplicate_row,medium,Duplicate lineage row for JK_baramu_1961
+JK_jammua_1951:1961,duplicate_row,medium,Duplicate lineage row for JK_srinag_1961
+JK_jammua_1951:1961,duplicate_row,medium,Duplicate lineage row for JK_srinag_1961
+JK_jammua_1951:1961,duplicate_row,medium,Duplicate lineage row for JK_anantn_1961
+JK_jammua_1951:1961,duplicate_row,medium,Duplicate lineage row for JK_srinag_1961
+JK_jammua_1951:1961,duplicate_row,medium,Duplicate lineage row for JK_doda_1961
+JK_jammua_1951:1961,duplicate_row,medium,Duplicate lineage row for JK_doda_1961
+JK_jammua_1951:1961,duplicate_row,medium,Duplicate lineage row for JK_udhamp_1961
+JK_jammua_1951:1961,duplicate_row,medium,Duplicate lineage row for JK_jammu_1961
+JK_srinag_1961:1981,duplicate_row,medium,Duplicate lineage row for JK_pulwam_1981
+JK_srinag_1961:1981,duplicate_row,medium,Duplicate lineage row for JK_pulwam_1981
+HP_mahasu_1951:1981,duplicate_row,medium,Duplicate lineage row for HP_shimla_1961
+HP_sirmur_1951:1961,cycle_rejected,high,Parent and child are identical (HP_sirmur_1951)
+HP_sirmur_1951:1971,cycle_rejected,high,Parent and child are identical (HP_sirmur_1951)
+HR_guruga_1951:1981,duplicate_row,medium,Duplicate lineage row for HR_farida_1981
+HR_guruga_1951:2024,cycle_rejected,high,Parent and child are identical (HR_guruga_1951)
+HR_hisar_1951:1981,duplicate_row,medium,Duplicate lineage row for HR_bhiwan_1981
+HR_hisar_1951:1971,cycle_rejected,high,Parent and child are identical (HR_hisar_1951)
+HR_hisar_1951:1971,duplicate_row,medium,Duplicate lineage row for HR_hisar_1951
+HR_hisar_1951:1971,duplicate_row,medium,Duplicate lineage row for HR_hisar_1951
+HR_hisar_1951:1971,duplicate_row,medium,Duplicate lineage row for HR_hisar_1951
+HR_hisar_1951:1971,duplicate_row,medium,Duplicate lineage row for HR_hisar_1951
+HR_karnal_1951:1981,duplicate_row,medium,Duplicate lineage row for HR_kuruks_1981
+HR_nuh_2011:2024,cycle_rejected,high,Parent and child are identical (HR_nuh_2011)
+HR_mahend_1951:1961,cycle_rejected,high,Parent and child are identical (HR_mahend_1951)
+HR_mahend_1951:1961,duplicate_row,medium,Duplicate lineage row for HR_mahend_1951
+GJ_ahmeda_1961:1971,cycle_rejected,high,Parent and child are identical (GJ_ahmeda_1961)
+GJ_ahmeda_1961:1971,duplicate_row,medium,Duplicate lineage row for GJ_ahmeda_1961
+GJ_banask_1961:1971,cycle_rejected,high,Parent and child are identical (GJ_banask_1961)
+GJ_baroda_1961:1971,duplicate_row,medium,Duplicate lineage row for GJ_vadoda_1971
+GJ_bharuc_1961:1971,cycle_rejected,high,Parent and child are identical (GJ_bharuc_1961)
+GJ_bharuc_1961:1971,duplicate_row,medium,Duplicate lineage row for GJ_bharuc_1961
+GJ_centra_1951:1961,duplicate_row,medium,Duplicate lineage row for GJ_rajkot_1961
+GJ_bhavna_1951:1961,cycle_rejected,high,Parent and child are identical (GJ_bhavna_1951)
+GJ_bhavna_1951:1961,duplicate_row,medium,Duplicate lineage row for GJ_bhavna_1951
+GJ_jamnag_1951:1961,cycle_rejected,high,Parent and child are identical (GJ_jamnag_1951)
+GJ_jamnag_1951:1961,duplicate_row,medium,Duplicate lineage row for GJ_jamnag_1951
+GJ_jamnag_1951:1961,duplicate_row,medium,Duplicate lineage row for GJ_jamnag_1951
+GJ_kheda_1961:1971,cycle_rejected,high,Parent and child are identical (GJ_kheda_1961)
+GJ_kheda_1961:1971,duplicate_row,medium,Duplicate lineage row for GJ_kheda_1961
+GJ_kheda_1961:1971,duplicate_row,medium,Duplicate lineage row for GJ_kheda_1961
+GJ_mahesa_1961:1971,cycle_rejected,high,Parent and child are identical (GJ_mahesa_1961)
+GJ_mahesa_1961:1971,duplicate_row,medium,Duplicate lineage row for GJ_mahesa_1961
+GJ_panchm_1951:1961,cycle_rejected,high,Parent and child are identical (GJ_panchm_1951)
+GJ_panchm_1951:1961,duplicate_row,medium,Duplicate lineage row for GJ_panchm_1951
+GJ_panchm_1951:1961,duplicate_row,medium,Duplicate lineage row for GJ_panchm_1951
+GJ_panchm_1951:1971,cycle_rejected,high,Parent and child are identical (GJ_panchm_1951)
+GJ_panchm_1951:1971,duplicate_row,medium,Duplicate lineage row for GJ_panchm_1951
+GJ_panchm_1951:1971,duplicate_row,medium,Duplicate lineage row for GJ_panchm_1951
+GJ_sabark_1961:1971,cycle_rejected,high,Parent and child are identical (GJ_sabark_1961)
+GJ_sabark_1961:1971,duplicate_row,medium,Duplicate lineage row for GJ_sabark_1961
+GJ_junaga_1951:1961,cycle_rejected,high,Parent and child are identical (GJ_junaga_1951)
+GJ_junaga_1951:1961,duplicate_row,medium,Duplicate lineage row for GJ_junaga_1951
+GJ_junaga_1951:1961,duplicate_row,medium,Duplicate lineage row for GJ_junaga_1951
+GJ_surat_1961:1971,duplicate_row,medium,Duplicate lineage row for GJ_valsad_1971
+GJ_zalawa_1951:1961,duplicate_row,medium,Duplicate lineage row for GJ_surend_1961
+DA_dadra_2001:2011,cycle_rejected,high,Parent and child are identical (DA_dadra_2001)
+CG_bastar_1991:2001,duplicate_row,medium,Duplicate lineage row for CG_dantew_2001
+CG_bastar_1991:2001,duplicate_row,medium,Duplicate lineage row for CG_dantew_2001
+CG_dantew_2001:2011,duplicate_row,medium,Duplicate lineage row for CG_dakshi_2011
+CG_durg_1971:1981,duplicate_row,medium,Duplicate lineage row for CG_rajnan_1981
+CG_rajnan_1981:2001,cycle_rejected,high,Parent and child are identical (CG_rajnan_1981)
+BR_gaya_1971:1991,duplicate_row,medium,Duplicate lineage row for BR_jehana_1991
+BR_monghy_1971:1981,duplicate_row,medium,Duplicate lineage row for BR_munger_1981
+BR_monghy_1971:1981,duplicate_row,medium,Duplicate lineage row for BR_munger_1981
+BR_monghy_1971:1981,duplicate_row,medium,Duplicate lineage row for BR_munger_1981
+BR_monghy_1971:1981,duplicate_row,medium,Duplicate lineage row for BR_munger_1981
+BR_muzaff_1971:1981,duplicate_row,medium,Duplicate lineage row for BR_sitama_1981
+BR_nawada_1981:1991,cycle_rejected,high,Parent and child are identical (BR_nawada_1981)
+BR_nawada_1981:2001,cycle_rejected,high,Parent and child are identical (BR_nawada_1981)
+BR_purnea_1971:1981,duplicate_row,medium,Duplicate lineage row for BR_purnia_1981
+BR_purnea_1971:1981,duplicate_row,medium,Duplicate lineage row for BR_purnia_1981
+BR_shahab_1971:1981,duplicate_row,medium,Duplicate lineage row for BR_bhojpu_1981
+BR_shahab_1971:1981,duplicate_row,medium,Duplicate lineage row for BR_rohtas_1981
+AS_darran_1981:1991,duplicate_row,medium,Duplicate lineage row for AS_sonitp_1991
+AS_darran_1981:2011,duplicate_row,medium,Duplicate lineage row for AS_baksa_2011
+AS_dhubur_1991:2011,duplicate_row,medium,Duplicate lineage row for AS_dhubri_2011
+AS_goalpa_1981:1991,duplicate_row,medium,Duplicate lineage row for AS_kokraj_1991
+AS_goalpa_1981:1991,duplicate_row,medium,Duplicate lineage row for AS_bongai_1991
+AS_goalpa_1981:1991,duplicate_row,medium,Duplicate lineage row for AS_dhubur_1991
+AS_kamrup_1981:1991,duplicate_row,medium,Duplicate lineage row for AS_barpet_1991
+AS_kamrup_1981:1991,duplicate_row,medium,Duplicate lineage row for AS_nalbar_1991
+AS_kamrup_1981:1991,duplicate_row,medium,Duplicate lineage row for AS_barpet_1991
+AS_kamrup_1981:2011,cycle_rejected,high,Parent and child are identical (AS_kamrup_1981)
+AS_lakhim_1971:1981,duplicate_row,medium,Duplicate lineage row for AS_dibrug_1981
+AS_mikirh_1971:1981,duplicate_row,medium,Duplicate lineage row for AS_karbia_1981
+AS_nowgon_1971:1981,duplicate_row,medium,Duplicate lineage row for AS_nagaon_1981
+AS_nowgon_1971:1981,duplicate_row,medium,Duplicate lineage row for AS_nagaon_1981
+AS_sivasa_1981:1991,duplicate_row,medium,Duplicate lineage row for AS_jorhat_1991
+AS_sivasa_1981:2011,cycle_rejected,high,Parent and child are identical (AS_sivasa_1981)
+AS_sivasa_1981:2011,duplicate_row,medium,Duplicate lineage row for AS_sivasa_1981
+AS_united_1961:1971,duplicate_row,medium,Duplicate lineage row for AS_mikirh_1971
+AR_aborhi_1951:1961,duplicate_row,medium,Duplicate lineage row for AR_siangf_1961
+AR_aborhi_1951:1961,duplicate_row,medium,Duplicate lineage row for AR_siangf_1961
+AR_aborhi_1951:1961,duplicate_row,medium,Duplicate lineage row for AR_siangf_1961
+AR_aborhi_1951:1961,duplicate_row,medium,Duplicate lineage row for AR_siangf_1961
+AR_aborhi_1951:1961,duplicate_row,medium,Duplicate lineage row for AR_siangf_1961
+AR_aborhi_1951:1961,duplicate_row,medium,Duplicate lineage row for AR_siangf_1961
+AR_aborhi_1951:1961,duplicate_row,medium,Duplicate lineage row for AR_siangf_1961
+AR_aborhi_1951:1961,duplicate_row,medium,Duplicate lineage row for AR_siangf_1961
+AR_aborhi_1951:1961,duplicate_row,medium,Duplicate lineage row for AR_siangf_1961
+AR_aborhi_1951:1961,duplicate_row,medium,Duplicate lineage row for AR_siangf_1961
+AR_balipa_1951:1961,duplicate_row,medium,Duplicate lineage row for AR_kameng_1961
+AR_balipa_1951:1961,duplicate_row,medium,Duplicate lineage row for AR_kameng_1961
+AR_balipa_1951:1961,duplicate_row,medium,Duplicate lineage row for AR_kameng_1961
+AR_balipa_1951:1961,duplicate_row,medium,Duplicate lineage row for AR_subans_1961
+AR_balipa_1951:1961,duplicate_row,medium,Duplicate lineage row for AR_subans_1961
+AR_balipa_1951:1961,duplicate_row,medium,Duplicate lineage row for AR_subans_1961
+AR_balipa_1951:1961,duplicate_row,medium,Duplicate lineage row for AR_subans_1961
+AR_balipa_1951:1961,duplicate_row,medium,Duplicate lineage row for AR_subans_1961
+AR_balipa_1951:1961,duplicate_row,medium,Duplicate lineage row for AR_subans_1961
+AR_kameng_1961:1981,duplicate_row,medium,Duplicate lineage row for AR_westka_1981
+AR_kameng_1961:1981,duplicate_row,medium,Duplicate lineage row for AR_eastka_1981
+AR_kameng_1961:1971,cycle_rejected,high,Parent and child are identical (AR_kameng_1961)
+AR_kameng_1961:1971,duplicate_row,medium,Duplicate lineage row for AR_kameng_1961
+AR_kameng_1961:1971,duplicate_row,medium,Duplicate lineage row for AR_kameng_1961
+AR_kameng_1961:1971,duplicate_row,medium,Duplicate lineage row for AR_kameng_1961
+AR_lohitf_1961:1971,duplicate_row,medium,Duplicate lineage row for AR_lohit_1971
+AR_lohitf_1961:1971,duplicate_row,medium,Duplicate lineage row for AR_lohit_1971
+AR_lowers_1981:2011,duplicate_row,medium,Duplicate lineage row for AR_kurung_2011
+AR_mishmi_1951:1961,duplicate_row,medium,Duplicate lineage row for AR_lohitf_1961
+AR_mishmi_1951:1961,duplicate_row,medium,Duplicate lineage row for AR_lohitf_1961
+AR_siang_1971:1981,duplicate_row,medium,Duplicate lineage row for AR_westsi_1981
+AR_siang_1971:1981,duplicate_row,medium,Duplicate lineage row for AR_westsi_1981
+AR_siang_1971:1981,duplicate_row,medium,Duplicate lineage row for AR_westsi_1981
+AR_siang_1971:1981,duplicate_row,medium,Duplicate lineage row for AR_westsi_1981
+AR_siang_1971:1981,duplicate_row,medium,Duplicate lineage row for AR_westsi_1981
+AR_siang_1971:1981,duplicate_row,medium,Duplicate lineage row for AR_eastsi_1981
+AR_siang_1971:1981,duplicate_row,medium,Duplicate lineage row for AR_eastsi_1981
+AR_siang_1971:1981,duplicate_row,medium,Duplicate lineage row for AR_eastsi_1981
+AR_siang_1971:1981,duplicate_row,medium,Duplicate lineage row for AR_eastsi_1981
+AR_siangf_1961:1971,duplicate_row,medium,Duplicate lineage row for AR_siang_1971
+AR_siangf_1961:1971,duplicate_row,medium,Duplicate lineage row for AR_siang_1971
+AR_siangf_1961:1971,duplicate_row,medium,Duplicate lineage row for AR_siang_1971
+AR_siangf_1961:1971,duplicate_row,medium,Duplicate lineage row for AR_siang_1971
+AR_siangf_1961:1971,duplicate_row,medium,Duplicate lineage row for AR_siang_1971
+AR_siangf_1961:1971,duplicate_row,medium,Duplicate lineage row for AR_siang_1971
+AR_siangf_1961:1971,duplicate_row,medium,Duplicate lineage row for AR_siang_1971
+AR_siangf_1961:1971,duplicate_row,medium,Duplicate lineage row for AR_siang_1971
+AR_siangf_1961:1971,duplicate_row,medium,Duplicate lineage row for AR_siang_1971
+AR_siangf_1961:1971,duplicate_row,medium,Duplicate lineage row for AR_siang_1971
+AR_subans_1961:1981,duplicate_row,medium,Duplicate lineage row for AR_uppers_1981
+AR_subans_1961:1981,duplicate_row,medium,Duplicate lineage row for AR_lowers_1981
+AR_subans_1961:1981,duplicate_row,medium,Duplicate lineage row for AR_lowers_1981
+AR_subans_1961:1981,duplicate_row,medium,Duplicate lineage row for AR_lowers_1981
+AR_subans_1961:1981,duplicate_row,medium,Duplicate lineage row for AR_lowers_1981
+AR_subans_1961:1971,cycle_rejected,high,Parent and child are identical (AR_subans_1961)
+AR_subans_1961:1971,duplicate_row,medium,Duplicate lineage row for AR_subans_1961
+AR_subans_1961:1971,duplicate_row,medium,Duplicate lineage row for AR_subans_1961
+AR_subans_1961:1971,duplicate_row,medium,Duplicate lineage row for AR_subans_1961
+AR_subans_1961:1971,duplicate_row,medium,Duplicate lineage row for AR_subans_1961
+AR_subans_1961:1971,duplicate_row,medium,Duplicate lineage row for AR_subans_1961
+AR_subans_1961:1971,duplicate_row,medium,Duplicate lineage row for AR_subans_1961
+AR_tirap_1971:1981,duplicate_row,medium,Duplicate lineage row for AR_dibang_1981
+AR_tirapf_1951:1971,duplicate_row,medium,Duplicate lineage row for AR_tirap_1971
+AR_tirapf_1951:1971,duplicate_row,medium,Duplicate lineage row for AR_tirap_1971
+AR_tirapf_1951:1971,duplicate_row,medium,Duplicate lineage row for AR_tirap_1971
+AR_tirapf_1951:1971,duplicate_row,medium,Duplicate lineage row for AR_tirap_1971
+AR_tirapf_1951:1961,cycle_rejected,high,Parent and child are identical (AR_tirapf_1951)
+AR_tirapf_1951:1961,duplicate_row,medium,Duplicate lineage row for AR_tirapf_1951
+AR_tirapf_1951:1961,duplicate_row,medium,Duplicate lineage row for AR_tirapf_1951
+AR_tirapf_1951:1961,duplicate_row,medium,Duplicate lineage row for AR_tirapf_1951
+AR_tirapf_1951:1961,duplicate_row,medium,Duplicate lineage row for AR_tirapf_1951
+AR_westsi_1981:2024,duplicate_row,medium,Duplicate lineage row for AR_lowers_1981
+AP_kadapa_2001:2011,duplicate_row,medium,Duplicate lineage row for AP_ysr_2011
+AP_sripot_1971:2011,cycle_rejected,high,Parent and child are identical (AP_sripot_1971)
+AP_sripot_1971:2011,duplicate_row,medium,Duplicate lineage row for AP_sripot_1971
+AP_srikak_1971:1981,duplicate_row,medium,Duplicate lineage row for AP_vizian_1981
+AP_visakh_1961:1981,duplicate_row,medium,Duplicate lineage row for AP_vizian_1981
+AP_visakh_1961:1981,duplicate_row,medium,Duplicate lineage row for AP_vishak_1981
+AP_visakh_1961:1981,duplicate_row,medium,Duplicate lineage row for AP_vishak_1981
+AP_vishak_1981:1991,duplicate_row,medium,Duplicate lineage row for AP_visakh_1961
+AP_vishak_1981:1991,duplicate_row,medium,Duplicate lineage row for AP_visakh_1961
+AP_vizaga_1951:1961,duplicate_row,medium,Duplicate lineage row for AP_visakh_1961
+AP_vizaga_1951:1961,duplicate_row,medium,Duplicate lineage row for AP_visakh_1961
+AP_vizaga_1951:1961,duplicate_row,medium,Duplicate lineage row for AP_visakh_1961
+AP_vizaga_1951:1961,duplicate_row,medium,Duplicate lineage row for AP_visakh_1961
+AN_andama_1971:1991,cycle_rejected,high,Parent and child are identical (AN_andama_1971)
+AN_andama_1971:1991,duplicate_row,medium,Duplicate lineage row for AN_andama_1971
+AN_andama_1971:1981,cycle_rejected,high,Parent and child are identical (AN_andama_1971)
+AN_andama_1971:1981,duplicate_row,medium,Duplicate lineage row for AN_andama_1971
+AN_nicoba_1981:1991,cycle_rejected,high,Parent and child are identical (AN_nicoba_1981)
+AN_nicoba_1981:2011,cycle_rejected,high,Parent and child are identical (AN_nicoba_1981)
+AP_vizaga_1951:1961,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+AR_aborhi_1951:1961,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+AR_balipa_1951:1961,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+AR_mishmi_1951:1961,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+GJ_centra_1951:1961,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+GJ_zalawa_1951:1961,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+HP_kangra_1951:1961,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+HP_kohist_1951:1961,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+HP_mahasu_1951:1961,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+JK_jammua_1951:1961,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+KL_kollam_1951:1961,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+KL_kottay_1951:1961,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+KL_malapp_1951:1961,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+KL_thriss_1951:1961,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+MH_satara_1951:1961,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+MP_bhilsa_1951:1961,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+MP_chhind_1951:1961,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+MP_gird_1951:1961,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+MP_goona_1951:1961,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+MP_narmad_1951:1961,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+MP_nimar_1951:1961,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+MP_sagar_1951:1961,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+NL_tuensa_1951:1961,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+RJ_kotah_1951:1961,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+TG_warang_1951:1961,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+TN_thiruv_1951:1961,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+UK_almora_1951:1961,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+UK_garhwa_1951:1961,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+UK_tehri_1951:1961,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+AR_lohitf_1961:1971,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+AR_siangf_1961:1971,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+AR_tirapf_1951:1971,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+AS_united_1961:1971,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+CH_ambala_1961:1971,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+GJ_ahmeda_1961:1971,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+GJ_baroda_1961:1971,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+GJ_dangs_1961:1971,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+GJ_mahesa_1961:1971,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+GJ_surat_1961:1971,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+HP_kangra_1951:1971,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+HP_lahaul_1961:1971,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+HR_sangru_1961:1971,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+JK_poonch_1961:1971,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+PB_hoshia_1961:1971,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+TN_salem_1961:1971,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+TR_tripur_1951:1971,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+WB_24parg_1961:1971,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+AN_andama_1971:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+AP_srikak_1971:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+AP_sripot_1971:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+AP_visakh_1961:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+AR_kameng_1961:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+AR_siang_1971:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+AR_subans_1961:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+AR_tirap_1971:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+AS_lakhim_1971:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+AS_mikirh_1971:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+AS_nowgon_1971:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+BR_champa_1971:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+BR_darbha_1971:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+BR_gaya_1971:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+BR_monghy_1971:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+BR_muzaff_1971:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+BR_patna_1971:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+BR_purnea_1971:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+BR_saran_1971:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+BR_shahab_1971:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+CG_durg_1971:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+GJ_kutch_1971:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+HP_kangra_1951:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+HP_kulu_1971:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+HP_mahasu_1951:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+HP_shimla_1961:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+HR_guruga_1951:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+HR_hisar_1951:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+HR_karnal_1951:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+HR_rohtak_1951:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+JH_hazari_1971:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+JK_baramu_1961:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+JK_ladakh_1961:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+JK_srinag_1961:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+KL_ernaku_1961:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+KL_kannur_1961:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+KL_kottay_1951:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+KL_kozhik_1961:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+MH_bhir_1971:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+MH_kolaba_1971:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+MH_nasik_1971:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+MH_sholap_1971:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+MH_yavatman_1971:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+ML_ekhasi_1971:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+ML_garohi_1971:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+MN_manipu_1951:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+MP_sehore_1971:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+MZ_mizora_1951:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+NL_kohima_1951:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+NL_mokokc_1961:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+NL_tuensa_1951:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+OD_balaso_1971:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+OD_bolang_1971:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+OD_keonjh_1971:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+PB_bhatin_1951:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+PB_firozp_1951:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+PB_ropar_1971:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+SK_sikkim_1971:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+TG_hydera_1971:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+TN_coimba_1951:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+TN_thanja_1951:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+TN_tiruch_1971:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+UP_buland_1971:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+UP_jhansi_1971:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+UP_meerut_1951:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+WB_hooghl_1971:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+WB_malda_1971:1981,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+AR_tirap_1971:1991,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+AR_westka_1981:1991,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+AS_goalpa_1981:1991,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+GA_goa_1981:1991,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+JH_psingh_1981:1991,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+JH_santha_1971:1991,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+KL_kannur_1961:1991,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+MN_manipu_1951:1991,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+TN_narcot_1981:1991,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+TN_ramana_1981:1991,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+UP_gorakh_1981:1991,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+WB_south2_1971:1991,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+AR_eastsi_1981:2001,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+AR_lowers_1981:2001,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+CG_raipur_1991:2001,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+DL_delhi_1991:2001,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+JH_hazari_1971:2001,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+JH_palamu_1971:2001,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+JH_sahibg_1991:2001,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+JK_ladakh_1961:2001,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+MH_bhanda_1991:2001,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+MH_greate_1991:2001,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+ML_eastkh_1981:2001,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+ML_westga_1981:2001,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+MZ_aizawl_1981:2001,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+MZ_chhimt_1981:2001,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+NC_delhi_1991:2001,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+NL_kohima_1951:2001,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+OD_korapu_1991:2001,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+OD_puri_1991:2001,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+OD_sambal_1991:2001,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+PB_hoshia_1961:2001,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+PB_jaland_1971:2001,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+SK_eastdi_1981:2001,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+SK_northd_1981:2001,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+SK_southd_1981:2001,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+SK_westdi_1981:2001,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+TN_chidam_1991:2001,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+TN_narcot_1981:2001,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+TN_periya_1981:2001,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+TR_northt_1971:2001,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+UP_meerut_1951:2001,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+UP_morada_1991:2001,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+AN_andama_1971:2011,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+AP_kadapa_2001:2011,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+AR_dibang_1981:2011,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+AR_lohit_1971:2011,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+AR_lowers_1981:2011,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+AS_mariga_1991:2011,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+AS_northc_1971:2011,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+CG_dantew_2001:2011,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+CG_kanker_2001:2011,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+CG_kaward_2001:2011,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+JH_psingh_1981:2011,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+JK_anantn_1961:2011,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+JK_baramu_1961:2011,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+JK_doda_1961:2011,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+JK_jammu_1961:2011,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+JK_pulwam_1981:2011,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+JK_rajaur_1971:2011,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+JK_udhamp_1961:2011,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+MP_shahdo_1991:2011,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+NL_kohima_1951:2011,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+NL_tuensa_1951:2011,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+OD_sonapu_2001:2011,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+PB_patial_1951:2011,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+PB_rupnag_1981:2011,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+UP_etah_2001:2011,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+WB_medini_1951:2011,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+AP_ananta_2011:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+AP_chitto_2011:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+AP_eastgo_2011:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+AP_guntur_1951:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+AP_krishn_2011:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+AP_kurnoo_1951:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+AP_srikak_1971:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+AP_sripot_1971:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+AP_visakh_1961:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+AP_vizian_1981:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+AP_westgo_2011:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+AP_ysr_2011:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+AR_eastka_1981:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+AR_eastsi_1981:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+AR_kurung_2011:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+AR_lohit_1971:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+AR_lowers_1981:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+AR_tirap_1971:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+AR_uppers_1981:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+AR_westsi_1981:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+AS_baksa_2011:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+AS_barpet_1991:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+AS_dhubri_2011:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+AS_jorhat_1991:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+AS_karbia_1981:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+AS_nagaon_1981:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+AS_sivasa_1981:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+AS_sonitp_1991:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+CG_bastar_1991:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+CG_bilasp_1991:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+CG_dakshi_2011:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+CG_durg_1971:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+CG_raipur_1991:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+CG_surguj_1991:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+DL_east_2001:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+DL_northe_2001:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+DL_northw_2001:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+DL_south_2001:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+DL_southw_2001:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+GJ_ahmeda_1961:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+GJ_bhavna_1951:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+GJ_jamnag_1951:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+GJ_junaga_1951:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+GJ_kheda_1961:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+GJ_panchm_1951:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+GJ_rajkot_1961:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+GJ_sabark_1961:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+GJ_surend_1961:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+GJ_vadoda_1971:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+HR_bhiwan_1981:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+KA_bellar_2011:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+KA_chikma_2011:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+KA_gulbar_2001:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+KA_ramana_2011:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+MH_aurang_1981:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+MH_thane_1971:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+ML_eastga_1981:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+ML_jainti_1981:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+ML_westkh_1981:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+MN_churac_1991:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+MN_imphal_1991:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+MN_senapa_1991:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+MN_tameng_1991:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+MN_thouba_1991:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+MN_ukhrul_1991:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+MP_shajap_2011:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+MP_tikamg_2011:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+MZ_aizawl_1981:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+MZ_champh_2001:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+MZ_lungle_1981:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+NL_dimapu_2001:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+NL_kohima_1951:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+NL_tuensa_1951:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+PB_firozp_1951:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+PB_gurdas_1951:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+PB_sangru_1951:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+SK_east_2001:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+SK_north_2001:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+SK_south_2001:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+SK_west_2001:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+TG_adilab_2011:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+TG_karimn_2011:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+TG_khamma_1961:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+TG_mahbub_2011:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+TG_medak_2011:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+TG_nalgon_2011:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+TG_nizama_2011:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+TG_rangar_1981:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+TG_warang_1951:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+TN_nagapa_2001:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+TN_tirune_1981:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+TN_vellor_2001:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+TN_vilupp_2001:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+TR_northt_1971:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+TR_southt_1971:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+TR_westtr_1971:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+UP_allaha_1951:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+UP_budaun_2011:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+UP_ghazia_1981:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+UP_kanshi_2011:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+UP_morada_1991:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+UP_muzaff_2011:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+UP_sultan_2011:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+WB_barddh_1951:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+WB_darjil_1971:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+WB_jalpai_2011:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.
+WB_paschi_2011:2024,equal_split_fallback,medium,No post-split crop area proxy was available; equal split weights were used.

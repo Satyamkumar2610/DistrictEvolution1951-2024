@@ -1,0 +1,1165 @@
+event_id,child_cdk,child_name,metric_basis,weight_value,weight_method,weight_confidence,source_year,basis,is_fallback
+AP_vizaga_1951:1961,AP_visakh_1961,Visakhapatnam,area,1.0,equal_split_fallback,0.35,1961,equal_split_fallback,True
+AP_vizaga_1951:1961,AP_visakh_1961,Visakhapatnam,production,1.0,equal_split_fallback,0.35,1961,equal_split_fallback,True
+AR_aborhi_1951:1961,AR_siangf_1961,Siang Frontier Division,area,1.0,equal_split_fallback,0.35,1961,equal_split_fallback,True
+AR_aborhi_1951:1961,AR_siangf_1961,Siang Frontier Division,production,1.0,equal_split_fallback,0.35,1961,equal_split_fallback,True
+AR_balipa_1951:1961,AR_kameng_1961,Kameng Frontier,area,0.5,equal_split_fallback,0.35,1961,equal_split_fallback,True
+AR_balipa_1951:1961,AR_kameng_1961,Kameng Frontier,production,0.5,equal_split_fallback,0.35,1961,equal_split_fallback,True
+AR_balipa_1951:1961,AR_subans_1961,Subansiri Frontier,area,0.5,equal_split_fallback,0.35,1961,equal_split_fallback,True
+AR_balipa_1951:1961,AR_subans_1961,Subansiri Frontier,production,0.5,equal_split_fallback,0.35,1961,equal_split_fallback,True
+AR_mishmi_1951:1961,AR_lohitf_1961,Lohit Frontier Division,area,1.0,equal_split_fallback,0.35,1961,equal_split_fallback,True
+AR_mishmi_1951:1961,AR_lohitf_1961,Lohit Frontier Division,production,1.0,equal_split_fallback,0.35,1961,equal_split_fallback,True
+GJ_centra_1951:1961,GJ_rajkot_1961,Rajkot,area,1.0,equal_split_fallback,0.35,1961,equal_split_fallback,True
+GJ_centra_1951:1961,GJ_rajkot_1961,Rajkot,production,1.0,equal_split_fallback,0.35,1961,equal_split_fallback,True
+GJ_zalawa_1951:1961,GJ_surend_1961,Surendranagar,area,1.0,equal_split_fallback,0.35,1961,equal_split_fallback,True
+GJ_zalawa_1951:1961,GJ_surend_1961,Surendranagar,production,1.0,equal_split_fallback,0.35,1961,equal_split_fallback,True
+HP_kangra_1951:1961,HP_lahaul_1961,Lahaul and Spiti,area,1.0,equal_split_fallback,0.35,1961,equal_split_fallback,True
+HP_kangra_1951:1961,HP_lahaul_1961,Lahaul and Spiti,production,1.0,equal_split_fallback,0.35,1961,equal_split_fallback,True
+HP_kohist_1951:1961,HP_shimla_1961,Simla,area,1.0,equal_split_fallback,0.35,1961,equal_split_fallback,True
+HP_kohist_1951:1961,HP_shimla_1961,Simla,production,1.0,equal_split_fallback,0.35,1961,equal_split_fallback,True
+HP_mahasu_1951:1961,HP_kinnau_1961,Kinnaur,area,1.0,equal_split_fallback,0.35,1961,equal_split_fallback,True
+HP_mahasu_1951:1961,HP_kinnau_1961,Kinnaur,production,1.0,equal_split_fallback,0.35,1961,equal_split_fallback,True
+JK_jammua_1951:1961,JK_anantn_1961,Anantnag,area,0.111111,equal_split_fallback,0.35,1961,equal_split_fallback,True
+JK_jammua_1951:1961,JK_anantn_1961,Anantnag,production,0.111111,equal_split_fallback,0.35,1961,equal_split_fallback,True
+JK_jammua_1951:1961,JK_baramu_1961,Baramula,area,0.111111,equal_split_fallback,0.35,1961,equal_split_fallback,True
+JK_jammua_1951:1961,JK_baramu_1961,Baramula,production,0.111111,equal_split_fallback,0.35,1961,equal_split_fallback,True
+JK_jammua_1951:1961,JK_doda_1961,Doda,area,0.111111,equal_split_fallback,0.35,1961,equal_split_fallback,True
+JK_jammua_1951:1961,JK_doda_1961,Doda,production,0.111111,equal_split_fallback,0.35,1961,equal_split_fallback,True
+JK_jammua_1951:1961,JK_jammu_1961,Jammu,area,0.111111,equal_split_fallback,0.35,1961,equal_split_fallback,True
+JK_jammua_1951:1961,JK_jammu_1961,Jammu,production,0.111111,equal_split_fallback,0.35,1961,equal_split_fallback,True
+JK_jammua_1951:1961,JK_kathua_1961,Kathua,area,0.111111,equal_split_fallback,0.35,1961,equal_split_fallback,True
+JK_jammua_1951:1961,JK_kathua_1961,Kathua,production,0.111111,equal_split_fallback,0.35,1961,equal_split_fallback,True
+JK_jammua_1951:1961,JK_ladakh_1961,Ladakh,area,0.111111,equal_split_fallback,0.35,1961,equal_split_fallback,True
+JK_jammua_1951:1961,JK_ladakh_1961,Ladakh,production,0.111111,equal_split_fallback,0.35,1961,equal_split_fallback,True
+JK_jammua_1951:1961,JK_poonch_1961,Poonch,area,0.111111,equal_split_fallback,0.35,1961,equal_split_fallback,True
+JK_jammua_1951:1961,JK_poonch_1961,Poonch,production,0.111111,equal_split_fallback,0.35,1961,equal_split_fallback,True
+JK_jammua_1951:1961,JK_srinag_1961,Srinagar,area,0.111111,equal_split_fallback,0.35,1961,equal_split_fallback,True
+JK_jammua_1951:1961,JK_srinag_1961,Srinagar,production,0.111111,equal_split_fallback,0.35,1961,equal_split_fallback,True
+JK_jammua_1951:1961,JK_udhamp_1961,Udhampur,area,0.111111,equal_split_fallback,0.35,1961,equal_split_fallback,True
+JK_jammua_1951:1961,JK_udhamp_1961,Udhampur,production,0.111111,equal_split_fallback,0.35,1961,equal_split_fallback,True
+KL_kollam_1951:1961,KL_alappu_1961,Alleppey,area,1.0,equal_split_fallback,0.35,1961,equal_split_fallback,True
+KL_kollam_1951:1961,KL_alappu_1961,Alleppey,production,1.0,equal_split_fallback,0.35,1961,equal_split_fallback,True
+KL_kottay_1951:1961,KL_alappu_1961,Alleppey,area,0.5,equal_split_fallback,0.35,1961,equal_split_fallback,True
+KL_kottay_1951:1961,KL_alappu_1961,Alleppey,production,0.5,equal_split_fallback,0.35,1961,equal_split_fallback,True
+KL_kottay_1951:1961,KL_ernaku_1961,Ernakulam,area,0.5,equal_split_fallback,0.35,1961,equal_split_fallback,True
+KL_kottay_1951:1961,KL_ernaku_1961,Ernakulam,production,0.5,equal_split_fallback,0.35,1961,equal_split_fallback,True
+KL_malapp_1951:1961,KL_kannur_1961,Cannanore,area,0.333333,equal_split_fallback,0.35,1961,equal_split_fallback,True
+KL_malapp_1951:1961,KL_kannur_1961,Cannanore,production,0.333333,equal_split_fallback,0.35,1961,equal_split_fallback,True
+KL_malapp_1951:1961,KL_kozhik_1961,Kozhikode,area,0.333333,equal_split_fallback,0.35,1961,equal_split_fallback,True
+KL_malapp_1951:1961,KL_kozhik_1961,Kozhikode,production,0.333333,equal_split_fallback,0.35,1961,equal_split_fallback,True
+KL_malapp_1951:1961,KL_palgha_1961,Palghat,area,0.333333,equal_split_fallback,0.35,1961,equal_split_fallback,True
+KL_malapp_1951:1961,KL_palgha_1961,Palghat,production,0.333333,equal_split_fallback,0.35,1961,equal_split_fallback,True
+KL_thriss_1951:1961,KL_ernaku_1961,Ernakulam,area,1.0,equal_split_fallback,0.35,1961,equal_split_fallback,True
+KL_thriss_1951:1961,KL_ernaku_1961,Ernakulam,production,1.0,equal_split_fallback,0.35,1961,equal_split_fallback,True
+MH_satara_1951:1961,MH_sangli_1961,Sangli,area,1.0,equal_split_fallback,0.35,1961,equal_split_fallback,True
+MH_satara_1951:1961,MH_sangli_1961,Sangli,production,1.0,equal_split_fallback,0.35,1961,equal_split_fallback,True
+MP_bhilsa_1951:1961,MP_vidish_1961,Vidisha,area,1.0,equal_split_fallback,0.35,1961,equal_split_fallback,True
+MP_bhilsa_1951:1961,MP_vidish_1961,Vidisha,production,1.0,equal_split_fallback,0.35,1961,equal_split_fallback,True
+MP_chhind_1951:1961,MP_seoni_1961,Seoni,area,1.0,equal_split_fallback,0.35,1961,equal_split_fallback,True
+MP_chhind_1951:1961,MP_seoni_1961,Seoni,production,1.0,equal_split_fallback,0.35,1961,equal_split_fallback,True
+MP_gird_1951:1961,MP_gwalio_1961,Gwalior,area,1.0,equal_split_fallback,0.35,1961,equal_split_fallback,True
+MP_gird_1951:1961,MP_gwalio_1961,Gwalior,production,1.0,equal_split_fallback,0.35,1961,equal_split_fallback,True
+MP_goona_1951:1961,MP_guna_1961,Guna,area,1.0,equal_split_fallback,0.35,1961,equal_split_fallback,True
+MP_goona_1951:1961,MP_guna_1961,Guna,production,1.0,equal_split_fallback,0.35,1961,equal_split_fallback,True
+MP_narmad_1951:1961,MP_narsin_1961,Narsimhapur,area,1.0,equal_split_fallback,0.35,1961,equal_split_fallback,True
+MP_narmad_1951:1961,MP_narsin_1961,Narsimhapur,production,1.0,equal_split_fallback,0.35,1961,equal_split_fallback,True
+MP_nimar_1951:1961,MP_khandw_1961,East Nimar,area,0.5,equal_split_fallback,0.35,1961,equal_split_fallback,True
+MP_nimar_1951:1961,MP_khandw_1961,East Nimar,production,0.5,equal_split_fallback,0.35,1961,equal_split_fallback,True
+MP_nimar_1951:1961,MP_khargo_1961,Khargone,area,0.5,equal_split_fallback,0.35,1961,equal_split_fallback,True
+MP_nimar_1951:1961,MP_khargo_1961,Khargone,production,0.5,equal_split_fallback,0.35,1961,equal_split_fallback,True
+MP_sagar_1951:1961,MP_damoh_1961,Damoh,area,1.0,equal_split_fallback,0.35,1961,equal_split_fallback,True
+MP_sagar_1951:1961,MP_damoh_1961,Damoh,production,1.0,equal_split_fallback,0.35,1961,equal_split_fallback,True
+NL_tuensa_1951:1961,NL_mokokc_1961,Mokokchung,area,1.0,equal_split_fallback,0.35,1961,equal_split_fallback,True
+NL_tuensa_1951:1961,NL_mokokc_1961,Mokokchung,production,1.0,equal_split_fallback,0.35,1961,equal_split_fallback,True
+RJ_kotah_1951:1961,RJ_kota_1951,Kota,area,1.0,equal_split_fallback,0.35,1961,equal_split_fallback,True
+RJ_kotah_1951:1961,RJ_kota_1951,Kota,production,1.0,equal_split_fallback,0.35,1961,equal_split_fallback,True
+TG_warang_1951:1961,TG_khamma_1961,Khammam,area,1.0,equal_split_fallback,0.35,1961,equal_split_fallback,True
+TG_warang_1951:1961,TG_khamma_1961,Khammam,production,1.0,equal_split_fallback,0.35,1961,equal_split_fallback,True
+TN_thiruv_1951:1961,TN_kanniy_1961,Kanyakumari,area,1.0,equal_split_fallback,0.35,1961,equal_split_fallback,True
+TN_thiruv_1951:1961,TN_kanniy_1961,Kanyakumari,production,1.0,equal_split_fallback,0.35,1961,equal_split_fallback,True
+UK_almora_1951:1961,UK_pithor_1961,Pithoragarh,area,1.0,equal_split_fallback,0.35,1961,equal_split_fallback,True
+UK_almora_1951:1961,UK_pithor_1961,Pithoragarh,production,1.0,equal_split_fallback,0.35,1961,equal_split_fallback,True
+UK_garhwa_1951:1961,UK_chamol_1961,Chamoli,area,1.0,equal_split_fallback,0.35,1961,equal_split_fallback,True
+UK_garhwa_1951:1961,UK_chamol_1961,Chamoli,production,1.0,equal_split_fallback,0.35,1961,equal_split_fallback,True
+UK_tehri_1951:1961,UK_uttark_1961,Uttar Kashi,area,1.0,equal_split_fallback,0.35,1961,equal_split_fallback,True
+UK_tehri_1951:1961,UK_uttark_1961,Uttar Kashi,production,1.0,equal_split_fallback,0.35,1961,equal_split_fallback,True
+AR_lohitf_1961:1971,AR_lohit_1971,Lohit,area,1.0,equal_split_fallback,0.35,1971,equal_split_fallback,True
+AR_lohitf_1961:1971,AR_lohit_1971,Lohit,production,1.0,equal_split_fallback,0.35,1971,equal_split_fallback,True
+AR_siangf_1961:1971,AR_siang_1971,Siang,area,1.0,equal_split_fallback,0.35,1971,equal_split_fallback,True
+AR_siangf_1961:1971,AR_siang_1971,Siang,production,1.0,equal_split_fallback,0.35,1971,equal_split_fallback,True
+AR_tirapf_1951:1971,AR_tirap_1971,Tirap,area,1.0,equal_split_fallback,0.35,1971,equal_split_fallback,True
+AR_tirapf_1951:1971,AR_tirap_1971,Tirap,production,1.0,equal_split_fallback,0.35,1971,equal_split_fallback,True
+AS_united_1961:1971,AS_mikirh_1971,Mikir Hills,area,0.5,equal_split_fallback,0.35,1971,equal_split_fallback,True
+AS_united_1961:1971,AS_mikirh_1971,Mikir Hills,production,0.5,equal_split_fallback,0.35,1971,equal_split_fallback,True
+AS_united_1961:1971,AS_northc_1971,North Cachar Hills,area,0.5,equal_split_fallback,0.35,1971,equal_split_fallback,True
+AS_united_1961:1971,AS_northc_1971,North Cachar Hills,production,0.5,equal_split_fallback,0.35,1971,equal_split_fallback,True
+CH_ambala_1961:1971,CH_chandi_1971,Chandigarh,area,1.0,equal_split_fallback,0.35,1971,equal_split_fallback,True
+CH_ambala_1961:1971,CH_chandi_1971,Chandigarh,production,1.0,equal_split_fallback,0.35,1971,equal_split_fallback,True
+GJ_ahmeda_1961:1971,GJ_gandhi_1971,Gandhinagar,area,1.0,equal_split_fallback,0.35,1971,equal_split_fallback,True
+GJ_ahmeda_1961:1971,GJ_gandhi_1971,Gandhinagar,production,1.0,equal_split_fallback,0.35,1971,equal_split_fallback,True
+GJ_baroda_1961:1971,GJ_vadoda_1971,Vadodara,area,1.0,equal_split_fallback,0.35,1971,equal_split_fallback,True
+GJ_baroda_1961:1971,GJ_vadoda_1971,Vadodara,production,1.0,equal_split_fallback,0.35,1971,equal_split_fallback,True
+GJ_dangs_1961:1971,GJ_thedan_1971,The Dangs,area,1.0,equal_split_fallback,0.35,1971,equal_split_fallback,True
+GJ_dangs_1961:1971,GJ_thedan_1971,The Dangs,production,1.0,equal_split_fallback,0.35,1971,equal_split_fallback,True
+GJ_mahesa_1961:1971,GJ_gandhi_1971,Gandhinagar,area,1.0,equal_split_fallback,0.35,1971,equal_split_fallback,True
+GJ_mahesa_1961:1971,GJ_gandhi_1971,Gandhinagar,production,1.0,equal_split_fallback,0.35,1971,equal_split_fallback,True
+GJ_surat_1961:1971,GJ_valsad_1971,Valsad,area,1.0,equal_split_fallback,0.35,1971,equal_split_fallback,True
+GJ_surat_1961:1971,GJ_valsad_1971,Valsad,production,1.0,equal_split_fallback,0.35,1971,equal_split_fallback,True
+HP_kangra_1951:1971,HP_kulu_1971,Kulu,area,1.0,equal_split_fallback,0.35,1971,equal_split_fallback,True
+HP_kangra_1951:1971,HP_kulu_1971,Kulu,production,1.0,equal_split_fallback,0.35,1971,equal_split_fallback,True
+HP_lahaul_1961:1971,HP_lahula_1971,Lahul and Spiti,area,1.0,equal_split_fallback,0.35,1971,equal_split_fallback,True
+HP_lahaul_1961:1971,HP_lahula_1971,Lahul and Spiti,production,1.0,equal_split_fallback,0.35,1971,equal_split_fallback,True
+HR_sangru_1961:1971,HR_jind_1971,Jind,area,1.0,equal_split_fallback,0.35,1971,equal_split_fallback,True
+HR_sangru_1961:1971,HR_jind_1971,Jind,production,1.0,equal_split_fallback,0.35,1971,equal_split_fallback,True
+JK_poonch_1961:1971,JK_punch_1971,Punch,area,0.5,equal_split_fallback,0.35,1971,equal_split_fallback,True
+JK_poonch_1961:1971,JK_punch_1971,Punch,production,0.5,equal_split_fallback,0.35,1971,equal_split_fallback,True
+JK_poonch_1961:1971,JK_rajaur_1971,Rajauri,area,0.5,equal_split_fallback,0.35,1971,equal_split_fallback,True
+JK_poonch_1961:1971,JK_rajaur_1971,Rajauri,production,0.5,equal_split_fallback,0.35,1971,equal_split_fallback,True
+PB_hoshia_1961:1971,PB_ropar_1971,Ropar,area,1.0,equal_split_fallback,0.35,1971,equal_split_fallback,True
+PB_hoshia_1961:1971,PB_ropar_1971,Ropar,production,1.0,equal_split_fallback,0.35,1971,equal_split_fallback,True
+TN_salem_1961:1971,TN_dharma_1971,Dharmapuri,area,1.0,equal_split_fallback,0.35,1971,equal_split_fallback,True
+TN_salem_1961:1971,TN_dharma_1971,Dharmapuri,production,1.0,equal_split_fallback,0.35,1971,equal_split_fallback,True
+TR_tripur_1951:1971,TR_northt_1971,North Tripura,area,0.333333,equal_split_fallback,0.35,1971,equal_split_fallback,True
+TR_tripur_1951:1971,TR_northt_1971,North Tripura,production,0.333333,equal_split_fallback,0.35,1971,equal_split_fallback,True
+TR_tripur_1951:1971,TR_southt_1971,South Tripura,area,0.333333,equal_split_fallback,0.35,1971,equal_split_fallback,True
+TR_tripur_1951:1971,TR_southt_1971,South Tripura,production,0.333333,equal_split_fallback,0.35,1971,equal_split_fallback,True
+TR_tripur_1951:1971,TR_westtr_1971,West Tripura,area,0.333333,equal_split_fallback,0.35,1971,equal_split_fallback,True
+TR_tripur_1951:1971,TR_westtr_1971,West Tripura,production,0.333333,equal_split_fallback,0.35,1971,equal_split_fallback,True
+WB_24parg_1961:1971,WB_south2_1971,Twenty Four Parganas,area,1.0,equal_split_fallback,0.35,1971,equal_split_fallback,True
+WB_24parg_1961:1971,WB_south2_1971,Twenty Four Parganas,production,1.0,equal_split_fallback,0.35,1971,equal_split_fallback,True
+AN_andama_1971:1981,AN_nicoba_1981,Nicobar,area,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+AN_andama_1971:1981,AN_nicoba_1981,Nicobar,production,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+AP_srikak_1971:1981,AP_vizian_1981,Vizianagaram,area,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+AP_srikak_1971:1981,AP_vizian_1981,Vizianagaram,production,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+AP_sripot_1971:1981,AP_prakas_1981,Prakasam,area,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+AP_sripot_1971:1981,AP_prakas_1981,Prakasam,production,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+AP_visakh_1961:1981,AP_vizian_1981,Vizianagaram,area,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+AP_visakh_1961:1981,AP_vizian_1981,Vizianagaram,production,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+AR_kameng_1961:1981,AR_eastka_1981,East Kameng,area,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+AR_kameng_1961:1981,AR_eastka_1981,East Kameng,production,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+AR_kameng_1961:1981,AR_westka_1981,West Kameng,area,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+AR_kameng_1961:1981,AR_westka_1981,West Kameng,production,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+AR_siang_1971:1981,AR_westsi_1981,West Siang,area,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+AR_siang_1971:1981,AR_westsi_1981,West Siang,production,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+AR_subans_1961:1981,AR_lowers_1981,Lower Siang,area,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+AR_subans_1961:1981,AR_lowers_1981,Lower Siang,production,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+AR_subans_1961:1981,AR_uppers_1981,Upper Siang,area,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+AR_subans_1961:1981,AR_uppers_1981,Upper Siang,production,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+AR_tirap_1971:1981,AR_dibang_1981,Dibang Valley,area,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+AR_tirap_1971:1981,AR_dibang_1981,Dibang Valley,production,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+AS_lakhim_1971:1981,AS_dibrug_1981,Dibrugarh,area,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+AS_lakhim_1971:1981,AS_dibrug_1981,Dibrugarh,production,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+AS_mikirh_1971:1981,AS_karbia_1981,Karbi Anglong,area,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+AS_mikirh_1971:1981,AS_karbia_1981,Karbi Anglong,production,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+AS_nowgon_1971:1981,AS_nagaon_1981,Nagaon,area,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+AS_nowgon_1971:1981,AS_nagaon_1981,Nagaon,production,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+BR_champa_1971:1981,BR_pashch_1981,Pashchim Champaran,area,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+BR_champa_1971:1981,BR_pashch_1981,Pashchim Champaran,production,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+BR_champa_1971:1981,BR_purbac_1981,Purba Champaran,area,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+BR_champa_1971:1981,BR_purbac_1981,Purba Champaran,production,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+BR_darbha_1971:1981,BR_madhub_1981,Madhubani,area,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+BR_darbha_1971:1981,BR_madhub_1981,Madhubani,production,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+BR_darbha_1971:1981,BR_samast_1981,Samastipur,area,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+BR_darbha_1971:1981,BR_samast_1981,Samastipur,production,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+BR_gaya_1971:1981,BR_aurang_1981,Aurangabad,area,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+BR_gaya_1971:1981,BR_aurang_1981,Aurangabad,production,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+BR_gaya_1971:1981,BR_nawada_1981,Nawada,area,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+BR_gaya_1971:1981,BR_nawada_1981,Nawada,production,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+BR_monghy_1971:1981,BR_begusa_1981,Begusarai,area,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+BR_monghy_1971:1981,BR_begusa_1981,Begusarai,production,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+BR_monghy_1971:1981,BR_munger_1981,Munger,area,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+BR_monghy_1971:1981,BR_munger_1981,Munger,production,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+BR_muzaff_1971:1981,BR_sitama_1981,Sitamarhi,area,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+BR_muzaff_1971:1981,BR_sitama_1981,Sitamarhi,production,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+BR_muzaff_1971:1981,BR_vaisha_1981,Vaishali,area,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+BR_muzaff_1971:1981,BR_vaisha_1981,Vaishali,production,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+BR_patna_1971:1981,BR_naland_1981,Nalanda,area,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+BR_patna_1971:1981,BR_naland_1981,Nalanda,production,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+BR_purnea_1971:1981,BR_katiha_1981,Katihar,area,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+BR_purnea_1971:1981,BR_katiha_1981,Katihar,production,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+BR_purnea_1971:1981,BR_purnia_1981,Purnia,area,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+BR_purnea_1971:1981,BR_purnia_1981,Purnia,production,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+BR_saran_1971:1981,BR_gopalg_1981,Gopalganj,area,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+BR_saran_1971:1981,BR_gopalg_1981,Gopalganj,production,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+BR_saran_1971:1981,BR_siwan_1981,Siwan,area,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+BR_saran_1971:1981,BR_siwan_1981,Siwan,production,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+BR_shahab_1971:1981,BR_bhojpu_1981,Bhojpur,area,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+BR_shahab_1971:1981,BR_bhojpu_1981,Bhojpur,production,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+BR_shahab_1971:1981,BR_rohtas_1981,Rohtas,area,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+BR_shahab_1971:1981,BR_rohtas_1981,Rohtas,production,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+CG_durg_1971:1981,CG_rajnan_1981,Raj Nandgaon,area,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+CG_durg_1971:1981,CG_rajnan_1981,Raj Nandgaon,production,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+GJ_kutch_1971:1981,GJ_kachch_1981,Kachchh,area,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+GJ_kutch_1971:1981,GJ_kachch_1981,Kachchh,production,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+HP_kangra_1951:1981,HP_hamirp_1981,Hamirpur,area,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+HP_kangra_1951:1981,HP_hamirp_1981,Hamirpur,production,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+HP_kangra_1951:1981,HP_una_1981,Una,area,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+HP_kangra_1951:1981,HP_una_1981,Una,production,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+HP_kulu_1971:1981,HP_kullu_1981,Kullu,area,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+HP_kulu_1971:1981,HP_kullu_1981,Kullu,production,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+HP_mahasu_1951:1981,HP_shimla_1961,Simla,area,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+HP_mahasu_1951:1981,HP_shimla_1961,Simla,production,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+HP_mahasu_1951:1981,HP_solan_1981,Solan,area,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+HP_mahasu_1951:1981,HP_solan_1981,Solan,production,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+HP_shimla_1961:1981,HP_solan_1981,Solan,area,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+HP_shimla_1961:1981,HP_solan_1981,Solan,production,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+HR_guruga_1951:1981,HR_farida_1981,Faridabad,area,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+HR_guruga_1951:1981,HR_farida_1981,Faridabad,production,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+HR_guruga_1951:1981,HR_mahend_1951,Mahendragarh,area,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+HR_guruga_1951:1981,HR_mahend_1951,Mahendragarh,production,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+HR_hisar_1951:1981,HR_bhiwan_1981,Bhiwani,area,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+HR_hisar_1951:1981,HR_bhiwan_1981,Bhiwani,production,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+HR_hisar_1951:1981,HR_sirsa_1981,Sirsa,area,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+HR_hisar_1951:1981,HR_sirsa_1981,Sirsa,production,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+HR_karnal_1951:1981,HR_kuruks_1981,Kurukshetra,area,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+HR_karnal_1951:1981,HR_kuruks_1981,Kurukshetra,production,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+HR_rohtak_1951:1981,HR_karnal_1951,Karnal,area,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+HR_rohtak_1951:1981,HR_karnal_1951,Karnal,production,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+HR_rohtak_1951:1981,HR_sonipa_1981,Sonipat,area,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+HR_rohtak_1951:1981,HR_sonipa_1981,Sonipat,production,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+JH_hazari_1971:1981,JH_giridi_1981,Giridih,area,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+JH_hazari_1971:1981,JH_giridi_1981,Giridih,production,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+JK_baramu_1961:1981,JK_kupwar_1981,Kupwara,area,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+JK_baramu_1961:1981,JK_kupwar_1981,Kupwara,production,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+JK_ladakh_1961:1981,JK_kargil_1981,Kargil,area,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+JK_ladakh_1961:1981,JK_kargil_1981,Kargil,production,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+JK_srinag_1961:1981,JK_badgam_1981,Badgam,area,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+JK_srinag_1961:1981,JK_badgam_1981,Badgam,production,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+JK_srinag_1961:1981,JK_pulwam_1981,Pulwama,area,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+JK_srinag_1961:1981,JK_pulwam_1981,Pulwama,production,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+KL_ernaku_1961:1981,KL_idukki_1981,Idukki,area,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+KL_ernaku_1961:1981,KL_idukki_1981,Idukki,production,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+KL_kannur_1961:1981,KL_wayana_1981,Wayanad,area,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+KL_kannur_1961:1981,KL_wayana_1981,Wayanad,production,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+KL_kottay_1951:1981,KL_idukki_1981,Idukki,area,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+KL_kottay_1951:1981,KL_idukki_1981,Idukki,production,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+KL_kozhik_1961:1981,KL_wayana_1981,Wayanad,area,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+KL_kozhik_1961:1981,KL_wayana_1981,Wayanad,production,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+MH_bhir_1971:1981,MH_bid_1981,Bid,area,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+MH_bhir_1971:1981,MH_bid_1981,Bid,production,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+MH_kolaba_1971:1981,MH_raigar_1981,Raigarh,area,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+MH_kolaba_1971:1981,MH_raigar_1981,Raigarh,production,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+MH_nasik_1971:1981,MH_nashik_1981,Nashik,area,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+MH_nasik_1971:1981,MH_nashik_1981,Nashik,production,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+MH_sholap_1971:1981,MH_solapu_1981,Solapur,area,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+MH_sholap_1971:1981,MH_solapu_1981,Solapur,production,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+MH_yavatman_1971:1981,MH_yavatma_1981,Yavatmal,area,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+MH_yavatman_1971:1981,MH_yavatma_1981,Yavatmal,production,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+ML_ekhasi_1971:1981,ML_eastkh_1981,East Khasi Hills,area,0.333333,equal_split_fallback,0.35,1981,equal_split_fallback,True
+ML_ekhasi_1971:1981,ML_eastkh_1981,East Khasi Hills,production,0.333333,equal_split_fallback,0.35,1981,equal_split_fallback,True
+ML_ekhasi_1971:1981,ML_jainti_1981,Jaintia Hills,area,0.333333,equal_split_fallback,0.35,1981,equal_split_fallback,True
+ML_ekhasi_1971:1981,ML_jainti_1981,Jaintia Hills,production,0.333333,equal_split_fallback,0.35,1981,equal_split_fallback,True
+ML_ekhasi_1971:1981,ML_westkh_1981,West Khasi Hills,area,0.333333,equal_split_fallback,0.35,1981,equal_split_fallback,True
+ML_ekhasi_1971:1981,ML_westkh_1981,West Khasi Hills,production,0.333333,equal_split_fallback,0.35,1981,equal_split_fallback,True
+ML_garohi_1971:1981,ML_eastga_1981,East Garo Hills,area,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+ML_garohi_1971:1981,ML_eastga_1981,East Garo Hills,production,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+ML_garohi_1971:1981,ML_westga_1981,West Garo Hills,area,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+ML_garohi_1971:1981,ML_westga_1981,West Garo Hills,production,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+MN_manipu_1951:1981,MN_tengno_1951,Chandel,area,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+MN_manipu_1951:1981,MN_tengno_1951,Chandel,production,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+MP_sehore_1971:1981,MP_bhopal_1981,Bhopal,area,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+MP_sehore_1971:1981,MP_bhopal_1981,Bhopal,production,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+MZ_mizora_1951:1981,MZ_aizawl_1981,Aizawl,area,0.333333,equal_split_fallback,0.35,1981,equal_split_fallback,True
+MZ_mizora_1951:1981,MZ_aizawl_1981,Aizawl,production,0.333333,equal_split_fallback,0.35,1981,equal_split_fallback,True
+MZ_mizora_1951:1981,MZ_chhimt_1981,Chhimtuipui,area,0.333333,equal_split_fallback,0.35,1981,equal_split_fallback,True
+MZ_mizora_1951:1981,MZ_chhimt_1981,Chhimtuipui,production,0.333333,equal_split_fallback,0.35,1981,equal_split_fallback,True
+MZ_mizora_1951:1981,MZ_lungle_1981,Lunglei,area,0.333333,equal_split_fallback,0.35,1981,equal_split_fallback,True
+MZ_mizora_1951:1981,MZ_lungle_1981,Lunglei,production,0.333333,equal_split_fallback,0.35,1981,equal_split_fallback,True
+NL_kohima_1951:1981,NL_phek_1981,Phek,area,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+NL_kohima_1951:1981,NL_phek_1981,Phek,production,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+NL_mokokc_1961:1981,NL_wokha_1981,Wokha,area,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+NL_mokokc_1961:1981,NL_wokha_1981,Wokha,production,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+NL_mokokc_1961:1981,NL_zunheb_1981,Zunheboto,area,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+NL_mokokc_1961:1981,NL_zunheb_1981,Zunheboto,production,0.5,equal_split_fallback,0.35,1981,equal_split_fallback,True
+NL_tuensa_1951:1981,NL_mon_1981,Mon,area,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+NL_tuensa_1951:1981,NL_mon_1981,Mon,production,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+OD_balaso_1971:1981,OD_balesh_1981,Baleshwar,area,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+OD_balaso_1971:1981,OD_balesh_1981,Baleshwar,production,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+OD_bolang_1971:1981,OD_balang_1981,Balangir,area,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+OD_bolang_1971:1981,OD_balang_1981,Balangir,production,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+OD_keonjh_1971:1981,OD_kenduj_1981,Kendujhar,area,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+OD_keonjh_1971:1981,OD_kenduj_1981,Kendujhar,production,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+PB_bhatin_1951:1981,PB_faridk_1981,Faridkot,area,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+PB_bhatin_1951:1981,PB_faridk_1981,Faridkot,production,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+PB_firozp_1951:1981,PB_faridk_1981,Faridkot,area,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+PB_firozp_1951:1981,PB_faridk_1981,Faridkot,production,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+PB_ropar_1971:1981,PB_rupnag_1981,Rupnagar,area,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+PB_ropar_1971:1981,PB_rupnag_1981,Rupnagar,production,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+SK_sikkim_1971:1981,SK_eastdi_1981,East District,area,0.25,equal_split_fallback,0.35,1981,equal_split_fallback,True
+SK_sikkim_1971:1981,SK_eastdi_1981,East District,production,0.25,equal_split_fallback,0.35,1981,equal_split_fallback,True
+SK_sikkim_1971:1981,SK_northd_1981,North District,area,0.25,equal_split_fallback,0.35,1981,equal_split_fallback,True
+SK_sikkim_1971:1981,SK_northd_1981,North District,production,0.25,equal_split_fallback,0.35,1981,equal_split_fallback,True
+SK_sikkim_1971:1981,SK_southd_1981,South District,area,0.25,equal_split_fallback,0.35,1981,equal_split_fallback,True
+SK_sikkim_1971:1981,SK_southd_1981,South District,production,0.25,equal_split_fallback,0.35,1981,equal_split_fallback,True
+SK_sikkim_1971:1981,SK_westdi_1981,West District,area,0.25,equal_split_fallback,0.35,1981,equal_split_fallback,True
+SK_sikkim_1971:1981,SK_westdi_1981,West District,production,0.25,equal_split_fallback,0.35,1981,equal_split_fallback,True
+TG_hydera_1971:1981,TG_rangar_1981,Rangareddi,area,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+TG_hydera_1971:1981,TG_rangar_1981,Rangareddi,production,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+TN_coimba_1951:1981,TN_periya_1981,Periyar,area,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+TN_coimba_1951:1981,TN_periya_1981,Periyar,production,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+TN_thanja_1951:1981,TN_pudukk_1981,Pudukkottai,area,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+TN_thanja_1951:1981,TN_pudukk_1981,Pudukkottai,production,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+TN_tiruch_1971:1981,TN_pudukk_1981,Pudukkottai,area,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+TN_tiruch_1971:1981,TN_pudukk_1981,Pudukkottai,production,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+UP_buland_1971:1981,UP_ghazia_1981,Ghaziabad,area,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+UP_buland_1971:1981,UP_ghazia_1981,Ghaziabad,production,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+UP_jhansi_1971:1981,UP_lalitp_1981,Lalitpur,area,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+UP_jhansi_1971:1981,UP_lalitp_1981,Lalitpur,production,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+UP_meerut_1951:1981,UP_ghazia_1981,Ghaziabad,area,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+UP_meerut_1951:1981,UP_ghazia_1981,Ghaziabad,production,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+WB_hooghl_1971:1981,WB_hugli_1981,Hugli,area,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+WB_hooghl_1971:1981,WB_hugli_1981,Hugli,production,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+WB_malda_1971:1981,WB_maldah_1981,Maldah,area,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+WB_malda_1971:1981,WB_maldah_1981,Maldah,production,1.0,equal_split_fallback,0.35,1981,equal_split_fallback,True
+AP_vishak_1981:1991,AP_visakh_1961,Visakhapatnam,area,1.0,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+AP_vishak_1981:1991,AP_visakh_1961,Visakhapatnam,production,1.0,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+AR_tirap_1971:1991,AR_changl_1991,Changlang,area,1.0,equal_split_fallback,0.35,1991,equal_split_fallback,True
+AR_tirap_1971:1991,AR_changl_1991,Changlang,production,1.0,equal_split_fallback,0.35,1991,equal_split_fallback,True
+AR_westka_1981:1991,AR_tawang_1991,Tawang,area,1.0,equal_split_fallback,0.35,1991,equal_split_fallback,True
+AR_westka_1981:1991,AR_tawang_1991,Tawang,production,1.0,equal_split_fallback,0.35,1991,equal_split_fallback,True
+AS_cachar_1981:1991,AS_hailak_1991,Hailakandi,area,0.362772,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+AS_cachar_1981:1991,AS_hailak_1991,Hailakandi,production,0.362772,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+AS_cachar_1981:1991,AS_karimg_1991,Karimganj,area,0.637228,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+AS_cachar_1981:1991,AS_karimg_1991,Karimganj,production,0.637228,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+AS_darran_1981:1991,AS_sonitp_1991,Sonitpur,area,1.0,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+AS_darran_1981:1991,AS_sonitp_1991,Sonitpur,production,1.0,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+AS_dibrug_1981:1991,AS_tinsuk_1991,Tinsukia,area,1.0,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+AS_dibrug_1981:1991,AS_tinsuk_1991,Tinsukia,production,1.0,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+AS_goalpa_1981:1991,AS_bongai_1991,Bongaigaon,area,0.333333,equal_split_fallback,0.35,1991,equal_split_fallback,True
+AS_goalpa_1981:1991,AS_bongai_1991,Bongaigaon,production,0.333333,equal_split_fallback,0.35,1991,equal_split_fallback,True
+AS_goalpa_1981:1991,AS_dhubur_1991,Dhuburi,area,0.333333,equal_split_fallback,0.35,1991,equal_split_fallback,True
+AS_goalpa_1981:1991,AS_dhubur_1991,Dhuburi,production,0.333333,equal_split_fallback,0.35,1991,equal_split_fallback,True
+AS_goalpa_1981:1991,AS_kokraj_1991,Kokrajhar,area,0.333333,equal_split_fallback,0.35,1991,equal_split_fallback,True
+AS_goalpa_1981:1991,AS_kokraj_1991,Kokrajhar,production,0.333333,equal_split_fallback,0.35,1991,equal_split_fallback,True
+AS_kamrup_1981:1991,AS_barpet_1991,Barpeta,area,0.620985,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+AS_kamrup_1981:1991,AS_barpet_1991,Barpeta,production,0.620985,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+AS_kamrup_1981:1991,AS_nalbar_1991,Nalbari,area,0.379015,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+AS_kamrup_1981:1991,AS_nalbar_1991,Nalbari,production,0.379015,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+AS_lakhim_1971:1991,AS_dhemaj_1991,Dhemaji,area,1.0,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+AS_lakhim_1971:1991,AS_dhemaj_1991,Dhemaji,production,1.0,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+AS_nagaon_1981:1991,AS_mariga_1991,Marigaon,area,1.0,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+AS_nagaon_1981:1991,AS_mariga_1991,Marigaon,production,1.0,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+AS_sivasa_1981:1991,AS_golagh_1991,Golaghat,area,0.48622,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+AS_sivasa_1981:1991,AS_golagh_1991,Golaghat,production,0.48622,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+AS_sivasa_1981:1991,AS_jorhat_1991,Jorhat,area,0.51378,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+AS_sivasa_1981:1991,AS_jorhat_1991,Jorhat,production,0.51378,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+BR_gaya_1971:1991,BR_jehana_1991,Jehanabad,area,1.0,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+BR_gaya_1971:1991,BR_jehana_1991,Jehanabad,production,1.0,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+BR_munger_1981:1991,BR_khagar_1991,Khagaria,area,1.0,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+BR_munger_1981:1991,BR_khagar_1991,Khagaria,production,1.0,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+BR_purnia_1981:1991,BR_araria_1991,Araria,area,0.622281,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+BR_purnia_1981:1991,BR_araria_1991,Araria,production,0.622281,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+BR_purnia_1981:1991,BR_kishan_1991,Kishanganj,area,0.377719,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+BR_purnia_1981:1991,BR_kishan_1991,Kishanganj,production,0.377719,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+BR_sahars_1981:1991,BR_madhep_1991,Madhepura,area,1.0,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+BR_sahars_1981:1991,BR_madhep_1991,Madhepura,production,1.0,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+GA_goa_1981:1991,GA_northg_1991,North Goa,area,0.5,equal_split_fallback,0.35,1991,equal_split_fallback,True
+GA_goa_1981:1991,GA_northg_1991,North Goa,production,0.5,equal_split_fallback,0.35,1991,equal_split_fallback,True
+GA_goa_1981:1991,GA_southg_1991,South Goa,area,0.5,equal_split_fallback,0.35,1991,equal_split_fallback,True
+GA_goa_1981:1991,GA_southg_1991,South Goa,production,0.5,equal_split_fallback,0.35,1991,equal_split_fallback,True
+HR_ambala_1951:1991,HR_yamuna_1991,Yamunanagar,area,1.0,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+HR_ambala_1951:1991,HR_yamuna_1991,Yamunanagar,production,1.0,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+HR_karnal_1951:1991,HR_panipa_1991,Panipat,area,1.0,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+HR_karnal_1951:1991,HR_panipa_1991,Panipat,production,1.0,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+HR_kuruks_1981:1991,HR_kaitha_1991,Kaithal,area,1.0,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+HR_kuruks_1981:1991,HR_kaitha_1991,Kaithal,production,1.0,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+HR_mahend_1951:1991,HR_rewari_1991,Rewari,area,1.0,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+HR_mahend_1951:1991,HR_rewari_1991,Rewari,production,1.0,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+JH_psingh_1981:1991,JH_purbis_1991,Purbi Singhbhum,area,1.0,equal_split_fallback,0.35,1991,equal_split_fallback,True
+JH_psingh_1981:1991,JH_purbis_1991,Purbi Singhbhum,production,1.0,equal_split_fallback,0.35,1991,equal_split_fallback,True
+JH_ranchi_1981:1991,JH_gumla_1991,Gumla,area,0.840622,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+JH_ranchi_1981:1991,JH_gumla_1991,Gumla,production,0.840622,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+JH_ranchi_1981:1991,JH_lohard_1991,Lohardaga,area,0.159378,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+JH_ranchi_1981:1991,JH_lohard_1991,Lohardaga,production,0.159378,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+JH_santha_1971:1991,JH_deogha_1991,Deoghar,area,0.25,equal_split_fallback,0.35,1991,equal_split_fallback,True
+JH_santha_1971:1991,JH_deogha_1991,Deoghar,production,0.25,equal_split_fallback,0.35,1991,equal_split_fallback,True
+JH_santha_1971:1991,JH_dumka_1991,Dumka,area,0.25,equal_split_fallback,0.35,1991,equal_split_fallback,True
+JH_santha_1971:1991,JH_dumka_1991,Dumka,production,0.25,equal_split_fallback,0.35,1991,equal_split_fallback,True
+JH_santha_1971:1991,JH_godda_1991,Godda,area,0.25,equal_split_fallback,0.35,1991,equal_split_fallback,True
+JH_santha_1971:1991,JH_godda_1991,Godda,production,0.25,equal_split_fallback,0.35,1991,equal_split_fallback,True
+JH_santha_1971:1991,JH_sahibg_1991,Sahibganj,area,0.25,equal_split_fallback,0.35,1991,equal_split_fallback,True
+JH_santha_1971:1991,JH_sahibg_1991,Sahibganj,production,0.25,equal_split_fallback,0.35,1991,equal_split_fallback,True
+KL_alappu_1961:1991,KL_pathan_1991,Pathanamthitta,area,1.0,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+KL_alappu_1961:1991,KL_pathan_1991,Pathanamthitta,production,1.0,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+KL_idukki_1981:1991,KL_pathan_1991,Pathanamthitta,area,1.0,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+KL_idukki_1981:1991,KL_pathan_1991,Pathanamthitta,production,1.0,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+KL_kannur_1961:1991,KL_kasarg_1991,Kasargod,area,1.0,equal_split_fallback,0.35,1991,equal_split_fallback,True
+KL_kannur_1961:1991,KL_kasarg_1991,Kasargod,production,1.0,equal_split_fallback,0.35,1991,equal_split_fallback,True
+KL_kollam_1951:1991,KL_pathan_1991,Pathanamthitta,area,1.0,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+KL_kollam_1951:1991,KL_pathan_1991,Pathanamthitta,production,1.0,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+KL_palgha_1961:1991,KL_palakk_1991,Palakkad,area,1.0,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+KL_palgha_1961:1991,KL_palakk_1991,Palakkad,production,1.0,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+MH_aurang_1981:1991,MH_jalna_1991,Jalna,area,1.0,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+MH_aurang_1981:1991,MH_jalna_1991,Jalna,production,1.0,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+MH_chandr_1961:1991,MH_gadchi_1991,Gadchiroli,area,1.0,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+MH_chandr_1961:1991,MH_gadchi_1991,Gadchiroli,production,1.0,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+MH_dharas_1981:1991,MH_latur_1991,Latur,area,1.0,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+MH_dharas_1981:1991,MH_latur_1991,Latur,production,1.0,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+MH_ratnag_1981:1991,MH_sindhu_1991,Sindhudurg,area,1.0,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+MH_ratnag_1981:1991,MH_sindhu_1991,Sindhudurg,production,1.0,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+MN_manipu_1951:1991,MN_bishnu_1991,Bishnupur,area,0.142857,equal_split_fallback,0.35,1991,equal_split_fallback,True
+MN_manipu_1951:1991,MN_bishnu_1991,Bishnupur,production,0.142857,equal_split_fallback,0.35,1991,equal_split_fallback,True
+MN_manipu_1951:1991,MN_churac_1991,Churachandpur,area,0.142857,equal_split_fallback,0.35,1991,equal_split_fallback,True
+MN_manipu_1951:1991,MN_churac_1991,Churachandpur,production,0.142857,equal_split_fallback,0.35,1991,equal_split_fallback,True
+MN_manipu_1951:1991,MN_imphal_1991,Imphal,area,0.142857,equal_split_fallback,0.35,1991,equal_split_fallback,True
+MN_manipu_1951:1991,MN_imphal_1991,Imphal,production,0.142857,equal_split_fallback,0.35,1991,equal_split_fallback,True
+MN_manipu_1951:1991,MN_senapa_1991,Senapati,area,0.142857,equal_split_fallback,0.35,1991,equal_split_fallback,True
+MN_manipu_1951:1991,MN_senapa_1991,Senapati,production,0.142857,equal_split_fallback,0.35,1991,equal_split_fallback,True
+MN_manipu_1951:1991,MN_tameng_1991,Tamenglong,area,0.142857,equal_split_fallback,0.35,1991,equal_split_fallback,True
+MN_manipu_1951:1991,MN_tameng_1991,Tamenglong,production,0.142857,equal_split_fallback,0.35,1991,equal_split_fallback,True
+MN_manipu_1951:1991,MN_thouba_1991,Thoubal,area,0.142857,equal_split_fallback,0.35,1991,equal_split_fallback,True
+MN_manipu_1951:1991,MN_thouba_1991,Thoubal,production,0.142857,equal_split_fallback,0.35,1991,equal_split_fallback,True
+MN_manipu_1951:1991,MN_ukhrul_1991,Ukhrul,area,0.142857,equal_split_fallback,0.35,1991,equal_split_fallback,True
+MN_manipu_1951:1991,MN_ukhrul_1991,Ukhrul,production,0.142857,equal_split_fallback,0.35,1991,equal_split_fallback,True
+RJ_bharat_1981:1991,RJ_dhaulp_1991,Dhaulpur,area,1.0,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+RJ_bharat_1981:1991,RJ_dhaulp_1991,Dhaulpur,production,1.0,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+TN_madura_1951:1991,TN_dindig_1991,Dindigul Anna,area,1.0,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+TN_madura_1951:1991,TN_dindig_1991,Dindigul Anna,production,1.0,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+TN_narcot_1981:1991,TN_tiruva_1991,Tiruvannamalai Sambuvarayar,area,1.0,equal_split_fallback,0.35,1991,equal_split_fallback,True
+TN_narcot_1981:1991,TN_tiruva_1991,Tiruvannamalai Sambuvarayar,production,1.0,equal_split_fallback,0.35,1991,equal_split_fallback,True
+TN_ramana_1981:1991,TN_kamara_1991,Kamarajar,area,0.5,equal_split_fallback,0.35,1991,equal_split_fallback,True
+TN_ramana_1981:1991,TN_kamara_1991,Kamarajar,production,0.5,equal_split_fallback,0.35,1991,equal_split_fallback,True
+TN_ramana_1981:1991,TN_pasump_1991,Pasumpon Muthuramalinga Thevar,area,0.5,equal_split_fallback,0.35,1991,equal_split_fallback,True
+TN_ramana_1981:1991,TN_pasump_1991,Pasumpon Muthuramalinga Thevar,production,0.5,equal_split_fallback,0.35,1991,equal_split_fallback,True
+TN_tirune_1981:1991,TN_chidam_1991,Chidambaranar,area,1.0,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+TN_tirune_1981:1991,TN_chidam_1991,Chidambaranar,production,1.0,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+UK_sahara_1981:1991,UK_hardwa_1991,Hardwar,area,1.0,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+UK_sahara_1981:1991,UK_hardwa_1991,Hardwar,production,1.0,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+UP_agra_1981:1991,UP_firoza_1991,Firozabad,area,1.0,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+UP_agra_1981:1991,UP_firoza_1991,Firozabad,production,1.0,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+UP_azamga_1981:1991,UP_mau_1991,Mau,area,1.0,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+UP_azamga_1981:1991,UP_mau_1991,Mau,production,1.0,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+UP_basti_1981:1991,UP_siddha_1991,Siddharthnagar,area,1.0,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+UP_basti_1981:1991,UP_siddha_1991,Siddharthnagar,production,1.0,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+UP_gorakh_1981:1991,UP_mahara_1991,Maharajganj,area,1.0,equal_split_fallback,0.35,1991,equal_split_fallback,True
+UP_gorakh_1981:1991,UP_mahara_1991,Maharajganj,production,1.0,equal_split_fallback,0.35,1991,equal_split_fallback,True
+UP_mainpu_1981:1991,UP_firoza_1991,Firozabad,area,1.0,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+UP_mainpu_1981:1991,UP_firoza_1991,Firozabad,production,1.0,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+UP_mirzap_1981:1991,UP_sonbha_1991,Sonbhadra,area,1.0,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+UP_mirzap_1981:1991,UP_sonbha_1991,Sonbhadra,production,1.0,post_split_crop_area_proxy,0.6,1991,average_total_crop_area_next_3_years,False
+WB_south2_1971:1991,WB_northt_1991,North Twenty Four Parganas,area,0.5,equal_split_fallback,0.35,1991,equal_split_fallback,True
+WB_south2_1971:1991,WB_northt_1991,North Twenty Four Parganas,production,0.5,equal_split_fallback,0.35,1991,equal_split_fallback,True
+WB_south2_1971:1991,WB_southt_1991,South Twenty Four Parganas,area,0.5,equal_split_fallback,0.35,1991,equal_split_fallback,True
+WB_south2_1971:1991,WB_southt_1991,South Twenty Four Parganas,production,0.5,equal_split_fallback,0.35,1991,equal_split_fallback,True
+AR_eastsi_1981:2001,AR_uppers_1981,Upper Siang,area,1.0,equal_split_fallback,0.35,2001,equal_split_fallback,True
+AR_eastsi_1981:2001,AR_uppers_1981,Upper Siang,production,1.0,equal_split_fallback,0.35,2001,equal_split_fallback,True
+AR_lowers_1981:2001,AR_papump_2001,Papum Pare,area,1.0,equal_split_fallback,0.35,2001,equal_split_fallback,True
+AR_lowers_1981:2001,AR_papump_2001,Papum Pare,production,1.0,equal_split_fallback,0.35,2001,equal_split_fallback,True
+BR_bhagal_1991:2001,BR_banka_2001,Banka,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+BR_bhagal_1991:2001,BR_banka_2001,Banka,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+BR_bhojpu_1981:2001,BR_buxar_2001,Buxar,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+BR_bhojpu_1981:2001,BR_buxar_2001,Buxar,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+BR_munger_1981:2001,BR_jamui_2001,Jamui,area,0.411243,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+BR_munger_1981:2001,BR_jamui_2001,Jamui,production,0.411243,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+BR_munger_1981:2001,BR_lakhis_2001,Lakhisarai,area,0.341732,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+BR_munger_1981:2001,BR_lakhis_2001,Lakhisarai,production,0.341732,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+BR_munger_1981:2001,BR_sheikh_2001,Sheikhpura,area,0.247025,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+BR_munger_1981:2001,BR_sheikh_2001,Sheikhpura,production,0.247025,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+BR_rohtas_1981:2001,BR_kaimur_2001,Kaimur (Bhabua),area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+BR_rohtas_1981:2001,BR_kaimur_2001,Kaimur (Bhabua),production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+BR_sahars_1981:2001,BR_supaul_2001,Supaul,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+BR_sahars_1981:2001,BR_supaul_2001,Supaul,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+BR_sitama_1981:2001,BR_sheoha_2001,Sheohar,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+BR_sitama_1981:2001,BR_sheoha_2001,Sheohar,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+CG_bastar_1991:2001,CG_dantew_2001,Dantewada,area,0.551813,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+CG_bastar_1991:2001,CG_dantew_2001,Dantewada,production,0.551813,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+CG_bastar_1991:2001,CG_kanker_2001,Kanker,area,0.448187,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+CG_bastar_1991:2001,CG_kanker_2001,Kanker,production,0.448187,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+CG_bilasp_1991:2001,CG_janjgi_2001,Janjgir-Champa,area,0.665281,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+CG_bilasp_1991:2001,CG_janjgi_2001,Janjgir-Champa,production,0.665281,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+CG_bilasp_1991:2001,CG_korba_2001,Korba,area,0.334719,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+CG_bilasp_1991:2001,CG_korba_2001,Korba,production,0.334719,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+CG_raigar_1991:2001,CG_jashpu_2001,Jashpur,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+CG_raigar_1991:2001,CG_jashpu_2001,Jashpur,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+CG_raipur_1991:2001,CG_dhamta_2001,Dhamtari,area,0.5,equal_split_fallback,0.35,2001,equal_split_fallback,True
+CG_raipur_1991:2001,CG_dhamta_2001,Dhamtari,production,0.5,equal_split_fallback,0.35,2001,equal_split_fallback,True
+CG_raipur_1991:2001,CG_mahasa_2001,Mahasamund,area,0.5,equal_split_fallback,0.35,2001,equal_split_fallback,True
+CG_raipur_1991:2001,CG_mahasa_2001,Mahasamund,production,0.5,equal_split_fallback,0.35,2001,equal_split_fallback,True
+CG_rajnan_1981:2001,CG_kaward_2001,Kawardha,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+CG_rajnan_1981:2001,CG_kaward_2001,Kawardha,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+CG_surguj_1991:2001,CG_koriya_2001,Koriya,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+CG_surguj_1991:2001,CG_koriya_2001,Koriya,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+DL_delhi_1991:2001,DL_east_2001,East,area,0.2,equal_split_fallback,0.35,2001,equal_split_fallback,True
+DL_delhi_1991:2001,DL_east_2001,East,production,0.2,equal_split_fallback,0.35,2001,equal_split_fallback,True
+DL_delhi_1991:2001,DL_northe_2001,North East,area,0.2,equal_split_fallback,0.35,2001,equal_split_fallback,True
+DL_delhi_1991:2001,DL_northe_2001,North East,production,0.2,equal_split_fallback,0.35,2001,equal_split_fallback,True
+DL_delhi_1991:2001,DL_northw_2001,North West,area,0.2,equal_split_fallback,0.35,2001,equal_split_fallback,True
+DL_delhi_1991:2001,DL_northw_2001,North West,production,0.2,equal_split_fallback,0.35,2001,equal_split_fallback,True
+DL_delhi_1991:2001,DL_south_2001,South,area,0.2,equal_split_fallback,0.35,2001,equal_split_fallback,True
+DL_delhi_1991:2001,DL_south_2001,South,production,0.2,equal_split_fallback,0.35,2001,equal_split_fallback,True
+DL_delhi_1991:2001,DL_southw_2001,South West,area,0.2,equal_split_fallback,0.35,2001,equal_split_fallback,True
+DL_delhi_1991:2001,DL_southw_2001,South West,production,0.2,equal_split_fallback,0.35,2001,equal_split_fallback,True
+GJ_bharuc_1961:2001,GJ_narmad_2001,Narmada,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+GJ_bharuc_1961:2001,GJ_narmad_2001,Narmada,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+GJ_junaga_1951:2001,GJ_porban_2001,Porbandar,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+GJ_junaga_1951:2001,GJ_porban_2001,Porbandar,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+GJ_kheda_1961:2001,GJ_anand_2001,Anand,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+GJ_kheda_1961:2001,GJ_anand_2001,Anand,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+GJ_mahesa_1961:2001,GJ_patan_2001,Patan,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+GJ_mahesa_1961:2001,GJ_patan_2001,Patan,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+GJ_panchm_1951:2001,GJ_dohad_2001,Dohad,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+GJ_panchm_1951:2001,GJ_dohad_2001,Dohad,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+GJ_valsad_1971:2001,GJ_navsar_2001,Navsari,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+GJ_valsad_1971:2001,GJ_navsar_2001,Navsari,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+HR_ambala_1951:2001,HR_panchk_2001,Panchkula,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+HR_ambala_1951:2001,HR_panchk_2001,Panchkula,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+HR_hisar_1951:2001,HR_fateha_2001,Fatehabad,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+HR_hisar_1951:2001,HR_fateha_2001,Fatehabad,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+HR_rohtak_1951:2001,HR_jhajja_2001,Jhajjar,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+HR_rohtak_1951:2001,HR_jhajja_2001,Jhajjar,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+JH_dhanba_1991:2001,JH_bokaro_2001,Bokaro,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+JH_dhanba_1991:2001,JH_bokaro_2001,Bokaro,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+JH_giridi_1981:2001,JH_bokaro_2001,Bokaro,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+JH_giridi_1981:2001,JH_bokaro_2001,Bokaro,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+JH_hazari_1971:2001,JH_chatra_2001,Chatra,area,0.5,equal_split_fallback,0.35,2001,equal_split_fallback,True
+JH_hazari_1971:2001,JH_chatra_2001,Chatra,production,0.5,equal_split_fallback,0.35,2001,equal_split_fallback,True
+JH_hazari_1971:2001,JH_kodarm_2001,Kodarma,area,0.5,equal_split_fallback,0.35,2001,equal_split_fallback,True
+JH_hazari_1971:2001,JH_kodarm_2001,Kodarma,production,0.5,equal_split_fallback,0.35,2001,equal_split_fallback,True
+JH_palamu_1971:2001,JH_garhwa_2001,Garhwa,area,1.0,equal_split_fallback,0.35,2001,equal_split_fallback,True
+JH_palamu_1971:2001,JH_garhwa_2001,Garhwa,production,1.0,equal_split_fallback,0.35,2001,equal_split_fallback,True
+JH_sahibg_1991:2001,JH_pakaur_2001,Pakaur,area,1.0,equal_split_fallback,0.35,2001,equal_split_fallback,True
+JH_sahibg_1991:2001,JH_pakaur_2001,Pakaur,production,1.0,equal_split_fallback,0.35,2001,equal_split_fallback,True
+JK_ladakh_1961:2001,JK_lehlad_2001,Leh (Ladakh),area,1.0,equal_split_fallback,0.35,2001,equal_split_fallback,True
+JK_ladakh_1961:2001,JK_lehlad_2001,Leh (Ladakh),production,1.0,equal_split_fallback,0.35,2001,equal_split_fallback,True
+KA_bijapu_1991:2001,KA_bagalk_2001,Bagalkot,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+KA_bijapu_1991:2001,KA_bagalk_2001,Bagalkot,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+KA_chitra_1951:2001,KA_davana_2001,Davanagere,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+KA_chitra_1951:2001,KA_davana_2001,Davanagere,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+KA_dakshi_1971:2001,KA_udupi_2001,Udupi,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+KA_dakshi_1971:2001,KA_udupi_2001,Udupi,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+KA_dharwa_1971:2001,KA_gadag_2001,Gadag,area,0.56331,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+KA_dharwa_1971:2001,KA_gadag_2001,Gadag,production,0.56331,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+KA_dharwa_1971:2001,KA_haveri_2001,Haveri,area,0.43669,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+KA_dharwa_1971:2001,KA_haveri_2001,Haveri,production,0.43669,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+KA_mysuru_1991:2001,KA_chamar_2001,Chamarajanagar,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+KA_mysuru_1991:2001,KA_chamar_2001,Chamarajanagar,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+KA_raichu_1991:2001,KA_koppal_2001,Koppal,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+KA_raichu_1991:2001,KA_koppal_2001,Koppal,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+MH_akola_1991:2001,MH_washim_2001,Washim,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+MH_akola_1991:2001,MH_washim_2001,Washim,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+MH_bhanda_1991:2001,MH_gondia_2001,Gondiya,area,1.0,equal_split_fallback,0.35,2001,equal_split_fallback,True
+MH_bhanda_1991:2001,MH_gondia_2001,Gondiya,production,1.0,equal_split_fallback,0.35,2001,equal_split_fallback,True
+MH_dhule_1951:2001,MH_nandur_2001,Nandurbar,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+MH_dhule_1951:2001,MH_nandur_2001,Nandurbar,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+MH_greate_1991:2001,MH_mumbai_1951,Mumbai,area,1.0,equal_split_fallback,0.35,2001,equal_split_fallback,True
+MH_greate_1991:2001,MH_mumbai_1951,Mumbai,production,1.0,equal_split_fallback,0.35,2001,equal_split_fallback,True
+MH_parbha_1991:2001,MH_hingol_2001,Hingoli,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+MH_parbha_1991:2001,MH_hingol_2001,Hingoli,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+ML_eastkh_1981:2001,ML_ribhoi_2001,Ri Bhoi,area,1.0,equal_split_fallback,0.35,2001,equal_split_fallback,True
+ML_eastkh_1981:2001,ML_ribhoi_2001,Ri Bhoi,production,1.0,equal_split_fallback,0.35,2001,equal_split_fallback,True
+ML_westga_1981:2001,ML_southg_2001,South Garo Hills,area,1.0,equal_split_fallback,0.35,2001,equal_split_fallback,True
+ML_westga_1981:2001,ML_southg_2001,South Garo Hills,production,1.0,equal_split_fallback,0.35,2001,equal_split_fallback,True
+MP_jabalp_1991:2001,MP_katni_2001,Katni,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+MP_jabalp_1991:2001,MP_katni_2001,Katni,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+MP_khargo_1961:2001,MP_barwan_2001,Barwani,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+MP_khargo_1961:2001,MP_barwan_2001,Barwani,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+MP_mandla_1991:2001,MP_dindor_2001,Dindori,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+MP_mandla_1991:2001,MP_dindor_2001,Dindori,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+MP_mandsa_1991:2001,MP_neemuc_2001,Neemuch,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+MP_mandsa_1991:2001,MP_neemuc_2001,Neemuch,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+MP_morena_1991:2001,MP_sheopu_2001,Sheopur,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+MP_morena_1991:2001,MP_sheopu_2001,Sheopur,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+MP_narmad_1951:2001,MP_harda_2001,Harda,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+MP_narmad_1951:2001,MP_harda_2001,Harda,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+MP_shahdo_1991:2001,MP_umaria_2001,Umaria,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+MP_shahdo_1991:2001,MP_umaria_2001,Umaria,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+MZ_aizawl_1981:2001,MZ_champh_2001,Champhai,area,0.25,equal_split_fallback,0.35,2001,equal_split_fallback,True
+MZ_aizawl_1981:2001,MZ_champh_2001,Champhai,production,0.25,equal_split_fallback,0.35,2001,equal_split_fallback,True
+MZ_aizawl_1981:2001,MZ_kolasi_2001,Kolasib,area,0.25,equal_split_fallback,0.35,2001,equal_split_fallback,True
+MZ_aizawl_1981:2001,MZ_kolasi_2001,Kolasib,production,0.25,equal_split_fallback,0.35,2001,equal_split_fallback,True
+MZ_aizawl_1981:2001,MZ_mamit_2001,Mamit,area,0.25,equal_split_fallback,0.35,2001,equal_split_fallback,True
+MZ_aizawl_1981:2001,MZ_mamit_2001,Mamit,production,0.25,equal_split_fallback,0.35,2001,equal_split_fallback,True
+MZ_aizawl_1981:2001,MZ_serchh_2001,Serchhip,area,0.25,equal_split_fallback,0.35,2001,equal_split_fallback,True
+MZ_aizawl_1981:2001,MZ_serchh_2001,Serchhip,production,0.25,equal_split_fallback,0.35,2001,equal_split_fallback,True
+MZ_chhimt_1981:2001,MZ_lawngt_2001,Lawngtlai,area,0.5,equal_split_fallback,0.35,2001,equal_split_fallback,True
+MZ_chhimt_1981:2001,MZ_lawngt_2001,Lawngtlai,production,0.5,equal_split_fallback,0.35,2001,equal_split_fallback,True
+MZ_chhimt_1981:2001,MZ_saiha_2001,Saiha,area,0.5,equal_split_fallback,0.35,2001,equal_split_fallback,True
+MZ_chhimt_1981:2001,MZ_saiha_2001,Saiha,production,0.5,equal_split_fallback,0.35,2001,equal_split_fallback,True
+NC_delhi_1991:2001,NC_centra_2001,Central,area,0.111111,equal_split_fallback,0.35,2001,equal_split_fallback,True
+NC_delhi_1991:2001,NC_centra_2001,Central,production,0.111111,equal_split_fallback,0.35,2001,equal_split_fallback,True
+NC_delhi_1991:2001,NC_east_2001,East,area,0.111111,equal_split_fallback,0.35,2001,equal_split_fallback,True
+NC_delhi_1991:2001,NC_east_2001,East,production,0.111111,equal_split_fallback,0.35,2001,equal_split_fallback,True
+NC_delhi_1991:2001,NC_newdel_2001,New Delhi,area,0.111111,equal_split_fallback,0.35,2001,equal_split_fallback,True
+NC_delhi_1991:2001,NC_newdel_2001,New Delhi,production,0.111111,equal_split_fallback,0.35,2001,equal_split_fallback,True
+NC_delhi_1991:2001,NC_north_2001,North,area,0.111111,equal_split_fallback,0.35,2001,equal_split_fallback,True
+NC_delhi_1991:2001,NC_north_2001,North,production,0.111111,equal_split_fallback,0.35,2001,equal_split_fallback,True
+NC_delhi_1991:2001,NC_northe_2001,North East,area,0.111111,equal_split_fallback,0.35,2001,equal_split_fallback,True
+NC_delhi_1991:2001,NC_northe_2001,North East,production,0.111111,equal_split_fallback,0.35,2001,equal_split_fallback,True
+NC_delhi_1991:2001,NC_northw_2001,North West,area,0.111111,equal_split_fallback,0.35,2001,equal_split_fallback,True
+NC_delhi_1991:2001,NC_northw_2001,North West,production,0.111111,equal_split_fallback,0.35,2001,equal_split_fallback,True
+NC_delhi_1991:2001,NC_south_2001,South,area,0.111111,equal_split_fallback,0.35,2001,equal_split_fallback,True
+NC_delhi_1991:2001,NC_south_2001,South,production,0.111111,equal_split_fallback,0.35,2001,equal_split_fallback,True
+NC_delhi_1991:2001,NC_southw_2001,South West,area,0.111111,equal_split_fallback,0.35,2001,equal_split_fallback,True
+NC_delhi_1991:2001,NC_southw_2001,South West,production,0.111111,equal_split_fallback,0.35,2001,equal_split_fallback,True
+NC_delhi_1991:2001,NC_west_2001,West,area,0.111111,equal_split_fallback,0.35,2001,equal_split_fallback,True
+NC_delhi_1991:2001,NC_west_2001,West,production,0.111111,equal_split_fallback,0.35,2001,equal_split_fallback,True
+NL_kohima_1951:2001,NL_dimapu_2001,Dimapur,area,1.0,equal_split_fallback,0.35,2001,equal_split_fallback,True
+NL_kohima_1951:2001,NL_dimapu_2001,Dimapur,production,1.0,equal_split_fallback,0.35,2001,equal_split_fallback,True
+OD_balang_1981:2001,OD_sonapu_2001,Sonapur,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+OD_balang_1981:2001,OD_sonapu_2001,Sonapur,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+OD_balesh_1981:2001,OD_bhadra_2001,Bhadrak,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+OD_balesh_1981:2001,OD_bhadra_2001,Bhadrak,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+OD_baudh_1951:2001,OD_kandha_2001,Kandhamal,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+OD_baudh_1951:2001,OD_kandha_2001,Kandhamal,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+OD_cuttac_1991:2001,OD_jagats_2001,Jagatsinghapur,area,0.263942,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+OD_cuttac_1991:2001,OD_jagats_2001,Jagatsinghapur,production,0.263942,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+OD_cuttac_1991:2001,OD_jajapu_2001,Jajapur,area,0.399818,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+OD_cuttac_1991:2001,OD_jajapu_2001,Jajapur,production,0.399818,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+OD_cuttac_1991:2001,OD_kendra_2001,Kendrapara,area,0.33624,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+OD_cuttac_1991:2001,OD_kendra_2001,Kendrapara,production,0.33624,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+OD_dhenka_1991:2001,OD_anugul_2001,Anugul,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+OD_dhenka_1991:2001,OD_anugul_2001,Anugul,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+OD_ganjam_1991:2001,OD_gajapa_2001,Gajapati,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+OD_ganjam_1991:2001,OD_gajapa_2001,Gajapati,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+OD_kalaha_1991:2001,OD_nuapad_2001,Nuapada,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+OD_kalaha_1991:2001,OD_nuapad_2001,Nuapada,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+OD_korapu_1991:2001,OD_malkan_2001,Malkangiri,area,0.333333,equal_split_fallback,0.35,2001,equal_split_fallback,True
+OD_korapu_1991:2001,OD_malkan_2001,Malkangiri,production,0.333333,equal_split_fallback,0.35,2001,equal_split_fallback,True
+OD_korapu_1991:2001,OD_nabara_2001,Nabarangapur,area,0.333333,equal_split_fallback,0.35,2001,equal_split_fallback,True
+OD_korapu_1991:2001,OD_nabara_2001,Nabarangapur,production,0.333333,equal_split_fallback,0.35,2001,equal_split_fallback,True
+OD_korapu_1991:2001,OD_rayaga_2001,Rayagada,area,0.333333,equal_split_fallback,0.35,2001,equal_split_fallback,True
+OD_korapu_1991:2001,OD_rayaga_2001,Rayagada,production,0.333333,equal_split_fallback,0.35,2001,equal_split_fallback,True
+OD_puri_1991:2001,OD_khordh_2001,Khordha,area,0.5,equal_split_fallback,0.35,2001,equal_split_fallback,True
+OD_puri_1991:2001,OD_khordh_2001,Khordha,production,0.5,equal_split_fallback,0.35,2001,equal_split_fallback,True
+OD_puri_1991:2001,OD_nayaga_2001,Nayagarh,area,0.5,equal_split_fallback,0.35,2001,equal_split_fallback,True
+OD_puri_1991:2001,OD_nayaga_2001,Nayagarh,production,0.5,equal_split_fallback,0.35,2001,equal_split_fallback,True
+OD_sambal_1991:2001,OD_bargar_2001,Bargarh,area,0.333333,equal_split_fallback,0.35,2001,equal_split_fallback,True
+OD_sambal_1991:2001,OD_bargar_2001,Bargarh,production,0.333333,equal_split_fallback,0.35,2001,equal_split_fallback,True
+OD_sambal_1991:2001,OD_debaga_2001,Debagarh,area,0.333333,equal_split_fallback,0.35,2001,equal_split_fallback,True
+OD_sambal_1991:2001,OD_debaga_2001,Debagarh,production,0.333333,equal_split_fallback,0.35,2001,equal_split_fallback,True
+OD_sambal_1991:2001,OD_jharsu_2001,Jharsuguda,area,0.333333,equal_split_fallback,0.35,2001,equal_split_fallback,True
+OD_sambal_1991:2001,OD_jharsu_2001,Jharsuguda,production,0.333333,equal_split_fallback,0.35,2001,equal_split_fallback,True
+PB_bhatin_1951:2001,PB_mansa_2001,Mansa,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+PB_bhatin_1951:2001,PB_mansa_2001,Mansa,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+PB_faridk_1981:2001,PB_moga_2001,Moga,area,0.477295,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+PB_faridk_1981:2001,PB_moga_2001,Moga,production,0.477295,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+PB_faridk_1981:2001,PB_srimuk_2001,Muktsar,area,0.522705,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+PB_faridk_1981:2001,PB_srimuk_2001,Muktsar,production,0.522705,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+PB_hoshia_1961:2001,PB_shahid_2001,Nawanshahr,area,1.0,equal_split_fallback,0.35,2001,equal_split_fallback,True
+PB_hoshia_1961:2001,PB_shahid_2001,Nawanshahr,production,1.0,equal_split_fallback,0.35,2001,equal_split_fallback,True
+PB_jaland_1971:2001,PB_shahid_2001,Nawanshahr,area,1.0,equal_split_fallback,0.35,2001,equal_split_fallback,True
+PB_jaland_1971:2001,PB_shahid_2001,Nawanshahr,production,1.0,equal_split_fallback,0.35,2001,equal_split_fallback,True
+PB_patial_1951:2001,PB_fatehg_1951,Fatehgarh Sahib,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+PB_patial_1951:2001,PB_fatehg_1951,Fatehgarh Sahib,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+RJ_gangan_1991:2001,RJ_hanuma_2001,Hanumangarh,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+RJ_gangan_1991:2001,RJ_hanuma_2001,Hanumangarh,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+RJ_jaipur_1951:2001,RJ_dausa_2001,Dausa,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+RJ_jaipur_1951:2001,RJ_dausa_2001,Dausa,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+RJ_kota_1951:2001,RJ_baran_2001,Baran,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+RJ_kota_1951:2001,RJ_baran_2001,Baran,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+RJ_sawaim_1951:2001,RJ_karaul_2001,Karauli,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+RJ_sawaim_1951:2001,RJ_karaul_2001,Karauli,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+RJ_udaipu_1951:2001,RJ_rajsam_2001,Rajsamand,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+RJ_udaipu_1951:2001,RJ_rajsam_2001,Rajsamand,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+SK_eastdi_1981:2001,SK_east_2001,East,area,1.0,equal_split_fallback,0.35,2001,equal_split_fallback,True
+SK_eastdi_1981:2001,SK_east_2001,East,production,1.0,equal_split_fallback,0.35,2001,equal_split_fallback,True
+SK_northd_1981:2001,SK_north_2001,North,area,1.0,equal_split_fallback,0.35,2001,equal_split_fallback,True
+SK_northd_1981:2001,SK_north_2001,North,production,1.0,equal_split_fallback,0.35,2001,equal_split_fallback,True
+SK_southd_1981:2001,SK_south_2001,South,area,1.0,equal_split_fallback,0.35,2001,equal_split_fallback,True
+SK_southd_1981:2001,SK_south_2001,South,production,1.0,equal_split_fallback,0.35,2001,equal_split_fallback,True
+SK_westdi_1981:2001,SK_west_2001,West,area,1.0,equal_split_fallback,0.35,2001,equal_split_fallback,True
+SK_westdi_1981:2001,SK_west_2001,West,production,1.0,equal_split_fallback,0.35,2001,equal_split_fallback,True
+TN_chenga_1951:2001,TN_thiruv_1951,Thiruvallur,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+TN_chenga_1951:2001,TN_thiruv_1951,Thiruvallur,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+TN_chidam_1991:2001,TN_thooth_2001,Toothukudi,area,1.0,equal_split_fallback,0.35,2001,equal_split_fallback,True
+TN_chidam_1991:2001,TN_thooth_2001,Toothukudi,production,1.0,equal_split_fallback,0.35,2001,equal_split_fallback,True
+TN_cuddal_1991:2001,TN_vilupp_2001,Viluppuram,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+TN_cuddal_1991:2001,TN_vilupp_2001,Viluppuram,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+TN_kamara_1991:2001,TN_virudh_2001,Virudhunagar,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+TN_kamara_1991:2001,TN_virudh_2001,Virudhunagar,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+TN_madura_1951:2001,TN_theni_2001,Theni,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+TN_madura_1951:2001,TN_theni_2001,Theni,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+TN_narcot_1981:2001,TN_vellor_2001,Vellore,area,1.0,equal_split_fallback,0.35,2001,equal_split_fallback,True
+TN_narcot_1981:2001,TN_vellor_2001,Vellore,production,1.0,equal_split_fallback,0.35,2001,equal_split_fallback,True
+TN_pasump_1991:2001,TN_sivaga_2001,Sivaganga,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+TN_pasump_1991:2001,TN_sivaga_2001,Sivaganga,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+TN_periya_1981:2001,TN_erode_2001,Erode,area,1.0,equal_split_fallback,0.35,2001,equal_split_fallback,True
+TN_periya_1981:2001,TN_erode_2001,Erode,production,1.0,equal_split_fallback,0.35,2001,equal_split_fallback,True
+TN_salem_1961:2001,TN_namakk_2001,Namakkal,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+TN_salem_1961:2001,TN_namakk_2001,Namakkal,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+TN_thanja_1951:2001,TN_nagapa_2001,Nagapattinam,area,0.574148,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+TN_thanja_1951:2001,TN_nagapa_2001,Nagapattinam,production,0.574148,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+TN_thanja_1951:2001,TN_thiruv_1951,Thiruvallur,area,0.425852,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+TN_thanja_1951:2001,TN_thiruv_1951,Thiruvallur,production,0.425852,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+TN_tiruch_1971:2001,TN_karur_2001,Karur,area,0.32146,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+TN_tiruch_1971:2001,TN_karur_2001,Karur,production,0.32146,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+TN_tiruch_1971:2001,TN_peramb_2001,Perambalur,area,0.67854,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+TN_tiruch_1971:2001,TN_peramb_2001,Perambalur,production,0.67854,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+TR_northt_1971:2001,TR_dhalai_2001,Dhalai,area,1.0,equal_split_fallback,0.35,2001,equal_split_fallback,True
+TR_northt_1971:2001,TR_dhalai_2001,Dhalai,production,1.0,equal_split_fallback,0.35,2001,equal_split_fallback,True
+UK_almora_1951:2001,UK_bagesh_2001,Bageshwar,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+UK_almora_1951:2001,UK_bagesh_2001,Bageshwar,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+UK_chamol_1961:2001,UK_rudrap_2001,Rudraprayag,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+UK_chamol_1961:2001,UK_rudrap_2001,Rudraprayag,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+UK_nainit_1971:2001,UK_udhams_2001,Udham Singh Nagar,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+UK_nainit_1971:2001,UK_udhams_2001,Udham Singh Nagar,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+UK_pithor_1961:2001,UK_champa_2001,Champawat,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+UK_pithor_1961:2001,UK_champa_2001,Champawat,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+UP_aligar_1991:2001,UP_hathra_2001,Hathras,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+UP_aligar_1991:2001,UP_hathra_2001,Hathras,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+UP_allaha_1951:2001,UP_kausha_2001,Kaushambi,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+UP_allaha_1951:2001,UP_kausha_2001,Kaushambi,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+UP_ayodhy_1991:2001,UP_ambedk_2001,Ambedkar Nagar,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+UP_ayodhy_1991:2001,UP_ambedk_2001,Ambedkar Nagar,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+UP_bahrai_1991:2001,UP_shrawa_2001,Shrawasti,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+UP_bahrai_1991:2001,UP_shrawa_2001,Shrawasti,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+UP_banda_1991:2001,UP_chitra_2001,Chitrakoot,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+UP_banda_1991:2001,UP_chitra_2001,Chitrakoot,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+UP_basti_1981:2001,UP_santka_2001,Sant Kabir Nagar,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+UP_basti_1981:2001,UP_santka_2001,Sant Kabir Nagar,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+UP_buland_1971:2001,UP_gautam_2001,Gautam Buddha Nagar,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+UP_buland_1971:2001,UP_gautam_2001,Gautam Buddha Nagar,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+UP_deoria_1991:2001,UP_kushin_2001,Kushinagar,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+UP_deoria_1991:2001,UP_kushin_2001,Kushinagar,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+UP_etawah_1991:2001,UP_auraiy_2001,Auraiya,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+UP_etawah_1991:2001,UP_auraiy_2001,Auraiya,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+UP_farruk_1991:2001,UP_kannau_2001,Kannauj,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+UP_farruk_1991:2001,UP_kannau_2001,Kannauj,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+UP_ghazia_1981:2001,UP_gautam_2001,Gautam Buddha Nagar,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+UP_ghazia_1981:2001,UP_gautam_2001,Gautam Buddha Nagar,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+UP_gonda_1991:2001,UP_balram_2001,Balrampur,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+UP_gonda_1991:2001,UP_balram_2001,Balrampur,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+UP_hamirp_1991:2001,UP_mahoba_2001,Mahoba,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+UP_hamirp_1991:2001,UP_mahoba_2001,Mahoba,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+UP_meerut_1951:2001,UP_baghpa_2001,Baghpat,area,1.0,equal_split_fallback,0.35,2001,equal_split_fallback,True
+UP_meerut_1951:2001,UP_baghpa_2001,Baghpat,production,1.0,equal_split_fallback,0.35,2001,equal_split_fallback,True
+UP_morada_1991:2001,UP_amroha_2001,Jyotiba Phule Nagar,area,1.0,equal_split_fallback,0.35,2001,equal_split_fallback,True
+UP_morada_1991:2001,UP_amroha_2001,Jyotiba Phule Nagar,production,1.0,equal_split_fallback,0.35,2001,equal_split_fallback,True
+UP_varana_1951:2001,UP_bhadoh_2001,Sant Ravidas Nagar,area,0.297782,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+UP_varana_1951:2001,UP_bhadoh_2001,Sant Ravidas Nagar,production,0.297782,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+UP_varana_1951:2001,UP_chanda_2001,Chandauli,area,0.702218,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+UP_varana_1951:2001,UP_chanda_2001,Chandauli,production,0.702218,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+WB_dakshi_1991:2001,WB_uttard_2001,Uttar Dinajpur,area,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+WB_dakshi_1991:2001,WB_uttard_2001,Uttar Dinajpur,production,1.0,post_split_crop_area_proxy,0.6,2001,average_total_crop_area_next_3_years,False
+AN_andama_1971:2011,AN_northm_2011,North & Middle Andaman,area,0.5,equal_split_fallback,0.35,2011,equal_split_fallback,True
+AN_andama_1971:2011,AN_northm_2011,North & Middle Andaman,production,0.5,equal_split_fallback,0.35,2011,equal_split_fallback,True
+AN_andama_1971:2011,AN_southa_2011,South Andaman,area,0.5,equal_split_fallback,0.35,2011,equal_split_fallback,True
+AN_andama_1971:2011,AN_southa_2011,South Andaman,production,0.5,equal_split_fallback,0.35,2011,equal_split_fallback,True
+AP_kadapa_2001:2011,AP_ysr_2011,Y.S.R.,area,1.0,equal_split_fallback,0.35,2011,equal_split_fallback,True
+AP_kadapa_2001:2011,AP_ysr_2011,Y.S.R.,production,1.0,equal_split_fallback,0.35,2011,equal_split_fallback,True
+AR_dibang_1981:2011,AR_lowerd_2011,Lower Dibang Valley,area,1.0,equal_split_fallback,0.35,2011,equal_split_fallback,True
+AR_dibang_1981:2011,AR_lowerd_2011,Lower Dibang Valley,production,1.0,equal_split_fallback,0.35,2011,equal_split_fallback,True
+AR_lohit_1971:2011,AR_anjaw_2011,Anjaw,area,1.0,equal_split_fallback,0.35,2011,equal_split_fallback,True
+AR_lohit_1971:2011,AR_anjaw_2011,Anjaw,production,1.0,equal_split_fallback,0.35,2011,equal_split_fallback,True
+AR_lowers_1981:2011,AR_kurung_2011,Kurung Kumey,area,1.0,equal_split_fallback,0.35,2011,equal_split_fallback,True
+AR_lowers_1981:2011,AR_kurung_2011,Kurung Kumey,production,1.0,equal_split_fallback,0.35,2011,equal_split_fallback,True
+AS_barpet_1991:2011,AS_baksa_2011,Baksa,area,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+AS_barpet_1991:2011,AS_baksa_2011,Baksa,production,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+AS_bongai_1991:2011,AS_chiran_2011,Chirang,area,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+AS_bongai_1991:2011,AS_chiran_2011,Chirang,production,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+AS_darran_1981:2011,AS_baksa_2011,Baksa,area,0.508515,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+AS_darran_1981:2011,AS_baksa_2011,Baksa,production,0.508515,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+AS_darran_1981:2011,AS_udalgu_2011,Udalguri,area,0.491485,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+AS_darran_1981:2011,AS_udalgu_2011,Udalguri,production,0.491485,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+AS_dhubur_1991:2011,AS_dhubri_2011,Dhubri,area,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+AS_dhubur_1991:2011,AS_dhubri_2011,Dhubri,production,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+AS_kamrup_1981:2011,AS_baksa_2011,Baksa,area,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+AS_kamrup_1981:2011,AS_baksa_2011,Baksa,production,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+AS_kokraj_1991:2011,AS_chiran_2011,Chirang,area,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+AS_kokraj_1991:2011,AS_chiran_2011,Chirang,production,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+AS_mariga_1991:2011,AS_moriga_2011,Morigaon,area,1.0,equal_split_fallback,0.35,2011,equal_split_fallback,True
+AS_mariga_1991:2011,AS_moriga_2011,Morigaon,production,1.0,equal_split_fallback,0.35,2011,equal_split_fallback,True
+AS_nalbar_1991:2011,AS_baksa_2011,Baksa,area,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+AS_nalbar_1991:2011,AS_baksa_2011,Baksa,production,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+AS_northc_1971:2011,AS_dimaha_2011,Dima Hasao,area,1.0,equal_split_fallback,0.35,2011,equal_split_fallback,True
+AS_northc_1971:2011,AS_dimaha_2011,Dima Hasao,production,1.0,equal_split_fallback,0.35,2011,equal_split_fallback,True
+BR_jehana_1991:2011,BR_arwal_2011,Arwal,area,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+BR_jehana_1991:2011,BR_arwal_2011,Arwal,production,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+CG_bastar_1991:2011,CG_naraya_2011,Narayanpur,area,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+CG_bastar_1991:2011,CG_naraya_2011,Narayanpur,production,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+CG_dantew_2001:2011,CG_bijapu_2011,Bijapur,area,0.5,equal_split_fallback,0.35,2011,equal_split_fallback,True
+CG_dantew_2001:2011,CG_bijapu_2011,Bijapur,production,0.5,equal_split_fallback,0.35,2011,equal_split_fallback,True
+CG_dantew_2001:2011,CG_dakshi_2011,Dakshin Bastar Dantewada,area,0.5,equal_split_fallback,0.35,2011,equal_split_fallback,True
+CG_dantew_2001:2011,CG_dakshi_2011,Dakshin Bastar Dantewada,production,0.5,equal_split_fallback,0.35,2011,equal_split_fallback,True
+CG_kanker_2001:2011,CG_uttarb_2011,Uttar Bastar Kanker,area,1.0,equal_split_fallback,0.35,2011,equal_split_fallback,True
+CG_kanker_2001:2011,CG_uttarb_2011,Uttar Bastar Kanker,production,1.0,equal_split_fallback,0.35,2011,equal_split_fallback,True
+CG_kaward_2001:2011,CG_kabeer_2011,Kabeerdham,area,1.0,equal_split_fallback,0.35,2011,equal_split_fallback,True
+CG_kaward_2001:2011,CG_kabeer_2011,Kabeerdham,production,1.0,equal_split_fallback,0.35,2011,equal_split_fallback,True
+GJ_surat_1961:2011,GJ_tapi_2011,Tapi,area,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+GJ_surat_1961:2011,GJ_tapi_2011,Tapi,production,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+HP_lahula_1971:2011,HP_lahuls_2011,Lahul & Spiti,area,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+HP_lahula_1971:2011,HP_lahuls_2011,Lahul & Spiti,production,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+HR_farida_1981:2011,HR_palwal_2011,Palwal,area,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+HR_farida_1981:2011,HR_palwal_2011,Palwal,production,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+HR_guruga_1951:2011,HR_nuh_2011,Mewat,area,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+HR_guruga_1951:2011,HR_nuh_2011,Mewat,production,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+JH_dumka_1991:2011,JH_jamtar_2011,Jamtara,area,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+JH_dumka_1991:2011,JH_jamtar_2011,Jamtara,production,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+JH_gumla_1991:2011,JH_simdeg_2011,Simdega,area,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+JH_gumla_1991:2011,JH_simdeg_2011,Simdega,production,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+JH_hazari_1971:2011,JH_ramgar_2011,Ramgarh,area,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+JH_hazari_1971:2011,JH_ramgar_2011,Ramgarh,production,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+JH_pakaur_2001:2011,JH_pakur_2011,Pakur,area,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+JH_pakaur_2001:2011,JH_pakur_2011,Pakur,production,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+JH_palamu_1971:2011,JH_lateha_2011,Latehar,area,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+JH_palamu_1971:2011,JH_lateha_2011,Latehar,production,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+JH_psingh_1981:2011,JH_saraik_2011,Saraikela-kharsawan,area,1.0,equal_split_fallback,0.35,2011,equal_split_fallback,True
+JH_psingh_1981:2011,JH_saraik_2011,Saraikela-kharsawan,production,1.0,equal_split_fallback,0.35,2011,equal_split_fallback,True
+JH_ranchi_1981:2011,JH_khunti_2011,Khunti,area,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+JH_ranchi_1981:2011,JH_khunti_2011,Khunti,production,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+JK_anantn_1961:2011,JK_kulgam_2011,Kulgam,area,1.0,equal_split_fallback,0.35,2011,equal_split_fallback,True
+JK_anantn_1961:2011,JK_kulgam_2011,Kulgam,production,1.0,equal_split_fallback,0.35,2011,equal_split_fallback,True
+JK_baramu_1961:2011,JK_bandip_2011,Bandipore,area,0.5,equal_split_fallback,0.35,2011,equal_split_fallback,True
+JK_baramu_1961:2011,JK_bandip_2011,Bandipore,production,0.5,equal_split_fallback,0.35,2011,equal_split_fallback,True
+JK_baramu_1961:2011,JK_gander_2011,Ganderbal,area,0.5,equal_split_fallback,0.35,2011,equal_split_fallback,True
+JK_baramu_1961:2011,JK_gander_2011,Ganderbal,production,0.5,equal_split_fallback,0.35,2011,equal_split_fallback,True
+JK_doda_1961:2011,JK_kishtw_2011,Kishtwar,area,0.5,equal_split_fallback,0.35,2011,equal_split_fallback,True
+JK_doda_1961:2011,JK_kishtw_2011,Kishtwar,production,0.5,equal_split_fallback,0.35,2011,equal_split_fallback,True
+JK_doda_1961:2011,JK_ramban_2011,Ramban,area,0.5,equal_split_fallback,0.35,2011,equal_split_fallback,True
+JK_doda_1961:2011,JK_ramban_2011,Ramban,production,0.5,equal_split_fallback,0.35,2011,equal_split_fallback,True
+JK_jammu_1961:2011,JK_samba_2011,Samba,area,1.0,equal_split_fallback,0.35,2011,equal_split_fallback,True
+JK_jammu_1961:2011,JK_samba_2011,Samba,production,1.0,equal_split_fallback,0.35,2011,equal_split_fallback,True
+JK_pulwam_1981:2011,JK_kulgam_2011,Kulgam,area,0.5,equal_split_fallback,0.35,2011,equal_split_fallback,True
+JK_pulwam_1981:2011,JK_kulgam_2011,Kulgam,production,0.5,equal_split_fallback,0.35,2011,equal_split_fallback,True
+JK_pulwam_1981:2011,JK_shupiy_2011,Shupiyan,area,0.5,equal_split_fallback,0.35,2011,equal_split_fallback,True
+JK_pulwam_1981:2011,JK_shupiy_2011,Shupiyan,production,0.5,equal_split_fallback,0.35,2011,equal_split_fallback,True
+JK_rajaur_1971:2011,JK_rajour_2011,Rajouri,area,1.0,equal_split_fallback,0.35,2011,equal_split_fallback,True
+JK_rajaur_1971:2011,JK_rajour_2011,Rajouri,production,1.0,equal_split_fallback,0.35,2011,equal_split_fallback,True
+JK_udhamp_1961:2011,JK_reasi_2011,Reasi,area,1.0,equal_split_fallback,0.35,2011,equal_split_fallback,True
+JK_udhamp_1961:2011,JK_reasi_2011,Reasi,production,1.0,equal_split_fallback,0.35,2011,equal_split_fallback,True
+KA_bangal_1981:2011,KA_ramana_2011,Ramanagara,area,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+KA_bangal_1981:2011,KA_ramana_2011,Ramanagara,production,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+KA_gulbar_2001:2011,KA_yadgir_2011,Yadgir,area,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+KA_gulbar_2001:2011,KA_yadgir_2011,Yadgir,production,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+KA_kolar_2001:2011,KA_chikka_2011,Chikkamagaluru,area,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+KA_kolar_2001:2011,KA_chikka_2011,Chikkamagaluru,production,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+MP_guna_1961:2011,MP_ashokn_2011,Ashoknagar,area,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+MP_guna_1961:2011,MP_ashokn_2011,Ashoknagar,production,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+MP_jhabua_2001:2011,MP_aliraj_2011,Alirajpur,area,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+MP_jhabua_2001:2011,MP_aliraj_2011,Alirajpur,production,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+MP_khandw_1961:2011,MP_burhan_2011,Burhanpur,area,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+MP_khandw_1961:2011,MP_burhan_2011,Burhanpur,production,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+MP_shahdo_1991:2011,MP_annupu_2011,Annupur,area,1.0,equal_split_fallback,0.35,2011,equal_split_fallback,True
+MP_shahdo_1991:2011,MP_annupu_2011,Annupur,production,1.0,equal_split_fallback,0.35,2011,equal_split_fallback,True
+MP_sidhi_2001:2011,MP_singra_2011,Singrauli,area,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+MP_sidhi_2001:2011,MP_singra_2011,Singrauli,production,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+NL_kohima_1951:2011,NL_peren_2011,Peren,area,1.0,equal_split_fallback,0.35,2011,equal_split_fallback,True
+NL_kohima_1951:2011,NL_peren_2011,Peren,production,1.0,equal_split_fallback,0.35,2011,equal_split_fallback,True
+NL_tuensa_1951:2011,NL_kiphir_2011,Kiphire,area,0.5,equal_split_fallback,0.35,2011,equal_split_fallback,True
+NL_tuensa_1951:2011,NL_kiphir_2011,Kiphire,production,0.5,equal_split_fallback,0.35,2011,equal_split_fallback,True
+NL_tuensa_1951:2011,NL_longle_2011,Longleng,area,0.5,equal_split_fallback,0.35,2011,equal_split_fallback,True
+NL_tuensa_1951:2011,NL_longle_2011,Longleng,production,0.5,equal_split_fallback,0.35,2011,equal_split_fallback,True
+OD_sonapu_2001:2011,OD_subarn_2011,Subarnapur,area,1.0,equal_split_fallback,0.35,2011,equal_split_fallback,True
+OD_sonapu_2001:2011,OD_subarn_2011,Subarnapur,production,1.0,equal_split_fallback,0.35,2011,equal_split_fallback,True
+PB_amrits_2001:2011,PB_tarnta_2011,Tarn Taran,area,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+PB_amrits_2001:2011,PB_tarnta_2011,Tarn Taran,production,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+PB_patial_1951:2011,PB_mohali_2011,Sahibzada Ajit Singh Nagar,area,1.0,equal_split_fallback,0.35,2011,equal_split_fallback,True
+PB_patial_1951:2011,PB_mohali_2011,Sahibzada Ajit Singh Nagar,production,1.0,equal_split_fallback,0.35,2011,equal_split_fallback,True
+PB_rupnag_1981:2011,PB_mohali_2011,Sahibzada Ajit Singh Nagar,area,1.0,equal_split_fallback,0.35,2011,equal_split_fallback,True
+PB_rupnag_1981:2011,PB_mohali_2011,Sahibzada Ajit Singh Nagar,production,1.0,equal_split_fallback,0.35,2011,equal_split_fallback,True
+PB_sangru_1951:2011,PB_barnal_1951,Barnala,area,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+PB_sangru_1951:2011,PB_barnal_1951,Barnala,production,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+RJ_chitto_1951:2011,RJ_pratap_2011,Pratapgarh,area,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+RJ_chitto_1951:2011,RJ_pratap_2011,Pratapgarh,production,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+TN_coimba_1951:2011,TN_tirupp_2011,Tiruppur,area,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+TN_coimba_1951:2011,TN_tirupp_2011,Tiruppur,production,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+TN_dharma_1971:2011,TN_krishn_2011,Krishnagiri,area,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+TN_dharma_1971:2011,TN_krishn_2011,Krishnagiri,production,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+TN_erode_2001:2011,TN_tirupp_2011,Tiruppur,area,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+TN_erode_2001:2011,TN_tirupp_2011,Tiruppur,production,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+TN_peramb_2001:2011,TN_ariyal_2011,Ariyalur,area,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+TN_peramb_2001:2011,TN_ariyal_2011,Ariyalur,production,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+UP_etah_2001:2011,UP_kanshi_2011,Kanshiram Nagar,area,1.0,equal_split_fallback,0.35,2011,equal_split_fallback,True
+UP_etah_2001:2011,UP_kanshi_2011,Kanshiram Nagar,production,1.0,equal_split_fallback,0.35,2011,equal_split_fallback,True
+UP_mahara_1991:2011,UP_mahraj_2011,Mahrajganj,area,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+UP_mahara_1991:2011,UP_mahraj_2011,Mahrajganj,production,1.0,post_split_crop_area_proxy,0.6,2011,average_total_crop_area_next_3_years,False
+WB_medini_1951:2011,WB_paschi_2011,Pashchim Barddhaman,area,0.5,equal_split_fallback,0.35,2011,equal_split_fallback,True
+WB_medini_1951:2011,WB_paschi_2011,Pashchim Barddhaman,production,0.5,equal_split_fallback,0.35,2011,equal_split_fallback,True
+WB_medini_1951:2011,WB_purbam_2011,Purba Medinipur,area,0.5,equal_split_fallback,0.35,2011,equal_split_fallback,True
+WB_medini_1951:2011,WB_purbam_2011,Purba Medinipur,production,0.5,equal_split_fallback,0.35,2011,equal_split_fallback,True
+AP_ananta_2011:2024,AP_srisat_2024,Sri Sathya Sai,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AP_ananta_2011:2024,AP_srisat_2024,Sri Sathya Sai,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AP_chitto_2011:2024,AP_annama_2024,Annamayya,area,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AP_chitto_2011:2024,AP_annama_2024,Annamayya,production,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AP_chitto_2011:2024,AP_tirupa_2024,Tirupati,area,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AP_chitto_2011:2024,AP_tirupa_2024,Tirupati,production,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AP_eastgo_2011:2024,AP_alluri_2024,Alluri Sitharama Raju,area,0.333333,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AP_eastgo_2011:2024,AP_alluri_2024,Alluri Sitharama Raju,production,0.333333,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AP_eastgo_2011:2024,AP_drbram_2024,Dr. B. R. Ambedkar Konaseema,area,0.333333,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AP_eastgo_2011:2024,AP_drbram_2024,Dr. B. R. Ambedkar Konaseema,production,0.333333,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AP_eastgo_2011:2024,AP_kakina_2024,Kakinada,area,0.333333,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AP_eastgo_2011:2024,AP_kakina_2024,Kakinada,production,0.333333,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AP_guntur_1951:2024,AP_bapatl_2024,Bapatla,area,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AP_guntur_1951:2024,AP_bapatl_2024,Bapatla,production,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AP_guntur_1951:2024,AP_palnad_2024,Palnadu,area,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AP_guntur_1951:2024,AP_palnad_2024,Palnadu,production,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AP_krishn_2011:2024,AP_ntr_2024,NTR,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AP_krishn_2011:2024,AP_ntr_2024,NTR,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AP_kurnoo_1951:2024,AP_nandya_2024,Nandyal,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AP_kurnoo_1951:2024,AP_nandya_2024,Nandyal,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AP_srikak_1971:2024,AP_parvat_2024,Parvathipuram Manyam,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AP_srikak_1971:2024,AP_parvat_2024,Parvathipuram Manyam,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AP_sripot_1971:2024,AP_tirupa_2024,Tirupati,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AP_sripot_1971:2024,AP_tirupa_2024,Tirupati,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AP_visakh_1961:2024,AP_alluri_2024,Alluri Sitharama Raju,area,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AP_visakh_1961:2024,AP_alluri_2024,Alluri Sitharama Raju,production,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AP_visakh_1961:2024,AP_anakap_2024,Anakapalli,area,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AP_visakh_1961:2024,AP_anakap_2024,Anakapalli,production,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AP_vizian_1981:2024,AP_alluri_2024,Alluri Sitharama Raju,area,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AP_vizian_1981:2024,AP_alluri_2024,Alluri Sitharama Raju,production,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AP_vizian_1981:2024,AP_parvat_2024,Parvathipuram Manyam,area,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AP_vizian_1981:2024,AP_parvat_2024,Parvathipuram Manyam,production,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AP_westgo_2011:2024,AP_eluru_2024,Eluru,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AP_westgo_2011:2024,AP_eluru_2024,Eluru,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AP_ysr_2011:2024,AP_annama_2024,Annamayya,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AP_ysr_2011:2024,AP_annama_2024,Annamayya,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AR_eastka_1981:2024,AR_pakkek_2024,Pakke-Kesang,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AR_eastka_1981:2024,AR_pakkek_2024,Pakke-Kesang,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AR_eastsi_1981:2024,AR_lepara_2024,Lepa - Rada,area,0.333333,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AR_eastsi_1981:2024,AR_lepara_2024,Lepa - Rada,production,0.333333,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AR_eastsi_1981:2024,AR_lowers_1981,Lower Siang,area,0.333333,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AR_eastsi_1981:2024,AR_lowers_1981,Lower Siang,production,0.333333,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AR_eastsi_1981:2024,AR_siang_1971,Siang,area,0.333333,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AR_eastsi_1981:2024,AR_siang_1971,Siang,production,0.333333,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AR_kurung_2011:2024,AR_kradaa_2024,Kra Daadi,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AR_kurung_2011:2024,AR_kradaa_2024,Kra Daadi,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AR_lohit_1971:2024,AR_namsai_2024,Namsai,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AR_lohit_1971:2024,AR_namsai_2024,Namsai,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AR_lowers_1981:2024,AR_kamle_2024,Kamle,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AR_lowers_1981:2024,AR_kamle_2024,Kamle,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AR_tirap_1971:2024,AR_longdi_2024,Longding,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AR_tirap_1971:2024,AR_longdi_2024,Longding,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AR_uppers_1981:2024,AR_kamle_2024,Kamle,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AR_uppers_1981:2024,AR_kamle_2024,Kamle,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AR_westsi_1981:2024,AR_lepara_2024,Lepa - Rada,area,0.333333,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AR_westsi_1981:2024,AR_lepara_2024,Lepa - Rada,production,0.333333,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AR_westsi_1981:2024,AR_lowers_1981,Lower Siang,area,0.333333,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AR_westsi_1981:2024,AR_lowers_1981,Lower Siang,production,0.333333,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AR_westsi_1981:2024,AR_shiyom_2024,Shi-Yomi,area,0.333333,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AR_westsi_1981:2024,AR_shiyom_2024,Shi-Yomi,production,0.333333,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AS_baksa_2011:2024,AS_tamulp_2024,Tamulpur,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AS_baksa_2011:2024,AS_tamulp_2024,Tamulpur,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AS_barpet_1991:2024,AS_bajali_2024,Bajali,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AS_barpet_1991:2024,AS_bajali_2024,Bajali,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AS_dhubri_2011:2024,AS_souths_2024,South Salmara-Mankachar,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AS_dhubri_2011:2024,AS_souths_2024,South Salmara-Mankachar,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AS_jorhat_1991:2024,AS_majuli_2024,Majuli,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AS_jorhat_1991:2024,AS_majuli_2024,Majuli,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AS_karbia_1981:2024,AS_westka_2024,West Karbi Anglong,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AS_karbia_1981:2024,AS_westka_2024,West Karbi Anglong,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AS_nagaon_1981:2024,AS_hojai_2024,Hojai,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AS_nagaon_1981:2024,AS_hojai_2024,Hojai,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AS_sivasa_1981:2024,AS_charai_2024,Charaideo,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AS_sivasa_1981:2024,AS_charai_2024,Charaideo,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AS_sonitp_1991:2024,AS_biswan_2024,Biswanath,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+AS_sonitp_1991:2024,AS_biswan_2024,Biswanath,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+CG_bastar_1991:2024,CG_kondag_2024,Kondagaon,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+CG_bastar_1991:2024,CG_kondag_2024,Kondagaon,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+CG_bilasp_1991:2024,CG_gaurel_2024,Gaurela-Pendra-Marwahi,area,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+CG_bilasp_1991:2024,CG_gaurel_2024,Gaurela-Pendra-Marwahi,production,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+CG_bilasp_1991:2024,CG_mungel_2024,Mungeli,area,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+CG_bilasp_1991:2024,CG_mungel_2024,Mungeli,production,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+CG_dakshi_2011:2024,CG_sukma_2024,Sukma,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+CG_dakshi_2011:2024,CG_sukma_2024,Sukma,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+CG_durg_1971:2024,CG_balod_2024,Balod,area,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+CG_durg_1971:2024,CG_balod_2024,Balod,production,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+CG_durg_1971:2024,CG_bemeta_2024,Bemetara,area,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+CG_durg_1971:2024,CG_bemeta_2024,Bemetara,production,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+CG_raipur_1991:2024,CG_baloda_2024,Baloda Bazar,area,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+CG_raipur_1991:2024,CG_baloda_2024,Baloda Bazar,production,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+CG_raipur_1991:2024,CG_gariya_2024,Gariyaband,area,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+CG_raipur_1991:2024,CG_gariya_2024,Gariyaband,production,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+CG_surguj_1991:2024,CG_balram_2024,Balrampur,area,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+CG_surguj_1991:2024,CG_balram_2024,Balrampur,production,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+CG_surguj_1991:2024,CG_surajp_2024,Surajpur,area,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+CG_surguj_1991:2024,CG_surajp_2024,Surajpur,production,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+DL_east_2001:2024,DL_shahda_2024,Shahdara,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+DL_east_2001:2024,DL_shahda_2024,Shahdara,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+DL_northe_2001:2024,DL_shahda_2024,Shahdara,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+DL_northe_2001:2024,DL_shahda_2024,Shahdara,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+DL_northw_2001:2024,DL_north_2024,North,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+DL_northw_2001:2024,DL_north_2024,North,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+DL_south_2001:2024,DL_southe_2024,South East,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+DL_south_2001:2024,DL_southe_2024,South East,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+DL_southw_2001:2024,DL_newdel_2024,New Delhi,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+DL_southw_2001:2024,DL_newdel_2024,New Delhi,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+GJ_ahmeda_1961:2024,GJ_botad_2024,Botad,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+GJ_ahmeda_1961:2024,GJ_botad_2024,Botad,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+GJ_bhavna_1951:2024,GJ_botad_2024,Botad,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+GJ_bhavna_1951:2024,GJ_botad_2024,Botad,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+GJ_jamnag_1951:2024,GJ_devbhu_2024,Devbhumi Dwarka,area,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+GJ_jamnag_1951:2024,GJ_devbhu_2024,Devbhumi Dwarka,production,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+GJ_jamnag_1951:2024,GJ_morbi_2024,Morbi,area,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+GJ_jamnag_1951:2024,GJ_morbi_2024,Morbi,production,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+GJ_junaga_1951:2024,GJ_girsom_2024,Gir Somnath,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+GJ_junaga_1951:2024,GJ_girsom_2024,Gir Somnath,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+GJ_kheda_1961:2024,GJ_mahisa_2024,Mahisagar,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+GJ_kheda_1961:2024,GJ_mahisa_2024,Mahisagar,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+GJ_panchm_1951:2024,GJ_mahisa_2024,Mahisagar,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+GJ_panchm_1951:2024,GJ_mahisa_2024,Mahisagar,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+GJ_rajkot_1961:2024,GJ_morbi_2024,Morbi,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+GJ_rajkot_1961:2024,GJ_morbi_2024,Morbi,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+GJ_sabark_1961:2024,GJ_araval_2024,Aravalli,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+GJ_sabark_1961:2024,GJ_araval_2024,Aravalli,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+GJ_surend_1961:2024,GJ_morbi_2024,Morbi,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+GJ_surend_1961:2024,GJ_morbi_2024,Morbi,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+GJ_vadoda_1971:2024,GJ_chhota_2024,Chhota Udepur,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+GJ_vadoda_1971:2024,GJ_chhota_2024,Chhota Udepur,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+HR_bhiwan_1981:2024,HR_charkh_2024,Charkhi Dadri,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+HR_bhiwan_1981:2024,HR_charkh_2024,Charkhi Dadri,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+KA_bellar_2011:2024,KA_vijaya_2024,Vijayanagara,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+KA_bellar_2011:2024,KA_vijaya_2024,Vijayanagara,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+KA_chikma_2011:2024,KA_chikka_2011,Chikkamagaluru,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+KA_chikma_2011:2024,KA_chikka_2011,Chikkamagaluru,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+KA_gulbar_2001:2024,KA_kalabu_2024,Kalaburagi,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+KA_gulbar_2001:2024,KA_kalabu_2024,Kalaburagi,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+KA_ramana_2011:2024,KA_bengal_2024,Bengaluru South,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+KA_ramana_2011:2024,KA_bengal_2024,Bengaluru South,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+MH_aurang_1981:2024,MH_sambha_2024,Sambhaji Nagar,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+MH_aurang_1981:2024,MH_sambha_2024,Sambhaji Nagar,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+MH_thane_1971:2024,MH_palgha_2024,Palghar,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+MH_thane_1971:2024,MH_palgha_2024,Palghar,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+ML_eastga_1981:2024,ML_northg_2024,North Garo Hills,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+ML_eastga_1981:2024,ML_northg_2024,North Garo Hills,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+ML_jainti_1981:2024,ML_eastja_2024,East Jaintia Hills,area,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+ML_jainti_1981:2024,ML_eastja_2024,East Jaintia Hills,production,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+ML_jainti_1981:2024,ML_westja_2024,West Jaintia Hills,area,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+ML_jainti_1981:2024,ML_westja_2024,West Jaintia Hills,production,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+ML_westkh_1981:2024,ML_easter_2024,Eastern West Khasi Hills,area,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+ML_westkh_1981:2024,ML_easter_2024,Eastern West Khasi Hills,production,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+ML_westkh_1981:2024,ML_southw_2024,South West Khasi Hills,area,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+ML_westkh_1981:2024,ML_southw_2024,South West Khasi Hills,production,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+MN_churac_1991:2024,MN_pherza_2024,Pherzawl,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+MN_churac_1991:2024,MN_pherza_2024,Pherzawl,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+MN_imphal_1991:2024,MN_jiriba_2024,Jiribam,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+MN_imphal_1991:2024,MN_jiriba_2024,Jiribam,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+MN_senapa_1991:2024,MN_kangpo_2024,Kangpokpi,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+MN_senapa_1991:2024,MN_kangpo_2024,Kangpokpi,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+MN_tameng_1991:2024,MN_noney_2024,Noney,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+MN_tameng_1991:2024,MN_noney_2024,Noney,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+MN_thouba_1991:2024,MN_kakchi_2024,Kakching,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+MN_thouba_1991:2024,MN_kakchi_2024,Kakching,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+MN_ukhrul_1991:2024,MN_kamjon_2024,Kamjong,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+MN_ukhrul_1991:2024,MN_kamjon_2024,Kamjong,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+MP_shajap_2011:2024,MP_agarma_2024,Agar-Malwa,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+MP_shajap_2011:2024,MP_agarma_2024,Agar-Malwa,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+MP_tikamg_2011:2024,MP_niwari_2024,Niwari,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+MP_tikamg_2011:2024,MP_niwari_2024,Niwari,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+MZ_aizawl_1981:2024,MZ_saitua_2024,Saitual,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+MZ_aizawl_1981:2024,MZ_saitua_2024,Saitual,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+MZ_champh_2001:2024,MZ_khawza_2024,Khawzawl,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+MZ_champh_2001:2024,MZ_khawza_2024,Khawzawl,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+MZ_lungle_1981:2024,MZ_hnathi_2024,Hnathial,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+MZ_lungle_1981:2024,MZ_hnathi_2024,Hnathial,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+NL_dimapu_2001:2024,NL_chumou_2024,Chumoukedima,area,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+NL_dimapu_2001:2024,NL_chumou_2024,Chumoukedima,production,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+NL_dimapu_2001:2024,NL_niulan_2024,Niuland,area,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+NL_dimapu_2001:2024,NL_niulan_2024,Niuland,production,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+NL_kohima_1951:2024,NL_tsemin_2024,Tseminyü,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+NL_kohima_1951:2024,NL_tsemin_2024,Tseminyü,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+NL_tuensa_1951:2024,NL_noklak_2024,Noklak,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+NL_tuensa_1951:2024,NL_noklak_2024,Noklak,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+PB_firozp_1951:2024,PB_fazilk_2024,Fazilka,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+PB_firozp_1951:2024,PB_fazilk_2024,Fazilka,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+PB_gurdas_1951:2024,PB_pathan_2024,Pathankot,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+PB_gurdas_1951:2024,PB_pathan_2024,Pathankot,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+PB_sangru_1951:2024,PB_malerk_2024,Malerkotla,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+PB_sangru_1951:2024,PB_malerk_2024,Malerkotla,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+SK_east_2001:2024,SK_gangto_2024,Gangtok,area,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+SK_east_2001:2024,SK_gangto_2024,Gangtok,production,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+SK_east_2001:2024,SK_pakyon_2024,Pakyong,area,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+SK_east_2001:2024,SK_pakyon_2024,Pakyong,production,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+SK_north_2001:2024,SK_mangan_2024,Mangan,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+SK_north_2001:2024,SK_mangan_2024,Mangan,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+SK_south_2001:2024,SK_namchi_2024,Namchi,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+SK_south_2001:2024,SK_namchi_2024,Namchi,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+SK_west_2001:2024,SK_gyalsh_2024,Gyalshing,area,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+SK_west_2001:2024,SK_gyalsh_2024,Gyalshing,production,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+SK_west_2001:2024,SK_soreng_2024,Soreng,area,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+SK_west_2001:2024,SK_soreng_2024,Soreng,production,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TG_adilab_2011:2024,TG_kumura_2024,Kumuram Bheem,area,0.333333,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TG_adilab_2011:2024,TG_kumura_2024,Kumuram Bheem,production,0.333333,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TG_adilab_2011:2024,TG_manche_2024,Mancherial,area,0.333333,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TG_adilab_2011:2024,TG_manche_2024,Mancherial,production,0.333333,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TG_adilab_2011:2024,TG_nirmal_2024,Nirmal,area,0.333333,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TG_adilab_2011:2024,TG_nirmal_2024,Nirmal,production,0.333333,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TG_karimn_2011:2024,TG_jagtia_2024,Jagtial,area,0.2,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TG_karimn_2011:2024,TG_jagtia_2024,Jagtial,production,0.2,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TG_karimn_2011:2024,TG_jayash_2024,Jayashankar Bhupalpally,area,0.2,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TG_karimn_2011:2024,TG_jayash_2024,Jayashankar Bhupalpally,production,0.2,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TG_karimn_2011:2024,TG_peddap_2024,Peddapalli,area,0.2,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TG_karimn_2011:2024,TG_peddap_2024,Peddapalli,production,0.2,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TG_karimn_2011:2024,TG_rajann_2024,Rajanna Sircilla,area,0.2,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TG_karimn_2011:2024,TG_rajann_2024,Rajanna Sircilla,production,0.2,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TG_karimn_2011:2024,TG_siddip_2024,Siddipet,area,0.2,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TG_karimn_2011:2024,TG_siddip_2024,Siddipet,production,0.2,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TG_khamma_1961:2024,TG_bhadra_2024,Bhadradri Kothagudem,area,0.333333,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TG_khamma_1961:2024,TG_bhadra_2024,Bhadradri Kothagudem,production,0.333333,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TG_khamma_1961:2024,TG_mahabu_2024,Mahabubabad,area,0.333333,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TG_khamma_1961:2024,TG_mahabu_2024,Mahabubabad,production,0.333333,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TG_khamma_1961:2024,TG_mulugu_2024,Mulugu,area,0.333333,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TG_khamma_1961:2024,TG_mulugu_2024,Mulugu,production,0.333333,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TG_mahbub_2011:2024,TG_jogula_2024,Jogulamba Gadwal,area,0.25,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TG_mahbub_2011:2024,TG_jogula_2024,Jogulamba Gadwal,production,0.25,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TG_mahbub_2011:2024,TG_nagark_2024,Nagarkurnool,area,0.25,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TG_mahbub_2011:2024,TG_nagark_2024,Nagarkurnool,production,0.25,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TG_mahbub_2011:2024,TG_naraya_2024,Narayanpet,area,0.25,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TG_mahbub_2011:2024,TG_naraya_2024,Narayanpet,production,0.25,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TG_mahbub_2011:2024,TG_wanapa_2024,Wanaparthy,area,0.25,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TG_mahbub_2011:2024,TG_wanapa_2024,Wanaparthy,production,0.25,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TG_medak_2011:2024,TG_sangar_2024,Sangareddy,area,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TG_medak_2011:2024,TG_sangar_2024,Sangareddy,production,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TG_medak_2011:2024,TG_siddip_2024,Siddipet,area,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TG_medak_2011:2024,TG_siddip_2024,Siddipet,production,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TG_nalgon_2011:2024,TG_jangao_2024,Jangaon,area,0.333333,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TG_nalgon_2011:2024,TG_jangao_2024,Jangaon,production,0.333333,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TG_nalgon_2011:2024,TG_suryap_2024,Suryapet,area,0.333333,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TG_nalgon_2011:2024,TG_suryap_2024,Suryapet,production,0.333333,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TG_nalgon_2011:2024,TG_yadadr_2024,Yadadri Bhuvanagiri,area,0.333333,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TG_nalgon_2011:2024,TG_yadadr_2024,Yadadri Bhuvanagiri,production,0.333333,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TG_nizama_2011:2024,TG_kamare_2024,Kamareddy,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TG_nizama_2011:2024,TG_kamare_2024,Kamareddy,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TG_rangar_1981:2024,TG_medcha_2024,Medchal–Malkajgiri,area,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TG_rangar_1981:2024,TG_medcha_2024,Medchal–Malkajgiri,production,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TG_rangar_1981:2024,TG_vikara_2024,Vikarabad,area,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TG_rangar_1981:2024,TG_vikara_2024,Vikarabad,production,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TG_warang_1951:2024,TG_jangao_2024,Jangaon,area,0.25,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TG_warang_1951:2024,TG_jangao_2024,Jangaon,production,0.25,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TG_warang_1951:2024,TG_jayash_2024,Jayashankar Bhupalpally,area,0.25,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TG_warang_1951:2024,TG_jayash_2024,Jayashankar Bhupalpally,production,0.25,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TG_warang_1951:2024,TG_mahabu_2024,Mahabubabad,area,0.25,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TG_warang_1951:2024,TG_mahabu_2024,Mahabubabad,production,0.25,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TG_warang_1951:2024,TG_mulugu_2024,Mulugu,area,0.25,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TG_warang_1951:2024,TG_mulugu_2024,Mulugu,production,0.25,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TN_nagapa_2001:2024,TN_mayila_2024,Mayiladuthurai,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TN_nagapa_2001:2024,TN_mayila_2024,Mayiladuthurai,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TN_tirune_1981:2024,TN_tenkas_2024,Tenkasi,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TN_tirune_1981:2024,TN_tenkas_2024,Tenkasi,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TN_vellor_2001:2024,TN_ranipe_2024,Ranipet,area,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TN_vellor_2001:2024,TN_ranipe_2024,Ranipet,production,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TN_vellor_2001:2024,TN_tirupa_2024,Tirupattur,area,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TN_vellor_2001:2024,TN_tirupa_2024,Tirupattur,production,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TN_vilupp_2001:2024,TN_kallak_2024,Kallakurichi,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TN_vilupp_2001:2024,TN_kallak_2024,Kallakurichi,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TR_northt_1971:2024,TR_unakot_2024,Unakoti,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TR_northt_1971:2024,TR_unakot_2024,Unakoti,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TR_southt_1971:2024,TR_gomati_2024,Gomati,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TR_southt_1971:2024,TR_gomati_2024,Gomati,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TR_westtr_1971:2024,TR_khowai_2024,Khowai,area,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TR_westtr_1971:2024,TR_khowai_2024,Khowai,production,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TR_westtr_1971:2024,TR_sipahi_2024,Sipahijala,area,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+TR_westtr_1971:2024,TR_sipahi_2024,Sipahijala,production,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+UP_allaha_1951:2024,UP_prayag_2024,Prayagraj,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+UP_allaha_1951:2024,UP_prayag_2024,Prayagraj,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+UP_budaun_2011:2024,UP_sambha_2024,Sambhal (Bhimnagar),area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+UP_budaun_2011:2024,UP_sambha_2024,Sambhal (Bhimnagar),production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+UP_ghazia_1981:2024,UP_hapurp_2024,Hapur (Panchsheel Nagar),area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+UP_ghazia_1981:2024,UP_hapurp_2024,Hapur (Panchsheel Nagar),production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+UP_kanshi_2011:2024,UP_kasgan_2024,Kasganj,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+UP_kanshi_2011:2024,UP_kasgan_2024,Kasganj,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+UP_morada_1991:2024,UP_sambha_2024,Sambhal (Bhimnagar),area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+UP_morada_1991:2024,UP_sambha_2024,Sambhal (Bhimnagar),production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+UP_muzaff_2011:2024,UP_shamli_2024,Shamli (Prabuddhanagar),area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+UP_muzaff_2011:2024,UP_shamli_2024,Shamli (Prabuddhanagar),production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+UP_sultan_2011:2024,UP_amethi_2024,Amethi,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+UP_sultan_2011:2024,UP_amethi_2024,Amethi,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+WB_barddh_1951:2024,WB_paschi_2011,Pashchim Barddhaman,area,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+WB_barddh_1951:2024,WB_paschi_2011,Pashchim Barddhaman,production,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+WB_barddh_1951:2024,WB_purbab_2024,Purba Barddhaman,area,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+WB_barddh_1951:2024,WB_purbab_2024,Purba Barddhaman,production,0.5,equal_split_fallback,0.35,2024,equal_split_fallback,True
+WB_darjil_1971:2024,WB_kalimp_2024,Kalimpong,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+WB_darjil_1971:2024,WB_kalimp_2024,Kalimpong,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+WB_jalpai_2011:2024,WB_alipur_2024,Alipurduar,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+WB_jalpai_2011:2024,WB_alipur_2024,Alipurduar,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+WB_paschi_2011:2024,WB_jhargr_2024,Jhargram,area,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True
+WB_paschi_2011:2024,WB_jhargr_2024,Jhargram,production,1.0,equal_split_fallback,0.35,2024,equal_split_fallback,True

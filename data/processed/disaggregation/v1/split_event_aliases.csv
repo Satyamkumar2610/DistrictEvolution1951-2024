@@ -1,0 +1,1021 @@
+event_id,role,cdk,name,normalized_name
+AP_vizaga_1951:1961,parent,AP_vizaga_1951,Vizagapatnam,vizagapatnam
+AP_vizaga_1951:1961,child,AP_visakh_1961,Visakhapatnam,visakhapatnam
+AR_aborhi_1951:1961,parent,AR_aborhi_1951,Abor Hills,abor hills
+AR_aborhi_1951:1961,child,AR_siangf_1961,Siang Frontier Division,siang frontier division
+AR_balipa_1951:1961,parent,AR_balipa_1951,Balipara Frontier Tract,balipara frontier tract
+AR_balipa_1951:1961,child,AR_kameng_1961,Kameng Frontier,kameng frontier
+AR_balipa_1951:1961,child,AR_subans_1961,Subansiri Frontier,subansiri frontier
+AR_mishmi_1951:1961,parent,AR_mishmi_1951,Mishmi Hills,mishmi hills
+AR_mishmi_1951:1961,child,AR_lohitf_1961,Lohit Frontier Division,lohit frontier division
+GJ_centra_1951:1961,parent,GJ_centra_1951,Central Saurashtra,central saurashtra
+GJ_centra_1951:1961,child,GJ_rajkot_1961,Rajkot,rajkot
+GJ_zalawa_1951:1961,parent,GJ_zalawa_1951,Zalawad,zalawad
+GJ_zalawa_1951:1961,child,GJ_surend_1961,Surendranagar,surendranagar
+HP_kangra_1951:1961,parent,HP_kangra_1951,Kangra,kangra
+HP_kangra_1951:1961,child,HP_lahaul_1961,Lahaul and Spiti,lahaul and spiti
+HP_kohist_1951:1961,parent,HP_kohist_1951,Kohistan,kohistan
+HP_kohist_1951:1961,child,HP_shimla_1961,Simla,simla
+HP_mahasu_1951:1961,parent,HP_mahasu_1951,Mahasu,mahasu
+HP_mahasu_1951:1961,child,HP_kinnau_1961,Kinnaur,kinnaur
+JK_jammua_1951:1961,parent,JK_jammua_1951,Jammu and Kashmir,jammu and kashmir
+JK_jammua_1951:1961,child,JK_anantn_1961,Anantnag,anantnag
+JK_jammua_1951:1961,child,JK_baramu_1961,Baramula,baramula
+JK_jammua_1951:1961,child,JK_doda_1961,Doda,doda
+JK_jammua_1951:1961,child,JK_jammu_1961,Jammu,jammu
+JK_jammua_1951:1961,child,JK_kathua_1961,Kathua,kathua
+JK_jammua_1951:1961,child,JK_ladakh_1961,Ladakh,ladakh
+JK_jammua_1951:1961,child,JK_poonch_1961,Poonch,poonch
+JK_jammua_1951:1961,child,JK_srinag_1961,Srinagar,srinagar
+JK_jammua_1951:1961,child,JK_udhamp_1961,Udhampur,udhampur
+KL_kollam_1951:1961,parent,KL_kollam_1951,Quilon,quilon
+KL_kollam_1951:1961,child,KL_alappu_1961,Alleppey,alleppey
+KL_kottay_1951:1961,parent,KL_kottay_1951,Kottayam,kottayam
+KL_kottay_1951:1961,child,KL_alappu_1961,Alleppey,alleppey
+KL_kottay_1951:1961,child,KL_ernaku_1961,Ernakulam,ernakulam
+KL_malapp_1951:1961,parent,KL_malapp_1951,Malappuram,malappuram
+KL_malapp_1951:1961,child,KL_kannur_1961,Cannanore,cannanore
+KL_malapp_1951:1961,child,KL_kozhik_1961,Kozhikode,kozhikode
+KL_malapp_1951:1961,child,KL_palgha_1961,Palghat,palghat
+KL_thriss_1951:1961,parent,KL_thriss_1951,Trichur,trichur
+KL_thriss_1951:1961,child,KL_ernaku_1961,Ernakulam,ernakulam
+MH_satara_1951:1961,parent,MH_satara_1951,Satara North,satara north
+MH_satara_1951:1961,child,MH_sangli_1961,Sangli,sangli
+MP_bhilsa_1951:1961,parent,MP_bhilsa_1951,Bhilsa,bhilsa
+MP_bhilsa_1951:1961,child,MP_vidish_1961,Vidisha,vidisha
+MP_chhind_1951:1961,parent,MP_chhind_1951,Chhindwara,chhindwara
+MP_chhind_1951:1961,child,MP_seoni_1961,Seoni,seoni
+MP_gird_1951:1961,parent,MP_gird_1951,Gird,gird
+MP_gird_1951:1961,child,MP_gwalio_1961,Gwalior,gwalior
+MP_goona_1951:1961,parent,MP_goona_1951,Goona,goona
+MP_goona_1951:1961,child,MP_guna_1961,Guna,guna
+MP_narmad_1951:1961,parent,MP_narmad_1951,Hoshangabad,hoshangabad
+MP_narmad_1951:1961,child,MP_narsin_1961,Narsimhapur,narsimhapur
+MP_nimar_1951:1961,parent,MP_nimar_1951,Nimar,nimar
+MP_nimar_1951:1961,child,MP_khandw_1961,East Nimar,east nimar
+MP_nimar_1951:1961,child,MP_khargo_1961,Khargone,khargone
+MP_sagar_1951:1961,parent,MP_sagar_1951,Sagar,sagar
+MP_sagar_1951:1961,child,MP_damoh_1961,Damoh,damoh
+NL_tuensa_1951:1961,parent,NL_tuensa_1951,Tuensang,tuensang
+NL_tuensa_1951:1961,child,NL_mokokc_1961,Mokokchung,mokokchung
+RJ_kotah_1951:1961,parent,RJ_kotah_1951,Kotah,kotah
+RJ_kotah_1951:1961,child,RJ_kota_1951,Kota,kota
+TG_warang_1951:1961,parent,TG_warang_1951,Warangal,warangal
+TG_warang_1951:1961,child,TG_khamma_1961,Khammam,khammam
+TN_thiruv_1951:1961,parent,TN_thiruv_1951,Thiruvallur,thiruvallur
+TN_thiruv_1951:1961,child,TN_kanniy_1961,Kanyakumari,kanyakumari
+UK_almora_1951:1961,parent,UK_almora_1951,Almora,almora
+UK_almora_1951:1961,child,UK_pithor_1961,Pithoragarh,pithoragarh
+UK_garhwa_1951:1961,parent,UK_garhwa_1951,Garhwal,garhwal
+UK_garhwa_1951:1961,child,UK_chamol_1961,Chamoli,chamoli
+UK_tehri_1951:1961,parent,UK_tehri_1951,Tehri Garhwal,tehri garhwal
+UK_tehri_1951:1961,child,UK_uttark_1961,Uttar Kashi,uttar kashi
+AR_lohitf_1961:1971,parent,AR_lohitf_1961,Lohit Frontier Division,lohit frontier division
+AR_lohitf_1961:1971,child,AR_lohit_1971,Lohit,lohit
+AR_siangf_1961:1971,parent,AR_siangf_1961,Siang Frontier Division,siang frontier division
+AR_siangf_1961:1971,child,AR_siang_1971,Siang,siang
+AR_tirapf_1951:1971,parent,AR_tirapf_1951,Tirap Frontier Division,tirap frontier division
+AR_tirapf_1951:1971,child,AR_tirap_1971,Tirap,tirap
+AS_united_1961:1971,parent,AS_united_1961,United Mikir and North Cachar Hills,united mikir and north cachar hills
+AS_united_1961:1971,child,AS_mikirh_1971,Mikir Hills,mikir hills
+AS_united_1961:1971,child,AS_northc_1971,North Cachar Hills,north cachar hills
+CH_ambala_1961:1971,parent,CH_ambala_1961,Ambala,ambala
+CH_ambala_1961:1971,child,CH_chandi_1971,Chandigarh,chandigarh
+GJ_ahmeda_1961:1971,parent,GJ_ahmeda_1961,Ahmadabad,ahmadabad
+GJ_ahmeda_1961:1971,child,GJ_gandhi_1971,Gandhinagar,gandhinagar
+GJ_baroda_1961:1971,parent,GJ_baroda_1961,Baroda,baroda
+GJ_baroda_1961:1971,child,GJ_vadoda_1971,Vadodara,vadodara
+GJ_dangs_1961:1971,parent,GJ_dangs_1961,Dangs,dangs
+GJ_dangs_1961:1971,child,GJ_thedan_1971,The Dangs,the dangs
+GJ_mahesa_1961:1971,parent,GJ_mahesa_1961,Mahesana,mahesana
+GJ_mahesa_1961:1971,child,GJ_gandhi_1971,Gandhinagar,gandhinagar
+GJ_surat_1961:1971,parent,GJ_surat_1961,Surat,surat
+GJ_surat_1961:1971,child,GJ_valsad_1971,Valsad,valsad
+HP_kangra_1951:1971,parent,HP_kangra_1951,Kangra,kangra
+HP_kangra_1951:1971,child,HP_kulu_1971,Kulu,kulu
+HP_lahaul_1961:1971,parent,HP_lahaul_1961,Lahaul and Spiti,lahaul and spiti
+HP_lahaul_1961:1971,child,HP_lahula_1971,Lahul and Spiti,lahul and spiti
+HR_sangru_1961:1971,parent,HR_sangru_1961,Sangrur,sangrur
+HR_sangru_1961:1971,child,HR_jind_1971,Jind,jind
+JK_poonch_1961:1971,parent,JK_poonch_1961,Poonch,poonch
+JK_poonch_1961:1971,child,JK_punch_1971,Punch,punch
+JK_poonch_1961:1971,child,JK_rajaur_1971,Rajauri,rajauri
+PB_hoshia_1961:1971,parent,PB_hoshia_1961,Hoshiarpur,hoshiarpur
+PB_hoshia_1961:1971,child,PB_ropar_1971,Ropar,ropar
+TN_salem_1961:1971,parent,TN_salem_1961,Salem,salem
+TN_salem_1961:1971,child,TN_dharma_1971,Dharmapuri,dharmapuri
+TR_tripur_1951:1971,parent,TR_tripur_1951,Tripura,tripura
+TR_tripur_1951:1971,child,TR_northt_1971,North Tripura,north tripura
+TR_tripur_1951:1971,child,TR_southt_1971,South Tripura,south tripura
+TR_tripur_1951:1971,child,TR_westtr_1971,West Tripura,west tripura
+WB_24parg_1961:1971,parent,WB_24parg_1961,24 - Parganas,24 parganas
+WB_24parg_1961:1971,child,WB_south2_1971,Twenty Four Parganas,twenty four parganas
+AN_andama_1971:1981,parent,AN_andama_1971,Andaman,andaman
+AN_andama_1971:1981,child,AN_nicoba_1981,Nicobar,nicobar
+AP_srikak_1971:1981,parent,AP_srikak_1971,Srikakulam,srikakulam
+AP_srikak_1971:1981,child,AP_vizian_1981,Vizianagaram,vizianagaram
+AP_sripot_1971:1981,parent,AP_sripot_1971,Nellore,nellore
+AP_sripot_1971:1981,child,AP_prakas_1981,Prakasam,prakasam
+AP_visakh_1961:1981,parent,AP_visakh_1961,Visakhapatnam,visakhapatnam
+AP_visakh_1961:1981,child,AP_vizian_1981,Vizianagaram,vizianagaram
+AR_kameng_1961:1981,parent,AR_kameng_1961,Kameng Frontier,kameng frontier
+AR_kameng_1961:1981,child,AR_eastka_1981,East Kameng,east kameng
+AR_kameng_1961:1981,child,AR_westka_1981,West Kameng,west kameng
+AR_siang_1971:1981,parent,AR_siang_1971,Siang,siang
+AR_siang_1971:1981,child,AR_westsi_1981,West Siang,west siang
+AR_subans_1961:1981,parent,AR_subans_1961,Subansiri Frontier,subansiri frontier
+AR_subans_1961:1981,child,AR_lowers_1981,Lower Siang,lower siang
+AR_subans_1961:1981,child,AR_uppers_1981,Upper Siang,upper siang
+AR_tirap_1971:1981,parent,AR_tirap_1971,Tirap,tirap
+AR_tirap_1971:1981,child,AR_dibang_1981,Dibang Valley,dibang valley
+AS_lakhim_1971:1981,parent,AS_lakhim_1971,Lakhimpur,lakhimpur
+AS_lakhim_1971:1981,child,AS_dibrug_1981,Dibrugarh,dibrugarh
+AS_mikirh_1971:1981,parent,AS_mikirh_1971,Mikir Hills,mikir hills
+AS_mikirh_1971:1981,child,AS_karbia_1981,Karbi Anglong,karbi anglong
+AS_nowgon_1971:1981,parent,AS_nowgon_1971,Nowgong,nowgong
+AS_nowgon_1971:1981,child,AS_nagaon_1981,Nagaon,nagaon
+BR_champa_1971:1981,parent,BR_champa_1971,Champaran,champaran
+BR_champa_1971:1981,child,BR_pashch_1981,Pashchim Champaran,pashchim champaran
+BR_champa_1971:1981,child,BR_purbac_1981,Purba Champaran,purba champaran
+BR_darbha_1971:1981,parent,BR_darbha_1971,Darbhanga,darbhanga
+BR_darbha_1971:1981,child,BR_madhub_1981,Madhubani,madhubani
+BR_darbha_1971:1981,child,BR_samast_1981,Samastipur,samastipur
+BR_gaya_1971:1981,parent,BR_gaya_1971,Gaya,gaya
+BR_gaya_1971:1981,child,BR_aurang_1981,Aurangabad,aurangabad
+BR_gaya_1971:1981,child,BR_nawada_1981,Nawada,nawada
+BR_monghy_1971:1981,parent,BR_monghy_1971,Monghyr,monghyr
+BR_monghy_1971:1981,child,BR_begusa_1981,Begusarai,begusarai
+BR_monghy_1971:1981,child,BR_munger_1981,Munger,munger
+BR_muzaff_1971:1981,parent,BR_muzaff_1971,Muzaffarpur,muzaffarpur
+BR_muzaff_1971:1981,child,BR_sitama_1981,Sitamarhi,sitamarhi
+BR_muzaff_1971:1981,child,BR_vaisha_1981,Vaishali,vaishali
+BR_patna_1971:1981,parent,BR_patna_1971,Patna,patna
+BR_patna_1971:1981,child,BR_naland_1981,Nalanda,nalanda
+BR_purnea_1971:1981,parent,BR_purnea_1971,Purnea,purnea
+BR_purnea_1971:1981,child,BR_katiha_1981,Katihar,katihar
+BR_purnea_1971:1981,child,BR_purnia_1981,Purnia,purnia
+BR_saran_1971:1981,parent,BR_saran_1971,Saran,saran
+BR_saran_1971:1981,child,BR_gopalg_1981,Gopalganj,gopalganj
+BR_saran_1971:1981,child,BR_siwan_1981,Siwan,siwan
+BR_shahab_1971:1981,parent,BR_shahab_1971,Shahabad,shahabad
+BR_shahab_1971:1981,child,BR_bhojpu_1981,Bhojpur,bhojpur
+BR_shahab_1971:1981,child,BR_rohtas_1981,Rohtas,rohtas
+CG_durg_1971:1981,parent,CG_durg_1971,Durg,durg
+CG_durg_1971:1981,child,CG_rajnan_1981,Raj Nandgaon,raj nandgaon
+GJ_kutch_1971:1981,parent,GJ_kutch_1971,Kutch,kutch
+GJ_kutch_1971:1981,child,GJ_kachch_1981,Kachchh,kachchh
+HP_kangra_1951:1981,parent,HP_kangra_1951,Kangra,kangra
+HP_kangra_1951:1981,child,HP_hamirp_1981,Hamirpur,hamirpur
+HP_kangra_1951:1981,child,HP_una_1981,Una,una
+HP_kulu_1971:1981,parent,HP_kulu_1971,Kulu,kulu
+HP_kulu_1971:1981,child,HP_kullu_1981,Kullu,kullu
+HP_mahasu_1951:1981,parent,HP_mahasu_1951,Mahasu,mahasu
+HP_mahasu_1951:1981,child,HP_shimla_1961,Simla,simla
+HP_mahasu_1951:1981,child,HP_solan_1981,Solan,solan
+HP_shimla_1961:1981,parent,HP_shimla_1961,Simla,simla
+HP_shimla_1961:1981,child,HP_solan_1981,Solan,solan
+HR_guruga_1951:1981,parent,HR_guruga_1951,Gurgaon,gurgaon
+HR_guruga_1951:1981,child,HR_farida_1981,Faridabad,faridabad
+HR_guruga_1951:1981,child,HR_mahend_1951,Mahendragarh,mahendragarh
+HR_hisar_1951:1981,parent,HR_hisar_1951,Hisar,hisar
+HR_hisar_1951:1981,child,HR_bhiwan_1981,Bhiwani,bhiwani
+HR_hisar_1951:1981,child,HR_sirsa_1981,Sirsa,sirsa
+HR_karnal_1951:1981,parent,HR_karnal_1951,Karnal,karnal
+HR_karnal_1951:1981,child,HR_kuruks_1981,Kurukshetra,kurukshetra
+HR_rohtak_1951:1981,parent,HR_rohtak_1951,Rohtak,rohtak
+HR_rohtak_1951:1981,child,HR_karnal_1951,Karnal,karnal
+HR_rohtak_1951:1981,child,HR_sonipa_1981,Sonipat,sonipat
+JH_hazari_1971:1981,parent,JH_hazari_1971,Hazaribag,hazaribag
+JH_hazari_1971:1981,child,JH_giridi_1981,Giridih,giridih
+JK_baramu_1961:1981,parent,JK_baramu_1961,Baramula,baramula
+JK_baramu_1961:1981,child,JK_kupwar_1981,Kupwara,kupwara
+JK_ladakh_1961:1981,parent,JK_ladakh_1961,Ladakh,ladakh
+JK_ladakh_1961:1981,child,JK_kargil_1981,Kargil,kargil
+JK_srinag_1961:1981,parent,JK_srinag_1961,Srinagar,srinagar
+JK_srinag_1961:1981,child,JK_badgam_1981,Badgam,badgam
+JK_srinag_1961:1981,child,JK_pulwam_1981,Pulwama,pulwama
+KL_ernaku_1961:1981,parent,KL_ernaku_1961,Ernakulam,ernakulam
+KL_ernaku_1961:1981,child,KL_idukki_1981,Idukki,idukki
+KL_kannur_1961:1981,parent,KL_kannur_1961,Cannanore,cannanore
+KL_kannur_1961:1981,child,KL_wayana_1981,Wayanad,wayanad
+KL_kottay_1951:1981,parent,KL_kottay_1951,Kottayam,kottayam
+KL_kottay_1951:1981,child,KL_idukki_1981,Idukki,idukki
+KL_kozhik_1961:1981,parent,KL_kozhik_1961,Kozhikode,kozhikode
+KL_kozhik_1961:1981,child,KL_wayana_1981,Wayanad,wayanad
+MH_bhir_1971:1981,parent,MH_bhir_1971,Bhir,bhir
+MH_bhir_1971:1981,child,MH_bid_1981,Bid,bid
+MH_kolaba_1971:1981,parent,MH_kolaba_1971,Kolaba,kolaba
+MH_kolaba_1971:1981,child,MH_raigar_1981,Raigarh,raigarh
+MH_nasik_1971:1981,parent,MH_nasik_1971,Nasik,nasik
+MH_nasik_1971:1981,child,MH_nashik_1981,Nashik,nashik
+MH_sholap_1971:1981,parent,MH_sholap_1971,Sholapur,sholapur
+MH_sholap_1971:1981,child,MH_solapu_1981,Solapur,solapur
+MH_yavatman_1971:1981,parent,MH_yavatman_1971,Yeotmal,yeotmal
+MH_yavatman_1971:1981,child,MH_yavatma_1981,Yavatmal,yavatmal
+ML_ekhasi_1971:1981,parent,ML_ekhasi_1971,United Khasi and Jaintia Hills,united khasi and jaintia hills
+ML_ekhasi_1971:1981,child,ML_eastkh_1981,East Khasi Hills,east khasi hills
+ML_ekhasi_1971:1981,child,ML_jainti_1981,Jaintia Hills,jaintia hills
+ML_ekhasi_1971:1981,child,ML_westkh_1981,West Khasi Hills,west khasi hills
+ML_garohi_1971:1981,parent,ML_garohi_1971,Garo Hills,garo hills
+ML_garohi_1971:1981,child,ML_eastga_1981,East Garo Hills,east garo hills
+ML_garohi_1971:1981,child,ML_westga_1981,West Garo Hills,west garo hills
+MN_manipu_1951:1981,parent,MN_manipu_1951,Manipur,manipur
+MN_manipu_1951:1981,child,MN_tengno_1951,Chandel,chandel
+MP_sehore_1971:1981,parent,MP_sehore_1971,Sehore,sehore
+MP_sehore_1971:1981,child,MP_bhopal_1981,Bhopal,bhopal
+MZ_mizora_1951:1981,parent,MZ_mizora_1951,Lushai Hills,lushai hills
+MZ_mizora_1951:1981,child,MZ_aizawl_1981,Aizawl,aizawl
+MZ_mizora_1951:1981,child,MZ_chhimt_1981,Chhimtuipui,chhimtuipui
+MZ_mizora_1951:1981,child,MZ_lungle_1981,Lunglei,lunglei
+NL_kohima_1951:1981,parent,NL_kohima_1951,Kohima,kohima
+NL_kohima_1951:1981,child,NL_phek_1981,Phek,phek
+NL_mokokc_1961:1981,parent,NL_mokokc_1961,Mokokchung,mokokchung
+NL_mokokc_1961:1981,child,NL_wokha_1981,Wokha,wokha
+NL_mokokc_1961:1981,child,NL_zunheb_1981,Zunheboto,zunheboto
+NL_tuensa_1951:1981,parent,NL_tuensa_1951,Tuensang,tuensang
+NL_tuensa_1951:1981,child,NL_mon_1981,Mon,mon
+OD_balaso_1971:1981,parent,OD_balaso_1971,Balasore,balasore
+OD_balaso_1971:1981,child,OD_balesh_1981,Baleshwar,baleshwar
+OD_bolang_1971:1981,parent,OD_bolang_1971,Bolangir,bolangir
+OD_bolang_1971:1981,child,OD_balang_1981,Balangir,balangir
+OD_keonjh_1971:1981,parent,OD_keonjh_1971,Keonjhar,keonjhar
+OD_keonjh_1971:1981,child,OD_kenduj_1981,Kendujhar,kendujhar
+PB_bhatin_1951:1981,parent,PB_bhatin_1951,Bathinda,bathinda
+PB_bhatin_1951:1981,child,PB_faridk_1981,Faridkot,faridkot
+PB_firozp_1951:1981,parent,PB_firozp_1951,Ferozepur,ferozepur
+PB_firozp_1951:1981,child,PB_faridk_1981,Faridkot,faridkot
+PB_ropar_1971:1981,parent,PB_ropar_1971,Ropar,ropar
+PB_ropar_1971:1981,child,PB_rupnag_1981,Rupnagar,rupnagar
+SK_sikkim_1971:1981,parent,SK_sikkim_1971,Sikkim,sikkim
+SK_sikkim_1971:1981,child,SK_eastdi_1981,East District,east district
+SK_sikkim_1971:1981,child,SK_northd_1981,North District,north district
+SK_sikkim_1971:1981,child,SK_southd_1981,South District,south district
+SK_sikkim_1971:1981,child,SK_westdi_1981,West District,west district
+TG_hydera_1971:1981,parent,TG_hydera_1971,Hyderabad,hyderabad
+TG_hydera_1971:1981,child,TG_rangar_1981,Rangareddi,rangareddi
+TN_coimba_1951:1981,parent,TN_coimba_1951,Coimbatore,coimbatore
+TN_coimba_1951:1981,child,TN_periya_1981,Periyar,periyar
+TN_thanja_1951:1981,parent,TN_thanja_1951,Tanjore,tanjore
+TN_thanja_1951:1981,child,TN_pudukk_1981,Pudukkottai,pudukkottai
+TN_tiruch_1971:1981,parent,TN_tiruch_1971,Tiruchchirappalli,tiruchchirappalli
+TN_tiruch_1971:1981,child,TN_pudukk_1981,Pudukkottai,pudukkottai
+UP_buland_1971:1981,parent,UP_buland_1971,Bulandshahr,bulandshahr
+UP_buland_1971:1981,child,UP_ghazia_1981,Ghaziabad,ghaziabad
+UP_jhansi_1971:1981,parent,UP_jhansi_1971,Jhansi,jhansi
+UP_jhansi_1971:1981,child,UP_lalitp_1981,Lalitpur,lalitpur
+UP_meerut_1951:1981,parent,UP_meerut_1951,Meerut,meerut
+UP_meerut_1951:1981,child,UP_ghazia_1981,Ghaziabad,ghaziabad
+WB_hooghl_1971:1981,parent,WB_hooghl_1971,Hooghly,hooghly
+WB_hooghl_1971:1981,child,WB_hugli_1981,Hugli,hugli
+WB_malda_1971:1981,parent,WB_malda_1971,Malda,malda
+WB_malda_1971:1981,child,WB_maldah_1981,Maldah,maldah
+AP_vishak_1981:1991,parent,AP_vishak_1981,Vishakhapatnam,vishakhapatnam
+AP_vishak_1981:1991,child,AP_visakh_1961,Visakhapatnam,visakhapatnam
+AR_tirap_1971:1991,parent,AR_tirap_1971,Tirap,tirap
+AR_tirap_1971:1991,child,AR_changl_1991,Changlang,changlang
+AR_westka_1981:1991,parent,AR_westka_1981,West Kameng,west kameng
+AR_westka_1981:1991,child,AR_tawang_1991,Tawang,tawang
+AS_cachar_1981:1991,parent,AS_cachar_1981,Cachar,cachar
+AS_cachar_1981:1991,child,AS_hailak_1991,Hailakandi,hailakandi
+AS_cachar_1981:1991,child,AS_karimg_1991,Karimganj,karimganj
+AS_darran_1981:1991,parent,AS_darran_1981,Darrang,darrang
+AS_darran_1981:1991,child,AS_sonitp_1991,Sonitpur,sonitpur
+AS_dibrug_1981:1991,parent,AS_dibrug_1981,Dibrugarh,dibrugarh
+AS_dibrug_1981:1991,child,AS_tinsuk_1991,Tinsukia,tinsukia
+AS_goalpa_1981:1991,parent,AS_goalpa_1981,Goalpara,goalpara
+AS_goalpa_1981:1991,child,AS_bongai_1991,Bongaigaon,bongaigaon
+AS_goalpa_1981:1991,child,AS_dhubur_1991,Dhuburi,dhuburi
+AS_goalpa_1981:1991,child,AS_kokraj_1991,Kokrajhar,kokrajhar
+AS_kamrup_1981:1991,parent,AS_kamrup_1981,Kamrup,kamrup
+AS_kamrup_1981:1991,child,AS_barpet_1991,Barpeta,barpeta
+AS_kamrup_1981:1991,child,AS_nalbar_1991,Nalbari,nalbari
+AS_lakhim_1971:1991,parent,AS_lakhim_1971,Lakhimpur,lakhimpur
+AS_lakhim_1971:1991,child,AS_dhemaj_1991,Dhemaji,dhemaji
+AS_nagaon_1981:1991,parent,AS_nagaon_1981,Nagaon,nagaon
+AS_nagaon_1981:1991,child,AS_mariga_1991,Marigaon,marigaon
+AS_sivasa_1981:1991,parent,AS_sivasa_1981,Sibsagar,sibsagar
+AS_sivasa_1981:1991,child,AS_golagh_1991,Golaghat,golaghat
+AS_sivasa_1981:1991,child,AS_jorhat_1991,Jorhat,jorhat
+BR_gaya_1971:1991,parent,BR_gaya_1971,Gaya,gaya
+BR_gaya_1971:1991,child,BR_jehana_1991,Jehanabad,jehanabad
+BR_munger_1981:1991,parent,BR_munger_1981,Munger,munger
+BR_munger_1981:1991,child,BR_khagar_1991,Khagaria,khagaria
+BR_purnia_1981:1991,parent,BR_purnia_1981,Purnia,purnia
+BR_purnia_1981:1991,child,BR_araria_1991,Araria,araria
+BR_purnia_1981:1991,child,BR_kishan_1991,Kishanganj,kishanganj
+BR_sahars_1981:1991,parent,BR_sahars_1981,Saharsa,saharsa
+BR_sahars_1981:1991,child,BR_madhep_1991,Madhepura,madhepura
+GA_goa_1981:1991,parent,GA_goa_1981,Goa,goa
+GA_goa_1981:1991,child,GA_northg_1991,North Goa,north goa
+GA_goa_1981:1991,child,GA_southg_1991,South Goa,south goa
+HR_ambala_1951:1991,parent,HR_ambala_1951,Ambala,ambala
+HR_ambala_1951:1991,child,HR_yamuna_1991,Yamunanagar,yamunanagar
+HR_karnal_1951:1991,parent,HR_karnal_1951,Karnal,karnal
+HR_karnal_1951:1991,child,HR_panipa_1991,Panipat,panipat
+HR_kuruks_1981:1991,parent,HR_kuruks_1981,Kurukshetra,kurukshetra
+HR_kuruks_1981:1991,child,HR_kaitha_1991,Kaithal,kaithal
+HR_mahend_1951:1991,parent,HR_mahend_1951,Mahendragarh,mahendragarh
+HR_mahend_1951:1991,child,HR_rewari_1991,Rewari,rewari
+JH_psingh_1981:1991,parent,JH_psingh_1981,Pashchimi Singhbhum,pashchimi singhbhum
+JH_psingh_1981:1991,child,JH_purbis_1991,Purbi Singhbhum,purbi singhbhum
+JH_ranchi_1981:1991,parent,JH_ranchi_1981,Ranchi,ranchi
+JH_ranchi_1981:1991,child,JH_gumla_1991,Gumla,gumla
+JH_ranchi_1981:1991,child,JH_lohard_1991,Lohardaga,lohardaga
+JH_santha_1971:1991,parent,JH_santha_1971,Santal Parganas,santal parganas
+JH_santha_1971:1991,child,JH_deogha_1991,Deoghar,deoghar
+JH_santha_1971:1991,child,JH_dumka_1991,Dumka,dumka
+JH_santha_1971:1991,child,JH_godda_1991,Godda,godda
+JH_santha_1971:1991,child,JH_sahibg_1991,Sahibganj,sahibganj
+KL_alappu_1961:1991,parent,KL_alappu_1961,Alleppey,alleppey
+KL_alappu_1961:1991,child,KL_pathan_1991,Pathanamthitta,pathanamthitta
+KL_idukki_1981:1991,parent,KL_idukki_1981,Idukki,idukki
+KL_idukki_1981:1991,child,KL_pathan_1991,Pathanamthitta,pathanamthitta
+KL_kannur_1961:1991,parent,KL_kannur_1961,Cannanore,cannanore
+KL_kannur_1961:1991,child,KL_kasarg_1991,Kasargod,kasargod
+KL_kollam_1951:1991,parent,KL_kollam_1951,Quilon,quilon
+KL_kollam_1951:1991,child,KL_pathan_1991,Pathanamthitta,pathanamthitta
+KL_palgha_1961:1991,parent,KL_palgha_1961,Palghat,palghat
+KL_palgha_1961:1991,child,KL_palakk_1991,Palakkad,palakkad
+MH_aurang_1981:1991,parent,MH_aurang_1981,Aurangabad,aurangabad
+MH_aurang_1981:1991,child,MH_jalna_1991,Jalna,jalna
+MH_chandr_1961:1991,parent,MH_chandr_1961,Chanda,chanda
+MH_chandr_1961:1991,child,MH_gadchi_1991,Gadchiroli,gadchiroli
+MH_dharas_1981:1991,parent,MH_dharas_1981,Osmanabad,osmanabad
+MH_dharas_1981:1991,child,MH_latur_1991,Latur,latur
+MH_ratnag_1981:1991,parent,MH_ratnag_1981,Ratnagiri,ratnagiri
+MH_ratnag_1981:1991,child,MH_sindhu_1991,Sindhudurg,sindhudurg
+MN_manipu_1951:1991,parent,MN_manipu_1951,Manipur,manipur
+MN_manipu_1951:1991,child,MN_bishnu_1991,Bishnupur,bishnupur
+MN_manipu_1951:1991,child,MN_churac_1991,Churachandpur,churachandpur
+MN_manipu_1951:1991,child,MN_imphal_1991,Imphal,imphal
+MN_manipu_1951:1991,child,MN_senapa_1991,Senapati,senapati
+MN_manipu_1951:1991,child,MN_tameng_1991,Tamenglong,tamenglong
+MN_manipu_1951:1991,child,MN_thouba_1991,Thoubal,thoubal
+MN_manipu_1951:1991,child,MN_ukhrul_1991,Ukhrul,ukhrul
+RJ_bharat_1981:1991,parent,RJ_bharat_1981,Bharatpur,bharatpur
+RJ_bharat_1981:1991,child,RJ_dhaulp_1991,Dhaulpur,dhaulpur
+TN_madura_1951:1991,parent,TN_madura_1951,Madurai,madurai
+TN_madura_1951:1991,child,TN_dindig_1991,Dindigul Anna,dindigul anna
+TN_narcot_1981:1991,parent,TN_narcot_1981,North Arcot,north arcot
+TN_narcot_1981:1991,child,TN_tiruva_1991,Tiruvannamalai Sambuvarayar,tiruvannamalai sambuvarayar
+TN_ramana_1981:1991,parent,TN_ramana_1981,Ramanathapuram,ramanathapuram
+TN_ramana_1981:1991,child,TN_kamara_1991,Kamarajar,kamarajar
+TN_ramana_1981:1991,child,TN_pasump_1991,Pasumpon Muthuramalinga Thevar,pasumpon muthuramalinga thevar
+TN_tirune_1981:1991,parent,TN_tirune_1981,Tirunelveli,tirunelveli
+TN_tirune_1981:1991,child,TN_chidam_1991,Chidambaranar,chidambaranar
+UK_sahara_1981:1991,parent,UK_sahara_1981,Saharanpur,saharanpur
+UK_sahara_1981:1991,child,UK_hardwa_1991,Hardwar,hardwar
+UP_agra_1981:1991,parent,UP_agra_1981,Agra,agra
+UP_agra_1981:1991,child,UP_firoza_1991,Firozabad,firozabad
+UP_azamga_1981:1991,parent,UP_azamga_1981,Azamgarh,azamgarh
+UP_azamga_1981:1991,child,UP_mau_1991,Mau,mau
+UP_basti_1981:1991,parent,UP_basti_1981,Basti,basti
+UP_basti_1981:1991,child,UP_siddha_1991,Siddharthnagar,siddharthnagar
+UP_gorakh_1981:1991,parent,UP_gorakh_1981,Gorakhpur,gorakhpur
+UP_gorakh_1981:1991,child,UP_mahara_1991,Maharajganj,maharajganj
+UP_mainpu_1981:1991,parent,UP_mainpu_1981,Mainpuri,mainpuri
+UP_mainpu_1981:1991,child,UP_firoza_1991,Firozabad,firozabad
+UP_mirzap_1981:1991,parent,UP_mirzap_1981,Mirzapur,mirzapur
+UP_mirzap_1981:1991,child,UP_sonbha_1991,Sonbhadra,sonbhadra
+WB_south2_1971:1991,parent,WB_south2_1971,Twenty Four Parganas,twenty four parganas
+WB_south2_1971:1991,child,WB_northt_1991,North Twenty Four Parganas,north twenty four parganas
+WB_south2_1971:1991,child,WB_southt_1991,South Twenty Four Parganas,south twenty four parganas
+AR_eastsi_1981:2001,parent,AR_eastsi_1981,East Siang,east siang
+AR_eastsi_1981:2001,child,AR_uppers_1981,Upper Siang,upper siang
+AR_lowers_1981:2001,parent,AR_lowers_1981,Lower Siang,lower siang
+AR_lowers_1981:2001,child,AR_papump_2001,Papum Pare,papum pare
+BR_bhagal_1991:2001,parent,BR_bhagal_1991,Bhagalpur,bhagalpur
+BR_bhagal_1991:2001,child,BR_banka_2001,Banka,banka
+BR_bhojpu_1981:2001,parent,BR_bhojpu_1981,Bhojpur,bhojpur
+BR_bhojpu_1981:2001,child,BR_buxar_2001,Buxar,buxar
+BR_munger_1981:2001,parent,BR_munger_1981,Munger,munger
+BR_munger_1981:2001,child,BR_jamui_2001,Jamui,jamui
+BR_munger_1981:2001,child,BR_lakhis_2001,Lakhisarai,lakhisarai
+BR_munger_1981:2001,child,BR_sheikh_2001,Sheikhpura,sheikhpura
+BR_rohtas_1981:2001,parent,BR_rohtas_1981,Rohtas,rohtas
+BR_rohtas_1981:2001,child,BR_kaimur_2001,Kaimur (Bhabua),kaimur bhabua
+BR_sahars_1981:2001,parent,BR_sahars_1981,Saharsa,saharsa
+BR_sahars_1981:2001,child,BR_supaul_2001,Supaul,supaul
+BR_sitama_1981:2001,parent,BR_sitama_1981,Sitamarhi,sitamarhi
+BR_sitama_1981:2001,child,BR_sheoha_2001,Sheohar,sheohar
+CG_bastar_1991:2001,parent,CG_bastar_1991,Bastar,bastar
+CG_bastar_1991:2001,child,CG_dantew_2001,Dantewada,dantewada
+CG_bastar_1991:2001,child,CG_kanker_2001,Kanker,kanker
+CG_bilasp_1991:2001,parent,CG_bilasp_1991,Bilaspur,bilaspur
+CG_bilasp_1991:2001,child,CG_janjgi_2001,Janjgir-Champa,janjgir champa
+CG_bilasp_1991:2001,child,CG_korba_2001,Korba,korba
+CG_raigar_1991:2001,parent,CG_raigar_1991,Raigarh,raigarh
+CG_raigar_1991:2001,child,CG_jashpu_2001,Jashpur,jashpur
+CG_raipur_1991:2001,parent,CG_raipur_1991,Raipur,raipur
+CG_raipur_1991:2001,child,CG_dhamta_2001,Dhamtari,dhamtari
+CG_raipur_1991:2001,child,CG_mahasa_2001,Mahasamund,mahasamund
+CG_rajnan_1981:2001,parent,CG_rajnan_1981,Raj Nandgaon,raj nandgaon
+CG_rajnan_1981:2001,child,CG_kaward_2001,Kawardha,kawardha
+CG_surguj_1991:2001,parent,CG_surguj_1991,Surguja,surguja
+CG_surguj_1991:2001,child,CG_koriya_2001,Koriya,koriya
+DL_delhi_1991:2001,parent,DL_delhi_1991,Delhi,delhi
+DL_delhi_1991:2001,child,DL_east_2001,East,east
+DL_delhi_1991:2001,child,DL_northe_2001,North East,north east
+DL_delhi_1991:2001,child,DL_northw_2001,North West,north west
+DL_delhi_1991:2001,child,DL_south_2001,South,south
+DL_delhi_1991:2001,child,DL_southw_2001,South West,south west
+GJ_bharuc_1961:2001,parent,GJ_bharuc_1961,Bharuch,bharuch
+GJ_bharuc_1961:2001,child,GJ_narmad_2001,Narmada,narmada
+GJ_junaga_1951:2001,parent,GJ_junaga_1951,Junagadh,junagadh
+GJ_junaga_1951:2001,child,GJ_porban_2001,Porbandar,porbandar
+GJ_kheda_1961:2001,parent,GJ_kheda_1961,Kaira,kaira
+GJ_kheda_1961:2001,child,GJ_anand_2001,Anand,anand
+GJ_mahesa_1961:2001,parent,GJ_mahesa_1961,Mahesana,mahesana
+GJ_mahesa_1961:2001,child,GJ_patan_2001,Patan,patan
+GJ_panchm_1951:2001,parent,GJ_panchm_1951,Panch Mahals,panch mahals
+GJ_panchm_1951:2001,child,GJ_dohad_2001,Dohad,dohad
+GJ_valsad_1971:2001,parent,GJ_valsad_1971,Valsad,valsad
+GJ_valsad_1971:2001,child,GJ_navsar_2001,Navsari,navsari
+HR_ambala_1951:2001,parent,HR_ambala_1951,Ambala,ambala
+HR_ambala_1951:2001,child,HR_panchk_2001,Panchkula,panchkula
+HR_hisar_1951:2001,parent,HR_hisar_1951,Hisar,hisar
+HR_hisar_1951:2001,child,HR_fateha_2001,Fatehabad,fatehabad
+HR_rohtak_1951:2001,parent,HR_rohtak_1951,Rohtak,rohtak
+HR_rohtak_1951:2001,child,HR_jhajja_2001,Jhajjar,jhajjar
+JH_dhanba_1991:2001,parent,JH_dhanba_1991,Dhanbad,dhanbad
+JH_dhanba_1991:2001,child,JH_bokaro_2001,Bokaro,bokaro
+JH_giridi_1981:2001,parent,JH_giridi_1981,Giridih,giridih
+JH_giridi_1981:2001,child,JH_bokaro_2001,Bokaro,bokaro
+JH_hazari_1971:2001,parent,JH_hazari_1971,Hazaribag,hazaribag
+JH_hazari_1971:2001,child,JH_chatra_2001,Chatra,chatra
+JH_hazari_1971:2001,child,JH_kodarm_2001,Kodarma,kodarma
+JH_palamu_1971:2001,parent,JH_palamu_1971,Palamau,palamau
+JH_palamu_1971:2001,child,JH_garhwa_2001,Garhwa,garhwa
+JH_sahibg_1991:2001,parent,JH_sahibg_1991,Sahibganj,sahibganj
+JH_sahibg_1991:2001,child,JH_pakaur_2001,Pakaur,pakaur
+JK_ladakh_1961:2001,parent,JK_ladakh_1961,Ladakh,ladakh
+JK_ladakh_1961:2001,child,JK_lehlad_2001,Leh (Ladakh),leh ladakh
+KA_bijapu_1991:2001,parent,KA_bijapu_1991,Bijapur,bijapur
+KA_bijapu_1991:2001,child,KA_bagalk_2001,Bagalkot,bagalkot
+KA_chitra_1951:2001,parent,KA_chitra_1951,Chitaldrug,chitaldrug
+KA_chitra_1951:2001,child,KA_davana_2001,Davanagere,davanagere
+KA_dakshi_1971:2001,parent,KA_dakshi_1971,Dakshin Kannad,dakshin kannad
+KA_dakshi_1971:2001,child,KA_udupi_2001,Udupi,udupi
+KA_dharwa_1971:2001,parent,KA_dharwa_1971,Dharwad,dharwad
+KA_dharwa_1971:2001,child,KA_gadag_2001,Gadag,gadag
+KA_dharwa_1971:2001,child,KA_haveri_2001,Haveri,haveri
+KA_mysuru_1991:2001,parent,KA_mysuru_1991,Mysore,mysore
+KA_mysuru_1991:2001,child,KA_chamar_2001,Chamarajanagar,chamarajanagar
+KA_raichu_1991:2001,parent,KA_raichu_1991,Raichur,raichur
+KA_raichu_1991:2001,child,KA_koppal_2001,Koppal,koppal
+MH_akola_1991:2001,parent,MH_akola_1991,Akola,akola
+MH_akola_1991:2001,child,MH_washim_2001,Washim,washim
+MH_bhanda_1991:2001,parent,MH_bhanda_1991,Bhandara,bhandara
+MH_bhanda_1991:2001,child,MH_gondia_2001,Gondiya,gondiya
+MH_dhule_1951:2001,parent,MH_dhule_1951,Dhule,dhule
+MH_dhule_1951:2001,child,MH_nandur_2001,Nandurbar,nandurbar
+MH_greate_1991:2001,parent,MH_greate_1991,Greater Bombay,greater bombay
+MH_greate_1991:2001,child,MH_mumbai_1951,Mumbai,mumbai
+MH_parbha_1991:2001,parent,MH_parbha_1991,Parbhani,parbhani
+MH_parbha_1991:2001,child,MH_hingol_2001,Hingoli,hingoli
+ML_eastkh_1981:2001,parent,ML_eastkh_1981,East Khasi Hills,east khasi hills
+ML_eastkh_1981:2001,child,ML_ribhoi_2001,Ri Bhoi,ri bhoi
+ML_westga_1981:2001,parent,ML_westga_1981,West Garo Hills,west garo hills
+ML_westga_1981:2001,child,ML_southg_2001,South Garo Hills,south garo hills
+MP_jabalp_1991:2001,parent,MP_jabalp_1991,Jabalpur,jabalpur
+MP_jabalp_1991:2001,child,MP_katni_2001,Katni,katni
+MP_khargo_1961:2001,parent,MP_khargo_1961,Khargone,khargone
+MP_khargo_1961:2001,child,MP_barwan_2001,Barwani,barwani
+MP_mandla_1991:2001,parent,MP_mandla_1991,Mandla,mandla
+MP_mandla_1991:2001,child,MP_dindor_2001,Dindori,dindori
+MP_mandsa_1991:2001,parent,MP_mandsa_1991,Mandsaur,mandsaur
+MP_mandsa_1991:2001,child,MP_neemuc_2001,Neemuch,neemuch
+MP_morena_1991:2001,parent,MP_morena_1991,Morena,morena
+MP_morena_1991:2001,child,MP_sheopu_2001,Sheopur,sheopur
+MP_narmad_1951:2001,parent,MP_narmad_1951,Hoshangabad,hoshangabad
+MP_narmad_1951:2001,child,MP_harda_2001,Harda,harda
+MP_shahdo_1991:2001,parent,MP_shahdo_1991,Shahdol,shahdol
+MP_shahdo_1991:2001,child,MP_umaria_2001,Umaria,umaria
+MZ_aizawl_1981:2001,parent,MZ_aizawl_1981,Aizawl,aizawl
+MZ_aizawl_1981:2001,child,MZ_champh_2001,Champhai,champhai
+MZ_aizawl_1981:2001,child,MZ_kolasi_2001,Kolasib,kolasib
+MZ_aizawl_1981:2001,child,MZ_mamit_2001,Mamit,mamit
+MZ_aizawl_1981:2001,child,MZ_serchh_2001,Serchhip,serchhip
+MZ_chhimt_1981:2001,parent,MZ_chhimt_1981,Chhimtuipui,chhimtuipui
+MZ_chhimt_1981:2001,child,MZ_lawngt_2001,Lawngtlai,lawngtlai
+MZ_chhimt_1981:2001,child,MZ_saiha_2001,Saiha,saiha
+NC_delhi_1991:2001,parent,NC_delhi_1991,Delhi,delhi
+NC_delhi_1991:2001,child,NC_centra_2001,Central,central
+NC_delhi_1991:2001,child,NC_east_2001,East,east
+NC_delhi_1991:2001,child,NC_newdel_2001,New Delhi,new delhi
+NC_delhi_1991:2001,child,NC_north_2001,North,north
+NC_delhi_1991:2001,child,NC_northe_2001,North East,north east
+NC_delhi_1991:2001,child,NC_northw_2001,North West,north west
+NC_delhi_1991:2001,child,NC_south_2001,South,south
+NC_delhi_1991:2001,child,NC_southw_2001,South West,south west
+NC_delhi_1991:2001,child,NC_west_2001,West,west
+NL_kohima_1951:2001,parent,NL_kohima_1951,Kohima,kohima
+NL_kohima_1951:2001,child,NL_dimapu_2001,Dimapur,dimapur
+OD_balang_1981:2001,parent,OD_balang_1981,Balangir,balangir
+OD_balang_1981:2001,child,OD_sonapu_2001,Sonapur,sonapur
+OD_balesh_1981:2001,parent,OD_balesh_1981,Baleshwar,baleshwar
+OD_balesh_1981:2001,child,OD_bhadra_2001,Bhadrak,bhadrak
+OD_baudh_1951:2001,parent,OD_baudh_1951,Baudh Khondmals,baudh khondmals
+OD_baudh_1951:2001,child,OD_kandha_2001,Kandhamal,kandhamal
+OD_cuttac_1991:2001,parent,OD_cuttac_1991,Cuttack,cuttack
+OD_cuttac_1991:2001,child,OD_jagats_2001,Jagatsinghapur,jagatsinghapur
+OD_cuttac_1991:2001,child,OD_jajapu_2001,Jajapur,jajapur
+OD_cuttac_1991:2001,child,OD_kendra_2001,Kendrapara,kendrapara
+OD_dhenka_1991:2001,parent,OD_dhenka_1991,Dhenkanal,dhenkanal
+OD_dhenka_1991:2001,child,OD_anugul_2001,Anugul,anugul
+OD_ganjam_1991:2001,parent,OD_ganjam_1991,Ganjam,ganjam
+OD_ganjam_1991:2001,child,OD_gajapa_2001,Gajapati,gajapati
+OD_kalaha_1991:2001,parent,OD_kalaha_1991,Kalahandi,kalahandi
+OD_kalaha_1991:2001,child,OD_nuapad_2001,Nuapada,nuapada
+OD_korapu_1991:2001,parent,OD_korapu_1991,Koraput,koraput
+OD_korapu_1991:2001,child,OD_malkan_2001,Malkangiri,malkangiri
+OD_korapu_1991:2001,child,OD_nabara_2001,Nabarangapur,nabarangapur
+OD_korapu_1991:2001,child,OD_rayaga_2001,Rayagada,rayagada
+OD_puri_1991:2001,parent,OD_puri_1991,Puri,puri
+OD_puri_1991:2001,child,OD_khordh_2001,Khordha,khordha
+OD_puri_1991:2001,child,OD_nayaga_2001,Nayagarh,nayagarh
+OD_sambal_1991:2001,parent,OD_sambal_1991,Sambalpur,sambalpur
+OD_sambal_1991:2001,child,OD_bargar_2001,Bargarh,bargarh
+OD_sambal_1991:2001,child,OD_debaga_2001,Debagarh,debagarh
+OD_sambal_1991:2001,child,OD_jharsu_2001,Jharsuguda,jharsuguda
+PB_bhatin_1951:2001,parent,PB_bhatin_1951,Bathinda,bathinda
+PB_bhatin_1951:2001,child,PB_mansa_2001,Mansa,mansa
+PB_faridk_1981:2001,parent,PB_faridk_1981,Faridkot,faridkot
+PB_faridk_1981:2001,child,PB_moga_2001,Moga,moga
+PB_faridk_1981:2001,child,PB_srimuk_2001,Muktsar,muktsar
+PB_hoshia_1961:2001,parent,PB_hoshia_1961,Hoshiarpur,hoshiarpur
+PB_hoshia_1961:2001,child,PB_shahid_2001,Nawanshahr,nawanshahr
+PB_jaland_1971:2001,parent,PB_jaland_1971,Jalandhar,jalandhar
+PB_jaland_1971:2001,child,PB_shahid_2001,Nawanshahr,nawanshahr
+PB_patial_1951:2001,parent,PB_patial_1951,Patiala,patiala
+PB_patial_1951:2001,child,PB_fatehg_1951,Fatehgarh Sahib,fatehgarh sahib
+RJ_gangan_1991:2001,parent,RJ_gangan_1991,Ganganagar,ganganagar
+RJ_gangan_1991:2001,child,RJ_hanuma_2001,Hanumangarh,hanumangarh
+RJ_jaipur_1951:2001,parent,RJ_jaipur_1951,Jaipur,jaipur
+RJ_jaipur_1951:2001,child,RJ_dausa_2001,Dausa,dausa
+RJ_kota_1951:2001,parent,RJ_kota_1951,Kota,kota
+RJ_kota_1951:2001,child,RJ_baran_2001,Baran,baran
+RJ_sawaim_1951:2001,parent,RJ_sawaim_1951,Sawai Madhopur,sawai madhopur
+RJ_sawaim_1951:2001,child,RJ_karaul_2001,Karauli,karauli
+RJ_udaipu_1951:2001,parent,RJ_udaipu_1951,Udaipur,udaipur
+RJ_udaipu_1951:2001,child,RJ_rajsam_2001,Rajsamand,rajsamand
+SK_eastdi_1981:2001,parent,SK_eastdi_1981,East District,east district
+SK_eastdi_1981:2001,child,SK_east_2001,East,east
+SK_northd_1981:2001,parent,SK_northd_1981,North District,north district
+SK_northd_1981:2001,child,SK_north_2001,North,north
+SK_southd_1981:2001,parent,SK_southd_1981,South District,south district
+SK_southd_1981:2001,child,SK_south_2001,South,south
+SK_westdi_1981:2001,parent,SK_westdi_1981,West District,west district
+SK_westdi_1981:2001,child,SK_west_2001,West,west
+TN_chenga_1951:2001,parent,TN_chenga_1951,Chengalpattu,chengalpattu
+TN_chenga_1951:2001,child,TN_thiruv_1951,Thiruvallur,thiruvallur
+TN_chidam_1991:2001,parent,TN_chidam_1991,Chidambaranar,chidambaranar
+TN_chidam_1991:2001,child,TN_thooth_2001,Toothukudi,toothukudi
+TN_cuddal_1991:2001,parent,TN_cuddal_1991,South Arcot,south arcot
+TN_cuddal_1991:2001,child,TN_vilupp_2001,Viluppuram,viluppuram
+TN_kamara_1991:2001,parent,TN_kamara_1991,Kamarajar,kamarajar
+TN_kamara_1991:2001,child,TN_virudh_2001,Virudhunagar,virudhunagar
+TN_madura_1951:2001,parent,TN_madura_1951,Madurai,madurai
+TN_madura_1951:2001,child,TN_theni_2001,Theni,theni
+TN_narcot_1981:2001,parent,TN_narcot_1981,North Arcot,north arcot
+TN_narcot_1981:2001,child,TN_vellor_2001,Vellore,vellore
+TN_pasump_1991:2001,parent,TN_pasump_1991,Pasumpon Muthuramalinga Thevar,pasumpon muthuramalinga thevar
+TN_pasump_1991:2001,child,TN_sivaga_2001,Sivaganga,sivaganga
+TN_periya_1981:2001,parent,TN_periya_1981,Periyar,periyar
+TN_periya_1981:2001,child,TN_erode_2001,Erode,erode
+TN_salem_1961:2001,parent,TN_salem_1961,Salem,salem
+TN_salem_1961:2001,child,TN_namakk_2001,Namakkal,namakkal
+TN_thanja_1951:2001,parent,TN_thanja_1951,Tanjore,tanjore
+TN_thanja_1951:2001,child,TN_nagapa_2001,Nagapattinam,nagapattinam
+TN_thanja_1951:2001,child,TN_thiruv_1951,Thiruvallur,thiruvallur
+TN_tiruch_1971:2001,parent,TN_tiruch_1971,Tiruchchirappalli,tiruchchirappalli
+TN_tiruch_1971:2001,child,TN_karur_2001,Karur,karur
+TN_tiruch_1971:2001,child,TN_peramb_2001,Perambalur,perambalur
+TR_northt_1971:2001,parent,TR_northt_1971,North Tripura,north tripura
+TR_northt_1971:2001,child,TR_dhalai_2001,Dhalai,dhalai
+UK_almora_1951:2001,parent,UK_almora_1951,Almora,almora
+UK_almora_1951:2001,child,UK_bagesh_2001,Bageshwar,bageshwar
+UK_chamol_1961:2001,parent,UK_chamol_1961,Chamoli,chamoli
+UK_chamol_1961:2001,child,UK_rudrap_2001,Rudraprayag,rudraprayag
+UK_nainit_1971:2001,parent,UK_nainit_1971,Naini Tal,naini tal
+UK_nainit_1971:2001,child,UK_udhams_2001,Udham Singh Nagar,udham singh nagar
+UK_pithor_1961:2001,parent,UK_pithor_1961,Pithoragarh,pithoragarh
+UK_pithor_1961:2001,child,UK_champa_2001,Champawat,champawat
+UP_aligar_1991:2001,parent,UP_aligar_1991,Aligarh,aligarh
+UP_aligar_1991:2001,child,UP_hathra_2001,Hathras,hathras
+UP_allaha_1951:2001,parent,UP_allaha_1951,Allahabad,allahabad
+UP_allaha_1951:2001,child,UP_kausha_2001,Kaushambi,kaushambi
+UP_ayodhy_1991:2001,parent,UP_ayodhy_1991,Faizabad,faizabad
+UP_ayodhy_1991:2001,child,UP_ambedk_2001,Ambedkar Nagar,ambedkar nagar
+UP_bahrai_1991:2001,parent,UP_bahrai_1991,Bahraich,bahraich
+UP_bahrai_1991:2001,child,UP_shrawa_2001,Shrawasti,shrawasti
+UP_banda_1991:2001,parent,UP_banda_1991,Banda,banda
+UP_banda_1991:2001,child,UP_chitra_2001,Chitrakoot,chitrakoot
+UP_basti_1981:2001,parent,UP_basti_1981,Basti,basti
+UP_basti_1981:2001,child,UP_santka_2001,Sant Kabir Nagar,sant kabir nagar
+UP_buland_1971:2001,parent,UP_buland_1971,Bulandshahr,bulandshahr
+UP_buland_1971:2001,child,UP_gautam_2001,Gautam Buddha Nagar,gautam buddha nagar
+UP_deoria_1991:2001,parent,UP_deoria_1991,Deoria,deoria
+UP_deoria_1991:2001,child,UP_kushin_2001,Kushinagar,kushinagar
+UP_etawah_1991:2001,parent,UP_etawah_1991,Etawah,etawah
+UP_etawah_1991:2001,child,UP_auraiy_2001,Auraiya,auraiya
+UP_farruk_1991:2001,parent,UP_farruk_1991,Farrukhabad,farrukhabad
+UP_farruk_1991:2001,child,UP_kannau_2001,Kannauj,kannauj
+UP_ghazia_1981:2001,parent,UP_ghazia_1981,Ghaziabad,ghaziabad
+UP_ghazia_1981:2001,child,UP_gautam_2001,Gautam Buddha Nagar,gautam buddha nagar
+UP_gonda_1991:2001,parent,UP_gonda_1991,Gonda,gonda
+UP_gonda_1991:2001,child,UP_balram_2001,Balrampur,balrampur
+UP_hamirp_1991:2001,parent,UP_hamirp_1991,Hamirpur,hamirpur
+UP_hamirp_1991:2001,child,UP_mahoba_2001,Mahoba,mahoba
+UP_meerut_1951:2001,parent,UP_meerut_1951,Meerut,meerut
+UP_meerut_1951:2001,child,UP_baghpa_2001,Baghpat,baghpat
+UP_morada_1991:2001,parent,UP_morada_1991,Moradabad,moradabad
+UP_morada_1991:2001,child,UP_amroha_2001,Jyotiba Phule Nagar,jyotiba phule nagar
+UP_varana_1951:2001,parent,UP_varana_1951,Banares,banares
+UP_varana_1951:2001,child,UP_bhadoh_2001,Sant Ravidas Nagar,sant ravidas nagar
+UP_varana_1951:2001,child,UP_chanda_2001,Chandauli,chandauli
+WB_dakshi_1991:2001,parent,WB_dakshi_1991,West Dinajpur,west dinajpur
+WB_dakshi_1991:2001,child,WB_uttard_2001,Uttar Dinajpur,uttar dinajpur
+AN_andama_1971:2011,parent,AN_andama_1971,Andaman,andaman
+AN_andama_1971:2011,child,AN_northm_2011,North & Middle Andaman,north middle andaman
+AN_andama_1971:2011,child,AN_southa_2011,South Andaman,south andaman
+AP_kadapa_2001:2011,parent,AP_kadapa_2001,Cuddapah,cuddapah
+AP_kadapa_2001:2011,child,AP_ysr_2011,Y.S.R.,y s r
+AR_dibang_1981:2011,parent,AR_dibang_1981,Dibang Valley,dibang valley
+AR_dibang_1981:2011,child,AR_lowerd_2011,Lower Dibang Valley,lower dibang valley
+AR_lohit_1971:2011,parent,AR_lohit_1971,Lohit,lohit
+AR_lohit_1971:2011,child,AR_anjaw_2011,Anjaw,anjaw
+AR_lowers_1981:2011,parent,AR_lowers_1981,Lower Siang,lower siang
+AR_lowers_1981:2011,child,AR_kurung_2011,Kurung Kumey,kurung kumey
+AS_barpet_1991:2011,parent,AS_barpet_1991,Barpeta,barpeta
+AS_barpet_1991:2011,child,AS_baksa_2011,Baksa,baksa
+AS_bongai_1991:2011,parent,AS_bongai_1991,Bongaigaon,bongaigaon
+AS_bongai_1991:2011,child,AS_chiran_2011,Chirang,chirang
+AS_darran_1981:2011,parent,AS_darran_1981,Darrang,darrang
+AS_darran_1981:2011,child,AS_baksa_2011,Baksa,baksa
+AS_darran_1981:2011,child,AS_udalgu_2011,Udalguri,udalguri
+AS_dhubur_1991:2011,parent,AS_dhubur_1991,Dhuburi,dhuburi
+AS_dhubur_1991:2011,child,AS_dhubri_2011,Dhubri,dhubri
+AS_kamrup_1981:2011,parent,AS_kamrup_1981,Kamrup,kamrup
+AS_kamrup_1981:2011,child,AS_baksa_2011,Baksa,baksa
+AS_kokraj_1991:2011,parent,AS_kokraj_1991,Kokrajhar,kokrajhar
+AS_kokraj_1991:2011,child,AS_chiran_2011,Chirang,chirang
+AS_mariga_1991:2011,parent,AS_mariga_1991,Marigaon,marigaon
+AS_mariga_1991:2011,child,AS_moriga_2011,Morigaon,morigaon
+AS_nalbar_1991:2011,parent,AS_nalbar_1991,Nalbari,nalbari
+AS_nalbar_1991:2011,child,AS_baksa_2011,Baksa,baksa
+AS_northc_1971:2011,parent,AS_northc_1971,North Cachar Hills,north cachar hills
+AS_northc_1971:2011,child,AS_dimaha_2011,Dima Hasao,dima hasao
+BR_jehana_1991:2011,parent,BR_jehana_1991,Jehanabad,jehanabad
+BR_jehana_1991:2011,child,BR_arwal_2011,Arwal,arwal
+CG_bastar_1991:2011,parent,CG_bastar_1991,Bastar,bastar
+CG_bastar_1991:2011,child,CG_naraya_2011,Narayanpur,narayanpur
+CG_dantew_2001:2011,parent,CG_dantew_2001,Dantewada,dantewada
+CG_dantew_2001:2011,child,CG_bijapu_2011,Bijapur,bijapur
+CG_dantew_2001:2011,child,CG_dakshi_2011,Dakshin Bastar Dantewada,dakshin bastar dantewada
+CG_kanker_2001:2011,parent,CG_kanker_2001,Kanker,kanker
+CG_kanker_2001:2011,child,CG_uttarb_2011,Uttar Bastar Kanker,uttar bastar kanker
+CG_kaward_2001:2011,parent,CG_kaward_2001,Kawardha,kawardha
+CG_kaward_2001:2011,child,CG_kabeer_2011,Kabeerdham,kabeerdham
+GJ_surat_1961:2011,parent,GJ_surat_1961,Surat,surat
+GJ_surat_1961:2011,child,GJ_tapi_2011,Tapi,tapi
+HP_lahula_1971:2011,parent,HP_lahula_1971,Lahul and Spiti,lahul and spiti
+HP_lahula_1971:2011,child,HP_lahuls_2011,Lahul & Spiti,lahul spiti
+HR_farida_1981:2011,parent,HR_farida_1981,Faridabad,faridabad
+HR_farida_1981:2011,child,HR_palwal_2011,Palwal,palwal
+HR_guruga_1951:2011,parent,HR_guruga_1951,Gurgaon,gurgaon
+HR_guruga_1951:2011,child,HR_nuh_2011,Mewat,mewat
+JH_dumka_1991:2011,parent,JH_dumka_1991,Dumka,dumka
+JH_dumka_1991:2011,child,JH_jamtar_2011,Jamtara,jamtara
+JH_gumla_1991:2011,parent,JH_gumla_1991,Gumla,gumla
+JH_gumla_1991:2011,child,JH_simdeg_2011,Simdega,simdega
+JH_hazari_1971:2011,parent,JH_hazari_1971,Hazaribag,hazaribag
+JH_hazari_1971:2011,child,JH_ramgar_2011,Ramgarh,ramgarh
+JH_pakaur_2001:2011,parent,JH_pakaur_2001,Pakaur,pakaur
+JH_pakaur_2001:2011,child,JH_pakur_2011,Pakur,pakur
+JH_palamu_1971:2011,parent,JH_palamu_1971,Palamau,palamau
+JH_palamu_1971:2011,child,JH_lateha_2011,Latehar,latehar
+JH_psingh_1981:2011,parent,JH_psingh_1981,Pashchimi Singhbhum,pashchimi singhbhum
+JH_psingh_1981:2011,child,JH_saraik_2011,Saraikela-kharsawan,saraikela kharsawan
+JH_ranchi_1981:2011,parent,JH_ranchi_1981,Ranchi,ranchi
+JH_ranchi_1981:2011,child,JH_khunti_2011,Khunti,khunti
+JK_anantn_1961:2011,parent,JK_anantn_1961,Anantnag,anantnag
+JK_anantn_1961:2011,child,JK_kulgam_2011,Kulgam,kulgam
+JK_baramu_1961:2011,parent,JK_baramu_1961,Baramula,baramula
+JK_baramu_1961:2011,child,JK_bandip_2011,Bandipore,bandipore
+JK_baramu_1961:2011,child,JK_gander_2011,Ganderbal,ganderbal
+JK_doda_1961:2011,parent,JK_doda_1961,Doda,doda
+JK_doda_1961:2011,child,JK_kishtw_2011,Kishtwar,kishtwar
+JK_doda_1961:2011,child,JK_ramban_2011,Ramban,ramban
+JK_jammu_1961:2011,parent,JK_jammu_1961,Jammu,jammu
+JK_jammu_1961:2011,child,JK_samba_2011,Samba,samba
+JK_pulwam_1981:2011,parent,JK_pulwam_1981,Pulwama,pulwama
+JK_pulwam_1981:2011,child,JK_kulgam_2011,Kulgam,kulgam
+JK_pulwam_1981:2011,child,JK_shupiy_2011,Shupiyan,shupiyan
+JK_rajaur_1971:2011,parent,JK_rajaur_1971,Rajauri,rajauri
+JK_rajaur_1971:2011,child,JK_rajour_2011,Rajouri,rajouri
+JK_udhamp_1961:2011,parent,JK_udhamp_1961,Udhampur,udhampur
+JK_udhamp_1961:2011,child,JK_reasi_2011,Reasi,reasi
+KA_bangal_1981:2011,parent,KA_bangal_1981,Bangalore,bangalore
+KA_bangal_1981:2011,child,KA_ramana_2011,Ramanagara,ramanagara
+KA_gulbar_2001:2011,parent,KA_gulbar_2001,Gulbarga,gulbarga
+KA_gulbar_2001:2011,child,KA_yadgir_2011,Yadgir,yadgir
+KA_kolar_2001:2011,parent,KA_kolar_2001,Kolar,kolar
+KA_kolar_2001:2011,child,KA_chikka_2011,Chikkamagaluru,chikkamagaluru
+MP_guna_1961:2011,parent,MP_guna_1961,Guna,guna
+MP_guna_1961:2011,child,MP_ashokn_2011,Ashoknagar,ashoknagar
+MP_jhabua_2001:2011,parent,MP_jhabua_2001,Jhabua,jhabua
+MP_jhabua_2001:2011,child,MP_aliraj_2011,Alirajpur,alirajpur
+MP_khandw_1961:2011,parent,MP_khandw_1961,East Nimar,east nimar
+MP_khandw_1961:2011,child,MP_burhan_2011,Burhanpur,burhanpur
+MP_shahdo_1991:2011,parent,MP_shahdo_1991,Shahdol,shahdol
+MP_shahdo_1991:2011,child,MP_annupu_2011,Annupur,annupur
+MP_sidhi_2001:2011,parent,MP_sidhi_2001,Sidhi,sidhi
+MP_sidhi_2001:2011,child,MP_singra_2011,Singrauli,singrauli
+NL_kohima_1951:2011,parent,NL_kohima_1951,Kohima,kohima
+NL_kohima_1951:2011,child,NL_peren_2011,Peren,peren
+NL_tuensa_1951:2011,parent,NL_tuensa_1951,Tuensang,tuensang
+NL_tuensa_1951:2011,child,NL_kiphir_2011,Kiphire,kiphire
+NL_tuensa_1951:2011,child,NL_longle_2011,Longleng,longleng
+OD_sonapu_2001:2011,parent,OD_sonapu_2001,Sonapur,sonapur
+OD_sonapu_2001:2011,child,OD_subarn_2011,Subarnapur,subarnapur
+PB_amrits_2001:2011,parent,PB_amrits_2001,Amritsar,amritsar
+PB_amrits_2001:2011,child,PB_tarnta_2011,Tarn Taran,tarn taran
+PB_patial_1951:2011,parent,PB_patial_1951,Patiala,patiala
+PB_patial_1951:2011,child,PB_mohali_2011,Sahibzada Ajit Singh Nagar,sahibzada ajit singh nagar
+PB_rupnag_1981:2011,parent,PB_rupnag_1981,Rupnagar,rupnagar
+PB_rupnag_1981:2011,child,PB_mohali_2011,Sahibzada Ajit Singh Nagar,sahibzada ajit singh nagar
+PB_sangru_1951:2011,parent,PB_sangru_1951,Sangrur,sangrur
+PB_sangru_1951:2011,child,PB_barnal_1951,Barnala,barnala
+RJ_chitto_1951:2011,parent,RJ_chitto_1951,Chitorgarh,chitorgarh
+RJ_chitto_1951:2011,child,RJ_pratap_2011,Pratapgarh,pratapgarh
+TN_coimba_1951:2011,parent,TN_coimba_1951,Coimbatore,coimbatore
+TN_coimba_1951:2011,child,TN_tirupp_2011,Tiruppur,tiruppur
+TN_dharma_1971:2011,parent,TN_dharma_1971,Dharmapuri,dharmapuri
+TN_dharma_1971:2011,child,TN_krishn_2011,Krishnagiri,krishnagiri
+TN_erode_2001:2011,parent,TN_erode_2001,Erode,erode
+TN_erode_2001:2011,child,TN_tirupp_2011,Tiruppur,tiruppur
+TN_peramb_2001:2011,parent,TN_peramb_2001,Perambalur,perambalur
+TN_peramb_2001:2011,child,TN_ariyal_2011,Ariyalur,ariyalur
+UP_etah_2001:2011,parent,UP_etah_2001,Etah,etah
+UP_etah_2001:2011,child,UP_kanshi_2011,Kanshiram Nagar,kanshiram nagar
+UP_mahara_1991:2011,parent,UP_mahara_1991,Maharajganj,maharajganj
+UP_mahara_1991:2011,child,UP_mahraj_2011,Mahrajganj,mahrajganj
+WB_medini_1951:2011,parent,WB_medini_1951,Medinipur,medinipur
+WB_medini_1951:2011,child,WB_paschi_2011,Pashchim Barddhaman,pashchim barddhaman
+WB_medini_1951:2011,child,WB_purbam_2011,Purba Medinipur,purba medinipur
+AP_ananta_2011:2024,parent,AP_ananta_2011,Anantapur,anantapur
+AP_ananta_2011:2024,child,AP_srisat_2024,Sri Sathya Sai,sri sathya sai
+AP_chitto_2011:2024,parent,AP_chitto_2011,Chittoor,chittoor
+AP_chitto_2011:2024,child,AP_annama_2024,Annamayya,annamayya
+AP_chitto_2011:2024,child,AP_tirupa_2024,Tirupati,tirupati
+AP_eastgo_2011:2024,parent,AP_eastgo_2011,East Godavari,east godavari
+AP_eastgo_2011:2024,child,AP_alluri_2024,Alluri Sitharama Raju,alluri sitharama raju
+AP_eastgo_2011:2024,child,AP_drbram_2024,Dr. B. R. Ambedkar Konaseema,dr b r ambedkar konaseema
+AP_eastgo_2011:2024,child,AP_kakina_2024,Kakinada,kakinada
+AP_guntur_1951:2024,parent,AP_guntur_1951,Guntur,guntur
+AP_guntur_1951:2024,child,AP_bapatl_2024,Bapatla,bapatla
+AP_guntur_1951:2024,child,AP_palnad_2024,Palnadu,palnadu
+AP_krishn_2011:2024,parent,AP_krishn_2011,Krishna,krishna
+AP_krishn_2011:2024,child,AP_ntr_2024,NTR,ntr
+AP_kurnoo_1951:2024,parent,AP_kurnoo_1951,Kurnool,kurnool
+AP_kurnoo_1951:2024,child,AP_nandya_2024,Nandyal,nandyal
+AP_srikak_1971:2024,parent,AP_srikak_1971,Srikakulam,srikakulam
+AP_srikak_1971:2024,child,AP_parvat_2024,Parvathipuram Manyam,parvathipuram manyam
+AP_sripot_1971:2024,parent,AP_sripot_1971,Nellore,nellore
+AP_sripot_1971:2024,child,AP_tirupa_2024,Tirupati,tirupati
+AP_visakh_1961:2024,parent,AP_visakh_1961,Visakhapatnam,visakhapatnam
+AP_visakh_1961:2024,child,AP_alluri_2024,Alluri Sitharama Raju,alluri sitharama raju
+AP_visakh_1961:2024,child,AP_anakap_2024,Anakapalli,anakapalli
+AP_vizian_1981:2024,parent,AP_vizian_1981,Vizianagaram,vizianagaram
+AP_vizian_1981:2024,child,AP_alluri_2024,Alluri Sitharama Raju,alluri sitharama raju
+AP_vizian_1981:2024,child,AP_parvat_2024,Parvathipuram Manyam,parvathipuram manyam
+AP_westgo_2011:2024,parent,AP_westgo_2011,West Godavari,west godavari
+AP_westgo_2011:2024,child,AP_eluru_2024,Eluru,eluru
+AP_ysr_2011:2024,parent,AP_ysr_2011,Y.S.R.,y s r
+AP_ysr_2011:2024,child,AP_annama_2024,Annamayya,annamayya
+AR_eastka_1981:2024,parent,AR_eastka_1981,East Kameng,east kameng
+AR_eastka_1981:2024,child,AR_pakkek_2024,Pakke-Kesang,pakke kesang
+AR_eastsi_1981:2024,parent,AR_eastsi_1981,East Siang,east siang
+AR_eastsi_1981:2024,child,AR_lepara_2024,Lepa - Rada,lepa rada
+AR_eastsi_1981:2024,child,AR_lowers_1981,Lower Siang,lower siang
+AR_eastsi_1981:2024,child,AR_siang_1971,Siang,siang
+AR_kurung_2011:2024,parent,AR_kurung_2011,Kurung Kumey,kurung kumey
+AR_kurung_2011:2024,child,AR_kradaa_2024,Kra Daadi,kra daadi
+AR_lohit_1971:2024,parent,AR_lohit_1971,Lohit,lohit
+AR_lohit_1971:2024,child,AR_namsai_2024,Namsai,namsai
+AR_lowers_1981:2024,parent,AR_lowers_1981,Lower Siang,lower siang
+AR_lowers_1981:2024,child,AR_kamle_2024,Kamle,kamle
+AR_tirap_1971:2024,parent,AR_tirap_1971,Tirap,tirap
+AR_tirap_1971:2024,child,AR_longdi_2024,Longding,longding
+AR_uppers_1981:2024,parent,AR_uppers_1981,Upper Siang,upper siang
+AR_uppers_1981:2024,child,AR_kamle_2024,Kamle,kamle
+AR_westsi_1981:2024,parent,AR_westsi_1981,West Siang,west siang
+AR_westsi_1981:2024,child,AR_lepara_2024,Lepa - Rada,lepa rada
+AR_westsi_1981:2024,child,AR_lowers_1981,Lower Siang,lower siang
+AR_westsi_1981:2024,child,AR_shiyom_2024,Shi-Yomi,shi yomi
+AS_baksa_2011:2024,parent,AS_baksa_2011,Baksa,baksa
+AS_baksa_2011:2024,child,AS_tamulp_2024,Tamulpur,tamulpur
+AS_barpet_1991:2024,parent,AS_barpet_1991,Barpeta,barpeta
+AS_barpet_1991:2024,child,AS_bajali_2024,Bajali,bajali
+AS_dhubri_2011:2024,parent,AS_dhubri_2011,Dhubri,dhubri
+AS_dhubri_2011:2024,child,AS_souths_2024,South Salmara-Mankachar,south salmara mankachar
+AS_jorhat_1991:2024,parent,AS_jorhat_1991,Jorhat,jorhat
+AS_jorhat_1991:2024,child,AS_majuli_2024,Majuli,majuli
+AS_karbia_1981:2024,parent,AS_karbia_1981,Karbi Anglong,karbi anglong
+AS_karbia_1981:2024,child,AS_westka_2024,West Karbi Anglong,west karbi anglong
+AS_nagaon_1981:2024,parent,AS_nagaon_1981,Nagaon,nagaon
+AS_nagaon_1981:2024,child,AS_hojai_2024,Hojai,hojai
+AS_sivasa_1981:2024,parent,AS_sivasa_1981,Sibsagar,sibsagar
+AS_sivasa_1981:2024,child,AS_charai_2024,Charaideo,charaideo
+AS_sonitp_1991:2024,parent,AS_sonitp_1991,Sonitpur,sonitpur
+AS_sonitp_1991:2024,child,AS_biswan_2024,Biswanath,biswanath
+CG_bastar_1991:2024,parent,CG_bastar_1991,Bastar,bastar
+CG_bastar_1991:2024,child,CG_kondag_2024,Kondagaon,kondagaon
+CG_bilasp_1991:2024,parent,CG_bilasp_1991,Bilaspur,bilaspur
+CG_bilasp_1991:2024,child,CG_gaurel_2024,Gaurela-Pendra-Marwahi,gaurela pendra marwahi
+CG_bilasp_1991:2024,child,CG_mungel_2024,Mungeli,mungeli
+CG_dakshi_2011:2024,parent,CG_dakshi_2011,Dakshin Bastar Dantewada,dakshin bastar dantewada
+CG_dakshi_2011:2024,child,CG_sukma_2024,Sukma,sukma
+CG_durg_1971:2024,parent,CG_durg_1971,Durg,durg
+CG_durg_1971:2024,child,CG_balod_2024,Balod,balod
+CG_durg_1971:2024,child,CG_bemeta_2024,Bemetara,bemetara
+CG_raipur_1991:2024,parent,CG_raipur_1991,Raipur,raipur
+CG_raipur_1991:2024,child,CG_baloda_2024,Baloda Bazar,baloda bazar
+CG_raipur_1991:2024,child,CG_gariya_2024,Gariyaband,gariyaband
+CG_surguj_1991:2024,parent,CG_surguj_1991,Surguja,surguja
+CG_surguj_1991:2024,child,CG_balram_2024,Balrampur,balrampur
+CG_surguj_1991:2024,child,CG_surajp_2024,Surajpur,surajpur
+DL_east_2001:2024,parent,DL_east_2001,East,east
+DL_east_2001:2024,child,DL_shahda_2024,Shahdara,shahdara
+DL_northe_2001:2024,parent,DL_northe_2001,North East,north east
+DL_northe_2001:2024,child,DL_shahda_2024,Shahdara,shahdara
+DL_northw_2001:2024,parent,DL_northw_2001,North West,north west
+DL_northw_2001:2024,child,DL_north_2024,North,north
+DL_south_2001:2024,parent,DL_south_2001,South,south
+DL_south_2001:2024,child,DL_southe_2024,South East,south east
+DL_southw_2001:2024,parent,DL_southw_2001,South West,south west
+DL_southw_2001:2024,child,DL_newdel_2024,New Delhi,new delhi
+GJ_ahmeda_1961:2024,parent,GJ_ahmeda_1961,Ahmadabad,ahmadabad
+GJ_ahmeda_1961:2024,child,GJ_botad_2024,Botad,botad
+GJ_bhavna_1951:2024,parent,GJ_bhavna_1951,Bhavnagar,bhavnagar
+GJ_bhavna_1951:2024,child,GJ_botad_2024,Botad,botad
+GJ_jamnag_1951:2024,parent,GJ_jamnag_1951,Halar,halar
+GJ_jamnag_1951:2024,child,GJ_devbhu_2024,Devbhumi Dwarka,devbhumi dwarka
+GJ_jamnag_1951:2024,child,GJ_morbi_2024,Morbi,morbi
+GJ_junaga_1951:2024,parent,GJ_junaga_1951,Junagadh,junagadh
+GJ_junaga_1951:2024,child,GJ_girsom_2024,Gir Somnath,gir somnath
+GJ_kheda_1961:2024,parent,GJ_kheda_1961,Kaira,kaira
+GJ_kheda_1961:2024,child,GJ_mahisa_2024,Mahisagar,mahisagar
+GJ_panchm_1951:2024,parent,GJ_panchm_1951,Panch Mahals,panch mahals
+GJ_panchm_1951:2024,child,GJ_mahisa_2024,Mahisagar,mahisagar
+GJ_rajkot_1961:2024,parent,GJ_rajkot_1961,Rajkot,rajkot
+GJ_rajkot_1961:2024,child,GJ_morbi_2024,Morbi,morbi
+GJ_sabark_1961:2024,parent,GJ_sabark_1961,Sabar Kantha,sabar kantha
+GJ_sabark_1961:2024,child,GJ_araval_2024,Aravalli,aravalli
+GJ_surend_1961:2024,parent,GJ_surend_1961,Surendranagar,surendranagar
+GJ_surend_1961:2024,child,GJ_morbi_2024,Morbi,morbi
+GJ_vadoda_1971:2024,parent,GJ_vadoda_1971,Vadodara,vadodara
+GJ_vadoda_1971:2024,child,GJ_chhota_2024,Chhota Udepur,chhota udepur
+HR_bhiwan_1981:2024,parent,HR_bhiwan_1981,Bhiwani,bhiwani
+HR_bhiwan_1981:2024,child,HR_charkh_2024,Charkhi Dadri,charkhi dadri
+KA_bellar_2011:2024,parent,KA_bellar_2011,Bellary,bellary
+KA_bellar_2011:2024,child,KA_vijaya_2024,Vijayanagara,vijayanagara
+KA_chikma_2011:2024,parent,KA_chikma_2011,Chikmagalur,chikmagalur
+KA_chikma_2011:2024,child,KA_chikka_2011,Chikkamagaluru,chikkamagaluru
+KA_gulbar_2001:2024,parent,KA_gulbar_2001,Gulbarga,gulbarga
+KA_gulbar_2001:2024,child,KA_kalabu_2024,Kalaburagi,kalaburagi
+KA_ramana_2011:2024,parent,KA_ramana_2011,Ramanagara,ramanagara
+KA_ramana_2011:2024,child,KA_bengal_2024,Bengaluru South,bengaluru south
+MH_aurang_1981:2024,parent,MH_aurang_1981,Aurangabad,aurangabad
+MH_aurang_1981:2024,child,MH_sambha_2024,Sambhaji Nagar,sambhaji nagar
+MH_thane_1971:2024,parent,MH_thane_1971,Thana,thana
+MH_thane_1971:2024,child,MH_palgha_2024,Palghar,palghar
+ML_eastga_1981:2024,parent,ML_eastga_1981,East Garo Hills,east garo hills
+ML_eastga_1981:2024,child,ML_northg_2024,North Garo Hills,north garo hills
+ML_jainti_1981:2024,parent,ML_jainti_1981,Jaintia Hills,jaintia hills
+ML_jainti_1981:2024,child,ML_eastja_2024,East Jaintia Hills,east jaintia hills
+ML_jainti_1981:2024,child,ML_westja_2024,West Jaintia Hills,west jaintia hills
+ML_westkh_1981:2024,parent,ML_westkh_1981,West Khasi Hills,west khasi hills
+ML_westkh_1981:2024,child,ML_easter_2024,Eastern West Khasi Hills,eastern west khasi hills
+ML_westkh_1981:2024,child,ML_southw_2024,South West Khasi Hills,south west khasi hills
+MN_churac_1991:2024,parent,MN_churac_1991,Churachandpur,churachandpur
+MN_churac_1991:2024,child,MN_pherza_2024,Pherzawl,pherzawl
+MN_imphal_1991:2024,parent,MN_imphal_1991,Imphal,imphal
+MN_imphal_1991:2024,child,MN_jiriba_2024,Jiribam,jiribam
+MN_senapa_1991:2024,parent,MN_senapa_1991,Senapati,senapati
+MN_senapa_1991:2024,child,MN_kangpo_2024,Kangpokpi,kangpokpi
+MN_tameng_1991:2024,parent,MN_tameng_1991,Tamenglong,tamenglong
+MN_tameng_1991:2024,child,MN_noney_2024,Noney,noney
+MN_thouba_1991:2024,parent,MN_thouba_1991,Thoubal,thoubal
+MN_thouba_1991:2024,child,MN_kakchi_2024,Kakching,kakching
+MN_ukhrul_1991:2024,parent,MN_ukhrul_1991,Ukhrul,ukhrul
+MN_ukhrul_1991:2024,child,MN_kamjon_2024,Kamjong,kamjong
+MP_shajap_2011:2024,parent,MP_shajap_2011,Shajapur,shajapur
+MP_shajap_2011:2024,child,MP_agarma_2024,Agar-Malwa,agar malwa
+MP_tikamg_2011:2024,parent,MP_tikamg_2011,Tikamgarh,tikamgarh
+MP_tikamg_2011:2024,child,MP_niwari_2024,Niwari,niwari
+MZ_aizawl_1981:2024,parent,MZ_aizawl_1981,Aizawl,aizawl
+MZ_aizawl_1981:2024,child,MZ_saitua_2024,Saitual,saitual
+MZ_champh_2001:2024,parent,MZ_champh_2001,Champhai,champhai
+MZ_champh_2001:2024,child,MZ_khawza_2024,Khawzawl,khawzawl
+MZ_lungle_1981:2024,parent,MZ_lungle_1981,Lunglei,lunglei
+MZ_lungle_1981:2024,child,MZ_hnathi_2024,Hnathial,hnathial
+NL_dimapu_2001:2024,parent,NL_dimapu_2001,Dimapur,dimapur
+NL_dimapu_2001:2024,child,NL_chumou_2024,Chumoukedima,chumoukedima
+NL_dimapu_2001:2024,child,NL_niulan_2024,Niuland,niuland
+NL_kohima_1951:2024,parent,NL_kohima_1951,Kohima,kohima
+NL_kohima_1951:2024,child,NL_tsemin_2024,Tseminyü,tseminy
+NL_tuensa_1951:2024,parent,NL_tuensa_1951,Tuensang,tuensang
+NL_tuensa_1951:2024,child,NL_noklak_2024,Noklak,noklak
+PB_firozp_1951:2024,parent,PB_firozp_1951,Ferozepur,ferozepur
+PB_firozp_1951:2024,child,PB_fazilk_2024,Fazilka,fazilka
+PB_gurdas_1951:2024,parent,PB_gurdas_1951,Gurdaspur,gurdaspur
+PB_gurdas_1951:2024,child,PB_pathan_2024,Pathankot,pathankot
+PB_sangru_1951:2024,parent,PB_sangru_1951,Sangrur,sangrur
+PB_sangru_1951:2024,child,PB_malerk_2024,Malerkotla,malerkotla
+SK_east_2001:2024,parent,SK_east_2001,East,east
+SK_east_2001:2024,child,SK_gangto_2024,Gangtok,gangtok
+SK_east_2001:2024,child,SK_pakyon_2024,Pakyong,pakyong
+SK_north_2001:2024,parent,SK_north_2001,North,north
+SK_north_2001:2024,child,SK_mangan_2024,Mangan,mangan
+SK_south_2001:2024,parent,SK_south_2001,South,south
+SK_south_2001:2024,child,SK_namchi_2024,Namchi,namchi
+SK_west_2001:2024,parent,SK_west_2001,West,west
+SK_west_2001:2024,child,SK_gyalsh_2024,Gyalshing,gyalshing
+SK_west_2001:2024,child,SK_soreng_2024,Soreng,soreng
+TG_adilab_2011:2024,parent,TG_adilab_2011,Adilabad,adilabad
+TG_adilab_2011:2024,child,TG_kumura_2024,Kumuram Bheem,kumuram bheem
+TG_adilab_2011:2024,child,TG_manche_2024,Mancherial,mancherial
+TG_adilab_2011:2024,child,TG_nirmal_2024,Nirmal,nirmal
+TG_karimn_2011:2024,parent,TG_karimn_2011,Karimnagar,karimnagar
+TG_karimn_2011:2024,child,TG_jagtia_2024,Jagtial,jagtial
+TG_karimn_2011:2024,child,TG_jayash_2024,Jayashankar Bhupalpally,jayashankar bhupalpally
+TG_karimn_2011:2024,child,TG_peddap_2024,Peddapalli,peddapalli
+TG_karimn_2011:2024,child,TG_rajann_2024,Rajanna Sircilla,rajanna sircilla
+TG_karimn_2011:2024,child,TG_siddip_2024,Siddipet,siddipet
+TG_khamma_1961:2024,parent,TG_khamma_1961,Khammam,khammam
+TG_khamma_1961:2024,child,TG_bhadra_2024,Bhadradri Kothagudem,bhadradri kothagudem
+TG_khamma_1961:2024,child,TG_mahabu_2024,Mahabubabad,mahabubabad
+TG_khamma_1961:2024,child,TG_mulugu_2024,Mulugu,mulugu
+TG_mahbub_2011:2024,parent,TG_mahbub_2011,Mahbubnagar,mahbubnagar
+TG_mahbub_2011:2024,child,TG_jogula_2024,Jogulamba Gadwal,jogulamba gadwal
+TG_mahbub_2011:2024,child,TG_nagark_2024,Nagarkurnool,nagarkurnool
+TG_mahbub_2011:2024,child,TG_naraya_2024,Narayanpet,narayanpet
+TG_mahbub_2011:2024,child,TG_wanapa_2024,Wanaparthy,wanaparthy
+TG_medak_2011:2024,parent,TG_medak_2011,Medak,medak
+TG_medak_2011:2024,child,TG_sangar_2024,Sangareddy,sangareddy
+TG_medak_2011:2024,child,TG_siddip_2024,Siddipet,siddipet
+TG_nalgon_2011:2024,parent,TG_nalgon_2011,Nalgonda,nalgonda
+TG_nalgon_2011:2024,child,TG_jangao_2024,Jangaon,jangaon
+TG_nalgon_2011:2024,child,TG_suryap_2024,Suryapet,suryapet
+TG_nalgon_2011:2024,child,TG_yadadr_2024,Yadadri Bhuvanagiri,yadadri bhuvanagiri
+TG_nizama_2011:2024,parent,TG_nizama_2011,Nizamabad,nizamabad
+TG_nizama_2011:2024,child,TG_kamare_2024,Kamareddy,kamareddy
+TG_rangar_1981:2024,parent,TG_rangar_1981,Rangareddi,rangareddi
+TG_rangar_1981:2024,child,TG_medcha_2024,Medchal–Malkajgiri,medchal malkajgiri
+TG_rangar_1981:2024,child,TG_vikara_2024,Vikarabad,vikarabad
+TG_warang_1951:2024,parent,TG_warang_1951,Warangal,warangal
+TG_warang_1951:2024,child,TG_jangao_2024,Jangaon,jangaon
+TG_warang_1951:2024,child,TG_jayash_2024,Jayashankar Bhupalpally,jayashankar bhupalpally
+TG_warang_1951:2024,child,TG_mahabu_2024,Mahabubabad,mahabubabad
+TG_warang_1951:2024,child,TG_mulugu_2024,Mulugu,mulugu
+TN_nagapa_2001:2024,parent,TN_nagapa_2001,Nagapattinam,nagapattinam
+TN_nagapa_2001:2024,child,TN_mayila_2024,Mayiladuthurai,mayiladuthurai
+TN_tirune_1981:2024,parent,TN_tirune_1981,Tirunelveli,tirunelveli
+TN_tirune_1981:2024,child,TN_tenkas_2024,Tenkasi,tenkasi
+TN_vellor_2001:2024,parent,TN_vellor_2001,Vellore,vellore
+TN_vellor_2001:2024,child,TN_ranipe_2024,Ranipet,ranipet
+TN_vellor_2001:2024,child,TN_tirupa_2024,Tirupattur,tirupattur
+TN_vilupp_2001:2024,parent,TN_vilupp_2001,Viluppuram,viluppuram
+TN_vilupp_2001:2024,child,TN_kallak_2024,Kallakurichi,kallakurichi
+TR_northt_1971:2024,parent,TR_northt_1971,North Tripura,north tripura
+TR_northt_1971:2024,child,TR_unakot_2024,Unakoti,unakoti
+TR_southt_1971:2024,parent,TR_southt_1971,South Tripura,south tripura
+TR_southt_1971:2024,child,TR_gomati_2024,Gomati,gomati
+TR_westtr_1971:2024,parent,TR_westtr_1971,West Tripura,west tripura
+TR_westtr_1971:2024,child,TR_khowai_2024,Khowai,khowai
+TR_westtr_1971:2024,child,TR_sipahi_2024,Sipahijala,sipahijala
+UP_allaha_1951:2024,parent,UP_allaha_1951,Allahabad,allahabad
+UP_allaha_1951:2024,child,UP_prayag_2024,Prayagraj,prayagraj
+UP_budaun_2011:2024,parent,UP_budaun_2011,Budaun,budaun
+UP_budaun_2011:2024,child,UP_sambha_2024,Sambhal (Bhimnagar),sambhal bhimnagar
+UP_ghazia_1981:2024,parent,UP_ghazia_1981,Ghaziabad,ghaziabad
+UP_ghazia_1981:2024,child,UP_hapurp_2024,Hapur (Panchsheel Nagar),hapur panchsheel nagar
+UP_kanshi_2011:2024,parent,UP_kanshi_2011,Kanshiram Nagar,kanshiram nagar
+UP_kanshi_2011:2024,child,UP_kasgan_2024,Kasganj,kasganj
+UP_morada_1991:2024,parent,UP_morada_1991,Moradabad,moradabad
+UP_morada_1991:2024,child,UP_sambha_2024,Sambhal (Bhimnagar),sambhal bhimnagar
+UP_muzaff_2011:2024,parent,UP_muzaff_2011,Muzaffarnagar,muzaffarnagar
+UP_muzaff_2011:2024,child,UP_shamli_2024,Shamli (Prabuddhanagar),shamli prabuddhanagar
+UP_sultan_2011:2024,parent,UP_sultan_2011,Sultanpur,sultanpur
+UP_sultan_2011:2024,child,UP_amethi_2024,Amethi,amethi
+WB_barddh_1951:2024,parent,WB_barddh_1951,Barddhaman,barddhaman
+WB_barddh_1951:2024,child,WB_paschi_2011,Pashchim Barddhaman,pashchim barddhaman
+WB_barddh_1951:2024,child,WB_purbab_2024,Purba Barddhaman,purba barddhaman
+WB_darjil_1971:2024,parent,WB_darjil_1971,Darjeeling,darjeeling
+WB_darjil_1971:2024,child,WB_kalimp_2024,Kalimpong,kalimpong
+WB_jalpai_2011:2024,parent,WB_jalpai_2011,Jalpaiguri,jalpaiguri
+WB_jalpai_2011:2024,child,WB_alipur_2024,Alipurduar,alipurduar
+WB_paschi_2011:2024,parent,WB_paschi_2011,Pashchim Barddhaman,pashchim barddhaman
+WB_paschi_2011:2024,child,WB_jhargr_2024,Jhargram,jhargram

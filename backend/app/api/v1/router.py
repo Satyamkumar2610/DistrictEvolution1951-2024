@@ -7,6 +7,7 @@ from app.api.v1 import (
     analysis,
     anomalies,
     climate,
+    disaggregation,
     districts,
     forecast,
     health,
@@ -37,6 +38,7 @@ api_router.include_router(metrics.router, prefix="/metrics", tags=["Metrics"])
 api_router.include_router(analysis.router, prefix="/analysis", tags=["Analysis"])
 # self-prefixed /analytics
 api_router.include_router(advanced_analytics.router)
+api_router.include_router(disaggregation.router)
 api_router.include_router(climate.router, prefix="/climate", tags=["Climate"])
 api_router.include_router(simulation.router, prefix="/simulation", tags=["Simulation"])
 api_router.include_router(spatial.router)  # self-prefixed /spatial

@@ -71,8 +71,68 @@ async def main():
             UNIQUE(transfer_id, dataset_name, metric_name)
         );
     """)
+
+    await conn.execute("""
+        CREATE TABLE IF NOT EXISTS split_event_packets (
+            event_id         TEXT PRIMARY KEY,
+            split_event_id   INTEGER REFERENCES split_events(id) ON DELETE SET NULL,
+            parent_cdk       TEXT NOT NULL,
+            parent_name      TEXT,
+            child_cdks       TEXT[] NOT NULL,
+            child_names      TEXT[] NOT NULL DEFAULT '{}',
+            state            TEXT NOT NULL,
+            split_year       INTEGER NOT NULL,
+            effective_date   DATE,
+            event_type       TEXT NOT NULL DEFAULT 'SPLIT',
+            source_quality   TEXT NOT NULL DEFAULT 'unknown',
+            source_urls      TEXT[] NOT NULL DEFAULT '{}',
+            source_text_path TEXT,
+            aliases          JSONB NOT NULL DEFAULT '[]'::jsonb,
+            geometry_status  TEXT NOT NULL DEFAULT 'unknown',
+            weight_status    TEXT NOT NULL DEFAULT 'none',
+            readiness_tier   TEXT NOT NULL DEFAULT 'Tier C',
+            notes            TEXT,
+            created_at       TIMESTAMP DEFAULT NOW(),
+            updated_at       TIMESTAMP DEFAULT NOW(),
+            UNIQUE(parent_cdk, split_year)
+        );
+        CREATE INDEX IF NOT EXISTS idx_split_event_packets_state ON split_event_packets (state);
+        CREATE INDEX IF NOT EXISTS idx_split_event_packets_tier ON split_event_packets (readiness_tier);
+    """)
+
+    await conn.execute("""
+        CREATE TABLE IF NOT EXISTS split_event_sources (
+            id           SERIAL PRIMARY KEY,
+            event_id     TEXT NOT NULL REFERENCES split_event_packets(event_id) ON DELETE CASCADE,
+            source_url   TEXT NOT NULL,
+            source_label TEXT,
+            source_type  TEXT,
+            is_primary   BOOLEAN NOT NULL DEFAULT FALSE,
+            created_at   TIMESTAMP DEFAULT NOW()
+        );
+        CREATE INDEX IF NOT EXISTS idx_split_event_sources_event ON split_event_sources (event_id);
+    """)
+
+    await conn.execute("""
+        CREATE TABLE IF NOT EXISTS split_event_weights (
+            id                SERIAL PRIMARY KEY,
+            event_id          TEXT NOT NULL REFERENCES split_event_packets(event_id) ON DELETE CASCADE,
+            child_cdk         TEXT NOT NULL,
+            child_name        TEXT,
+            metric_basis      TEXT NOT NULL,
+            weight_value      DOUBLE PRECISION NOT NULL CHECK (weight_value >= 0.0 AND weight_value <= 1.0),
+            weight_method     TEXT NOT NULL,
+            weight_confidence FLOAT NOT NULL DEFAULT 0.0 CHECK (weight_confidence >= 0.0 AND weight_confidence <= 1.0),
+            source_year       INTEGER,
+            basis             TEXT NOT NULL,
+            is_fallback       BOOLEAN NOT NULL DEFAULT FALSE,
+            created_at        TIMESTAMP DEFAULT NOW(),
+            UNIQUE(event_id, child_cdk, metric_basis)
+        );
+        CREATE INDEX IF NOT EXISTS idx_split_event_weights_event ON split_event_weights (event_id);
+    """)
     
-    print("Dropped old tables and successfully recreated split_events, area_transfers, and split_enrichment with Phase 1a schema.")
+    print("Dropped old tables and successfully recreated split analyzer and disaggregation schema.")
     await conn.close()
     
 asyncio.run(main())

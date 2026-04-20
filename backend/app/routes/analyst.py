@@ -10,12 +10,17 @@ from __future__ import annotations
 
 import json
 import os
+from typing import Any
 
-import anthropic
 import asyncpg
 from fastapi import APIRouter
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
+
+try:
+    import anthropic
+except ImportError:  # pragma: no cover - optional dependency in tests
+    anthropic = None  # type: ignore[assignment]
 
 from app.ai.system_prompt import SYSTEM_PROMPT
 from app.ai.tool_schemas import TOOL_SCHEMAS
@@ -43,8 +48,10 @@ class AnalystRequest(BaseModel):
     context: dict = {}
 
 
-def _get_client() -> anthropic.AsyncAnthropic | None:
+def _get_client() -> Any | None:
     """Create an Anthropic client if the API key is available."""
+    if anthropic is None:
+        return None
     api_key = os.environ.get("ANTHROPIC_API_KEY")
     if not api_key:
         return None
