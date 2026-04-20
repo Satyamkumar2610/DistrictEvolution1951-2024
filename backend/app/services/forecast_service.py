@@ -1,13 +1,28 @@
 """
 Forecast application service for API-facing forecasting workflows.
+
+Supports two forecasting strategies:
+  1. Prophet + XGBoost ensemble (Phase 2) — when exogenous climate features exist.
+  2. SARIMA / Linear fallback (Phase 1) — when only yield history is available.
 """
 
 import asyncpg
+import logging
 
 from app.exceptions import NotFoundError, ValidationError
 from app.ml.forecaster import CropRecommender, YieldForecaster
 from app.repositories.forecast_repo import ForecastRepository
 from app.schemas.forecast import CropRecommendationsResponse, YieldForecastResponse
+
+logger = logging.getLogger(__name__)
+
+# Lazy-load ensemble to avoid hard dependency on prophet/xgboost
+try:
+    from app.ml.ensemble_forecaster import EnsembleForecaster
+    ENSEMBLE_OK = True
+except ImportError:
+    ENSEMBLE_OK = False
+    logger.info("Ensemble forecaster unavailable — using SARIMA/linear only.")
 
 
 class ForecastService:

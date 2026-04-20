@@ -27,6 +27,22 @@ python-jose[cryptography]>=3.3.0
 # ML / Forecasting
 statsmodels>=0.14.0
 scikit-learn>=1.4.0
+pymc>=5.10.0
+
+# Phase 2: Ensemble Forecasting & Explainability
+prophet>=1.1.0
+xgboost>=2.0.0
+shap>=0.44.0
+
+# Phase 2: Spatial Autocorrelation (PySAL)
+libpysal>=4.9.0
+esda>=2.5.0
+
+# Phase 2: Deep Learning (LSTM Autoencoder)
+tensorflow>=2.15.0
+
+# Phase 2: Earth Engine (NDVI pipeline)
+earthengine-api>=0.1.380
 
 # Persistent Caching
 redis[hiredis]>=5.0.0
