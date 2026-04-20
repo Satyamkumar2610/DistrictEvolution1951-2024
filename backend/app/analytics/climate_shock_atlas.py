@@ -146,10 +146,13 @@ class ClimateShockAnalyzer:
             ClimateShockAtlasReport.
         """
         warnings_list: list[str] = []
-        years = sorted(set(yearly_yields.keys()) & set(yearly_climate.keys()))
+        yield_years = sorted(yearly_yields.keys())
+        overlap_years = sorted(set(yearly_yields.keys()) & set(yearly_climate.keys()))
 
-        if len(years) < 5:
-            warnings_list.append(f"Only {len(years)} overlapping years — analysis may be unreliable.")
+        if yearly_climate and len(overlap_years) < 5:
+            warnings_list.append(f"Only {len(overlap_years)} overlapping climate/yield years — attribution may be unreliable.")
+        if not yearly_climate:
+            warnings_list.append("No climate data provided — shocks detected from yield deviations only.")
 
         # Step 1: Detect yield shocks
         shocks = self._detect_yield_shocks(cdk, crop, yearly_yields)
@@ -215,7 +218,7 @@ class ClimateShockAnalyzer:
 
         avg_loss = total_loss / len(shocks) if shocks else 0.0
 
-        period = f"{min(years)}-{max(years)}" if years else "N/A"
+        period = f"{min(yield_years)}-{max(yield_years)}" if yield_years else "N/A"
 
         return ClimateShockAtlasReport(
             cdk=cdk,
