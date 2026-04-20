@@ -304,7 +304,7 @@ class EnsembleForecaster:
 
             # Build feature matrix for historical years
             feature_names = sorted(
-                {k for feat in exogenous.values() for k in feat.keys()}
+                {k for feat in exogenous.values() for k in feat}
             )
             if not feature_names:
                 return None
@@ -359,7 +359,7 @@ class EnsembleForecaster:
                     mean_abs = np.mean(np.abs(shap_values_train), axis=0)
                     global_importance = {
                         fn: round(float(v), 4)
-                        for fn, v in zip(feature_names, mean_abs)
+                        for fn, v in zip(feature_names, mean_abs, strict=False)
                     }
 
                     # Per-point contributions for future forecasts

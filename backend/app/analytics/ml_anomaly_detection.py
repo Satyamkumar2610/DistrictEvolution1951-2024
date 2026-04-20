@@ -32,7 +32,7 @@ except ImportError:
     SKLEARN_OK = False
 
 try:
-    import tensorflow as tf
+    import tensorflow as tf  # noqa: F401
     TF_OK = True
 except ImportError:
     TF_OK = False
@@ -107,7 +107,7 @@ class IsolationForestDetector:
         # Resolve feature names
         if feature_names is None:
             feature_names = sorted(
-                {k for feats in yearly_features.values() for k in feats.keys()}
+                {k for feats in yearly_features.values() for k in feats}
             )
 
         if not feature_names:
@@ -199,7 +199,7 @@ class LSTMAutoencoderDetector:
 
         if feature_names is None:
             feature_names = sorted(
-                {k for feats in yearly_features.values() for k in feats.keys()}
+                {k for feats in yearly_features.values() for k in feats}
             )
 
         if not feature_names:
@@ -240,7 +240,7 @@ class LSTMAutoencoderDetector:
         threshold = float(np.percentile(errors, self.threshold_percentile))
 
         anomalies: list[MLAnomaly] = []
-        for i, (err, yr) in enumerate(zip(errors, seq_year_end)):
+        for _i, (err, yr) in enumerate(zip(errors, seq_year_end, strict=False)):
             if err > threshold:
                 anomalies.append(MLAnomaly(
                     year=yr,

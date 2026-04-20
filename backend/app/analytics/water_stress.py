@@ -221,7 +221,7 @@ class WaterStressAnalyzer:
             factors.append(f"Critical groundwater ({gw.pre_monsoon_depth_m}m depth)")
         elif gw.category == "Semi-Critical":
             score += 15
-            factors.append(f"Semi-critical groundwater levels")
+            factors.append("Semi-critical groundwater levels")
 
         # Depletion trend (0-20 points)
         if gw.depletion_trend_m_yr > 0.5:
@@ -229,7 +229,7 @@ class WaterStressAnalyzer:
             factors.append(f"Rapid depletion ({gw.depletion_trend_m_yr:.1f} m/year)")
         elif gw.depletion_trend_m_yr > 0.2:
             score += 10
-            factors.append(f"Moderate depletion trend")
+            factors.append("Moderate depletion trend")
 
         # GW dependency (0-20 points)
         if irr and irr.groundwater_pct > 70:

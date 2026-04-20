@@ -4,25 +4,25 @@ Provides calibrated uncertainty bounds and robust trend estimation
 for agricultural districts with < 10 years of data.
 """
 
-from typing import Any, Dict, List, Tuple
 import logging
+from typing import Any
 
 try:
-    import pymc as pm
-    import numpy as np
     import arviz as az
+    import numpy as np
+    import pymc as pm
     PYMC_AVAILABLE = True
 except ImportError:
     PYMC_AVAILABLE = False
     logging.warning("PyMC is not installed. Bayesian state-space models will fallback to linear.")
 
 def bayesian_short_series_forecast(
-    years: List[int],
-    values: List[float],
+    years: list[int],
+    values: list[float],
     forecast_horizon: int = 5,
     regional_mean_trend: float = 0.0,
     regional_trend_std: float = 0.1
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Fit a Bayesian hierarchical state-space trend model using PyMC.
     Borrows strength from neighboring districts via `regional_mean_trend` prior.
@@ -47,7 +47,7 @@ def bayesian_short_series_forecast(
         t_normalized = t - t[0]
         y = np.array(values)
 
-        with pm.Model() as model:
+        with pm.Model():
             # Priors
             intercept = pm.Normal("intercept", mu=np.mean(y), sigma=np.std(y) * 2)
             slope = pm.Normal("slope", mu=regional_mean_trend, sigma=regional_trend_std)
@@ -66,10 +66,10 @@ def bayesian_short_series_forecast(
 
             # Inference
             trace = pm.sample(
-                1000, 
-                tune=1000, 
-                cores=1, 
-                progressbar=False, 
+                1000,
+                tune=1000,
+                cores=1,
+                progressbar=False,
                 return_inferencedata=True,
                 compute_convergence_checks=False
             )
@@ -78,12 +78,12 @@ def bayesian_short_series_forecast(
         forecast_samples = trace.posterior["forecast_mu"].values
         # shape is (chain, draws, time) => reshape to (chain*draws, time)
         forecast_samples = forecast_samples.reshape(-1, forecast_horizon)
-        
+
         forecast_means = np.mean(forecast_samples, axis=0)
         hdi_bounds = az.hdi(forecast_samples, hdi_prob=0.90)
 
         future_years = [years[-1] + i for i in range(1, forecast_horizon + 1)]
-        
+
         forecasts = []
         for i, year in enumerate(future_years):
             forecasts.append({
@@ -103,22 +103,22 @@ def bayesian_short_series_forecast(
         logging.error(f"Bayesian modeling failed: {e}. Falling back to linear.")
         return _linear_fallback(years, values, forecast_horizon)
 
-def _linear_fallback(years: List[int], values: List[float], horizon: int) -> Dict[str, Any]:
+def _linear_fallback(years: list[int], values: list[float], horizon: int) -> dict[str, Any]:
     """Simple linear extrapolation fallback."""
     from app.analytics.statistics import get_analyzer
     stats = get_analyzer()
     trend = stats.linear_trend(values)
-    
+
     last_year = years[-1] if years else 0
     last_val = values[-1] if values else 0.0
-    
+
     forecasts = []
     slope = trend.slope if trend.significant else 0.0
-    
+
     for i in range(1, horizon + 1):
         future_year = last_year + i
         projected = last_val + (slope * i)
-        
+
         # Simple ±10% dummy bounds for the linear fallback
         forecasts.append({
             "year": future_year,
@@ -126,7 +126,7 @@ def _linear_fallback(years: List[int], values: List[float], horizon: int) -> Dic
             "lower_bound": round(projected * 0.9, 4),
             "upper_bound": round(projected * 1.1, 4)
         })
-        
+
     return {
         "method": "linear_extrapolation",
         "borrowed_regional_strength": False,

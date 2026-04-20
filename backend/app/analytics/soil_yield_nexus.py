@@ -15,14 +15,13 @@ Data Sources:
 
 import logging
 from dataclasses import dataclass, field
-from typing import Any
 
 import numpy as np
 
 logger = logging.getLogger(__name__)
 
 try:
-    from scipy import stats as scipy_stats
+    from scipy import stats as scipy_stats  # noqa: F401
     from scipy.optimize import curve_fit
     SCIPY_OK = True
 except ImportError:
@@ -139,7 +138,7 @@ class SoilYieldAnalyzer:
         # Extract paired data
         inputs = []
         yields = []
-        for yr, data in sorted(yearly_input_yield.items()):
+        for _yr, data in sorted(yearly_input_yield.items()):
             npk = data.get("total_npk", 0)
             yld = data.get("yield", 0)
             if npk > 0 and yld > 0:
@@ -181,10 +180,10 @@ class SoilYieldAnalyzer:
 
             # Efficiency loss
             if over_fert:
-                yield_at_optimal = mitscherlich(optimal_npk, *popt)
-                yield_at_current = mitscherlich(current_npk, *popt)
+                mitscherlich(optimal_npk, *popt)
+                mitscherlich(current_npk, *popt)
                 extra_input = current_npk - optimal_npk
-                wasted_yield_potential = extra_input * marginal
+                extra_input * marginal
                 eff_loss = (extra_input / current_npk) * 100
             else:
                 eff_loss = 0.0

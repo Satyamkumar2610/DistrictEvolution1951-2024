@@ -9,8 +9,7 @@ Both statistics use Queen contiguity weights built from PostGIS neighbor queries
 """
 
 import logging
-from dataclasses import asdict, dataclass
-from typing import Any
+from dataclasses import dataclass
 
 import numpy as np
 
@@ -20,9 +19,9 @@ logger = logging.getLogger(__name__)
 # Availability
 # ---------------------------------------------------------------------------
 try:
-    from libpysal.weights import W
-    from esda.moran import Moran
     from esda.getisord import G_Local
+    from esda.moran import Moran
+    from libpysal.weights import W
     PYSAL_AVAILABLE = True
 except ImportError:
     PYSAL_AVAILABLE = False

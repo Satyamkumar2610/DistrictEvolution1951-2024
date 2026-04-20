@@ -17,7 +17,6 @@ For each shock year, the module:
 
 import logging
 from dataclasses import dataclass, field
-from typing import Any
 
 import numpy as np
 

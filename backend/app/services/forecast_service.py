@@ -6,8 +6,9 @@ Supports two forecasting strategies:
   2. SARIMA / Linear fallback (Phase 1) — when only yield history is available.
 """
 
-import asyncpg
 import logging
+
+import asyncpg
 
 from app.exceptions import NotFoundError, ValidationError
 from app.ml.forecaster import CropRecommender, YieldForecaster
@@ -18,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 # Lazy-load ensemble to avoid hard dependency on prophet/xgboost
 try:
-    from app.ml.ensemble_forecaster import EnsembleForecaster
+    from app.ml.ensemble_forecaster import EnsembleForecaster  # noqa: F401
     ENSEMBLE_OK = True
 except ImportError:
     ENSEMBLE_OK = False

@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 
 try:
     from scipy.optimize import minimize
-    from scipy.stats import norm, truncnorm
+    from scipy.stats import norm
     SCIPY_OK = True
 except ImportError:
     SCIPY_OK = False
