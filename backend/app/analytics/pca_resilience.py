@@ -123,9 +123,9 @@ class PCAResilienceAnalyzer:
         warnings_list: list[str] = []
 
         # Validate and fill missing
-        valid_data = []
+        valid_data: list[dict[str, Any]] = []
         for d in district_data:
-            row = {}
+            row: dict[str, Any] = {}
             for var in RESILIENCE_VARIABLES:
                 val = d.get(var)
                 if val is None or not np.isfinite(val):

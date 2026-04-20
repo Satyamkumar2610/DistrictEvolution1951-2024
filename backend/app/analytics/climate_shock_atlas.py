@@ -211,7 +211,7 @@ class ClimateShockAnalyzer:
         attributions.sort(key=lambda a: a.year)
 
         # Most damaging event type
-        most_damaging = max(event_freq, key=event_freq.get) if event_freq else None
+        most_damaging = max(event_freq, key=lambda k: event_freq[k]) if event_freq else None
 
         avg_loss = total_loss / len(shocks) if shocks else 0.0
 

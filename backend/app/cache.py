@@ -285,7 +285,7 @@ def cached(ttl: int = 3600, prefix: str = ""):
 
             # Try cache
             try:
-                cached_value: Any = await cache.get(cache_key)  # type: ignore[misc]
+                cached_value: Any = await cache.get(cache_key)
                 if cached_value is not None:
                     logger.debug(f"Cache hit for {key_prefix}")
                     return cached_value
