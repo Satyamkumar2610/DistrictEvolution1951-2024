@@ -7,19 +7,13 @@
     "backend"
   ],
   "extraPaths": [
-    "backend"
+    "./backend"
   ],
   "executionEnvironments": [
     {
       "root": "backend",
       "extraPaths": [
-        "backend"
-      ]
-    },
-    {
-      "root": "scripts",
-      "extraPaths": [
-        "backend"
+        "."
       ]
     }
   ]
