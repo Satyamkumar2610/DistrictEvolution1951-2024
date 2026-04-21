@@ -273,10 +273,11 @@ class PCAResilienceAnalyzer:
         components = vt[:n_comp]
         scores = X_scaled @ components.T
 
-        if X_scaled.shape[0] > 1:
-            eigenvalues = (svals ** 2) / (X_scaled.shape[0] - 1)
-        else:
-            eigenvalues = svals ** 2
+        eigenvalues = (
+            svals ** 2 / (X_scaled.shape[0] - 1)
+            if X_scaled.shape[0] > 1
+            else svals ** 2
+        )
         total_variance = float(np.sum(eigenvalues))
 
         if total_variance > 1e-12:
