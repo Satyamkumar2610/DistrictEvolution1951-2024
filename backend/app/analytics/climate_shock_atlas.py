@@ -109,6 +109,7 @@ class ClimateShockAnalyzer:
         heat_wave_temp_c: float = 40.0,
         heat_wave_min_days: int = 5,
         cold_wave_temp_c: float = 4.0,
+        cold_wave_min_days: int = 5,
     ):
         self.yield_shock_z = yield_shock_threshold_z
         self.spi_drought = spi_drought_threshold
@@ -116,6 +117,7 @@ class ClimateShockAnalyzer:
         self.heat_temp = heat_wave_temp_c
         self.heat_days = heat_wave_min_days
         self.cold_temp = cold_wave_temp_c
+        self.cold_days = cold_wave_min_days
 
     def analyze(
         self,
@@ -338,7 +340,7 @@ class ClimateShockAnalyzer:
 
             # Cold wave
             extreme_cold_days = climate.get("tmin_extreme_days", 0)
-            if extreme_cold_days >= self.heat_days:
+            if extreme_cold_days >= self.cold_days:
                 tmin = climate.get("tmin_mean", 0)
                 severity = "extreme" if extreme_cold_days > 15 else "severe" if extreme_cold_days > 10 else "moderate"
                 year_events.append(ClimaticEvent(
