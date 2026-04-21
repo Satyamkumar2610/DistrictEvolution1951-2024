@@ -29,6 +29,8 @@ export default function ResilienceCompositePage() {
         queryKey: ['resilienceComposite', selectedState, selectedCrop],
         queryFn: () => api.getResilienceComposite(selectedState, selectedCrop),
         enabled: !!selectedState,
+        staleTime: 300_000,
+        retry: 1,
     });
 
     const apiError = error instanceof ApiError ? error : null;
@@ -112,7 +114,7 @@ export default function ResilienceCompositePage() {
                 <div className="w-40">
                     <label className="text-[10px] uppercase font-bold text-slate-400 mb-1 block">Crop</label>
                     <select value={selectedCrop} onChange={e => setSelectedCrop(e.target.value)} className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-teal-500 outline-none">
-                        {['rice', 'wheat', 'cotton', 'sugarcane', 'maize', 'groundnut'].map(c => (
+                        {['rice', 'wheat', 'cotton', 'sugarcane', 'maize', 'groundnut', 'sorghum', 'chickpea'].map(c => (
                             <option key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</option>
                         ))}
                     </select>
@@ -183,6 +185,15 @@ export default function ResilienceCompositePage() {
                             </div>
                         )}
                     </div>
+
+                    {data.warnings && data.warnings.length > 0 && (
+                        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-800 shadow-sm">
+                            <strong className="flex items-center gap-1.5 mb-1"><AlertTriangle size={14} /> Data Notes:</strong>
+                            <ul className="list-disc list-inside space-y-0.5 text-xs mt-1">
+                                {data.warnings.map((w, i) => <li key={i}>{w}</li>)}
+                            </ul>
+                        </div>
+                    )}
 
                     <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
                         <div className="p-4 border-b border-slate-200 bg-slate-50">

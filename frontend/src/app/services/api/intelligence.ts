@@ -24,6 +24,7 @@ export interface ClimateShocksResult {
     event_frequency: Record<string, number>;
     attributions: ClimateShockAttribution[];
     warnings: string[];
+    ai_narrative?: string | null;
 }
 
 export interface ForecastValidationStep {
@@ -54,6 +55,7 @@ export interface ForecastValidationResult {
     interpretation: string;
     steps: ForecastValidationStep[];
     warnings: string[];
+    ai_narrative?: string | null;
 }
 
 export interface YieldFrontierDistrict {
@@ -79,6 +81,7 @@ export interface YieldFrontierResult {
     frontier_interpretation: string;
     district_results: YieldFrontierDistrict[];
     warnings: string[];
+    ai_narrative?: string | null;
 }
 
 export interface ResilienceDistrictResult {
@@ -132,10 +135,10 @@ export interface CropCalendarResult {
 
 export const intelligenceApi = {
     getClimateShocks: (cdk: string, crop: string) =>
-        fetcher<ClimateShocksResult>(`intelligence/climate-shocks?cdk=${cdk}&crop=${crop}`),
+        fetcher<ClimateShocksResult>(`intelligence/climate-shocks?cdk=${encodeURIComponent(cdk)}&crop=${encodeURIComponent(crop)}`),
 
     getForecastValidation: (cdk: string, crop: string) =>
-        fetcher<ForecastValidationResult>(`intelligence/forecast-validation?cdk=${cdk}&crop=${crop}`),
+        fetcher<ForecastValidationResult>(`intelligence/forecast-validation?cdk=${encodeURIComponent(cdk)}&crop=${encodeURIComponent(crop)}`),
 
     getYieldFrontier: (state: string, crop: string, year: number) =>
         fetcher<YieldFrontierResult>(`intelligence/yield-frontier?state=${encodeURIComponent(state)}&crop=${crop}&year=${year}`),
