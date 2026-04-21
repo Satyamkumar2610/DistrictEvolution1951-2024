@@ -1,12 +1,33 @@
 import { resolvePublicApiOrigin, toApiV1Url } from './config';
 
-const BASE_URL = toApiV1Url(resolvePublicApiOrigin());
+const BASE_URL =
+    typeof window === 'undefined'
+        ? toApiV1Url(resolvePublicApiOrigin())
+        : '/api/v1';
 
 export class ApiError extends Error {
     constructor(public status: number, message: string) {
         super(message);
         this.name = 'ApiError';
     }
+}
+
+function parseDetail(detail: unknown): string | null {
+    if (typeof detail === 'string') return detail;
+    if (Array.isArray(detail)) {
+        const parts = detail
+            .map((item) => {
+                if (typeof item === 'string') return item;
+                if (item && typeof item === 'object') {
+                    const record = item as Record<string, unknown>;
+                    if (typeof record.msg === 'string') return record.msg;
+                }
+                return null;
+            })
+            .filter((item): item is string => Boolean(item));
+        return parts.length > 0 ? parts.join('; ') : null;
+    }
+    return null;
 }
 
 async function fetchOnce<T>(url: string, options: RequestInit = {}): Promise<T> {
@@ -22,16 +43,33 @@ async function fetchOnce<T>(url: string, options: RequestInit = {}): Promise<T> 
     });
 
     if (!response.ok) {
-        const errorText = await response.text().catch(() => 'Unknown error');
+        const contentType = response.headers.get('Content-Type') || '';
+        let errorText = 'Unknown error';
+        let message: string | null = null;
+
+        if (contentType.includes('application/json')) {
+            const payload = await response.json().catch(() => null) as Record<string, unknown> | null;
+            if (payload) {
+                message =
+                    parseDetail(payload.detail) ||
+                    (typeof payload.message === 'string' ? payload.message : null) ||
+                    (typeof payload.error === 'string' ? payload.error : null);
+                errorText = JSON.stringify(payload);
+            }
+        } else {
+            errorText = await response.text().catch(() => 'Unknown error');
+            message = errorText || null;
+        }
+
         console.error(`[API] Error ${response.status}: ${errorText}`);
 
         if (response.status === 404) {
-            throw new ApiError(404, 'Resource not found');
+            throw new ApiError(404, message || 'Resource not found');
         }
         if (response.status >= 500) {
-            throw new ApiError(response.status, `Server error: ${errorText}`);
+            throw new ApiError(response.status, message ? `Server error: ${message}` : `Server error: ${errorText}`);
         }
-        throw new ApiError(response.status, `API Error: ${response.statusText}`);
+        throw new ApiError(response.status, message || `API Error: ${response.statusText}`);
     }
 
     return response.json();

@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../../services/api';
+import { ApiError } from '../../services/api/client';
 import { FlaskConical, Activity, TrendingUp, Info, AlertTriangle } from 'lucide-react';
 import ReactECharts from 'echarts-for-react';
 
@@ -17,12 +18,14 @@ export default function YieldFrontierPage() {
         return (Array.isArray(summaryData.states) ? summaryData.states : Object.keys(summaryData.states)).sort();
     }, [summaryData]);
 
-    const { data, isLoading, isError } = useQuery({
+    const { data, isLoading, isError, error } = useQuery({
         queryKey: ['yieldFrontier', selectedState, selectedCrop, selectedYear],
         queryFn: () => api.getYieldFrontier(selectedState, selectedCrop, selectedYear),
         enabled: !!selectedState,
     });
 
+    const apiError = error instanceof ApiError ? error : null;
+    const isNoDataError = !!apiError && [400, 404, 422].includes(apiError.status);
     const hasData = !!data && data.district_results?.length > 0;
 
     const chartOption = useMemo(() => {
@@ -120,17 +123,18 @@ export default function YieldFrontierPage() {
                     <span className="text-sm text-slate-500 font-medium">Estimating production frontier...</span>
                 </div>
             )}
-            {isError && (
+            {isError && !isNoDataError && (
                 <div className="bg-white border border-rose-200 rounded-xl p-10 text-center shadow-sm">
                     <AlertTriangle size={36} className="mx-auto mb-3 text-rose-400" />
                     <h3 className="text-lg font-bold text-slate-700">Frontier Estimation Failed</h3>
-                    <p className="text-sm text-slate-500 mt-1">Insufficient district data or model did not converge.</p>
+                    <p className="text-sm text-slate-500 mt-1">{(error as Error)?.message || 'Insufficient district data or model did not converge.'}</p>
                 </div>
             )}
-            {!isLoading && selectedState && !hasData && !isError && (
+            {!isLoading && selectedState && !hasData && (!isError || isNoDataError) && (
                 <div className="bg-white border border-slate-200 rounded-xl p-10 text-center shadow-sm">
                     <Info size={36} className="mx-auto mb-3 text-slate-300" />
                     <h3 className="text-lg font-bold text-slate-700">No Data Available</h3>
+                    <p className="text-sm text-slate-500 mt-1">{apiError?.message || 'Not enough district observations for the selected state/crop/year.'}</p>
                 </div>
             )}
 

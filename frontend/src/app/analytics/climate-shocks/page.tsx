@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../../services/api';
+import { ApiError } from '../../services/api/client';
 import { CloudLightning, AlertTriangle, Activity, Flame, Droplets, Snowflake, HelpCircle, Info, Search } from 'lucide-react';
 import ReactECharts from 'echarts-for-react';
 
@@ -25,6 +26,8 @@ export default function ClimateShocksPage() {
         enabled: !!cdk,
     });
 
+    const apiError = error instanceof ApiError ? error : null;
+    const isNoDataError = !!apiError && [400, 404, 422].includes(apiError.status);
     const hasData = !!data && data.attributions?.length > 0;
 
     const chartOption = useMemo(() => {
@@ -110,7 +113,7 @@ export default function ClimateShocksPage() {
                 </div>
             )}
 
-            {isError && (
+            {isError && !isNoDataError && (
                 <div className="bg-white border border-rose-200 rounded-xl p-10 text-center shadow-sm">
                     <AlertTriangle size={36} className="mx-auto mb-3 text-rose-400" />
                     <h3 className="text-lg font-bold text-slate-700">Analysis Failed</h3>
@@ -118,11 +121,11 @@ export default function ClimateShocksPage() {
                 </div>
             )}
 
-            {!isLoading && cdk && !hasData && !isError && (
+            {!isLoading && cdk && !hasData && (!isError || isNoDataError) && (
                 <div className="bg-white border border-slate-200 rounded-xl p-10 text-center shadow-sm">
                     <Info size={36} className="mx-auto mb-3 text-slate-300" />
                     <h3 className="text-lg font-bold text-slate-700">No Shocks Detected</h3>
-                    <p className="text-sm text-slate-500 mt-1">Either no significant yield drops occurred, or climate data is unavailable.</p>
+                    <p className="text-sm text-slate-500 mt-1">{apiError?.message || 'Either no significant yield drops occurred, or climate data is unavailable.'}</p>
                 </div>
             )}
 

@@ -116,10 +116,6 @@ class PCAResilienceAnalyzer:
         Returns:
             PCAResilienceReport or None if insufficient data.
         """
-        if not SKLEARN_OK:
-            logger.error("scikit-learn required for PCA resilience.")
-            return None
-
         warnings_list: list[str] = []
 
         # Validate and fill missing
@@ -158,33 +154,47 @@ class PCAResilienceAnalyzer:
             X[:, col] = -X[:, col]
 
         # Standardize
-        scaler = StandardScaler()
-        X_scaled = scaler.fit_transform(X)
+        if SKLEARN_OK:
+            scaler = StandardScaler()
+            X_scaled = scaler.fit_transform(X)
+        else:
+            mean = np.mean(X, axis=0)
+            std = np.std(X, axis=0)
+            std = np.where(std < 1e-12, 1.0, std)
+            X_scaled = (X - mean) / std
 
         # Handle NaN from zero-variance columns
         X_scaled = np.nan_to_num(X_scaled, nan=0.0)
 
         # PCA
         n_comp = min(self.n_components, n - 1, len(RESILIENCE_VARIABLES))
-        pca = PCA(n_components=n_comp)
-        scores = pca.fit_transform(X_scaled)
+        if SKLEARN_OK:
+            pca = PCA(n_components=n_comp)
+            scores = pca.fit_transform(X_scaled)
+            components = pca.components_
+            explained_ratio = pca.explained_variance_ratio_
+        else:
+            warnings_list.append("scikit-learn unavailable — using NumPy SVD PCA fallback.")
+            components, scores, explained_ratio = self._numpy_pca(X_scaled, n_comp)
+            if components is None:
+                return None
 
         # Build loadings
         loadings_list: list[PCALoadings] = []
         for i in range(n_comp):
             loadings_list.append(PCALoadings(
                 component=i + 1,
-                explained_variance_pct=round(float(pca.explained_variance_ratio_[i] * 100), 2),
+                explained_variance_pct=round(float(explained_ratio[i] * 100), 2),
                 loadings={
-                    var: round(float(pca.components_[i, j]), 4)
+                    var: round(float(components[i, j]), 4)
                     for j, var in enumerate(RESILIENCE_VARIABLES)
                 },
             ))
 
-        total_var = float(np.sum(pca.explained_variance_ratio_) * 100)
+        total_var = float(np.sum(explained_ratio) * 100)
 
         # Composite score: weighted sum of PC scores by variance explained
-        weights = pca.explained_variance_ratio_[:n_comp]
+        weights = explained_ratio[:n_comp]
         composite = scores @ weights
 
         # Rescale to 0-1
@@ -198,7 +208,7 @@ class PCAResilienceAnalyzer:
         var_contrib: dict[str, float] = {}
         for j, var in enumerate(RESILIENCE_VARIABLES):
             contrib = sum(
-                abs(float(pca.components_[i, j])) * float(pca.explained_variance_ratio_[i])
+                abs(float(components[i, j])) * float(explained_ratio[i])
                 for i in range(n_comp)
             )
             var_contrib[var] = round(contrib, 4)
@@ -245,6 +255,36 @@ class PCAResilienceAnalyzer:
             variable_contributions=var_contrib,
             warnings=warnings_list,
         )
+
+    @staticmethod
+    def _numpy_pca(
+        X_scaled: np.ndarray,
+        n_comp: int,
+    ) -> tuple[np.ndarray | None, np.ndarray | None, np.ndarray]:
+        """
+        PCA fallback via NumPy SVD for environments without scikit-learn.
+        """
+        try:
+            _, svals, vt = np.linalg.svd(X_scaled, full_matrices=False)
+        except np.linalg.LinAlgError:
+            logger.error("NumPy SVD failed for PCA fallback.", exc_info=True)
+            return None, None, np.array([])
+
+        components = vt[:n_comp]
+        scores = X_scaled @ components.T
+
+        if X_scaled.shape[0] > 1:
+            eigenvalues = (svals ** 2) / (X_scaled.shape[0] - 1)
+        else:
+            eigenvalues = svals ** 2
+        total_variance = float(np.sum(eigenvalues))
+
+        if total_variance > 1e-12:
+            explained_ratio = eigenvalues[:n_comp] / total_variance
+        else:
+            explained_ratio = np.full(n_comp, 1.0 / n_comp)
+
+        return components, scores, explained_ratio
 
     # ------------------------------------------------------------------
     # Helpers

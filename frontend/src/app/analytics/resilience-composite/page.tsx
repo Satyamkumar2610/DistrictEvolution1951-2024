@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../../services/api';
+import { ApiError } from '../../services/api/client';
 import { ShieldCheck, Activity, Info, AlertTriangle } from 'lucide-react';
 import ReactECharts from 'echarts-for-react';
 
@@ -24,12 +25,14 @@ export default function ResilienceCompositePage() {
         return (Array.isArray(summaryData.states) ? summaryData.states : Object.keys(summaryData.states)).sort();
     }, [summaryData]);
 
-    const { data, isLoading, isError } = useQuery({
+    const { data, isLoading, isError, error } = useQuery({
         queryKey: ['resilienceComposite', selectedState, selectedCrop],
         queryFn: () => api.getResilienceComposite(selectedState, selectedCrop),
         enabled: !!selectedState,
     });
 
+    const apiError = error instanceof ApiError ? error : null;
+    const isNoDataError = !!apiError && [400, 404, 422].includes(apiError.status);
     const hasData = !!data && data.district_results?.length > 0;
 
     const radarOption = useMemo(() => {
@@ -39,7 +42,7 @@ export default function ResilienceCompositePage() {
         return {
             tooltip: {},
             radar: {
-                indicator: vars.map(([name, val]) => ({
+                indicator: vars.map(([name]) => ({
                     name: name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
                     max: Math.ceil(maxV * 1.2 * 100) / 100,
                 })),
@@ -122,16 +125,18 @@ export default function ResilienceCompositePage() {
                     <span className="text-sm text-slate-500 font-medium">Computing PCA resilience composite...</span>
                 </div>
             )}
-            {isError && (
+            {isError && !isNoDataError && (
                 <div className="bg-white border border-rose-200 rounded-xl p-10 text-center shadow-sm">
                     <AlertTriangle size={36} className="mx-auto mb-3 text-rose-400" />
                     <h3 className="text-lg font-bold text-slate-700">Analysis Failed</h3>
+                    <p className="text-sm text-slate-500 mt-1">{(error as Error)?.message || 'Unable to compute resilience composite right now.'}</p>
                 </div>
             )}
-            {!isLoading && selectedState && !hasData && !isError && (
+            {!isLoading && selectedState && !hasData && (!isError || isNoDataError) && (
                 <div className="bg-white border border-slate-200 rounded-xl p-10 text-center shadow-sm">
                     <Info size={36} className="mx-auto mb-3 text-slate-300" />
                     <h3 className="text-lg font-bold text-slate-700">Insufficient Data</h3>
+                    <p className="text-sm text-slate-500 mt-1">{apiError?.message || 'Need enough district-year history to compute the PCA composite.'}</p>
                 </div>
             )}
 

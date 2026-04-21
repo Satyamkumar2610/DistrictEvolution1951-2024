@@ -108,10 +108,6 @@ class StochasticFrontierAnalyzer:
         Returns:
             SFAReport or None if insufficient data.
         """
-        if not SCIPY_OK:
-            logger.error("SciPy required for SFA — not installed.")
-            return None
-
         warnings_list: list[str] = []
 
         # Filter valid data
@@ -122,6 +118,10 @@ class StochasticFrontierAnalyzer:
         n = len(valid)
         y = np.array([d[yield_key] for d in valid], dtype=float)
         ln_y = np.log(y)
+
+        if not SCIPY_OK:
+            warnings_list.append("SciPy unavailable — using quantile frontier fallback.")
+            return self._fallback_frontier_report(valid, y, crop, year, warnings_list)
 
         # Build feature matrix (or intercept-only)
         if feature_keys:
@@ -232,6 +232,71 @@ class StochasticFrontierAnalyzer:
             ),
             district_results=district_results,
             frontier_interpretation=interp,
+            warnings=warnings_list,
+        )
+
+    def _fallback_frontier_report(
+        self,
+        valid: list[dict[str, Any]],
+        y: np.ndarray,
+        crop: str,
+        year: int | None,
+        warnings_list: list[str],
+    ) -> SFAReport:
+        """
+        Non-parametric fallback when SciPy isn't available.
+
+        Uses the max of observed p95 and max yield as the frontier, then
+        computes technical efficiency as observed/frontier.
+        """
+        n = len(valid)
+        frontier = float(max(np.percentile(y, 95), np.max(y)))
+        frontier = max(frontier, 1e-6)
+
+        te = np.clip(y / frontier, 1e-6, 1.0)
+        u_hat = -np.log(te)
+        frontier_yields = np.full_like(y, frontier, dtype=float)
+
+        district_results: list[SFADistrictResult] = []
+        for i, d in enumerate(valid):
+            district_results.append(SFADistrictResult(
+                cdk=d.get("cdk", f"d_{i}"),
+                name=d.get("name"),
+                observed_yield=round(float(y[i]), 1),
+                frontier_yield=round(float(frontier_yields[i]), 1),
+                technical_efficiency=round(float(te[i]), 4),
+                inefficiency_score=round(float(u_hat[i]), 4),
+                yield_gap_kg_ha=round(float(frontier_yields[i] - y[i]), 1),
+                yield_gap_pct=round(float((1 - te[i]) * 100), 1),
+                efficiency_rank=0,
+            ))
+
+        district_results.sort(key=lambda x: x.technical_efficiency, reverse=True)
+        for i, dr in enumerate(district_results):
+            dr.efficiency_rank = i + 1
+
+        mean_te = float(np.mean(te))
+        residual = frontier_yields - y
+        sigma = max(float(np.std(residual)), 1e-6)
+
+        return SFAReport(
+            crop=crop,
+            year=year,
+            model_stats=SFAModelStats(
+                n_districts=n,
+                sigma_v=round(sigma, 4),
+                sigma_u=round(sigma, 4),
+                lambda_ratio=1.0,
+                gamma=0.5,
+                log_likelihood=0.0,
+                mean_te=round(mean_te, 4),
+                features_used=["intercept"],
+            ),
+            district_results=district_results,
+            frontier_interpretation=(
+                f"Approximate quantile frontier used (p95={frontier:.1f} kg/ha). "
+                f"Average TE is {mean_te:.1%}."
+            ),
             warnings=warnings_list,
         )
 

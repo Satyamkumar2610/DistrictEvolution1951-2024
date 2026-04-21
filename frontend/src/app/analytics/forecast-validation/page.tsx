@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../../services/api';
+import { ApiError } from '../../services/api/client';
 import { CheckCircle2, Activity, XCircle, Info, AlertTriangle, Search } from 'lucide-react';
 import ReactECharts from 'echarts-for-react';
 
@@ -25,6 +26,8 @@ export default function ForecastValidationPage() {
         enabled: !!cdk,
     });
 
+    const apiError = error instanceof ApiError ? error : null;
+    const isNoDataError = !!apiError && [400, 404, 422].includes(apiError.status);
     const hasData = !!data && data.steps?.length > 0;
     const grade = data?.trustworthiness_grade || '-';
     const gradeBadge = GRADE_BADGES[grade] || GRADE_BADGES.C;
@@ -104,18 +107,18 @@ export default function ForecastValidationPage() {
                     <span className="text-sm text-slate-500 font-medium">Running walk-forward backtesting...</span>
                 </div>
             )}
-            {isError && (
+            {isError && !isNoDataError && (
                 <div className="bg-white border border-rose-200 rounded-xl p-10 text-center shadow-sm">
                     <AlertTriangle size={36} className="mx-auto mb-3 text-rose-400" />
                     <h3 className="text-lg font-bold text-slate-700">Backtesting Failed</h3>
                     <p className="text-sm text-slate-500 mt-1">{(error as Error)?.message || 'Insufficient data for backtesting.'}</p>
                 </div>
             )}
-            {!isLoading && cdk && !hasData && !isError && (
+            {!isLoading && cdk && !hasData && (!isError || isNoDataError) && (
                 <div className="bg-white border border-slate-200 rounded-xl p-10 text-center shadow-sm">
                     <Info size={36} className="mx-auto mb-3 text-slate-300" />
                     <h3 className="text-lg font-bold text-slate-700">No Data</h3>
-                    <p className="text-sm text-slate-500 mt-1">Need ≥12 years of yield data for backtesting.</p>
+                    <p className="text-sm text-slate-500 mt-1">{apiError?.message || 'Need ≥12 years of yield data for backtesting.'}</p>
                 </div>
             )}
 
