@@ -347,6 +347,7 @@ async def get_yield_frontier(
                 "yield_gap_pct": d.yield_gap_pct,
                 "rank": d.efficiency_rank,
             }
+            for d in report.district_results[:30]
         ],
         "warnings": report.warnings,
         "ai_narrative": None,
