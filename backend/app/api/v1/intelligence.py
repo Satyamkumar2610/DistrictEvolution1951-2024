@@ -157,7 +157,7 @@ async def get_climate_shocks(
     analyzer = ClimateShockAnalyzer()
     report = analyzer.analyze(cdk, name, crop, yields, climate)
 
-    return {
+    response = {
         "cdk": report.cdk,
         "name": report.name,
         "crop": crop,
@@ -238,7 +238,7 @@ async def get_forecast_validation(
     if report is None:
         raise ValidationError(detail="Backtesting failed — insufficient valid steps")
 
-    return {
+    response = {
         "cdk": report.cdk,
         "crop": report.crop,
         "method": report.forecast_method,
@@ -326,7 +326,7 @@ async def get_yield_frontier(
     if report is None:
         raise ValidationError(detail="SFA analysis failed — model did not converge")
 
-    return {
+    response = {
         "crop": report.crop,
         "year": report.year,
         "model_stats": {

@@ -53,7 +53,7 @@ class LLMService:
             "and what the data means for a farmer or policymaker. Be specific, reference the numbers, "
             "and do not use formatting like bold or bullet points."
         )
-        
+
         # Strip some verbose fields to save tokens
         clean_report = {
             "district": report.get("name"),
@@ -62,7 +62,7 @@ class LLMService:
             "avg_loss_per_shock_pct": report.get("avg_loss_per_shock_pct"),
             "most_damaging_event_type": report.get("most_damaging_event_type"),
         }
-        
+
         return await self._generate_narrative(system_prompt, json.dumps(clean_report))
 
     async def generate_forecast_validation_narrative(self, report: dict[str, Any]) -> str | None:
