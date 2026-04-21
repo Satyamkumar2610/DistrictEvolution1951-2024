@@ -17,8 +17,24 @@ const EVENT_ICONS: Record<string, { icon: React.ReactNode; color: string; bg: st
 
 export default function ClimateShocksPage() {
     const [cdk, setCdk] = useState('');
+    const [selectedState, setSelectedState] = useState('');
     const [crop, setCrop] = useState('rice');
     const [searchInput, setSearchInput] = useState('');
+
+    const { data: statesData } = useQuery({
+        queryKey: ['states-list-intelligence'],
+        queryFn: () => api.getStatesList(),
+        staleTime: 3600000,
+    });
+    const states = useMemo(() => (statesData || []).map((s) => s.state).sort(), [statesData]);
+
+    const { data: districtsData, isLoading: districtsLoading } = useQuery({
+        queryKey: ['state-districts-intelligence', selectedState],
+        queryFn: () => api.getDistrictsByState(selectedState),
+        enabled: !!selectedState,
+        staleTime: 3600000,
+    });
+    const districts = districtsData?.items || [];
 
     const { data, isLoading, isError, error } = useQuery({
         queryKey: ['climateShocks', cdk, crop],
@@ -78,24 +94,70 @@ export default function ClimateShocksPage() {
             </div>
 
             {/* Controls */}
-            <div className="bg-white border border-slate-200 rounded-xl p-5 mb-6 shadow-sm flex flex-col sm:flex-row gap-4 items-end">
-                <div className="flex-1">
-                    <label className="text-[10px] uppercase font-bold text-slate-400 mb-1 block">District CDK</label>
-                    <div className="flex gap-2">
-                        <input
-                            type="text"
-                            value={searchInput}
-                            onChange={e => setSearchInput(e.target.value)}
-                            onKeyDown={e => e.key === 'Enter' && setCdk(searchInput.trim())}
-                            placeholder="e.g. 555 or 301"
-                            className="flex-1 bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-orange-500 outline-none font-mono"
-                        />
-                        <button onClick={() => setCdk(searchInput.trim())} className="px-3 py-2 bg-orange-600 text-white rounded-lg text-sm font-medium hover:bg-orange-700 transition-colors">
-                            <Search size={16} />
-                        </button>
+            <div className="bg-white border border-slate-200 rounded-xl p-5 mb-6 shadow-sm">
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+                    <div className="md:col-span-3">
+                        <label className="text-[10px] uppercase font-bold text-slate-400 mb-1 block">State</label>
+                        <select
+                            value={selectedState}
+                            onChange={(e) => {
+                                setSelectedState(e.target.value);
+                                setCdk('');
+                                setSearchInput('');
+                            }}
+                            className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-orange-500 outline-none"
+                        >
+                            <option value="">Select state...</option>
+                            {states.map((state) => (
+                                <option key={state} value={state}>{state}</option>
+                            ))}
+                        </select>
                     </div>
-                </div>
-                <div className="w-40">
+
+                    <div className="md:col-span-5">
+                        <label className="text-[10px] uppercase font-bold text-slate-400 mb-1 block">District</label>
+                        <select
+                            value={cdk}
+                            onChange={(e) => {
+                                setCdk(e.target.value);
+                                setSearchInput(e.target.value);
+                            }}
+                            disabled={!selectedState || districtsLoading}
+                            className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-orange-500 outline-none disabled:opacity-60"
+                        >
+                            <option value="">
+                                {!selectedState
+                                    ? 'Select state first...'
+                                    : districtsLoading
+                                        ? 'Loading districts...'
+                                        : 'Select district...'}
+                            </option>
+                            {districts.map((district) => (
+                                <option key={district.cdk} value={district.cdk}>
+                                    {district.name} ({district.cdk})
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div className="md:col-span-2">
+                        <label className="text-[10px] uppercase font-bold text-slate-400 mb-1 block">Manual CDK</label>
+                        <div className="flex gap-2">
+                            <input
+                                type="text"
+                                value={searchInput}
+                                onChange={e => setSearchInput(e.target.value)}
+                                onKeyDown={e => e.key === 'Enter' && setCdk(searchInput.trim())}
+                                placeholder="UP_agra_1981"
+                                className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-orange-500 outline-none font-mono"
+                            />
+                            <button onClick={() => setCdk(searchInput.trim())} className="px-3 py-2 bg-orange-600 text-white rounded-lg text-sm font-medium hover:bg-orange-700 transition-colors">
+                                <Search size={16} />
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="md:col-span-2">
                     <label className="text-[10px] uppercase font-bold text-slate-400 mb-1 block">Crop</label>
                     <select value={crop} onChange={e => setCrop(e.target.value)} className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-orange-500 outline-none">
                         {['rice', 'wheat', 'cotton', 'sugarcane', 'maize', 'groundnut', 'sorghum'].map(c => (
@@ -103,6 +165,10 @@ export default function ClimateShocksPage() {
                         ))}
                     </select>
                 </div>
+                </div>
+                <p className="text-xs text-slate-500 mt-3">
+                    Select State and District from dropdowns for easiest use. Manual CDK entry is optional.
+                </p>
             </div>
 
             {/* States */}

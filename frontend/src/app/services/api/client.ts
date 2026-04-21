@@ -30,6 +30,21 @@ function parseDetail(detail: unknown): string | null {
     return null;
 }
 
+function parseApiMessage(payload: Record<string, unknown>): string | null {
+    const nestedError = payload.error;
+    const nestedErrorMessage =
+        nestedError && typeof nestedError === 'object'
+            ? (nestedError as Record<string, unknown>).message
+            : null;
+
+    return (
+        parseDetail(payload.detail) ||
+        (typeof payload.message === 'string' ? payload.message : null) ||
+        (typeof payload.error === 'string' ? payload.error : null) ||
+        (typeof nestedErrorMessage === 'string' ? nestedErrorMessage : null)
+    );
+}
+
 async function fetchOnce<T>(url: string, options: RequestInit = {}): Promise<T> {
     const headers = {
         'Content-Type': 'application/json',
@@ -50,10 +65,7 @@ async function fetchOnce<T>(url: string, options: RequestInit = {}): Promise<T> 
         if (contentType.includes('application/json')) {
             const payload = await response.json().catch(() => null) as Record<string, unknown> | null;
             if (payload) {
-                message =
-                    parseDetail(payload.detail) ||
-                    (typeof payload.message === 'string' ? payload.message : null) ||
-                    (typeof payload.error === 'string' ? payload.error : null);
+                message = parseApiMessage(payload);
                 errorText = JSON.stringify(payload);
             }
         } else {
