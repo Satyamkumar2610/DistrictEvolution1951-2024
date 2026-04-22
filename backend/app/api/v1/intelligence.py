@@ -326,6 +326,32 @@ async def get_yield_frontier(
     if report is None:
         raise ValidationError(detail="SFA analysis failed — model did not converge")
 
+    # Compute historical efficiency: current yield / 10-year rolling mean
+    hist_efficiency_map: dict[str, float | None] = {}
+    try:
+        hist_query = """
+            SELECT m.district_lgd::text as cdk, AVG(m.value) as mean_10yr
+            FROM agri_metrics m
+            WHERE m.district_lgd::text = ANY($1::text[])
+              AND m.variable_name = $2
+              AND m.value > 0
+              AND m.year >= $3 AND m.year < $4
+            GROUP BY m.district_lgd
+        """
+        all_cdks = [d.cdk for d in report.district_results]
+        hist_rows = await fetch(db, hist_query, all_cdks, f"{crop}_yield", year - 10, year)
+        if not hist_rows:
+            season = _SEASON_MAP.get(crop.lower())
+            if season:
+                hist_rows = await fetch(db, hist_query, all_cdks, f"{crop}_yield_{season}", year - 10, year)
+
+        for hr in hist_rows:
+            mean_10yr = float(hr["mean_10yr"])
+            if mean_10yr > 0:
+                hist_efficiency_map[hr["cdk"]] = mean_10yr
+    except Exception:
+        logger.debug("Could not compute historical efficiency for %s/%s", state, crop)
+
     response = {
         "crop": report.crop,
         "year": report.year,
@@ -346,6 +372,9 @@ async def get_yield_frontier(
                 "technical_efficiency": d.technical_efficiency,
                 "yield_gap_pct": d.yield_gap_pct,
                 "rank": d.efficiency_rank,
+                "historical_efficiency": round(
+                    d.observed_yield / hist_efficiency_map[d.cdk], 3
+                ) if d.cdk in hist_efficiency_map else None,
             }
             for d in report.district_results[:30]
         ],
@@ -511,7 +540,7 @@ async def get_resilience_composite(
     if report is None:
         raise ValidationError(detail="PCA analysis failed — insufficient variance")
 
-    return {
+    response = {
         "region": report.region,
         "n_districts": report.n_districts,
         "n_components": report.n_components_used,
@@ -530,4 +559,118 @@ async def get_resilience_composite(
             for d in report.district_results[:30]
         ],
         "warnings": report.warnings,
+        "ai_narrative": None,
     }
+
+    # Generate contextual AI narrative
+    llm = LLMService()
+    narrative = await llm.generate_resilience_narrative(response)
+    if narrative:
+        response["ai_narrative"] = narrative
+
+    return response
+
+
+# ---------------------------------------------------------------------------
+# 5. Anomaly Context Engine
+# ---------------------------------------------------------------------------
+@router.get("/anomaly-scan")
+async def get_anomaly_scan(
+    cdk: str = Query(..., description="District LGD code"),
+    crop: str = Query("rice", description="Crop name"),
+    db: asyncpg.Connection = Depends(get_db),
+) -> dict:
+    """Run Isolation Forest anomaly detection with LLM-powered context."""
+    from app.analytics.ml_anomaly_detection import IsolationForestDetector
+
+    # Fetch multi-feature time series
+    yield_series = await _fetch_yield_series(db, cdk, crop, min_year=1980)
+    if len(yield_series) < 8:
+        raise ValidationError(
+            detail=f"Need ≥8 years for anomaly detection, found {len(yield_series)}"
+        )
+
+    # District metadata
+    district_row = await fetchrow(
+        db, "SELECT district_name, state_name FROM districts WHERE lgd_code::text = $1", cdk,
+    )
+    name = district_row["district_name"] if district_row else cdk
+    state_name = district_row["state_name"] if district_row else ""
+
+    # Fetch area and production if available
+    area_query = """
+        SELECT year, value FROM agri_metrics
+        WHERE district_lgd::text = $1 AND variable_name = $2 AND value > 0 AND year >= 1980
+        ORDER BY year
+    """
+    area_rows = await fetch(db, area_query, cdk, f"{crop}_area")
+    area_series = {r["year"]: float(r["value"]) for r in area_rows}
+
+    prod_rows = await fetch(db, area_query, cdk, f"{crop}_production")
+    prod_series = {r["year"]: float(r["value"]) for r in prod_rows}
+
+    # Build multi-feature matrix
+    years = sorted(yield_series.keys())
+    yearly_features: dict[int, dict[str, float]] = {}
+    for yr in years:
+        features: dict[str, float] = {"yield": yield_series[yr]}
+        if yr in area_series:
+            features["area"] = area_series[yr]
+        if yr in prod_series:
+            features["production"] = prod_series[yr]
+        yearly_features[yr] = features
+
+    # Run Isolation Forest
+    detector = IsolationForestDetector(contamination=0.1)
+    anomalies = detector.detect(yearly_features)
+
+    # Compute summary stats
+    mean_yield = sum(yield_series.values()) / len(yield_series)
+    anomaly_years = [a.year for a in anomalies]
+
+    response = {
+        "cdk": cdk,
+        "name": name,
+        "state": state_name,
+        "crop": crop,
+        "years_analyzed": len(years),
+        "period": f"{years[0]}-{years[-1]}",
+        "total_anomalies": len(anomalies),
+        "mean_yield": round(mean_yield, 1),
+        "anomalies": [
+            {
+                "year": a.year,
+                "anomaly_score": a.anomaly_score,
+                "yield_value": round(yield_series.get(a.year, 0), 1),
+                "yield_deviation_pct": round(
+                    (yield_series.get(a.year, mean_yield) - mean_yield) / mean_yield * 100, 1
+                ) if mean_yield > 0 else 0,
+                "features_used": a.features_used,
+                "details": a.details,
+            }
+            for a in anomalies
+        ],
+        "timeline": [
+            {
+                "year": yr,
+                "yield": round(yield_series[yr], 1),
+                "is_anomaly": yr in anomaly_years,
+            }
+            for yr in years
+        ],
+        "warnings": [],
+        "ai_narrative": None,
+    }
+
+    if not anomalies:
+        response["warnings"].append("No multivariate anomalies detected — the district's time series is relatively stable.")
+
+    # Generate LLM context for the anomalies
+    if anomalies:
+        llm = LLMService()
+        narrative = await llm.generate_anomaly_context_narrative(response)
+        if narrative:
+            response["ai_narrative"] = narrative
+
+    return response
+

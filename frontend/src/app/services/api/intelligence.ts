@@ -66,6 +66,7 @@ export interface YieldFrontierDistrict {
     technical_efficiency: number;
     yield_gap_pct: number;
     rank: number;
+    historical_efficiency?: number | null;
 }
 
 export interface YieldFrontierResult {
@@ -102,6 +103,7 @@ export interface ResilienceCompositeResult {
     variable_contributions: Record<string, number>;
     district_results: ResilienceDistrictResult[];
     warnings: string[];
+    ai_narrative?: string | null;
 }
 
 export interface CropCalendarPhase {
@@ -131,6 +133,36 @@ export interface CropCalendarResult {
     warnings: string[];
 }
 
+export interface AnomalyScanAnomaly {
+    year: number;
+    anomaly_score: number;
+    yield_value: number;
+    yield_deviation_pct: number;
+    features_used: string[];
+    details: string;
+}
+
+export interface AnomalyScanTimelinePoint {
+    year: number;
+    yield: number;
+    is_anomaly: boolean;
+}
+
+export interface AnomalyScanResult {
+    cdk: string;
+    name: string;
+    state: string;
+    crop: string;
+    years_analyzed: number;
+    period: string;
+    total_anomalies: number;
+    mean_yield: number;
+    anomalies: AnomalyScanAnomaly[];
+    timeline: AnomalyScanTimelinePoint[];
+    warnings: string[];
+    ai_narrative?: string | null;
+}
+
 // ---- API Methods ----
 
 export const intelligenceApi = {
@@ -148,4 +180,8 @@ export const intelligenceApi = {
 
     getCropCalendar: (cdk: string, crop: string, year: number) =>
         fetcher<CropCalendarResult>(`intelligence/crop-calendar?cdk=${cdk}&crop=${encodeURIComponent(crop)}&year=${year}`),
+
+    getAnomalyScan: (cdk: string, crop: string) =>
+        fetcher<AnomalyScanResult>(`intelligence/anomaly-scan?cdk=${encodeURIComponent(cdk)}&crop=${encodeURIComponent(crop)}`),
 };
+

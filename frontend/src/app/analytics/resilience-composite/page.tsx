@@ -4,6 +4,7 @@ import React, { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../../services/api';
 import { ApiError } from '../../services/api/client';
+import { AINarrative } from '../../components/AINarrative';
 import { ShieldCheck, Activity, Info, AlertTriangle } from 'lucide-react';
 import ReactECharts from 'echarts-for-react';
 
@@ -166,6 +167,8 @@ export default function ResilienceCompositePage() {
                             </div>
                         </div>
                     </div>
+
+                    <AINarrative narrative={data.ai_narrative} />
 
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         {radarOption && (
