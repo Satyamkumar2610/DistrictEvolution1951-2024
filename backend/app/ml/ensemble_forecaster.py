@@ -92,9 +92,19 @@ def _check_shap() -> bool:
         return False
 
 
+def _check_optuna() -> bool:
+    try:
+        import optuna  # noqa: F401
+        return True
+    except ImportError:
+        logger.info("optuna not installed — hyperparameter tuning unavailable.")
+        return False
+
+
 PROPHET_OK = _check_prophet()
 XGB_OK = _check_xgboost()
 SHAP_OK = _check_shap()
+OPTUNA_OK = _check_optuna()
 
 
 # ---------------------------------------------------------------------------
@@ -117,11 +127,13 @@ class EnsembleForecaster:
     """
 
     MIN_POINTS = 8  # need at least 8 years for meaningful ensemble
+    N_BOOTSTRAP = 50  # number of bootstrap resamples for CIs
 
     def __init__(self):
         self.prophet_available = PROPHET_OK
         self.xgb_available = XGB_OK
         self.shap_available = SHAP_OK
+        self.optuna_available = OPTUNA_OK
 
     def forecast(
         self,
@@ -131,6 +143,7 @@ class EnsembleForecaster:
         exogenous_features: dict[int, dict[str, float]] | None = None,
         horizon_years: int = 3,
         confidence_level: float = 0.95,
+        use_tuning: bool = False,
     ) -> EnsembleForecastResult | None:
         """
         Run the full ensemble pipeline.
@@ -164,6 +177,13 @@ class EnsembleForecaster:
             return None
 
         # ------------------------------------------------------------------
+        # Stage 1.5: Feature engineering
+        # ------------------------------------------------------------------
+        enriched_features = self._engineer_features(
+            years, valid, exogenous_features
+        )
+
+        # ------------------------------------------------------------------
         # Stage 2: XGBoost on residuals
         # ------------------------------------------------------------------
         residuals = yields - prophet_preds[:len(years)]
@@ -174,18 +194,32 @@ class EnsembleForecaster:
         global_importance: dict[str, float] = {}
         shap_per_point: list[list[ShapContribution]] = [[] for _ in range(horizon_years)]
 
-        if self.xgb_available and exogenous_features:
+        # Optionally tune XGBoost hyperparameters
+        xgb_params: dict[str, Any] | None = None
+        if use_tuning and self.optuna_available and enriched_features:
+            xgb_params = self._tune_xgboost_params(
+                years, residuals, enriched_features
+            )
+
+        if self.xgb_available and enriched_features:
             xgb_result = self._fit_xgboost(
-                years, residuals, exogenous_features, horizon_years
+                years, residuals, enriched_features, horizon_years,
+                xgb_params=xgb_params,
             )
             if xgb_result is not None:
                 xgb_model, xgb_future_residuals, feature_names, global_importance, shap_per_point = xgb_result
 
         # ------------------------------------------------------------------
-        # Combine
+        # Combine with bootstrap confidence intervals
         # ------------------------------------------------------------------
         last_year = max(years)
         forecasts: list[EnsembleForecastPoint] = []
+
+        # Bootstrap CIs from XGBoost residual model
+        bootstrap_lower, bootstrap_upper = self._bootstrap_ci(
+            years, residuals, enriched_features, horizon_years,
+            confidence_level, xgb_params,
+        )
 
         for i in range(horizon_years):
             prophet_val = float(prophet_future["yhat"].iloc[i])
@@ -195,10 +229,16 @@ class EnsembleForecaster:
             xgb_adj = float(xgb_future_residuals[i]) if xgb_future_residuals is not None else 0.0
 
             predicted = max(0.0, prophet_val + xgb_adj)
-            lower = max(0.0, prophet_lower + xgb_adj)
-            upper = max(0.0, prophet_upper + xgb_adj)
 
-            conf = max(0.5, confidence_level - 0.03 * (i + 1))
+            # Use bootstrap CIs if available, else fall back to Prophet CIs
+            if bootstrap_lower is not None:
+                lower = max(0.0, prophet_val + float(bootstrap_lower[i]))
+                upper = max(0.0, prophet_val + float(bootstrap_upper[i]))
+            else:
+                lower = max(0.0, prophet_lower + xgb_adj)
+                upper = max(0.0, prophet_upper + xgb_adj)
+
+            conf = max(0.5, confidence_level - 0.02 * (i + 1))
 
             forecasts.append(EnsembleForecastPoint(
                 year=last_year + i + 1,
@@ -233,6 +273,208 @@ class EnsembleForecaster:
             },
             feature_importance=global_importance,
         )
+
+    # ------------------------------------------------------------------
+    # Feature Engineering
+    # ------------------------------------------------------------------
+    @staticmethod
+    def _engineer_features(
+        years: list[int],
+        yields_dict: dict[int, float],
+        exogenous: dict[int, dict[str, float]] | None,
+    ) -> dict[int, dict[str, float]]:
+        """
+        Augment exogenous features with engineered signals:
+          - yield_lag1, yield_lag2: autoregressive yield lags
+          - yield_rolling_mean_3: 3-year rolling mean
+          - yield_rolling_std_3: 3-year rolling volatility
+          - rain_temp_interaction: rainfall × temperature (if both available)
+        """
+        enriched: dict[int, dict[str, float]] = {}
+
+        for i, yr in enumerate(years):
+            row: dict[str, float] = {}
+            # Copy existing exogenous features
+            if exogenous and yr in exogenous:
+                row.update(exogenous[yr])
+
+            # Lag features
+            if i >= 1:
+                row["yield_lag1"] = yields_dict[years[i - 1]]
+            if i >= 2:
+                row["yield_lag2"] = yields_dict[years[i - 2]]
+
+            # Rolling stats (3-year window)
+            if i >= 2:
+                window = [yields_dict[years[j]] for j in range(max(0, i - 2), i + 1)]
+                row["yield_rolling_mean_3"] = float(np.mean(window))
+                row["yield_rolling_std_3"] = float(np.std(window)) if len(window) > 1 else 0.0
+
+            # Interaction feature
+            rainfall = row.get("rainfall", 0.0)
+            temperature = row.get("temperature", 0.0)
+            if rainfall > 0 and temperature > 0:
+                row["rain_temp_interaction"] = rainfall * temperature
+
+            if row:  # only add if at least one feature exists
+                enriched[yr] = row
+
+        return enriched
+
+    # ------------------------------------------------------------------
+    # Optuna Hyperparameter Tuning
+    # ------------------------------------------------------------------
+    def _tune_xgboost_params(
+        self,
+        years: list[int],
+        residuals: np.ndarray,
+        exogenous: dict[int, dict[str, float]],
+        n_trials: int = 20,
+    ) -> dict[str, Any] | None:
+        """Run lightweight Optuna study to tune XGBoost hyperparameters."""
+        if not self.optuna_available or not self.xgb_available:
+            return None
+
+        try:
+            import optuna
+            import xgboost as xgb
+
+            optuna.logging.set_verbosity(optuna.logging.WARNING)
+
+            feature_names = sorted(
+                {k for feat in exogenous.values() for k in feat}
+            )
+            if not feature_names:
+                return None
+
+            # Build training data
+            X_rows, y_rows = [], []
+            for i, yr in enumerate(years):
+                if yr in exogenous:
+                    X_rows.append([exogenous[yr].get(f, 0.0) for f in feature_names])
+                    y_rows.append(residuals[i])
+
+            if len(X_rows) < 5:
+                return None
+
+            X = np.array(X_rows)
+            y = np.array(y_rows)
+
+            def objective(trial: optuna.Trial) -> float:
+                params = {
+                    "n_estimators": trial.suggest_int("n_estimators", 50, 200),
+                    "max_depth": trial.suggest_int("max_depth", 2, 6),
+                    "learning_rate": trial.suggest_float("learning_rate", 0.01, 0.3, log=True),
+                    "subsample": trial.suggest_float("subsample", 0.5, 1.0),
+                    "reg_alpha": trial.suggest_float("reg_alpha", 0.01, 10.0, log=True),
+                    "reg_lambda": trial.suggest_float("reg_lambda", 0.01, 10.0, log=True),
+                    "random_state": 42,
+                    "verbosity": 0,
+                }
+                model = xgb.XGBRegressor(**params)
+
+                # Time-series aware CV: expanding window
+                n = len(X)
+                min_train = max(5, n // 2)
+                errors = []
+                for split_idx in range(min_train, n):
+                    model.fit(X[:split_idx], y[:split_idx])
+                    pred = model.predict(X[split_idx:split_idx + 1])
+                    errors.append(float((y[split_idx] - pred[0]) ** 2))
+
+                return float(np.mean(errors)) if errors else float("inf")
+
+            study = optuna.create_study(direction="minimize")
+            study.optimize(objective, n_trials=n_trials, show_progress_bar=False)
+
+            logger.info("Optuna tuning complete: best MSE=%.4f", study.best_value)
+            return study.best_params
+
+        except Exception as e:
+            logger.warning("Optuna tuning failed: %s", e)
+            return None
+
+    # ------------------------------------------------------------------
+    # Bootstrap Confidence Intervals
+    # ------------------------------------------------------------------
+    def _bootstrap_ci(
+        self,
+        years: list[int],
+        residuals: np.ndarray,
+        exogenous: dict[int, dict[str, float]] | None,
+        horizon: int,
+        confidence_level: float,
+        xgb_params: dict[str, Any] | None = None,
+    ) -> tuple[np.ndarray | None, np.ndarray | None]:
+        """
+        Compute bootstrap prediction intervals for the XGBoost residual model.
+
+        Returns (lower_bounds, upper_bounds) arrays of shape (horizon,)
+        or (None, None) if insufficient data.
+        """
+        if not self.xgb_available or not exogenous:
+            return None, None
+
+        try:
+            import xgboost as xgb
+
+            feature_names = sorted(
+                {k for feat in exogenous.values() for k in feat}
+            )
+            if not feature_names:
+                return None, None
+
+            X_rows, y_rows = [], []
+            for i, yr in enumerate(years):
+                if yr in exogenous:
+                    X_rows.append([exogenous[yr].get(f, 0.0) for f in feature_names])
+                    y_rows.append(residuals[i])
+
+            if len(X_rows) < 5:
+                return None, None
+
+            X = np.array(X_rows)
+            y = np.array(y_rows)
+
+            # Future feature vector (use last available year as proxy)
+            last_features = exogenous.get(years[-1], {})
+            future_row = np.array(
+                [[last_features.get(f, 0.0) for f in feature_names]]
+            )
+
+            # Default XGBoost params
+            base_params = {
+                "n_estimators": 100, "max_depth": 3, "learning_rate": 0.1,
+                "subsample": 0.8, "reg_alpha": 0.1, "reg_lambda": 1.0,
+                "random_state": 42, "verbosity": 0,
+            }
+            if xgb_params:
+                base_params.update(xgb_params)
+
+            rng = np.random.RandomState(42)
+            predictions = np.zeros((self.N_BOOTSTRAP, horizon))
+
+            for b in range(self.N_BOOTSTRAP):
+                # Resample with replacement
+                indices = rng.choice(len(X), size=len(X), replace=True)
+                X_boot = X[indices]
+                y_boot = y[indices]
+
+                model = xgb.XGBRegressor(**base_params)
+                model.fit(X_boot, y_boot)
+
+                for h in range(horizon):
+                    predictions[b, h] = float(model.predict(future_row)[0])
+
+            alpha = (1 - confidence_level) / 2
+            lower = np.percentile(predictions, alpha * 100, axis=0)
+            upper = np.percentile(predictions, (1 - alpha) * 100, axis=0)
+
+            return lower, upper
+
+        except Exception as e:
+            logger.warning("Bootstrap CI computation failed: %s", e)
+            return None, None
 
     # ------------------------------------------------------------------
     # Prophet stage
@@ -297,6 +539,7 @@ class EnsembleForecaster:
         residuals: np.ndarray,
         exogenous: dict[int, dict[str, float]],
         horizon: int,
+        xgb_params: dict[str, Any] | None = None,
     ) -> tuple[Any, np.ndarray, list[str], dict[str, float], list[list[ShapContribution]]] | None:
         """Fit XGBoost on Prophet residuals using exogenous features."""
         try:
@@ -323,16 +566,16 @@ class EnsembleForecaster:
             X = np.array(X_rows)
             y = np.array(y_rows)
 
-            model = xgb.XGBRegressor(
-                n_estimators=100,
-                max_depth=3,
-                learning_rate=0.1,
-                subsample=0.8,
-                reg_alpha=0.1,
-                reg_lambda=1.0,
-                random_state=42,
-                verbosity=0,
-            )
+            # Use tuned params if available, else defaults
+            params = {
+                "n_estimators": 100, "max_depth": 3, "learning_rate": 0.1,
+                "subsample": 0.8, "reg_alpha": 0.1, "reg_lambda": 1.0,
+                "random_state": 42, "verbosity": 0,
+            }
+            if xgb_params:
+                params.update(xgb_params)
+
+            model = xgb.XGBRegressor(**params)
             model.fit(X, y)
 
             # Predict future residuals (use last available features as proxy)
