@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.88.0",
+    "@google/generative-ai": "^0.21.0",
     "@tanstack/react-query": "^5.90.20",
     "@turf/turf": "^7.3.4",
     "@xyflow/react": "^12.10.2",

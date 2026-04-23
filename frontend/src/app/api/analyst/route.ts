@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
+import { GoogleGenerativeAI, Part } from "@google/generative-ai";
 
 import { resolveServerApiOrigin, toApiV1Url } from "../../services/api/config";
 
@@ -15,12 +15,17 @@ type AnalystMessage = {
   content: string;
 };
 
-function getAnthropicClient(): Anthropic | null {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+function getGeminiModel(systemPrompt: string) {
+  const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     return null;
   }
-  return new Anthropic({ apiKey });
+  const genAI = new GoogleGenerativeAI(apiKey);
+  return genAI.getGenerativeModel({
+    model: "gemini-1.5-pro",
+    systemInstruction: systemPrompt,
+    tools: [{ functionDeclarations: GEMINI_TOOLS }],
+  });
 }
 
 function toQueryString(params: Record<string, unknown>): string {
@@ -70,21 +75,21 @@ async function fetchBackend(path: string): Promise<unknown> {
   };
 }
 
-const TOOLS: Anthropic.Tool[] = [
+const GEMINI_TOOLS = [
   {
     name: "search_entities",
     description:
       "Search districts and states by name. Use this first when the user does not know the district CDK or exact state spelling.",
-    input_schema: {
-      type: "object",
+    parameters: {
+      type: "OBJECT",
       properties: {
-        q: { type: "string", description: "Search query such as Bihar or Patna." },
+        q: { type: "STRING", description: "Search query such as Bihar or Patna." },
         type: {
-          type: "string",
+          type: "STRING",
           enum: ["all", "district", "state"],
           description: "Filter result types when needed.",
         },
-        limit: { type: "number", description: "Maximum number of matches to return." },
+        limit: { type: "NUMBER", description: "Maximum number of matches to return." },
       },
       required: ["q"],
     },
@@ -93,13 +98,13 @@ const TOOLS: Anthropic.Tool[] = [
     name: "get_metric_history",
     description:
       "Get yearly area, production, and yield history for a district. Prefer cdk when available; otherwise supply district and optionally state.",
-    input_schema: {
-      type: "object",
+    parameters: {
+      type: "OBJECT",
       properties: {
-        cdk: { type: "string" },
-        district: { type: "string" },
-        state: { type: "string" },
-        crop: { type: "string" },
+        cdk: { type: "STRING" },
+        district: { type: "STRING" },
+        state: { type: "STRING" },
+        crop: { type: "STRING" },
       },
       required: ["crop"],
     },
@@ -108,12 +113,12 @@ const TOOLS: Anthropic.Tool[] = [
     name: "get_state_overview",
     description:
       "Get a state-level overview for a crop, including district counts, benchmarks, and top/bottom performers.",
-    input_schema: {
-      type: "object",
+    parameters: {
+      type: "OBJECT",
       properties: {
-        state_name: { type: "string" },
-        crop: { type: "string" },
-        year: { type: "number" },
+        state_name: { type: "STRING" },
+        crop: { type: "STRING" },
+        year: { type: "NUMBER" },
       },
       required: ["state_name"],
     },
@@ -122,10 +127,10 @@ const TOOLS: Anthropic.Tool[] = [
     name: "get_split_events_for_state",
     description:
       "List district split events for a state, including parent and child CDKs needed for split-impact analysis.",
-    input_schema: {
-      type: "object",
+    parameters: {
+      type: "OBJECT",
       properties: {
-        state: { type: "string" },
+        state: { type: "STRING" },
       },
       required: ["state"],
     },
@@ -134,22 +139,22 @@ const TOOLS: Anthropic.Tool[] = [
     name: "analyze_split_impact",
     description:
       "Run before/after split-impact analysis for a parent district and child districts. Use split events first if the CDKs are not known.",
-    input_schema: {
-      type: "object",
+    parameters: {
+      type: "OBJECT",
       properties: {
-        parent_cdk: { type: "string" },
+        parent_cdk: { type: "STRING" },
         child_cdks: {
-          type: "array",
-          items: { type: "string" },
+          type: "ARRAY",
+          items: { type: "STRING" },
         },
-        split_year: { type: "number" },
-        crop: { type: "string" },
+        split_year: { type: "NUMBER" },
+        crop: { type: "STRING" },
         metric: {
-          type: "string",
+          type: "STRING",
           enum: ["yield", "area", "production"],
         },
         mode: {
-          type: "string",
+          type: "STRING",
           enum: ["before_after", "entity_comparison"],
         },
       },
@@ -160,13 +165,13 @@ const TOOLS: Anthropic.Tool[] = [
     name: "get_yield_trend",
     description:
       "Get district yield trend analysis including CAGR and volatility over a year range.",
-    input_schema: {
-      type: "object",
+    parameters: {
+      type: "OBJECT",
       properties: {
-        cdk: { type: "string" },
-        crop: { type: "string" },
-        start_year: { type: "number" },
-        end_year: { type: "number" },
+        cdk: { type: "STRING" },
+        crop: { type: "STRING" },
+        start_year: { type: "NUMBER" },
+        end_year: { type: "NUMBER" },
       },
       required: ["cdk"],
     },
@@ -175,11 +180,11 @@ const TOOLS: Anthropic.Tool[] = [
     name: "get_rainfall",
     description:
       "Get historic rainfall normals for a district and state. Use for climate context, not real-time weather.",
-    input_schema: {
-      type: "object",
+    parameters: {
+      type: "OBJECT",
       properties: {
-        state: { type: "string" },
-        district: { type: "string" },
+        state: { type: "STRING" },
+        district: { type: "STRING" },
       },
       required: ["state", "district"],
     },
@@ -188,11 +193,11 @@ const TOOLS: Anthropic.Tool[] = [
     name: "get_district_report",
     description:
       "Fetch a comprehensive district profile report with historical yield, area, production, and state benchmark context.",
-    input_schema: {
-      type: "object",
+    parameters: {
+      type: "OBJECT",
       properties: {
-        cdk: { type: "string" },
-        crop: { type: "string" },
+        cdk: { type: "STRING" },
+        crop: { type: "STRING" },
       },
       required: ["cdk"],
     },
@@ -274,7 +279,7 @@ async function callBackend(toolName: string, input: ToolInput): Promise<unknown>
   }
 }
 
-function normalizeMessages(messages: unknown): Anthropic.MessageParam[] {
+function normalizeMessages(messages: unknown): any[] {
   if (!Array.isArray(messages)) {
     return [];
   }
@@ -284,41 +289,28 @@ function normalizeMessages(messages: unknown): Anthropic.MessageParam[] {
       return (
         typeof message === "object" &&
         message !== null &&
-        ("role" in message) &&
-        ("content" in message)
+        "role" in message &&
+        "content" in message
       );
     })
-    .map((message): Anthropic.MessageParam => {
-      const role: "user" | "assistant" =
-        message.role === "assistant" ? "assistant" : "user";
-
+    .map((message) => {
+      const role = message.role === "assistant" ? "model" : "user";
       return {
         role,
-        content:
-          typeof message.content === "string"
-            ? message.content
-            : String(message.content ?? ""),
+        parts: [{ text: String(message.content ?? "") }],
       };
     })
     .slice(-12);
 }
 
 export async function POST(req: NextRequest) {
-  const anthropic = getAnthropicClient();
-  if (!anthropic) {
-    return NextResponse.json(
-      { error: "AI analyst is unavailable because ANTHROPIC_API_KEY is not configured." },
-      { status: 503 },
-    );
-  }
-
   const body = await req.json().catch(() => ({}));
-  const currentMessages = normalizeMessages(body.messages);
+  const history = normalizeMessages(body.messages);
 
-  if (currentMessages.length === 0) {
+  if (history.length === 0) {
     return NextResponse.json(
       { error: "At least one user message is required." },
-      { status: 400 },
+      { status: 400 }
     );
   }
 
@@ -334,51 +326,41 @@ Rules:
 - Treat rainfall data as historic normals, not real-time weather.
 - When the data is insufficient or ambiguous, say so directly.`;
 
-  let conversation: Anthropic.MessageParam[] = currentMessages;
+  const model = getGeminiModel(systemPrompt);
+  if (!model) {
+    return NextResponse.json(
+      { error: "AI analyst is unavailable because GEMINI_API_KEY is not configured." },
+      { status: 503 }
+    );
+  }
+
+  // Remove the last message from history as it will be our first 'sendMessage'
+  const lastMessage = history.pop();
+  const chat = model.startChat({ history });
+  
+  let currentResponse = await chat.sendMessage(lastMessage.parts[0].text);
   let finalText = "";
 
   for (let i = 0; i < MAX_TOOL_LOOPS; i += 1) {
-    const response = await anthropic.messages.create({
-      model: MODEL,
-      max_tokens: 2048,
-      system: systemPrompt,
-      tools: TOOLS,
-      messages: conversation,
-    });
-
-    if (response.stop_reason === "end_turn") {
-      finalText = response.content
-        .filter((block) => block.type === "text")
-        .map((block) => block.text)
-        .join("\n")
-        .trim();
+    const call = currentResponse.response.functionCalls()?.[0];
+    
+    if (!call) {
+      finalText = currentResponse.response.text();
       break;
     }
 
-    if (response.stop_reason !== "tool_use") {
-      continue;
-    }
+    // Execute tool
+    const result = await callBackend(call.name, call.args as ToolInput);
 
-    const toolUseBlocks = response.content.filter(
-      (block): block is Anthropic.ToolUseBlock => block.type === "tool_use",
-    );
-
-    const toolResults = await Promise.all(
-      toolUseBlocks.map(async (block) => {
-        const result = await callBackend(block.name, block.input as ToolInput);
-        return {
-          type: "tool_result" as const,
-          tool_use_id: block.id,
-          content: JSON.stringify(result),
-        };
-      }),
-    );
-
-    conversation = [
-      ...conversation,
-      { role: "assistant", content: response.content },
-      { role: "user", content: toolResults },
-    ];
+    // Feed result back
+    currentResponse = await chat.sendMessage([
+      {
+        functionResponse: {
+          name: call.name,
+          response: result,
+        },
+      },
+    ]);
   }
 
   if (!finalText) {
