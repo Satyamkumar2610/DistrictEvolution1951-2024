@@ -11,39 +11,47 @@ from typing import Any
 logger = logging.getLogger(__name__)
 
 try:
-    import anthropic
+    import google.generativeai as genai
 except ImportError:
-    anthropic = None  # type: ignore[assignment]
+    genai = None  # type: ignore[assignment]
 
 
 class LLMService:
     """Service to generate natural language narratives from structured analytics data."""
 
-    def __init__(self):
-        self.api_key = os.environ.get("ANTHROPIC_API_KEY")
-        self.client = anthropic.AsyncAnthropic(api_key=self.api_key) if anthropic and self.api_key else None
+    def __init__(self) -> None:
+        self.api_key = os.environ.get("GEMINI_API_KEY")
+        if genai and self.api_key:
+            genai.configure(api_key=self.api_key)
+            # Use gemini-1.5-flash for fast, contextual insights
+            self.model = genai.GenerativeModel("gemini-1.5-flash")
+        else:
+            self.model = None
 
     async def _generate_narrative(self, system_prompt: str, user_prompt: str) -> str | None:
-        """Helper to call Claude and return the text string."""
-        if not self.client:
+        """Helper to call Gemini and return the text string."""
+        if not self.model:
             return None
 
         try:
-            response = await self.client.messages.create(
-                model="claude-3-haiku-20240307",  # Fast model for inline narratives
-                max_tokens=256,
-                temperature=0.3,
-                system=system_prompt,
-                messages=[{"role": "user", "content": user_prompt}],
+            # Combining system prompt into the context for Gemini
+            full_prompt = f"{system_prompt}\n\nDATA:\n{user_prompt}"
+            
+            response = await self.model.generate_content_async(
+                full_prompt,
+                generation_config=genai.types.GenerationConfig(
+                    max_output_tokens=256,
+                    temperature=0.3,
+                )
             )
-            return response.content[0].text
+            return response.text.strip()
         except Exception as e:
             logger.warning(f"Failed to generate LLM narrative: {e}")
             return None
 
     async def generate_climate_shock_narrative(self, report: dict[str, Any]) -> str | None:
         """Generate a narrative for the Climate Shock Atlas."""
-        if not self.client:
+        if not self.model:
             return None
 
         system_prompt = (
@@ -67,7 +75,7 @@ class LLMService:
 
     async def generate_forecast_validation_narrative(self, report: dict[str, Any]) -> str | None:
         """Generate a narrative explaining the forecast model's historical backtesting performance."""
-        if not self.client:
+        if not self.model:
             return None
 
         system_prompt = (
@@ -88,7 +96,7 @@ class LLMService:
 
     async def generate_yield_frontier_narrative(self, report: dict[str, Any]) -> str | None:
         """Generate a narrative for the Yield Frontier (SFA) analysis."""
-        if not self.client:
+        if not self.model:
             return None
 
         system_prompt = (
@@ -109,7 +117,7 @@ class LLMService:
 
     async def generate_resilience_narrative(self, report: dict[str, Any]) -> str | None:
         """Generate a narrative for the PCA Resilience Composite analysis."""
-        if not self.client:
+        if not self.model:
             return None
 
         system_prompt = (
@@ -141,7 +149,7 @@ class LLMService:
 
     async def generate_anomaly_context_narrative(self, report: dict[str, Any]) -> str | None:
         """Generate a narrative hypothesizing root causes for detected anomalies."""
-        if not self.client:
+        if not self.model:
             return None
 
         system_prompt = (

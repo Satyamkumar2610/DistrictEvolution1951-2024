@@ -18,11 +18,11 @@ from typing import Any
 import asyncpg
 from fastapi import APIRouter, Depends, Query
 
-from app.api.deps import get_db  # type: ignore[import]
-from app.db_compat import fetch, fetchrow  # type: ignore[import]
-from app.exceptions import NotFoundError, ValidationError  # type: ignore[import]
-from app.services.llm_service import LLMService  # type: ignore[import]
-from app.services.rainfall_service import get_rainfall_by_district  # type: ignore[import]
+from ...api.deps import get_db
+from ...db_compat import fetch, fetchrow  # schema-safe helpers
+from ...exceptions import NotFoundError, ValidationError
+from ...services.llm_service import LLMService
+from ...services.rainfall_service import get_rainfall_by_district
 
 logger = logging.getLogger(__name__)
 
@@ -113,7 +113,7 @@ async def get_climate_shocks(
     db: asyncpg.Connection = Depends(get_db),
 ) -> dict:
     """Detect yield shocks and attribute them to climatic events."""
-    from app.analytics.climate_shock_atlas import ClimateShockAnalyzer  # type: ignore[import]
+    from ...analytics.climate_shock_atlas import ClimateShockAnalyzer
 
     yields = await _fetch_yield_series(db, cdk, crop)
     if len(yields) < 5:
@@ -206,7 +206,7 @@ async def get_forecast_validation(
     db: asyncpg.Connection = Depends(get_db),
 ) -> dict:
     """Walk-forward backtesting on yield forecasting model."""
-    from app.analytics.forecast_backtesting import ForecastBacktester  # type: ignore[import]
+    from ...analytics.forecast_backtesting import ForecastBacktester
 
     yields = await _fetch_yield_series(db, cdk, crop, min_year=1980)
     if len(yields) < 12:
@@ -291,7 +291,7 @@ async def get_yield_frontier(
     db: asyncpg.Connection = Depends(get_db),
 ) -> dict:
     """Run SFA to estimate true production frontier and technical efficiency."""
-    from app.analytics.stochastic_frontier import StochasticFrontierAnalyzer  # type: ignore[import]
+    from ...analytics.stochastic_frontier import StochasticFrontierAnalyzer
 
     rows = await _fetch_state_yields(db, state, crop, year=year)
 
@@ -402,7 +402,7 @@ async def get_resilience_composite(
     db: asyncpg.Connection = Depends(get_db),
 ) -> dict:
     """Compute 8-variable PCA composite resilience score for districts."""
-    from app.analytics.pca_resilience import PCAResilienceAnalyzer  # type: ignore[import]
+    from ...analytics.pca_resilience import PCAResilienceAnalyzer
 
     rows = await _fetch_state_yields(db, state, crop, year=None)
 
@@ -582,7 +582,7 @@ async def get_anomaly_scan(
     db: asyncpg.Connection = Depends(get_db),
 ) -> dict:
     """Run Isolation Forest anomaly detection with LLM-powered context."""
-    from app.analytics.ml_anomaly_detection import IsolationForestDetector  # type: ignore[import]
+    from ...analytics.ml_anomaly_detection import IsolationForestDetector
 
     # Fetch multi-feature time series
     yield_series = await _fetch_yield_series(db, cdk, crop, min_year=1980)

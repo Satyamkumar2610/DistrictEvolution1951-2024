@@ -18,9 +18,9 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
 try:
-    import anthropic
+    import google.generativeai as genai
 except ImportError:  # pragma: no cover - optional dependency in tests
-    anthropic = None  # type: ignore[assignment]
+    genai = None  # type: ignore[assignment]
 
 from app.ai.system_prompt import SYSTEM_PROMPT
 from app.ai.tool_schemas import TOOL_SCHEMAS
@@ -48,14 +48,23 @@ class AnalystRequest(BaseModel):
     context: dict = {}
 
 
-def _get_client() -> Any | None:
-    """Create an Anthropic client if the API key is available."""
-    if anthropic is None:
+def _get_model() -> genai.GenerativeModel | None:
+    """Create a Gemini model instance if the API key is available."""
+    if genai is None:
         return None
-    api_key = os.environ.get("ANTHROPIC_API_KEY")
+    api_key = os.environ.get("GEMINI_API_KEY")
     if not api_key:
         return None
-    return anthropic.AsyncAnthropic(api_key=api_key)
+    
+    genai.configure(api_key=api_key)
+    
+    # Define Gemini-compatible tools from the existing handlers
+    # We pass the handlers as tools directly; Gemini will use their docstrings/signatures
+    return genai.GenerativeModel(
+        model_name="gemini-1.5-pro",
+        system_instruction=SYSTEM_PROMPT,
+        tools=list(TOOL_HANDLERS.values())
+    )
 
 
 @router.post("/api/analyst")
@@ -66,84 +75,92 @@ async def analyst(req: AnalystRequest):
     Accepts a natural language query, runs a Claude agentic loop
     with tool calls, and streams text deltas back as SSE events.
     """
-    client = _get_client()
-    if client is None:
+    model = _get_model()
+    if model is None:
         return StreamingResponse(
-            _error_stream("AI analyst unavailable: ANTHROPIC_API_KEY not configured"),
+            _error_stream("AI analyst unavailable: GEMINI_API_KEY not configured"),
             media_type="text/event-stream",
         )
 
     async def stream():
-        messages = [{"role": "user", "content": req.query}]
+        # Initialize a chat session
+        chat = model.start_chat()
+        user_query = req.query
 
-        # Agentic loop: continue until stop_reason == "end_turn"
+        # Agentic loop: continue until no more tool calls
         for _loop in range(MAX_TOOL_LOOPS):
             try:
-                async with client.messages.stream(
-                    model="claude-sonnet-4-20250514",
-                    max_tokens=2048,
-                    system=SYSTEM_PROMPT,
-                    tools=TOOL_SCHEMAS,
-                    messages=messages,
-                ) as s:
-                    # Stream text deltas to the client
-                    async for event in s:
-                        if event.type == "content_block_delta" and hasattr(event.delta, "text"):
-                            yield f"data: {json.dumps({'type': 'text', 'delta': event.delta.text})}\n\n"
+                # Send the message (or tool results) and stream the response
+                response = await chat.send_message_async(user_query, stream=True)
+                
+                # Stream text deltas to the client
+                async for chunk in response:
+                    if chunk.text:
+                        yield f"data: {json.dumps({'type': 'text', 'delta': chunk.text})}\n\n"
 
-                    msg = await s.get_final_message()
+                # Check if Gemini wants to call a tool
+                last_msg = chat.history[-1]
+                tool_calls = [p.function_call for p in last_msg.parts if p.function_call]
+                
+                if not tool_calls:
+                    yield f"data: {json.dumps({'type': 'done'})}\n\n"
+                    return
 
-            except anthropic.APIError as e:
-                yield f"data: {json.dumps({'type': 'error', 'message': str(e)})}\n\n"
-                yield f"data: {json.dumps({'type': 'done'})}\n\n"
-                return
-
-            # End of conversation
-            if msg.stop_reason == "end_turn":
-                yield f"data: {json.dumps({'type': 'done'})}\n\n"
-                return
-
-            # Tool use — execute tools and feed results back
-            if msg.stop_reason == "tool_use":
-                messages.append({"role": "assistant", "content": msg.content})
-
-                tool_results = []
+                # Process tool calls
+                tool_responses = []
                 conn = await asyncpg.connect(DATABASE_URL)
                 try:
-                    for block in msg.content:
-                        if block.type == "tool_use":
-                            handler = TOOL_HANDLERS.get(block.name)
-                            if handler is None:
-                                tool_results.append(
-                                    {
-                                        "type": "tool_result",
-                                        "tool_use_id": block.id,
-                                        "content": json.dumps({"error": f"Unknown tool: {block.name}"}),
-                                    }
+                    for fc in tool_calls:
+                        handler = TOOL_HANDLERS.get(fc.name)
+                        if handler is None:
+                            tool_responses.append(
+                                genai.types.Part(
+                                    function_response=genai.types.FunctionResponse(
+                                        name=fc.name,
+                                        response={"error": f"Unknown tool: {fc.name}"}
+                                    )
                                 )
-                                continue
+                            )
+                            continue
 
-                            try:
-                                result = await handler(conn, **block.input)
-                                # Serialize Pydantic models
-                                if isinstance(result, list):
-                                    content = json.dumps([r.model_dump() for r in result])
-                                else:
-                                    content = json.dumps(result.model_dump())
-                            except Exception as e:
-                                content = json.dumps({"error": f"Tool execution failed: {str(e)}"})
-
-                            tool_results.append(
-                                {
-                                    "type": "tool_result",
-                                    "tool_use_id": block.id,
-                                    "content": content,
-                                }
+                        try:
+                            # Convert Gemini arguments to handler-compatible dict
+                            args = dict(fc.args)
+                            result = await handler(conn, **args)
+                            
+                            # Serialize Pydantic models/lists
+                            if isinstance(result, list):
+                                content = [r.model_dump() for r in result]
+                            else:
+                                content = result.model_dump()
+                            
+                            tool_responses.append(
+                                genai.types.Part(
+                                    function_response=genai.types.FunctionResponse(
+                                        name=fc.name,
+                                        response={"result": content}
+                                    )
+                                )
+                            )
+                        except Exception as e:
+                            tool_responses.append(
+                                genai.types.Part(
+                                    function_response=genai.types.FunctionResponse(
+                                        name=fc.name,
+                                        response={"error": f"Tool execution failed: {str(e)}"}
+                                    )
+                                )
                             )
                 finally:
                     await conn.close()
 
-                messages.append({"role": "user", "content": tool_results})
+                # Feed the tool results back into the chat as the next 'user' message
+                user_query = tool_responses
+
+            except Exception as e:
+                yield f"data: {json.dumps({'type': 'error', 'message': str(e)})}\n\n"
+                yield f"data: {json.dumps({'type': 'done'})}\n\n"
+                return
 
         # Exhausted loop iterations
         yield f"data: {json.dumps({'type': 'text', 'delta': 'I could not complete the analysis. Please try a narrower question.'})}\n\n"
