@@ -49,3 +49,11 @@ redis[hiredis]>=5.0.0
 
 # AI Integration
 anthropic>=0.40.0
+
+# Additional ML and ETL dependencies
+arviz>=0.17.0
+optuna>=3.6.0
+xarray>=2024.1.0
+rasterstats>=0.19.0
+h5py>=3.10.0
+netCDF4>=1.6.5

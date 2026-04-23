@@ -1,6 +1,6 @@
 {
-  "venvPath": ".",
-  "venv": "backend/venv",
+  "venvPath": "/Users/satyamkumar/Desktop/DistrictEvolution/backend",
+  "venv": "venv",
   "pythonVersion": "3.13",
   "typeCheckingMode": "basic",
   "include": [
