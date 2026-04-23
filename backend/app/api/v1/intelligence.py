@@ -327,7 +327,7 @@ async def get_yield_frontier(
         raise ValidationError(detail="SFA analysis failed — model did not converge")
 
     # Compute historical efficiency: current yield / 10-year rolling mean
-    hist_efficiency_map: dict[str, float | None] = {}
+    hist_efficiency_map: dict[str, float] = {}
     try:
         hist_query = """
             SELECT m.district_lgd::text as cdk, AVG(m.value) as mean_10yr
@@ -374,7 +374,7 @@ async def get_yield_frontier(
                 "rank": d.efficiency_rank,
                 "historical_efficiency": round(
                     d.observed_yield / hist_efficiency_map[d.cdk], 3
-                ) if d.cdk in hist_efficiency_map else None,
+                ) if d.cdk in hist_efficiency_map and hist_efficiency_map[d.cdk] else None,
             }
             for d in report.district_results[:30]
         ],

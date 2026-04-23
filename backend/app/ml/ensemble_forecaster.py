@@ -231,7 +231,7 @@ class EnsembleForecaster:
             predicted = max(0.0, prophet_val + xgb_adj)
 
             # Use bootstrap CIs if available, else fall back to Prophet CIs
-            if bootstrap_lower is not None:
+            if bootstrap_lower is not None and bootstrap_upper is not None:
                 lower = max(0.0, prophet_val + float(bootstrap_lower[i]))
                 upper = max(0.0, prophet_val + float(bootstrap_upper[i]))
             else:
