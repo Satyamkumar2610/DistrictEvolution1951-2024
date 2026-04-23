@@ -37,6 +37,7 @@ class MetricsCollector:
 
     _instance: Optional["MetricsCollector"] = None
     _lock = threading.Lock()
+    _initialized: bool
 
     def __new__(cls):
         if cls._instance is None:
@@ -46,7 +47,7 @@ class MetricsCollector:
                     cls._instance._initialized = False
         return cls._instance
 
-    def __init__(self):
+    def __init__(self) -> None:
         if self._initialized:
             return
 
@@ -54,7 +55,7 @@ class MetricsCollector:
         self._initialized = True
 
         # Rolling windows for latency tracking (last 1000 requests)
-        self._latencies: deque = deque(maxlen=1000)
+        self._latencies: deque[float] = deque(maxlen=1000)
 
         # Counters
         self._request_counts: dict[str, int] = {}
@@ -65,7 +66,7 @@ class MetricsCollector:
         self._db_total_time_ms = 0.0
 
         # Recent quality scores (last 100)
-        self._quality_scores: deque = deque(maxlen=100)
+        self._quality_scores: deque[dict[str, Any]] = deque(maxlen=100)
 
         # Anomaly detection stats
         self._anomalies_detected = 0

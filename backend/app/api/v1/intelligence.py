@@ -15,6 +15,7 @@ import logging
 import math
 
 import asyncpg
+from typing import Any
 from fastapi import APIRouter, Depends, Query
 
 from app.api.deps import get_db
@@ -157,7 +158,7 @@ async def get_climate_shocks(
     analyzer = ClimateShockAnalyzer()
     report = analyzer.analyze(cdk, name, crop, yields, climate)
 
-    response = {
+    response: dict[str, Any] = {
         "cdk": report.cdk,
         "name": report.name,
         "crop": crop,
@@ -238,7 +239,7 @@ async def get_forecast_validation(
     if report is None:
         raise ValidationError(detail="Backtesting failed — insufficient valid steps")
 
-    response = {
+    response: dict[str, Any] = {
         "cdk": report.cdk,
         "crop": report.crop,
         "method": report.forecast_method,
@@ -352,7 +353,7 @@ async def get_yield_frontier(
     except Exception:
         logger.debug("Could not compute historical efficiency for %s/%s", state, crop)
 
-    response = {
+    response: dict[str, Any] = {
         "crop": report.crop,
         "year": report.year,
         "model_stats": {
@@ -540,7 +541,7 @@ async def get_resilience_composite(
     if report is None:
         raise ValidationError(detail="PCA analysis failed — insufficient variance")
 
-    response = {
+    response: dict[str, Any] = {
         "region": report.region,
         "n_districts": report.n_districts,
         "n_components": report.n_components_used,
@@ -628,7 +629,7 @@ async def get_anomaly_scan(
     mean_yield = sum(yield_series.values()) / len(yield_series)
     anomaly_years = [a.year for a in anomalies]
 
-    response = {
+    response: dict[str, Any] = {
         "cdk": cdk,
         "name": name,
         "state": state_name,

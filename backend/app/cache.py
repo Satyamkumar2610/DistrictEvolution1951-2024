@@ -31,7 +31,7 @@ class InMemoryCache:
     Suitable for development and single-process deployments.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self._store: dict[str, dict[str, Any]] = {}
         self._default_ttl = 3600
 
@@ -84,7 +84,7 @@ class RedisCache:
     Survives restarts and works across multiple workers/containers.
     """
 
-    def __init__(self, redis_url: str = "redis://localhost:6379/0"):
+    def __init__(self, redis_url: str = "redis://localhost:6379/0") -> None:
         self._redis_url = redis_url
         self._client = None
         self._default_ttl = 3600
@@ -277,7 +277,7 @@ def cached(ttl: int = 3600, prefix: str = ""):
 
     def decorator(func: Callable):
         @wraps(func)
-        async def wrapper(*args, **kwargs):
+        async def wrapper(*args, **kwargs) -> Any:
             cache = get_cache()
             key_prefix = prefix or func.__name__
             cache_payload = _build_cache_payload(func, *args, **kwargs)

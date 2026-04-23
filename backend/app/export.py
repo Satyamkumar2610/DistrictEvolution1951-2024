@@ -30,7 +30,7 @@ class DataExporter:
     Export data in various formats.
     """
 
-    def __init__(self, source: str = "I-ASCAP API"):
+    def __init__(self, source: str = "I-ASCAP API") -> None:
         self.source = source
 
     def _create_metadata(self, record_count: int, filters: dict[str, Any] | None = None) -> ExportMetadata:
@@ -203,7 +203,7 @@ class DataExporter:
             filename: Download filename
         """
 
-        async def generate():
+        async def generate() -> Any:
             # Write header
             output = io.StringIO()
             writer = csv.DictWriter(output, fieldnames=columns)
