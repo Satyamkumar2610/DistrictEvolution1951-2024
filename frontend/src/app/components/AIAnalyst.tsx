@@ -17,6 +17,7 @@
  */
 
 import { useState, useRef, useEffect } from "react";
+import { resolvePublicApiOrigin } from "../services/api/config";
 
 interface Message {
   role: "user" | "assistant";
@@ -53,7 +54,7 @@ export default function AIAnalyst({ onClose }: { onClose?: () => void }) {
     let accumulated = "";
 
     try {
-      const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+      const apiBase = resolvePublicApiOrigin();
       const res = await fetch(`${apiBase}/api/analyst`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
