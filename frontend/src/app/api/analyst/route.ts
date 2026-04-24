@@ -1,12 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { GoogleGenerativeAI, Part } from "@google/generative-ai";
+import { GoogleGenerativeAI, FunctionDeclaration, SchemaType } from "@google/generative-ai";
 
 import { resolveServerApiOrigin, toApiV1Url } from "../../services/api/config";
 
 export const runtime = "nodejs";
 
 const BACKEND_API_BASE = toApiV1Url(resolveServerApiOrigin());
-const MODEL = "claude-sonnet-4-20250514";
 const MAX_TOOL_LOOPS = 8;
 
 type ToolInput = Record<string, unknown>;
@@ -75,21 +74,21 @@ async function fetchBackend(path: string): Promise<unknown> {
   };
 }
 
-const GEMINI_TOOLS = [
+const GEMINI_TOOLS: FunctionDeclaration[] = [
   {
     name: "search_entities",
     description:
       "Search districts and states by name. Use this first when the user does not know the district CDK or exact state spelling.",
     parameters: {
-      type: "OBJECT",
+      type: SchemaType.OBJECT,
       properties: {
-        q: { type: "STRING", description: "Search query such as Bihar or Patna." },
+        q: { type: SchemaType.STRING, description: "Search query such as Bihar or Patna." },
         type: {
-          type: "STRING",
+          type: SchemaType.STRING,
           enum: ["all", "district", "state"],
           description: "Filter result types when needed.",
         },
-        limit: { type: "NUMBER", description: "Maximum number of matches to return." },
+        limit: { type: SchemaType.NUMBER, description: "Maximum number of matches to return." },
       },
       required: ["q"],
     },
@@ -99,12 +98,12 @@ const GEMINI_TOOLS = [
     description:
       "Get yearly area, production, and yield history for a district. Prefer cdk when available; otherwise supply district and optionally state.",
     parameters: {
-      type: "OBJECT",
+      type: SchemaType.OBJECT,
       properties: {
-        cdk: { type: "STRING" },
-        district: { type: "STRING" },
-        state: { type: "STRING" },
-        crop: { type: "STRING" },
+        cdk: { type: SchemaType.STRING },
+        district: { type: SchemaType.STRING },
+        state: { type: SchemaType.STRING },
+        crop: { type: SchemaType.STRING },
       },
       required: ["crop"],
     },
@@ -114,11 +113,11 @@ const GEMINI_TOOLS = [
     description:
       "Get a state-level overview for a crop, including district counts, benchmarks, and top/bottom performers.",
     parameters: {
-      type: "OBJECT",
+      type: SchemaType.OBJECT,
       properties: {
-        state_name: { type: "STRING" },
-        crop: { type: "STRING" },
-        year: { type: "NUMBER" },
+        state_name: { type: SchemaType.STRING },
+        crop: { type: SchemaType.STRING },
+        year: { type: SchemaType.NUMBER },
       },
       required: ["state_name"],
     },
@@ -128,9 +127,9 @@ const GEMINI_TOOLS = [
     description:
       "List district split events for a state, including parent and child CDKs needed for split-impact analysis.",
     parameters: {
-      type: "OBJECT",
+      type: SchemaType.OBJECT,
       properties: {
-        state: { type: "STRING" },
+        state: { type: SchemaType.STRING },
       },
       required: ["state"],
     },
@@ -140,21 +139,21 @@ const GEMINI_TOOLS = [
     description:
       "Run before/after split-impact analysis for a parent district and child districts. Use split events first if the CDKs are not known.",
     parameters: {
-      type: "OBJECT",
+      type: SchemaType.OBJECT,
       properties: {
-        parent_cdk: { type: "STRING" },
+        parent_cdk: { type: SchemaType.STRING },
         child_cdks: {
-          type: "ARRAY",
-          items: { type: "STRING" },
+          type: SchemaType.ARRAY,
+          items: { type: SchemaType.STRING },
         },
-        split_year: { type: "NUMBER" },
-        crop: { type: "STRING" },
+        split_year: { type: SchemaType.NUMBER },
+        crop: { type: SchemaType.STRING },
         metric: {
-          type: "STRING",
+          type: SchemaType.STRING,
           enum: ["yield", "area", "production"],
         },
         mode: {
-          type: "STRING",
+          type: SchemaType.STRING,
           enum: ["before_after", "entity_comparison"],
         },
       },
@@ -166,12 +165,12 @@ const GEMINI_TOOLS = [
     description:
       "Get district yield trend analysis including CAGR and volatility over a year range.",
     parameters: {
-      type: "OBJECT",
+      type: SchemaType.OBJECT,
       properties: {
-        cdk: { type: "STRING" },
-        crop: { type: "STRING" },
-        start_year: { type: "NUMBER" },
-        end_year: { type: "NUMBER" },
+        cdk: { type: SchemaType.STRING },
+        crop: { type: SchemaType.STRING },
+        start_year: { type: SchemaType.NUMBER },
+        end_year: { type: SchemaType.NUMBER },
       },
       required: ["cdk"],
     },
@@ -181,10 +180,10 @@ const GEMINI_TOOLS = [
     description:
       "Get historic rainfall normals for a district and state. Use for climate context, not real-time weather.",
     parameters: {
-      type: "OBJECT",
+      type: SchemaType.OBJECT,
       properties: {
-        state: { type: "STRING" },
-        district: { type: "STRING" },
+        state: { type: SchemaType.STRING },
+        district: { type: SchemaType.STRING },
       },
       required: ["state", "district"],
     },
@@ -194,10 +193,10 @@ const GEMINI_TOOLS = [
     description:
       "Fetch a comprehensive district profile report with historical yield, area, production, and state benchmark context.",
     parameters: {
-      type: "OBJECT",
+      type: SchemaType.OBJECT,
       properties: {
-        cdk: { type: "STRING" },
-        crop: { type: "STRING" },
+        cdk: { type: SchemaType.STRING },
+        crop: { type: SchemaType.STRING },
       },
       required: ["cdk"],
     },
@@ -279,7 +278,7 @@ async function callBackend(toolName: string, input: ToolInput): Promise<unknown>
   }
 }
 
-function normalizeMessages(messages: unknown): any[] {
+function normalizeMessages(messages: unknown): Array<{role: string, parts: Array<{text: string}>}> {
   if (!Array.isArray(messages)) {
     return [];
   }

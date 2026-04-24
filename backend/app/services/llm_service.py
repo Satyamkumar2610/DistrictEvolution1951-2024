@@ -36,7 +36,7 @@ class LLMService:
         try:
             # Combining system prompt into the context for Gemini
             full_prompt = f"{system_prompt}\n\nDATA:\n{user_prompt}"
-            
+
             response = await self.model.generate_content_async(
                 full_prompt,
                 generation_config=genai.types.GenerationConfig(

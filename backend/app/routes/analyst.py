@@ -10,7 +10,6 @@ from __future__ import annotations
 
 import json
 import os
-from typing import Any
 
 import asyncpg
 from fastapi import APIRouter
@@ -23,7 +22,6 @@ except ImportError:  # pragma: no cover - optional dependency in tests
     genai = None  # type: ignore[assignment]
 
 from app.ai.system_prompt import SYSTEM_PROMPT
-from app.ai.tool_schemas import TOOL_SCHEMAS
 from app.tools.compare import compare_metrics
 from app.tools.lineage import get_lineage
 from app.tools.metrics import query_metric
@@ -55,9 +53,9 @@ def _get_model() -> genai.GenerativeModel | None:
     api_key = os.environ.get("GEMINI_API_KEY")
     if not api_key:
         return None
-    
+
     genai.configure(api_key=api_key)
-    
+
     # Define Gemini-compatible tools from the existing handlers
     # We pass the handlers as tools directly; Gemini will use their docstrings/signatures
     return genai.GenerativeModel(
@@ -92,7 +90,7 @@ async def analyst(req: AnalystRequest):
             try:
                 # Send the message (or tool results) and stream the response
                 response = await chat.send_message_async(user_query, stream=True)
-                
+
                 # Stream text deltas to the client
                 async for chunk in response:
                     if chunk.text:
@@ -101,7 +99,7 @@ async def analyst(req: AnalystRequest):
                 # Check if Gemini wants to call a tool
                 last_msg = chat.history[-1]
                 tool_calls = [p.function_call for p in last_msg.parts if p.function_call]
-                
+
                 if not tool_calls:
                     yield f"data: {json.dumps({'type': 'done'})}\n\n"
                     return
@@ -127,13 +125,13 @@ async def analyst(req: AnalystRequest):
                             # Convert Gemini arguments to handler-compatible dict
                             args = dict(fc.args)
                             result = await handler(conn, **args)
-                            
+
                             # Serialize Pydantic models/lists
                             if isinstance(result, list):
                                 content = [r.model_dump() for r in result]
                             else:
                                 content = result.model_dump()
-                            
+
                             tool_responses.append(
                                 genai.types.Part(
                                     function_response=genai.types.FunctionResponse(
