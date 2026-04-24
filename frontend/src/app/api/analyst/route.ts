@@ -334,7 +334,7 @@ Rules:
   }
 
   // Remove the last message from history as it will be our first 'sendMessage'
-  const lastMessage = history.pop();
+  const lastMessage = history.pop()!;
   const chat = model.startChat({ history });
   
   let currentResponse = await chat.sendMessage(lastMessage.parts[0].text);
@@ -356,7 +356,7 @@ Rules:
       {
         functionResponse: {
           name: call.name,
-          response: result,
+          response: result as object,
         },
       },
     ]);
