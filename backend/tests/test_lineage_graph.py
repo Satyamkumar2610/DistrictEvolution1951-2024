@@ -1,5 +1,5 @@
 """Tests for LineageGraph (DAG-based district lineage tracking)."""
-from app.core.lineage_graph import (
+from app.core.lineage_graph import (  # type: ignore
     DistrictEvent,
     EventType,
     LineageGraph,

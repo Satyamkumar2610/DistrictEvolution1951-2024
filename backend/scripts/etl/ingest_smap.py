@@ -26,14 +26,14 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 try:
-    import h5py
+    import h5py  # type: ignore
     H5_OK = True
 except ImportError:
     H5_OK = False
 
 try:
     import geopandas as gpd  # noqa: F401
-    from rasterstats import zonal_stats  # noqa: F401
+    from rasterstats import zonal_stats  # type: ignore  # noqa: F401
     GEO_OK = True
 except ImportError:
     GEO_OK = False

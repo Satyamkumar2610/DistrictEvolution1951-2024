@@ -13,8 +13,8 @@ from pathlib import Path
 # Optional dependencies for geospatial processing
 try:
     import geopandas as gpd  # noqa: F401
-    import xarray as xr  # noqa: F401
-    from rasterstats import zonal_stats  # noqa: F401
+    import xarray as xr  # type: ignore  # noqa: F401
+    from rasterstats import zonal_stats  # type: ignore  # noqa: F401
     GEO_AVAILABLE = True
 except ImportError:
     GEO_AVAILABLE = False
