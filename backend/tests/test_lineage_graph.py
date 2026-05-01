@@ -1,12 +1,9 @@
 """Tests for LineageGraph (DAG-based district lineage tracking)."""
-import pytest
 from app.core.lineage_graph import (
     DistrictEvent,
-    DistrictNode,
     EventType,
     LineageGraph,
 )
-
 
 # ---------------------------------------------------------------------------
 # Fixtures
@@ -107,7 +104,7 @@ class TestDistrictEvent:
 
     def test_frozen_hashable(self):
         e = DistrictEvent(EventType.SPLIT, 1980, ("A",), ("B", "C"))
-        {e}  # should be hashable
+        hash(e)  # should be hashable
 
 
 # ---------------------------------------------------------------------------

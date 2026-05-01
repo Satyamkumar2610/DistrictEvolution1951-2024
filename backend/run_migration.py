@@ -1,13 +1,15 @@
 import asyncio
 import os
-import asyncpg
 from pathlib import Path
+
+import asyncpg
+
 
 async def main():
     db_url = os.getenv("DATABASE_URL")
     sql_path = Path(__file__).parent.parent / "db_export" / "004_split_analyzer.sql"
-    
-    with open(sql_path, "r") as f:
+
+    with open(sql_path) as f:
         sql = f.read()
 
     # The SQL has REFERENCES districts(cdk) which will fail because districts doesn't have cdk.
@@ -24,5 +26,5 @@ async def main():
         print(f"Migration failed: {e}")
     finally:
         await conn.close()
-    
+
 asyncio.run(main())

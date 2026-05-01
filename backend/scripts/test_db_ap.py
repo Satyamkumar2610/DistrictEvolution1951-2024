@@ -1,5 +1,7 @@
 import asyncio
+
 from app.db_compat import get_db_pool
+
 
 async def main():
     pool = await get_db_pool()
@@ -9,6 +11,6 @@ async def main():
         for r in res:
             print(dict(r))
 
-            
+
 if __name__ == '__main__':
     asyncio.run(main())

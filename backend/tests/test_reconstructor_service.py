@@ -1,7 +1,8 @@
-import pytest  # type: ignore[import-not-found]
-from app.services.reconstructor_service import ReconstructorService  # type: ignore[import-not-found]
+from typing import Any
 
-from typing import Any, Dict, List, Optional, Tuple, Set
+import pytest  # type: ignore[import-not-found]
+
+from app.services.reconstructor_service import ReconstructorService  # type: ignore[import-not-found]
 
 
 class FakeDB:
@@ -13,19 +14,19 @@ class FakeDB:
     """
     def __init__(
         self,
-        metrics: Optional[List[Dict[str, Any]]] = None,
-        splits: Optional[List[Dict[str, Any]]] = None,
-        geom: Optional[Dict[str, str]] = None,
-        available_cdks: Optional[Set[str]] = None,
+        metrics: list[dict[str, Any]] | None = None,
+        splits: list[dict[str, Any]] | None = None,
+        geom: dict[str, str] | None = None,
+        available_cdks: set[str] | None = None,
     ):
-        self.metrics: List[Dict[str, Any]] = metrics or []
-        self.splits: List[Dict[str, Any]] = splits or []
-        self.geom: Dict[str, str] = geom or {"geojson": '{"type": "Polygon"}', "type": "POLYGON"}
+        self.metrics: list[dict[str, Any]] = metrics or []
+        self.splits: list[dict[str, Any]] = splits or []
+        self.geom: dict[str, str] = geom or {"geojson": '{"type": "Polygon"}', "type": "POLYGON"}
         # CDKs that exist in agri_metrics (for _find_cdks_with_data)
-        self.available_cdks: Set[str] = available_cdks or {m["cdk"] for m in (metrics or [])}
-        self.queries: List[Tuple[str, tuple]] = []
+        self.available_cdks: set[str] = available_cdks or {m["cdk"] for m in (metrics or [])}
+        self.queries: list[tuple[str, tuple]] = []
 
-    async def fetch(self, query: str, *args: Any) -> List[Dict[str, Any]]:
+    async def fetch(self, query: str, *args: Any) -> list[dict[str, Any]]:
         self.queries.append((query, args))
         if "split_events" in query:
             return self.splits

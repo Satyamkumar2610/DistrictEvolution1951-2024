@@ -1,4 +1,3 @@
-import multiprocessing
 import os
 
 # Gunicorn configuration for Render deployment

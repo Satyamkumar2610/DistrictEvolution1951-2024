@@ -1,16 +1,18 @@
 import asyncio
 import os
+
 import asyncpg
+
 
 async def main():
     conn = await asyncpg.connect(os.environ["DATABASE_URL"])
-    
+
     # Drop old tables
     await conn.execute("DROP VIEW IF EXISTS v_lineage_tree CASCADE;")
     await conn.execute("DROP TABLE IF EXISTS split_enrichment CASCADE;")
     await conn.execute("DROP TABLE IF EXISTS area_transfers CASCADE;")
     await conn.execute("DROP TABLE IF EXISTS split_events CASCADE;")
-    
+
     # Recreate split_events correctly
     await conn.execute("""
         CREATE TABLE IF NOT EXISTS split_events (
@@ -21,8 +23,8 @@ async def main():
             event_type              TEXT DEFAULT 'SPLIT',
             geometry_status         geometry_status_type NOT NULL DEFAULT 'unknown',
             source_notes            TEXT,
-            area_conservation_error DOUBLE PRECISION,  
-            composite_confidence    FLOAT,             
+            area_conservation_error DOUBLE PRECISION,
+            composite_confidence    FLOAT,
 
             created_at              TIMESTAMP DEFAULT NOW(),
             updated_at              TIMESTAMP DEFAULT NOW(),
@@ -41,7 +43,7 @@ async def main():
             source_cdk          TEXT NOT NULL,
             dest_cdk            TEXT NOT NULL,
             transfer_type       transfer_type NOT NULL,
-            
+
             area_sqkm           DOUBLE PRECISION NOT NULL,
             confidence_score    FLOAT NOT NULL DEFAULT 0.0 CHECK (confidence_score >= 0.0 AND confidence_score <= 1.0),
 
@@ -62,11 +64,11 @@ async def main():
         CREATE TABLE IF NOT EXISTS split_enrichment (
             id                  SERIAL PRIMARY KEY,
             transfer_id         INTEGER NOT NULL REFERENCES area_transfers(id) ON DELETE CASCADE,
-            dataset_name        TEXT NOT NULL,    
-            metric_name         TEXT NOT NULL,    
-            apportioned_value   DOUBLE PRECISION NOT NULL,  
-            provenance_method   TEXT NOT NULL,    
-            
+            dataset_name        TEXT NOT NULL,
+            metric_name         TEXT NOT NULL,
+            apportioned_value   DOUBLE PRECISION NOT NULL,
+            provenance_method   TEXT NOT NULL,
+
             created_at          TIMESTAMP DEFAULT NOW(),
             UNIQUE(transfer_id, dataset_name, metric_name)
         );
@@ -131,8 +133,8 @@ async def main():
         );
         CREATE INDEX IF NOT EXISTS idx_split_event_weights_event ON split_event_weights (event_id);
     """)
-    
+
     print("Dropped old tables and successfully recreated split analyzer and disaggregation schema.")
     await conn.close()
-    
+
 asyncio.run(main())

@@ -16,10 +16,9 @@ The pipeline:
 
 import asyncio
 import logging
-import os
+from dataclasses import dataclass
 from datetime import date, timedelta
 from pathlib import Path
-from typing import Any
 
 import numpy as np
 
@@ -33,8 +32,8 @@ except ImportError:
     H5_OK = False
 
 try:
-    import geopandas as gpd
-    from rasterstats import zonal_stats
+    import geopandas as gpd  # noqa: F401
+    from rasterstats import zonal_stats  # noqa: F401
     GEO_OK = True
 except ImportError:
     GEO_OK = False
@@ -55,8 +54,6 @@ SMAP_VARIABLE = "Soil_Moisture_Retrieval_Data_AM/soil_moisture"
 # ---------------------------------------------------------------------------
 # Data classes
 # ---------------------------------------------------------------------------
-
-from dataclasses import dataclass, field
 
 
 @dataclass

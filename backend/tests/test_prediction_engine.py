@@ -2,8 +2,8 @@
 Tests for the PredictionEngine (multi-factor Ridge regression).
 """
 import pytest
-from app.ml.prediction_engine import PredictionEngine, PredictionResult
 
+from app.ml.prediction_engine import PredictionEngine, PredictionResult
 
 # ---------------------------------------------------------------------------
 # Fixtures

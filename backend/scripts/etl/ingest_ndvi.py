@@ -81,10 +81,7 @@ def extract_district_ndvi(
         for month in range(1, 13):
             start_date = f"{year}-{month:02d}-01"
             # Handle end-of-month
-            if month == 12:
-                end_date = f"{year + 1}-01-01"
-            else:
-                end_date = f"{year}-{month + 1:02d}-01"
+            end_date = f"{year + 1}-01-01" if month == 12 else f"{year}-{month + 1:02d}-01"
 
             try:
                 # MODIS MOD13Q1 — 250m 16-day NDVI

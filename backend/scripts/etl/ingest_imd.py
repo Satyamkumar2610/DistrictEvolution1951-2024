@@ -11,10 +11,10 @@ from pathlib import Path
 
 # Optional dependencies for geospatial processing
 try:
-    import geopandas as gpd
-    import xarray as xr
-    from rasterstats import zonal_stats
-    import numpy as np
+    import geopandas as gpd  # noqa: F401
+    import numpy as np  # noqa: F401
+    import xarray as xr  # noqa: F401
+    from rasterstats import zonal_stats  # noqa: F401
     GEO_AVAILABLE = True
 except ImportError:
     GEO_AVAILABLE = False
@@ -27,17 +27,17 @@ async def fetch_imd_data(variable: str, year: int, download_dir: Path) -> Path |
     # Assuming IMD files follow a structure like "Tmax_{year}.nc"
     filename = f"{variable}_{year}.nc"
     filepath = download_dir / filename
-    
+
     if filepath.exists():
         logger.info(f"{filename} already exists, skipping download.")
         return filepath
-        
+
     logger.info(f"Mock downloading IMD FTP link for {variable} year {year} to {filepath}...")
-    
+
     if not filepath.parent.exists():
         filepath.parent.mkdir(parents=True, exist_ok=True)
     filepath.touch()
-    
+
     return filepath
 
 def process_imd_zonal_stats(nc_path: Path, variable: str, districts_geojson: Path) -> list[dict]:
@@ -45,19 +45,19 @@ def process_imd_zonal_stats(nc_path: Path, variable: str, districts_geojson: Pat
     if not GEO_AVAILABLE:
         logger.warning("Geospatial libraries missing. Cannot compute true zonal stats.")
         return []
-        
+
     logger.info(f"Processing zonal stats from {nc_path} against {districts_geojson}")
-    
+
     try:
         # 1. Load District Geometries
         # districts = gpd.read_file(districts_geojson)
-        
+
         # 2. Load NetCDF
         # ds = xr.open_dataset(nc_path)
         # temp = ds[variable]
-        
+
         # 3. For each timestep, compute zonal_stats
-        
+
         # Mocking extraction response
         results = [
             {
@@ -81,14 +81,14 @@ async def upload_to_db(records: list[dict], variable: str, db_url: str):
 async def run_imd_pipeline(start_year: int = 2018, end_year: int = 2024):
     """Main pipeline to cover IMD Temperature gaps."""
     logger.info(f"Starting IMD pipeline for years {start_year}-{end_year}")
-    
+
     data_dir = Path(__file__).parent.parent.parent / "data" / "raw" / "imd"
     districts_shp = Path(__file__).parent.parent.parent / "data" / "shapefiles" / "districts.geojson"
-    
+
     db_url = os.environ.get("DATABASE_URL", "postgresql://user:pass@localhost:5432/db")
-    
+
     variables = ["Tmax", "Tmin", "Tmean"]
-    
+
     for year in range(start_year, end_year + 1):
         for var in variables:
             nc_file = await fetch_imd_data(var, year, data_dir)
@@ -96,7 +96,7 @@ async def run_imd_pipeline(start_year: int = 2018, end_year: int = 2024):
                 stats = process_imd_zonal_stats(nc_file, var, districts_shp)
                 if stats:
                     await upload_to_db(stats, var, db_url)
-            
+
     logger.info("IMD Pipeline execution completed.")
 
 if __name__ == "__main__":

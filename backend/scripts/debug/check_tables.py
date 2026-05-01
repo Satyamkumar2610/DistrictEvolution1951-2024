@@ -1,6 +1,8 @@
 import asyncio
 import os
+
 import asyncpg
+
 
 async def main():
     conn = await asyncpg.connect(os.environ["DATABASE_URL"])
@@ -8,5 +10,5 @@ async def main():
     for r in res:
         print(r['table_name'])
     await conn.close()
-    
+
 asyncio.run(main())

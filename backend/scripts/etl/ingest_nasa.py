@@ -7,8 +7,6 @@ Queries via REST API directly using point/regional queries.
 import asyncio
 import logging
 import os
-import json
-from pathlib import Path
 
 import httpx
 
@@ -18,19 +16,19 @@ logger = logging.getLogger(__name__)
 NASA_POWER_API_BASE = "https://power.larc.nasa.gov/api/temporal/daily/point"
 
 async def fetch_nasa_power_data(
-    client: httpx.AsyncClient, 
-    latitude: float, 
-    longitude: float, 
-    start_date: str, 
+    client: httpx.AsyncClient,
+    latitude: float,
+    longitude: float,
+    start_date: str,
     end_date: str
 ) -> dict:
     """Fetch daily NASA POWER data for a specific coordinate."""
-    # NASA POWER variables: 
+    # NASA POWER variables:
     # ALLSKY_SFC_SW_DWN = Solar Radiation
     # RH2M = Relative Humidity at 2 meters
     # ETO = Required Evapotranspiration
-    
-    params = {
+
+    {
         "parameters": "ALLSKY_SFC_SW_DWN,RH2M,T2M", # ETO requires computing or specific parameter sets
         "community": "AG",
         "longitude": longitude,
@@ -39,15 +37,14 @@ async def fetch_nasa_power_data(
         "end": end_date.replace("-", ""),
         "format": "JSON"
     }
-    
+
     try:
-        req_url = f"{NASA_POWER_API_BASE}"
         # logger.info(f"Mock fetching NASA POWER data. Skipping real request. {req_url}")
-        
+
         # resp = await client.get(req_url, params=params)
         # resp.raise_for_status()
         # return resp.json()
-        
+
         return {
             "type": "Feature",
             "geometry": {"coordinates": [longitude, latitude], "type": "Point"},
@@ -78,18 +75,18 @@ async def upload_to_db(records: list[dict], db_url: str):
 async def run_nasa_pipeline(start_year: int = 2018, end_year: int = 2024):
     """Main pipeline to collect NASA POWER variables."""
     logger.info(f"Starting NASA POWER pipeline for years {start_year}-{end_year}")
-    
+
     districts = await _fetch_district_centroids()
-    
+
     db_url = os.environ.get("DATABASE_URL", "postgresql://user:pass@localhost:5432/db")
-    
+
     start_date = f"{start_year}0101"
     end_date = f"{end_year}1231"
-    
+
     records = []
-    
+
     async with httpx.AsyncClient(timeout=30.0) as client:
-        # NOTE: NASA POWER API has strict rate limits. 
+        # NOTE: NASA POWER API has strict rate limits.
         # You should chunk requests and sleep appropriately.
         for dist in districts:
             logger.info(f"Fetching data for {dist['name']}...")
@@ -97,7 +94,7 @@ async def run_nasa_pipeline(start_year: int = 2018, end_year: int = 2024):
             if "properties" in data:
                 # Transform and append
                 params = data["properties"]["parameter"]
-                for date_str in params.get("T2M", {}).keys():
+                for date_str in params.get("T2M", {}):
                     records.append({
                         "cdk": dist["cdk"],
                         "date": date_str,
@@ -105,13 +102,13 @@ async def run_nasa_pipeline(start_year: int = 2018, end_year: int = 2024):
                         "rh": params.get("RH2M", {}).get(date_str),
                         "temp_avg": params.get("T2M", {}).get(date_str),
                     })
-                    
+
             # Rate limiting sleep
             await asyncio.sleep(0.5)
 
     if records:
         await upload_to_db(records, db_url)
-            
+
     logger.info("NASA POWER Pipeline execution completed.")
 
 if __name__ == "__main__":

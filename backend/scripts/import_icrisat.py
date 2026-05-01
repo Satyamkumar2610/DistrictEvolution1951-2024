@@ -1,13 +1,11 @@
-import csv
-import asyncio
 import argparse
-from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+import asyncio
+import csv
 import logging
+from pathlib import Path
 
 from app.database import get_connection
 from app.services.name_resolver import resolve_lgd
-from app.schemas.metric import MetricPoint
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -51,7 +49,7 @@ CROP_MAP = {
     "FODDER": "fodder",
 }
 
-async def fetch_lgd_lookup() -> Dict[Tuple[str, str], int]:
+async def fetch_lgd_lookup() -> dict[tuple[str, str], int]:
     """Fetch all districts from DB and build a lookup table {(district_lower, state_lower): lgd_code}."""
     lookup = {}
     async with get_connection() as db:
@@ -62,7 +60,7 @@ async def fetch_lgd_lookup() -> Dict[Tuple[str, str], int]:
             lookup[(d_name, s_name)] = row["lgd_code"]
     return lookup
 
-def parse_value(val: str, is_yield: bool = False) -> Optional[float]:
+def parse_value(val: str, is_yield: bool = False) -> float | None:
     """
     Parse float value from string.
     - Handle '-1.0' as None.
@@ -76,7 +74,7 @@ def parse_value(val: str, is_yield: bool = False) -> Optional[float]:
     except ValueError:
         return None
 
-def normalize_header(header: str) -> Tuple[Optional[str], Optional[str]]:
+def normalize_header(header: str) -> tuple[str | None, str | None]:
     """
     Parse header like 'RICE AREA (1000 ha)' into (variable_name, type).
     Returns (None, None) if not a metric column.
@@ -100,10 +98,10 @@ def normalize_header(header: str) -> Tuple[Optional[str], Optional[str]]:
     for key, val in CROP_MAP.items():
         # strict check to avoid 'SORGHUM' matching 'KHARIF SORGHUM'
         # 'KHARIF SORGHUM' should match 'KHARIF SORGHUM'
-        if header.startswith(key + " "): 
+        if header.startswith(key + " "):
              crop_key = val
              break
-    
+
     # If no prefix match, try general containment (careful with overlaps)
     if not crop_key:
         # Sort keys by length desc to match 'KHARIF SORGHUM' before 'SORGHUM'
@@ -115,7 +113,7 @@ def normalize_header(header: str) -> Tuple[Optional[str], Optional[str]]:
 
     if crop_key and metric_type:
         return f"{crop_key}_{metric_type}", metric_type
-    
+
     return None, None
 
 async def import_data(dry_run: bool = False):
@@ -133,9 +131,9 @@ async def import_data(dry_run: bool = False):
     skipped_count = 0
     metrics_to_insert = []
 
-    with open(CSV_PATH, 'r', encoding='utf-8') as f:
+    with open(CSV_PATH, encoding='utf-8') as f:
         reader = csv.DictReader(f)
-        
+
         # Pre-process headers
         header_map = {} # CSV Header -> (db_variable, metric_type)
         for h in reader.fieldnames:
@@ -145,7 +143,7 @@ async def import_data(dry_run: bool = False):
 
         logger.info(f"Identified {len(header_map)} metric columns.")
 
-        for row_idx, row in enumerate(reader):
+        for _row_idx, row in enumerate(reader):
             # District Mapping
             dist_name = row.get("Dist Name", "").strip()
             state_name = row.get("State Name", "").strip()
@@ -157,15 +155,15 @@ async def import_data(dry_run: bool = False):
                 unmapped.add((dist_name, state_name))
                 skipped_count += 1
                 continue
-            
+
             mapped_count += 1
 
             # Extract Metrics
             for col, (variable, mtype) in header_map.items():
                 raw_val = row.get(col)
-                if not raw_val: 
+                if not raw_val:
                     continue
-                
+
                 # Check for -1.0 validity
                 is_yield = (mtype == "yield")
                 val = parse_value(raw_val, is_yield)
@@ -188,7 +186,7 @@ async def import_data(dry_run: bool = False):
             writer.writerow(["District", "State"])
             writer.writerows(sorted(unmapped))
         logger.info(f"Unmapped districts written to {UNMAPPED_REPORT_PATH}")
-    
+
     logger.info(f"Summary: Mapped Districts: {mapped_count}, Skipped (Unmapped): {skipped_count}")
     logger.info(f"Total metrics found: {len(metrics_to_insert)}")
 
@@ -202,7 +200,7 @@ async def import_data(dry_run: bool = False):
                 await db.executemany("""
                     INSERT INTO agri_metrics (district_lgd, year, variable_name, value)
                     VALUES ($1, $2, $3, $4)
-                    ON CONFLICT (district_lgd, year, variable_name) 
+                    ON CONFLICT (district_lgd, year, variable_name)
                     DO UPDATE SET value = EXCLUDED.value
                 """, [(m["district_lgd"], m["year"], m["variable_name"], m["value"]) for m in batch])
                 logger.info(f"Inserted batch {i // batch_size + 1}/{(len(metrics_to_insert) - 1) // batch_size + 1}")
@@ -214,5 +212,5 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Import ICRISAT Data")
     parser.add_argument("--dry-run", action="store_true", help="Run without inserting data")
     args = parser.parse_args()
-    
+
     asyncio.run(import_data(dry_run=args.dry_run))

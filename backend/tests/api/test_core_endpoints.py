@@ -4,8 +4,9 @@ API Integration Tests — Health, Root, and System endpoints.
 These tests use the httpx AsyncClient against the real FastAPI app
 but with a mocked database pool to avoid needing a live Postgres instance.
 """
-import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
+
+import pytest
 
 
 @pytest.mark.asyncio

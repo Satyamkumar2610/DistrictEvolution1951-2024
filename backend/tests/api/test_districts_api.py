@@ -1,12 +1,14 @@
-import pytest
 from unittest.mock import AsyncMock, patch
+
+import pytest
+
 
 @pytest.mark.asyncio
 async def test_list_districts(client):
     """Test getting a list of districts."""
     mock_repo = AsyncMock()
     mock_repo.get_all.return_value = [{"cdk": "D1", "name": "Dist1", "state": "State1"}]
-    
+
     mock_db = AsyncMock()
     from app.api.deps import get_db
     async def override_get_db():
@@ -30,7 +32,7 @@ async def test_search_districts(client):
     """Test searching districts."""
     mock_repo = AsyncMock()
     mock_repo.search.return_value = [{"cdk": "D2", "name": "TestDist", "state": "State1"}]
-    
+
     mock_db = AsyncMock()
     from app.api.deps import get_db
     async def override_get_db():
@@ -53,7 +55,7 @@ async def test_list_states(client):
     """Test getting list of states."""
     mock_repo = AsyncMock()
     mock_repo.get_states.return_value = ["State1", "State2"]
-    
+
     mock_db = AsyncMock()
     from app.api.deps import get_db
     async def override_get_db():
@@ -75,7 +77,7 @@ async def test_get_district(client):
     """Test getting single district by CDK."""
     mock_repo = AsyncMock()
     mock_repo.get_by_cdk.return_value = {"cdk": "D1", "name": "Dist1", "state": "State1"}
-    
+
     mock_db = AsyncMock()
     from app.api.deps import get_db
     async def override_get_db():
@@ -95,7 +97,7 @@ async def test_get_district_not_found(client):
     """Test getting missing district."""
     mock_repo = AsyncMock()
     mock_repo.get_by_cdk.return_value = None
-    
+
     mock_db = AsyncMock()
     from app.api.deps import get_db
     async def override_get_db():
