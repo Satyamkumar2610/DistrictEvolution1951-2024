@@ -43,7 +43,7 @@ _SEASON_MAP = {
 
 
 # ---------------------------------------------------------------------------
-# Shared helpers — use db_compat everywhere
+# Shared helpers — use db_compat everywhere to ensure schema compatibility
 # ---------------------------------------------------------------------------
 async def _fetch_yield_series(conn: asyncpg.Connection, cdk: str, crop: str, min_year: int = 1990) -> dict[int, float]:
     """Fetch {year: yield} dict for a district-crop pair (schema-safe)."""
