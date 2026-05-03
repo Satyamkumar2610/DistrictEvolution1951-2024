@@ -30,18 +30,22 @@ router = APIRouter(prefix="/intelligence", tags=["Intelligence (Phase 2-3)"])
 
 # Season fallback map (mirrors base.py)
 _SEASON_MAP = {
-    "rice": "kharif", "wheat": "rabi", "maize": "kharif",
-    "cotton": "kharif", "groundnut": "kharif", "sorghum": "kharif",
-    "sugarcane": None, "chickpea": "rabi", "soyabean": "kharif",
+    "rice": "kharif",
+    "wheat": "rabi",
+    "maize": "kharif",
+    "cotton": "kharif",
+    "groundnut": "kharif",
+    "sorghum": "kharif",
+    "sugarcane": None,
+    "chickpea": "rabi",
+    "soyabean": "kharif",
 }
 
 
 # ---------------------------------------------------------------------------
 # Shared helpers — use db_compat everywhere
 # ---------------------------------------------------------------------------
-async def _fetch_yield_series(
-    conn: asyncpg.Connection, cdk: str, crop: str, min_year: int = 1990
-) -> dict[int, float]:
+async def _fetch_yield_series(conn: asyncpg.Connection, cdk: str, crop: str, min_year: int = 1990) -> dict[int, float]:
     """Fetch {year: yield} dict for a district-crop pair (schema-safe)."""
     query = """
         SELECT year, value FROM agri_metrics
@@ -121,7 +125,9 @@ async def get_climate_shocks(
 
     # District metadata
     district_row = await fetchrow(
-        db, "SELECT district_name, state_name FROM districts WHERE lgd_code::text = $1", cdk,
+        db,
+        "SELECT district_name, state_name FROM districts WHERE lgd_code::text = $1",
+        cdk,
     )
     name = district_row["district_name"] if district_row else cdk
     state_name = district_row["state_name"] if district_row else ""
@@ -139,7 +145,8 @@ async def get_climate_shocks(
             mean_yield = sum(yield_values) / len(yield_values)
             std_yield = (
                 math.sqrt(sum((v - mean_yield) ** 2 for v in yield_values) / max(1, len(yield_values) - 1))
-                if len(yield_values) > 1 else 1.0
+                if len(yield_values) > 1
+                else 1.0
             )
             for yr in yield_years:
                 # Approximate SPI from yield deviation as a proxy
@@ -175,7 +182,12 @@ async def get_climate_shocks(
                 "deviation_pct": a.yield_shock.deviation_pct,
                 "z_score": a.yield_shock.z_score,
                 "attributed_events": [
-                    {"type": e.event_type, "severity": e.severity, "metric_value": e.metric_value, "description": e.description}
+                    {
+                        "type": e.event_type,
+                        "severity": e.severity,
+                        "metric_value": e.metric_value,
+                        "description": e.description,
+                    }
                     for e in a.attributed_events
                 ],
                 "confidence": a.attribution_confidence,
@@ -214,9 +226,7 @@ async def get_forecast_validation(
 
     import numpy as np
 
-    def linear_forecast(
-        years: list[int], values: list[float], horizon: int
-    ) -> list[dict[str, float]]:
+    def linear_forecast(years: list[int], values: list[float], horizon: int) -> list[dict[str, float]]:
         x = np.array(years, dtype=float)
         y = np.array(values, dtype=float)
         coeffs = np.polyfit(x, y, 1)
@@ -226,11 +236,13 @@ async def get_forecast_validation(
             pred = float(np.polyval(coeffs, pred_year))
             pred = max(0, pred)
             std = float(np.std(y - np.polyval(coeffs, x)))
-            results.append({
-                "predicted_yield": round(pred, 2),
-                "lower_bound": round(max(0, pred - 1.96 * std), 2),
-                "upper_bound": round(pred + 1.96 * std, 2),
-            })
+            results.append(
+                {
+                    "predicted_yield": round(pred, 2),
+                    "lower_bound": round(max(0, pred - 1.96 * std), 2),
+                    "upper_bound": round(pred + 1.96 * std, 2),
+                }
+            )
         return results
 
     backtester = ForecastBacktester(min_train_years=8)
@@ -298,10 +310,7 @@ async def get_yield_frontier(
     if len(rows) < 10:
         raise ValidationError(detail=f"Need ≥10 districts for SFA, found {len(rows)}")
 
-    district_data = [
-        {"cdk": r["cdk"], "name": r["district_name"], "yield": float(r["value"])}
-        for r in rows
-    ]
+    district_data = [{"cdk": r["cdk"], "name": r["district_name"], "yield": float(r["value"])} for r in rows]
 
     # Enrich with rainfall normals as a cross-sectional feature
     feature_keys: list[str] | None = None
@@ -321,7 +330,10 @@ async def get_yield_frontier(
 
     analyzer = StochasticFrontierAnalyzer()
     report = analyzer.analyze(
-        district_data, crop=crop, year=year, feature_keys=feature_keys,
+        district_data,
+        crop=crop,
+        year=year,
+        feature_keys=feature_keys,
     )
 
     if report is None:
@@ -373,9 +385,11 @@ async def get_yield_frontier(
                 "technical_efficiency": d.technical_efficiency,
                 "yield_gap_pct": d.yield_gap_pct,
                 "rank": d.efficiency_rank,
-                "historical_efficiency": round(
-                    d.observed_yield / hist_efficiency_map[d.cdk], 3
-                ) if d.cdk in hist_efficiency_map and hist_efficiency_map[d.cdk] else None,
+                "historical_efficiency": (
+                    round(d.observed_yield / hist_efficiency_map[d.cdk], 3)
+                    if d.cdk in hist_efficiency_map and hist_efficiency_map[d.cdk]
+                    else None
+                ),
             }
             for d in report.district_results[:30]
         ],
@@ -414,7 +428,11 @@ async def get_resilience_composite(
     for r in rows:
         cdk = r["cdk"]
         if cdk not in district_series:
-            district_series[cdk] = {"cdk": cdk, "name": r["district_name"], "yields": {}}
+            district_series[cdk] = {
+                "cdk": cdk,
+                "name": r["district_name"],
+                "yields": {},
+            }
         district_series[cdk]["yields"][r["year"]] = float(r["value"])
 
     # ----- Scrape real irrigation data -----
@@ -481,10 +499,7 @@ async def get_resilience_composite(
         values = list(yields.values())
         mean_y = sum(values) / len(values)
         # Sample standard deviation (Bessel's correction)
-        std_y = (
-            math.sqrt(sum((v - mean_y) ** 2 for v in values) / (len(values) - 1))
-            if len(values) > 1 else 0
-        )
+        std_y = math.sqrt(sum((v - mean_y) ** 2 for v in values) / (len(values) - 1)) if len(values) > 1 else 0
 
         cv = (std_y / mean_y * 100) if mean_y > 0 else 0
         sorted_v = sorted(values)
@@ -519,18 +534,20 @@ async def get_resilience_composite(
         # Soil quality proxy: mean yield / state max yield
         soil_proxy = mean_y / state_max_yield if state_max_yield > 0 else 0.5
 
-        pca_input.append({
-            "cdk": cdk,
-            "name": data["name"],
-            "yield_cv": cv,
-            "retention_ratio": retention,
-            "cdi": cdi_map.get(cdk, 0.5),
-            "soil_quality": round(soil_proxy, 4),
-            "yield_depletion_rate": cagr,
-            "irrigation_pct": irrigation_map.get(cdk, 50.0),
-            "recovery_speed": round(recovery_speed, 2),
-            "input_efficiency": mean_y / 200 if mean_y > 0 else 0,
-        })
+        pca_input.append(
+            {
+                "cdk": cdk,
+                "name": data["name"],
+                "yield_cv": cv,
+                "retention_ratio": retention,
+                "cdi": cdi_map.get(cdk, 0.5),
+                "soil_quality": round(soil_proxy, 4),
+                "yield_depletion_rate": cagr,
+                "irrigation_pct": irrigation_map.get(cdk, 50.0),
+                "recovery_speed": round(recovery_speed, 2),
+                "input_efficiency": mean_y / 200 if mean_y > 0 else 0,
+            }
+        )
 
     if len(pca_input) < 5:
         raise ValidationError(detail=f"Need ≥5 districts with ≥5yr data for PCA, found {len(pca_input)}")
@@ -587,13 +604,13 @@ async def get_anomaly_scan(
     # Fetch multi-feature time series
     yield_series = await _fetch_yield_series(db, cdk, crop, min_year=1980)
     if len(yield_series) < 8:
-        raise ValidationError(
-            detail=f"Need ≥8 years for anomaly detection, found {len(yield_series)}"
-        )
+        raise ValidationError(detail=f"Need ≥8 years for anomaly detection, found {len(yield_series)}")
 
     # District metadata
     district_row = await fetchrow(
-        db, "SELECT district_name, state_name FROM districts WHERE lgd_code::text = $1", cdk,
+        db,
+        "SELECT district_name, state_name FROM districts WHERE lgd_code::text = $1",
+        cdk,
     )
     name = district_row["district_name"] if district_row else cdk
     state_name = district_row["state_name"] if district_row else ""
@@ -643,9 +660,14 @@ async def get_anomaly_scan(
                 "year": a.year,
                 "anomaly_score": a.anomaly_score,
                 "yield_value": round(yield_series.get(a.year, 0), 1),
-                "yield_deviation_pct": round(
-                    (yield_series.get(a.year, mean_yield) - mean_yield) / mean_yield * 100, 1
-                ) if mean_yield > 0 else 0,
+                "yield_deviation_pct": (
+                    round(
+                        (yield_series.get(a.year, mean_yield) - mean_yield) / mean_yield * 100,
+                        1,
+                    )
+                    if mean_yield > 0
+                    else 0
+                ),
                 "features_used": a.features_used,
                 "details": a.details,
             }
@@ -664,7 +686,9 @@ async def get_anomaly_scan(
     }
 
     if not anomalies:
-        response["warnings"].append("No multivariate anomalies detected — the district's time series is relatively stable.")
+        response["warnings"].append(
+            "No multivariate anomalies detected — the district's time series is relatively stable."
+        )
 
     # Generate LLM context for the anomalies
     if anomalies:
@@ -674,4 +698,3 @@ async def get_anomaly_scan(
             response["ai_narrative"] = narrative
 
     return response
-
