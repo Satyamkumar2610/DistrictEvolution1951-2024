@@ -35,6 +35,7 @@ from app.schemas.advanced_analytics import (
 )
 from app.schemas.backcast import BackcastResponse
 from app.services.analytics import AdvancedAnalyticsService
+from app.services.llm_service import LLMService
 
 
 class AdvancedAnalyticsFacade:
@@ -288,4 +289,9 @@ class AdvancedAnalyticsFacade:
         result = await backcaster.backcast_all_children(
             parent_cdk=parent_cdk, child_cdks=child_cdks, split_year=split_year, crop=crop, start_year=start_year
         )
+        
+        llm = LLMService()
+        narrative = await llm.generate_backcast_narrative(result.model_dump())
+        result.ai_narrative = narrative
+        
         return result

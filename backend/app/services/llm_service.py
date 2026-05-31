@@ -163,3 +163,27 @@ class LLMService:
         )
 
         return await self._generate_narrative(system_prompt, json.dumps(report))
+
+    async def generate_backcast_narrative(self, report: dict[str, Any]) -> str | None:
+        """Generate a narrative interpreting yield backcast model results and conservation checks."""
+        if not self.model:
+            return None
+
+        system_prompt = (
+            "You are an expert data scientist explaining an ML yield backcasting model to an agricultural stakeholder. "
+            "You are given a JSON report containing the model's predictions for how a parent district's historical yield "
+            "was disaggregated into its child districts. "
+            "Write a concise, 2-3 sentence paragraph explaining which ML method was used, whether the model's "
+            "conservation check passed (i.e. if the child yields sum correctly to the parent yield), and what "
+            "level of confidence we have in the results. "
+            "Be specific, reference the method and conservation error percentage, and do not use formatting like bold or bullet points."
+        )
+
+        clean_report = {
+            "parent_district": report.get("parent_cdk"),
+            "crop": report.get("crop"),
+            "primary_method": report.get("method"),
+            "conservation_check": report.get("conservation_check"),
+        }
+
+        return await self._generate_narrative(system_prompt, json.dumps(clean_report))

@@ -30,7 +30,7 @@ from app.schemas.advanced_analytics import (
     YieldTrendResponse,
     YoyGrowthResponse,
 )
-from app.schemas.backcast import BackcastResponse
+from app.schemas.backcast import BackcastResponse, BackcastValidationResponse
 from app.services import AdvancedAnalyticsFacade
 from app.validators import (
     validate_cdk,
@@ -318,3 +318,26 @@ async def get_yield_backcast(
 
     service = AdvancedAnalyticsFacade(db)
     return await service.get_backcast_response(parent_cdk, children, split_year, crop, start_year)
+
+
+@router.get("/backcast/validate", response_model=BackcastValidationResponse)
+async def validate_yield_backcast(
+    parent_cdk: str = Query(..., description="Parent district CDK"),
+    child_cdk: str = Query(..., description="Child district CDK to validate"),
+    split_year: int = Query(..., description="Year of the split"),
+    crop: str = Query("rice", description="Crop name to validate"),
+):
+    """
+    Validate the backcast model using Leave-One-Out Cross-Validation.
+    """
+    from app.ml.yield_backcaster import YieldBackcaster
+    
+    parent_cdk = validate_cdk(parent_cdk)
+    child_cdk = validate_cdk(child_cdk)
+    split_year = validate_year(split_year)
+    crop = validate_crop(crop)
+
+    backcaster = YieldBackcaster()
+    return await backcaster.validate_backcast(
+        parent_cdk=parent_cdk, child_cdk=child_cdk, split_year=split_year, crop=crop
+    )

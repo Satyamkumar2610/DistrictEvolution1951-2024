@@ -50,3 +50,26 @@ class BackcastResponse(BaseModel):
     conservation_check: ConservationCheck = Field(
         ..., description="Validation that sum of children approximates parent"
     )
+    ai_narrative: str | None = Field(None, description="AI-generated plain English narrative explaining the results")
+
+
+class BackcastValidationStep(BaseModel):
+    """A single step in LOO cross-validation."""
+
+    year: int = Field(..., description="The year that was hidden and predicted")
+    actual_yield: float = Field(..., description="The known actual yield")
+    predicted_yield: float = Field(..., description="The model's prediction for this year")
+    error_pct: float = Field(..., description="Percentage error (MAPE component)")
+
+
+class BackcastValidationResponse(BaseModel):
+    """Result of Leave-One-Out Cross-Validation on a backcast model."""
+
+    parent_cdk: str = Field(..., description="CDK of the parent district")
+    child_cdk: str = Field(..., description="CDK of the child district being validated")
+    crop: str = Field(..., description="Crop being analyzed")
+    method: str = Field(..., description="Prediction method used")
+    mape: float = Field(..., description="Mean Absolute Percentage Error across LOO steps")
+    rmse: float = Field(..., description="Root Mean Squared Error across LOO steps")
+    trustworthiness_grade: str = Field(..., description="Grade (A, B, C, F) based on MAPE")
+    steps: list[BackcastValidationStep] = Field(..., description="Individual LOO validation steps")

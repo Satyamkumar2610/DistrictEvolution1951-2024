@@ -7,7 +7,7 @@ import { usePathname } from 'next/navigation';
 import {
     Map, Shield, GitBranch, Wheat, FileText, BookOpen, Menu, X,
     Layers, Droplet, Network, Target, Home, BarChart3, Globe2, Database,
-    Activity, CloudLightning, TrendingUp, CheckCircle, Scissors
+    Activity, CloudLightning, TrendingUp, CheckCircle, Scissors, History
 } from 'lucide-react';
 import { buildPublicOriginUrl } from '../services/api/config';
 
@@ -35,6 +35,7 @@ const NAV_GROUPS = [
             { href: '/analytics/forecast-validation', label: 'Forecast Validation', icon: CheckCircle },
             { href: '/analytics/resilience-composite', label: 'Resilience', icon: Shield },
             { href: '/analytics/yield-frontier', label: 'Yield Frontier', icon: TrendingUp },
+            { href: '/analytics/backcast', label: 'Yield Backcast', icon: History },
             { href: '/visualise', label: 'Data Visualiser', icon: BarChart3 },
         ]
     },

@@ -592,3 +592,38 @@ export interface ProvenanceTracking {
     data_coverage: { years_with_data: number; total_records: number; min_year: number; max_year: number };
     lineage_events: SplitEvent[];
 }
+
+// ---- Backcast (Yield Backcasting) ----
+
+export interface BackcastYearPoint {
+    year: number;
+    predicted_yield: number;
+    confidence: number;
+    lower_bound: number;
+    upper_bound: number;
+    method: string;
+}
+
+export interface BackcastChildResult {
+    child_cdk: string;
+    backcasted_yields: BackcastYearPoint[];
+    model_stats: Record<string, number | string>;
+    features_used: string[];
+    feature_importances: Record<string, number>;
+}
+
+export interface BackcastConservationCheck {
+    is_valid: boolean;
+    relative_error: number;
+    parent_total_production: number;
+    children_sum_production: number;
+}
+
+export interface BackcastResponse {
+    parent_cdk: string;
+    split_year: number;
+    crop: string;
+    method: string;
+    children: Record<string, BackcastChildResult>;
+    conservation_check: BackcastConservationCheck;
+}

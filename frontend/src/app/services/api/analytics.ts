@@ -1,5 +1,5 @@
 import { fetcher } from './client';
-import { StateSummary, SplitDistrict, AnalysisResult, AnalyticsSummary, CropShiftResult, SplitImpactQueryParams, SplitImpactResult, SplitSpecializationResult, YieldGapResult } from './types';
+import { StateSummary, SplitDistrict, AnalysisResult, AnalyticsSummary, CropShiftResult, SplitImpactQueryParams, SplitImpactResult, SplitSpecializationResult, YieldGapResult, BackcastResponse } from './types';
 import { DiversificationData, YieldTrendData, YoyGrowthData, CropCorrelationData } from '../../../types/analysis';
 
 export const analyticsApi = {
@@ -44,5 +44,9 @@ export const analyticsApi = {
         fetcher<AnalyticsSummary>(`analytics/summary?cdk=${cdk}&year=${year}`),
 
     getYoyGrowth: (cdk: string, crop: string, startYear: number = 1990, endYear: number = 2020) =>
-        fetcher<YoyGrowthData>(`analytics/yoy-growth?cdk=${cdk}&crop=${crop}&start_year=${startYear}&end_year=${endYear}`)
+        fetcher<YoyGrowthData>(`analytics/yoy-growth?cdk=${cdk}&crop=${crop}&start_year=${startYear}&end_year=${endYear}`),
+
+    getBackcast: (parentCdk: string, childCdks: string[], splitYear: number, crop: string, startYear: number = 1966) =>
+        fetcher<BackcastResponse>(`analytics/backcast?parent_cdk=${encodeURIComponent(parentCdk)}&child_cdks=${childCdks.map(c => encodeURIComponent(c)).join(',')}&split_year=${splitYear}&crop=${encodeURIComponent(crop)}&start_year=${startYear}`),
 };
+

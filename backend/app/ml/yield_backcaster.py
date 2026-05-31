@@ -353,3 +353,120 @@ class YieldBackcaster:
             features_used=["parent_yield_raw"],
             feature_importances={},
         )
+
+    async def validate_backcast(
+        self,
+        parent_cdk: str,
+        child_cdk: str,
+        split_year: int,
+        crop: str,
+    ) -> "BackcastValidationResponse":
+        """
+        Perform Leave-One-Out Cross-Validation (LOOCV) for a specific child district.
+        """
+        from app.schemas.backcast import BackcastValidationResponse, BackcastValidationStep
+        
+        # 1. Fetch training data
+        data = await self.pipeline.fetch_training_data(
+            child_cdk=child_cdk,
+            parent_cdk=parent_cdk,
+            sibling_cdks=[],
+            split_year=split_year,
+            crop=crop,
+        )
+
+        overlapping_years = [y for y in data.child_yields if y in data.parent_yields]
+        n_overlap = len(overlapping_years)
+        
+        if n_overlap < 3 or not SKLEARN_AVAILABLE:
+            # Cannot do meaningful cross-validation with <3 points or without sklearn
+            return BackcastValidationResponse(
+                parent_cdk=parent_cdk,
+                child_cdk=child_cdk,
+                crop=crop,
+                method="insufficient_data",
+                mape=0.0,
+                rmse=0.0,
+                trustworthiness_grade="F (Insufficient Data)",
+                steps=[]
+            )
+
+        method_name = "ml_gradient_boosting" if n_overlap >= 5 else "ridge_regression"
+        steps = []
+        errors = []
+        squared_errors = []
+
+        for holdout_year in overlapping_years:
+            train_years = [y for y in overlapping_years if y != holdout_year]
+            
+            X_train = []
+            y_train = []
+            for y in train_years:
+                parent_y = data.parent_yields[y]
+                child_y = data.child_yields[y]
+                if n_overlap >= 5:
+                    X_train.append([parent_y, data.area_ratio])
+                else:
+                    X_train.append([parent_y])
+                y_train.append(child_y)
+
+            X_arr = np.array(X_train)
+            y_arr = np.array(y_train)
+
+            if n_overlap >= 5:
+                model = GradientBoostingRegressor(n_estimators=100, max_depth=3, random_state=42)
+            else:
+                model = Ridge(alpha=self.RIDGE_ALPHA)
+            
+            model.fit(X_arr, y_arr)
+
+            # Predict holdout
+            holdout_parent_y = data.parent_yields[holdout_year]
+            holdout_child_y = data.child_yields[holdout_year]
+            
+            if n_overlap >= 5:
+                x_test = np.array([[holdout_parent_y, data.area_ratio]])
+            else:
+                x_test = np.array([[holdout_parent_y]])
+                
+            pred_y = float(model.predict(x_test)[0])
+            pred_y = max(0.0, pred_y)
+
+            error = abs(pred_y - holdout_child_y)
+            error_pct = (error / holdout_child_y) if holdout_child_y > 0 else 0.0
+            
+            errors.append(error_pct)
+            squared_errors.append(error ** 2)
+            
+            steps.append(
+                BackcastValidationStep(
+                    year=holdout_year,
+                    actual_yield=round(holdout_child_y, 2),
+                    predicted_yield=round(pred_y, 2),
+                    error_pct=round(error_pct, 4)
+                )
+            )
+
+        mape = float(np.mean(errors))
+        rmse = float(np.sqrt(np.mean(squared_errors)))
+
+        if mape < 0.10:
+            grade = "A (High Trust)"
+        elif mape < 0.20:
+            grade = "B (Moderate Trust)"
+        elif mape < 0.35:
+            grade = "C (Low Trust)"
+        else:
+            grade = "F (Unreliable)"
+
+        return BackcastValidationResponse(
+            parent_cdk=parent_cdk,
+            child_cdk=child_cdk,
+            crop=crop,
+            method=method_name,
+            mape=round(mape, 4),
+            rmse=round(rmse, 2),
+            trustworthiness_grade=grade,
+            steps=steps
+        )
+
