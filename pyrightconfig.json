@@ -8,6 +8,7 @@
   ],
   "extraPaths": [
     "backend",
-    "backend/venv/lib/python3.13/site-packages"
+    "backend/venv/lib/python3.13/site-packages",
+    "/Users/satyamkumar/Desktop/DistrictEvolution/backend/venv/lib/python3.13/site-packages"
   ]
 }
