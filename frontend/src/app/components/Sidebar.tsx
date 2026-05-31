@@ -6,7 +6,8 @@ import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import {
     Map, Shield, GitBranch, Wheat, FileText, BookOpen, Menu, X,
-    Layers, Droplet, Network, Target, Home, BarChart3, Globe2, Database
+    Layers, Droplet, Network, Target, Home, BarChart3, Globe2, Database,
+    Activity, CloudLightning, TrendingUp, CheckCircle, Scissors
 } from 'lucide-react';
 import { buildPublicOriginUrl } from '../services/api/config';
 
@@ -15,6 +16,7 @@ const NAV_GROUPS = [
         name: "Overview",
         items: [
             { href: '/', label: 'Dashboard', icon: Home },
+            { href: '/dashboard/split-impact', label: 'Split Impact', icon: Scissors },
             { href: '/explore/map', label: 'Interactive Map', icon: Map },
             { href: '/compare', label: 'District Comparison', icon: BarChart3 },
         ]
@@ -28,6 +30,11 @@ const NAV_GROUPS = [
             { href: '/analytics/water-stress', label: 'Water Stress', icon: Droplet },
             { href: '/analytics/spatial-contagion', label: 'Spatial Contagion', icon: Network },
             { href: '/analytics/risk-monitor', label: 'Risk Monitor', icon: Shield },
+            { href: '/analytics/anomaly-scan', label: 'Anomaly Scan', icon: Activity },
+            { href: '/analytics/climate-shocks', label: 'Climate Shocks', icon: CloudLightning },
+            { href: '/analytics/forecast-validation', label: 'Forecast Validation', icon: CheckCircle },
+            { href: '/analytics/resilience-composite', label: 'Resilience', icon: Shield },
+            { href: '/analytics/yield-frontier', label: 'Yield Frontier', icon: TrendingUp },
             { href: '/visualise', label: 'Data Visualiser', icon: BarChart3 },
         ]
     },
