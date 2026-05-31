@@ -143,6 +143,17 @@ export default function ResilienceCompositePage() {
                 </div>
             )}
 
+            {/* Initial state — nothing selected */}
+            {!isLoading && !selectedState && !isError && (
+                <div className="bg-white border border-dashed border-slate-300 rounded-xl p-10 text-center shadow-sm">
+                    <ShieldCheck size={48} className="mx-auto mb-4 text-teal-300" />
+                    <h3 className="text-lg font-bold text-slate-700">Select a State to Begin</h3>
+                    <p className="text-sm text-slate-500 mt-1 max-w-md mx-auto">
+                        Choose a state from the dropdown above to compute the PCA-based resilience composite index across all districts in that state.
+                    </p>
+                </div>
+            )}
+
             {hasData && data && (
                 <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">

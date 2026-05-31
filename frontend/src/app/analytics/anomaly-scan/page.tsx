@@ -14,12 +14,15 @@ export default function AnomalyScanPage() {
     const [crop, setCrop] = useState('rice');
     const [searchInput, setSearchInput] = useState('');
 
-    const { data: statesData } = useQuery({
-        queryKey: ['states-list-anomaly'],
-        queryFn: () => api.getStatesList(),
+    const { data: summaryData } = useQuery({
+        queryKey: ['stateSummary'],
+        queryFn: api.getSummary,
         staleTime: 3600000,
     });
-    const states = useMemo(() => (statesData || []).map((s) => s.state).sort(), [statesData]);
+    const states = useMemo(() => {
+        if (!summaryData?.states) return [];
+        return (Array.isArray(summaryData.states) ? summaryData.states : Object.keys(summaryData.states)).sort();
+    }, [summaryData]);
 
     const { data: districtsData, isLoading: districtsLoading } = useQuery({
         queryKey: ['state-districts-anomaly', selectedState],
@@ -221,6 +224,17 @@ export default function AnomalyScanPage() {
                     <Info size={36} className="mx-auto mb-3 text-slate-300" />
                     <h3 className="text-lg font-bold text-slate-700">Insufficient Data</h3>
                     <p className="text-sm text-slate-500 mt-1">{apiError?.message || 'Need at least 8 years of data for anomaly detection.'}</p>
+                </div>
+            )}
+
+            {/* Initial state — nothing selected */}
+            {!isLoading && !cdk && !isError && (
+                <div className="bg-white border border-dashed border-slate-300 rounded-xl p-10 text-center shadow-sm">
+                    <ScanSearch size={48} className="mx-auto mb-4 text-violet-300" />
+                    <h3 className="text-lg font-bold text-slate-700">Select a District to Scan</h3>
+                    <p className="text-sm text-slate-500 mt-1 max-w-md mx-auto">
+                        Choose a state and district from the dropdowns above, or enter a CDK code manually to run the Isolation Forest anomaly scan.
+                    </p>
                 </div>
             )}
 
