@@ -139,8 +139,7 @@ export default function Sidebar() {
                 {/* Dynamic System Status */}
                 <div className="p-4 border-t border-slate-800/50 bg-slate-900/50 backdrop-blur-sm shrink-0">
                     <div className="bg-slate-800/50 rounded-xl p-3 border border-slate-700/50 flex flex-col items-center text-center">
-                        {/* eslint-disable-next-line */}
-                        <span className="text-[10px] uppercase font-bold text-slate-500 mb-1">Backend Status</span>
+                        <span className="text-[10px] uppercase font-bold text-slate-500 mb-1">{"Backend Status"}</span>
                         <div className="flex items-center gap-2">
                             <span className="relative flex h-2 w-2">
                                 {backendOnline && <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>}

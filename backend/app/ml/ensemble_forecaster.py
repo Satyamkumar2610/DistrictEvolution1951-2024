@@ -267,7 +267,7 @@ class EnsembleForecaster:
             forecasts=forecasts,
             model_stats={
                 "prophet_data_points": float(len(years)),
-                "xgb_r2": round(float(self._r2(residuals, xgb_model, years, exogenous_features, feature_names)), 4)
+                "xgb_r2": round(self._r2(residuals, xgb_model, years, exogenous_features, feature_names), 4)
                 if xgb_model else 0.0,
                 "exogenous_features_used": feature_names,
             },
