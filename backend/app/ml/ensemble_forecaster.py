@@ -69,8 +69,8 @@ def _check_prophet() -> bool:
     try:
         from prophet import Prophet  # noqa: F401
         return True
-    except ImportError:
-        logger.warning("prophet not installed — ensemble forecasting disabled.")
+    except Exception as e:
+        logger.warning("prophet could not be loaded — ensemble forecasting disabled. Error: %s", e)
         return False
 
 
@@ -78,8 +78,8 @@ def _check_xgboost() -> bool:
     try:
         import xgboost  # noqa: F401
         return True
-    except ImportError:
-        logger.warning("xgboost not installed — ensemble forecasting disabled.")
+    except Exception as e:
+        logger.warning("xgboost could not be loaded — ensemble forecasting disabled. Error: %s", e)
         return False
 
 
@@ -87,8 +87,8 @@ def _check_shap() -> bool:
     try:
         import shap  # noqa: F401
         return True
-    except ImportError:
-        logger.warning("shap not installed — feature importance will be unavailable.")
+    except Exception as e:
+        logger.warning("shap could not be loaded — feature importance will be unavailable. Error: %s", e)
         return False
 
 
@@ -96,8 +96,8 @@ def _check_optuna() -> bool:
     try:
         import optuna  # noqa: F401
         return True
-    except ImportError:
-        logger.info("optuna not installed — hyperparameter tuning unavailable.")
+    except Exception as e:
+        logger.info("optuna could not be loaded — hyperparameter tuning unavailable. Error: %s", e)
         return False
 
 
