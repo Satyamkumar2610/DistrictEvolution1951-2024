@@ -20,6 +20,7 @@ logger = logging.getLogger(__name__)
 
 try:
     from scipy import stats as scipy_stats
+
     SCIPY_OK = True
 except ImportError:
     SCIPY_OK = False
@@ -29,37 +30,41 @@ except ImportError:
 # Data classes
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class GroundwaterStatus:
     """Groundwater health for a single district."""
+
     cdk: str
     name: str | None
-    pre_monsoon_depth_m: float     # depth to water table (mbgl) — higher = worse
+    pre_monsoon_depth_m: float  # depth to water table (mbgl) — higher = worse
     post_monsoon_depth_m: float
-    recharge_m: float              # post - pre (positive = recharged)
-    depletion_trend_m_yr: float    # annual rate of depth increase (positive = depleting)
-    category: str                  # "Safe", "Semi-Critical", "Critical", "Over-Exploited"
+    recharge_m: float  # post - pre (positive = recharged)
+    depletion_trend_m_yr: float  # annual rate of depth increase (positive = depleting)
+    category: str  # "Safe", "Semi-Critical", "Critical", "Over-Exploited"
     years_to_critical: float | None  # estimated years until over-exploited at current rate
 
 
 @dataclass
 class IrrigationProfile:
     """Irrigation mix for a district."""
+
     cdk: str
-    net_irrigated_pct: float       # % of cropped area irrigated
-    canal_pct: float               # % irrigated by canal/surface
-    groundwater_pct: float         # % irrigated by tube/bore wells
-    other_pct: float               # sprinkler, drip, tanks, etc.
-    dependency_risk: str           # "High GW Dependency", "Balanced", "Surface Dominant"
+    net_irrigated_pct: float  # % of cropped area irrigated
+    canal_pct: float  # % irrigated by canal/surface
+    groundwater_pct: float  # % irrigated by tube/bore wells
+    other_pct: float  # sprinkler, drip, tanks, etc.
+    dependency_risk: str  # "High GW Dependency", "Balanced", "Surface Dominant"
 
 
 @dataclass
 class WaterStressAlert:
     """Water stress alert for a district."""
+
     cdk: str
     name: str | None
-    stress_score: float            # 0-100 composite
-    stress_level: str              # "Low", "Moderate", "High", "Critical"
+    stress_score: float  # 0-100 composite
+    stress_level: str  # "Low", "Moderate", "High", "Critical"
     factors: list[str]
     recommendation: str
 
@@ -67,6 +72,7 @@ class WaterStressAlert:
 @dataclass
 class WaterStressReport:
     """Complete water stress analysis for a region."""
+
     region: str
     n_districts: int
     groundwater_statuses: list[GroundwaterStatus]
@@ -95,6 +101,7 @@ CGWB_THRESHOLDS = {
 # Analyzer
 # ---------------------------------------------------------------------------
 
+
 class WaterStressAnalyzer:
     """
     Analyses groundwater depletion, irrigation dependency, and composite
@@ -121,10 +128,14 @@ class WaterStressAnalyzer:
 
         if not years:
             return GroundwaterStatus(
-                cdk=cdk, name=name,
-                pre_monsoon_depth_m=0, post_monsoon_depth_m=0,
-                recharge_m=0, depletion_trend_m_yr=0,
-                category="Unknown", years_to_critical=None,
+                cdk=cdk,
+                name=name,
+                pre_monsoon_depth_m=0,
+                post_monsoon_depth_m=0,
+                recharge_m=0,
+                depletion_trend_m_yr=0,
+                category="Unknown",
+                years_to_critical=None,
             )
 
         latest_year = years[-1]
@@ -302,9 +313,11 @@ class WaterStressAnalyzer:
         irr_map: dict[str, IrrigationProfile] = {}
         for d in irrigation_data:
             irr = self.classify_irrigation(
-                d["cdk"], d.get("net_irrigated_pct", 0),
-                d.get("canal_pct", 0), d.get("groundwater_pct", 0),
-                d.get("other_pct", 0)
+                d["cdk"],
+                d.get("net_irrigated_pct", 0),
+                d.get("canal_pct", 0),
+                d.get("groundwater_pct", 0),
+                d.get("other_pct", 0),
             )
             irr_profiles.append(irr)
             irr_map[d["cdk"]] = irr
@@ -312,7 +325,8 @@ class WaterStressAnalyzer:
         # Process groundwater
         for d in groundwater_data:
             gw = self.classify_groundwater(
-                d["cdk"], d.get("name"),
+                d["cdk"],
+                d.get("name"),
                 d.get("pre_monsoon_depths", {}),
                 d.get("post_monsoon_depths", {}),
             )

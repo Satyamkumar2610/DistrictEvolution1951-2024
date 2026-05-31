@@ -20,6 +20,7 @@ logger = logging.getLogger(__name__)
 
 try:
     from scipy.signal import savgol_filter
+
     SCIPY_OK = True
 except ImportError:
     SCIPY_OK = False
@@ -48,28 +49,32 @@ REFERENCE_CALENDAR: dict[str, dict[str, int]] = {
 # Data classes
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class CropPhase:
     """Detected phenological phase."""
-    phase: str          # "green_up" (sowing proxy) or "senescence" (harvest proxy)
-    month: int          # detected month (1-12)
-    ndvi_value: float   # NDVI at the inflection
+
+    phase: str  # "green_up" (sowing proxy) or "senescence" (harvest proxy)
+    month: int  # detected month (1-12)
+    ndvi_value: float  # NDVI at the inflection
 
 
 @dataclass
 class CalendarDeviation:
     """A deviation from the reference crop calendar."""
-    event: str                  # "early_sowing", "late_harvest", etc.
+
+    event: str  # "early_sowing", "late_harvest", etc.
     detected_month: int
     reference_month: int
-    deviation_months: int       # positive = late, negative = early
-    risk_level: str             # "low", "medium", "high"
+    deviation_months: int  # positive = late, negative = early
+    risk_level: str  # "low", "medium", "high"
     description: str
 
 
 @dataclass
 class CropCalendarResult:
     """Full crop calendar detection result for one district-year."""
+
     cdk: str
     year: int
     crop: str | None
@@ -84,6 +89,7 @@ class CropCalendarResult:
 # ---------------------------------------------------------------------------
 # Detector
 # ---------------------------------------------------------------------------
+
 
 class CropCalendarDetector:
     """
@@ -134,9 +140,7 @@ class CropCalendarDetector:
 
         # Smooth
         if SCIPY_OK and len(ndvi_array) >= self.smooth_window:
-            smoothed = savgol_filter(
-                ndvi_array, self.smooth_window, self.smooth_poly, mode="wrap"
-            )
+            smoothed = savgol_filter(ndvi_array, self.smooth_window, self.smooth_poly, mode="wrap")
         else:
             smoothed = ndvi_array.copy()
 
@@ -193,17 +197,21 @@ class CropCalendarDetector:
             curr_d = deriv[i]
 
             if prev_d <= 0 and curr_d > 0:
-                phases.append(CropPhase(
-                    phase="green_up",
-                    month=i + 1,
-                    ndvi_value=round(float(smoothed[i]), 4),
-                ))
+                phases.append(
+                    CropPhase(
+                        phase="green_up",
+                        month=i + 1,
+                        ndvi_value=round(float(smoothed[i]), 4),
+                    )
+                )
             elif prev_d >= 0 and curr_d < 0:
-                phases.append(CropPhase(
-                    phase="senescence",
-                    month=i + 1,
-                    ndvi_value=round(float(smoothed[i]), 4),
-                ))
+                phases.append(
+                    CropPhase(
+                        phase="senescence",
+                        month=i + 1,
+                        ndvi_value=round(float(smoothed[i]), 4),
+                    )
+                )
 
         return phases
 
@@ -226,15 +234,17 @@ class CropCalendarDetector:
             dev = self._circular_diff(closest_gu.month, ref_sow)
             if abs(dev) >= 1:
                 event = "late_sowing" if dev > 0 else "early_sowing"
-                deviations.append(CalendarDeviation(
-                    event=event,
-                    detected_month=closest_gu.month,
-                    reference_month=ref_sow,
-                    deviation_months=dev,
-                    risk_level=self._deviation_risk(abs(dev)),
-                    description=f"Sowing detected in month {closest_gu.month}, "
-                                f"reference is month {ref_sow} ({abs(dev)} months {'late' if dev > 0 else 'early'})",
-                ))
+                deviations.append(
+                    CalendarDeviation(
+                        event=event,
+                        detected_month=closest_gu.month,
+                        reference_month=ref_sow,
+                        deviation_months=dev,
+                        risk_level=self._deviation_risk(abs(dev)),
+                        description=f"Sowing detected in month {closest_gu.month}, "
+                        f"reference is month {ref_sow} ({abs(dev)} months {'late' if dev > 0 else 'early'})",
+                    )
+                )
 
         # Find closest senescence to reference harvest
         if senescences and ref_harvest:
@@ -242,15 +252,17 @@ class CropCalendarDetector:
             dev = self._circular_diff(closest_sen.month, ref_harvest)
             if abs(dev) >= 1:
                 event = "late_harvest" if dev > 0 else "early_harvest"
-                deviations.append(CalendarDeviation(
-                    event=event,
-                    detected_month=closest_sen.month,
-                    reference_month=ref_harvest,
-                    deviation_months=dev,
-                    risk_level=self._deviation_risk(abs(dev)),
-                    description=f"Harvest detected in month {closest_sen.month}, "
-                                f"reference is month {ref_harvest} ({abs(dev)} months {'late' if dev > 0 else 'early'})",
-                ))
+                deviations.append(
+                    CalendarDeviation(
+                        event=event,
+                        detected_month=closest_sen.month,
+                        reference_month=ref_harvest,
+                        deviation_months=dev,
+                        risk_level=self._deviation_risk(abs(dev)),
+                        description=f"Harvest detected in month {closest_sen.month}, "
+                        f"reference is month {ref_harvest} ({abs(dev)} months {'late' if dev > 0 else 'early'})",
+                    )
+                )
 
         return deviations
 

@@ -26,38 +26,42 @@ logger = logging.getLogger(__name__)
 # Data classes
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class BacktestStep:
     """A single walk-forward validation step."""
-    train_end_year: int         # last year in training window
-    forecast_year: int          # year being predicted
+
+    train_end_year: int  # last year in training window
+    forecast_year: int  # year being predicted
     actual_yield: float
     predicted_yield: float
     lower_bound: float
     upper_bound: float
     absolute_error: float
-    percentage_error: float     # MAPE contribution (|actual - pred| / actual × 100)
-    within_ci: bool             # did actual fall within confidence interval?
+    percentage_error: float  # MAPE contribution (|actual - pred| / actual × 100)
+    within_ci: bool  # did actual fall within confidence interval?
     method_used: str
 
 
 @dataclass
 class BacktestMetrics:
     """Aggregated backtesting performance metrics."""
-    rmse: float                 # Root Mean Squared Error
-    mae: float                  # Mean Absolute Error
-    mape: float                 # Mean Absolute Percentage Error (%)
-    bias: float                 # Mean signed error (positive = over-predicting)
-    coverage_pct: float         # % of actuals falling within CI
+
+    rmse: float  # Root Mean Squared Error
+    mae: float  # Mean Absolute Error
+    mape: float  # Mean Absolute Percentage Error (%)
+    bias: float  # Mean signed error (positive = over-predicting)
+    coverage_pct: float  # % of actuals falling within CI
     n_steps: int
-    best_year: int | None       # year with lowest error
-    worst_year: int | None      # year with highest error
-    directional_accuracy: float # % of times trend direction was correct
+    best_year: int | None  # year with lowest error
+    worst_year: int | None  # year with highest error
+    directional_accuracy: float  # % of times trend direction was correct
 
 
 @dataclass
 class BacktestReport:
     """Complete backtesting report for a district-crop pair."""
+
     cdk: str
     crop: str
     forecast_method: str
@@ -73,6 +77,7 @@ class BacktestReport:
 # ---------------------------------------------------------------------------
 # Core Backtester
 # ---------------------------------------------------------------------------
+
 
 class ForecastBacktester:
     """
@@ -145,18 +150,20 @@ class ForecastBacktester:
                 pct_err = (abs_err / actual * 100) if actual > 0 else 0
                 within = lower <= actual <= upper
 
-                steps.append(BacktestStep(
-                    train_end_year=train_years[-1],
-                    forecast_year=test_year,
-                    actual_yield=round(actual, 2),
-                    predicted_yield=round(predicted, 2),
-                    lower_bound=round(lower, 2),
-                    upper_bound=round(upper, 2),
-                    absolute_error=round(abs_err, 2),
-                    percentage_error=round(pct_err, 2),
-                    within_ci=bool(within),
-                    method_used=method_name,
-                ))
+                steps.append(
+                    BacktestStep(
+                        train_end_year=train_years[-1],
+                        forecast_year=test_year,
+                        actual_yield=round(actual, 2),
+                        predicted_yield=round(predicted, 2),
+                        lower_bound=round(lower, 2),
+                        upper_bound=round(upper, 2),
+                        absolute_error=round(abs_err, 2),
+                        percentage_error=round(pct_err, 2),
+                        within_ci=bool(within),
+                        method_used=method_name,
+                    )
+                )
             except Exception as e:
                 logger.warning(f"Backtest step failed at split {split_idx}: {e}")
 
@@ -221,7 +228,7 @@ class ForecastBacktester:
         preds = np.array([s.predicted_yield for s in steps])
         errors = actuals - preds
 
-        rmse = float(np.sqrt(np.mean(errors ** 2)))
+        rmse = float(np.sqrt(np.mean(errors**2)))
         mae = float(np.mean(np.abs(errors)))
         mape = float(np.mean([s.percentage_error for s in steps]))
         bias = float(np.mean(errors))  # negative = under-predicting

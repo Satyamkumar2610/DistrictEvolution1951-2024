@@ -29,6 +29,7 @@ logger = logging.getLogger(__name__)
 try:
     from scipy.optimize import minimize
     from scipy.stats import norm
+
     SCIPY_OK = True
 except ImportError:
     SCIPY_OK = False
@@ -38,36 +39,40 @@ except ImportError:
 # Data classes
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class SFADistrictResult:
     """SFA result for a single district."""
+
     cdk: str
     name: str | None
     observed_yield: float
-    frontier_yield: float       # what a fully-efficient district would produce
+    frontier_yield: float  # what a fully-efficient district would produce
     technical_efficiency: float  # TE ∈ (0, 1] — 1.0 = on the frontier
-    inefficiency_score: float   # u_i estimate
-    yield_gap_kg_ha: float      # frontier - observed
-    yield_gap_pct: float        # gap as % of frontier
+    inefficiency_score: float  # u_i estimate
+    yield_gap_kg_ha: float  # frontier - observed
+    yield_gap_pct: float  # gap as % of frontier
     efficiency_rank: int
 
 
 @dataclass
 class SFAModelStats:
     """Global model statistics."""
+
     n_districts: int
-    sigma_v: float              # noise std
-    sigma_u: float              # inefficiency std
-    lambda_ratio: float         # σ_u / σ_v — higher = more inefficiency dominance
-    gamma: float                # σ²_u / (σ²_u + σ²_v) — proportion of variance from inefficiency
+    sigma_v: float  # noise std
+    sigma_u: float  # inefficiency std
+    lambda_ratio: float  # σ_u / σ_v — higher = more inefficiency dominance
+    gamma: float  # σ²_u / (σ²_u + σ²_v) — proportion of variance from inefficiency
     log_likelihood: float
-    mean_te: float              # average technical efficiency across districts
+    mean_te: float  # average technical efficiency across districts
     features_used: list[str]
 
 
 @dataclass
 class SFAReport:
     """Complete Stochastic Frontier Analysis report."""
+
     crop: str
     year: int | None
     model_stats: SFAModelStats
@@ -79,6 +84,7 @@ class SFAReport:
 # ---------------------------------------------------------------------------
 # Core SFA Engine
 # ---------------------------------------------------------------------------
+
 
 class StochasticFrontierAnalyzer:
     """
@@ -125,10 +131,7 @@ class StochasticFrontierAnalyzer:
 
         # Build feature matrix (or intercept-only)
         if feature_keys:
-            X = np.column_stack([
-                np.array([d.get(k, 0.0) for d in valid], dtype=float)
-                for k in feature_keys
-            ])
+            X = np.column_stack([np.array([d.get(k, 0.0) for d in valid], dtype=float) for k in feature_keys])
             # Log-transform positive features for Cobb-Douglas form
             X = np.log(np.maximum(X, 1e-6))
             # Add intercept
@@ -179,17 +182,19 @@ class StochasticFrontierAnalyzer:
         # Build district results
         district_results = []
         for i, d in enumerate(valid):
-            district_results.append(SFADistrictResult(
-                cdk=d.get("cdk", f"d_{i}"),
-                name=d.get("name"),
-                observed_yield=round(float(y[i]), 1),
-                frontier_yield=round(float(frontier_yields[i]), 1),
-                technical_efficiency=round(float(te[i]), 4),
-                inefficiency_score=round(float(u_hat[i]), 4),
-                yield_gap_kg_ha=round(float(frontier_yields[i] - y[i]), 1),
-                yield_gap_pct=round(float((1 - te[i]) * 100), 1),
-                efficiency_rank=0,  # filled below
-            ))
+            district_results.append(
+                SFADistrictResult(
+                    cdk=d.get("cdk", f"d_{i}"),
+                    name=d.get("name"),
+                    observed_yield=round(float(y[i]), 1),
+                    frontier_yield=round(float(frontier_yields[i]), 1),
+                    technical_efficiency=round(float(te[i]), 4),
+                    inefficiency_score=round(float(u_hat[i]), 4),
+                    yield_gap_kg_ha=round(float(frontier_yields[i] - y[i]), 1),
+                    yield_gap_pct=round(float((1 - te[i]) * 100), 1),
+                    efficiency_rank=0,  # filled below
+                )
+            )
 
         # Rank by TE descending
         district_results.sort(key=lambda x: x.technical_efficiency, reverse=True)
@@ -212,7 +217,7 @@ class StochasticFrontierAnalyzer:
             )
         else:
             interp = (
-                f"Noise dominates ({1-gamma:.0%} of variance). "
+                f"Noise dominates ({1 - gamma:.0%} of variance). "
                 f"Average TE is {mean_te:.1%} — most districts are near-efficient; "
                 f"yield differences are largely explained by external shocks."
             )
@@ -259,17 +264,19 @@ class StochasticFrontierAnalyzer:
 
         district_results: list[SFADistrictResult] = []
         for i, d in enumerate(valid):
-            district_results.append(SFADistrictResult(
-                cdk=d.get("cdk", f"d_{i}"),
-                name=d.get("name"),
-                observed_yield=round(float(y[i]), 1),
-                frontier_yield=round(float(frontier_yields[i]), 1),
-                technical_efficiency=round(float(te[i]), 4),
-                inefficiency_score=round(float(u_hat[i]), 4),
-                yield_gap_kg_ha=round(float(frontier_yields[i] - y[i]), 1),
-                yield_gap_pct=round(float((1 - te[i]) * 100), 1),
-                efficiency_rank=0,
-            ))
+            district_results.append(
+                SFADistrictResult(
+                    cdk=d.get("cdk", f"d_{i}"),
+                    name=d.get("name"),
+                    observed_yield=round(float(y[i]), 1),
+                    frontier_yield=round(float(frontier_yields[i]), 1),
+                    technical_efficiency=round(float(te[i]), 4),
+                    inefficiency_score=round(float(u_hat[i]), 4),
+                    yield_gap_kg_ha=round(float(frontier_yields[i] - y[i]), 1),
+                    yield_gap_pct=round(float((1 - te[i]) * 100), 1),
+                    efficiency_rank=0,
+                )
+            )
 
         district_results.sort(key=lambda x: x.technical_efficiency, reverse=True)
         for i, dr in enumerate(district_results):
@@ -294,8 +301,7 @@ class StochasticFrontierAnalyzer:
             ),
             district_results=district_results,
             frontier_interpretation=(
-                f"Approximate quantile frontier used (p95={frontier:.1f} kg/ha). "
-                f"Average TE is {mean_te:.1%}."
+                f"Approximate quantile frontier used (p95={frontier:.1f} kg/ha). Average TE is {mean_te:.1%}."
             ),
             warnings=warnings_list,
         )
@@ -303,9 +309,7 @@ class StochasticFrontierAnalyzer:
     # ------------------------------------------------------------------
     # MLE internals
     # ------------------------------------------------------------------
-    def _fit_mle(
-        self, ln_y: np.ndarray, X: np.ndarray, k: int
-    ) -> tuple[np.ndarray, float, float] | None:
+    def _fit_mle(self, ln_y: np.ndarray, X: np.ndarray, k: int) -> tuple[np.ndarray, float, float] | None:
         """Maximize the normal/half-normal composed error log-likelihood."""
         try:
             # Initial OLS estimates
@@ -335,9 +339,7 @@ class StochasticFrontierAnalyzer:
             logger.warning(f"SFA MLE failed: {e}")
             return None
 
-    def _fallback_estimates(
-        self, ln_y: np.ndarray, X: np.ndarray, k: int
-    ) -> tuple[np.ndarray, float, float]:
+    def _fallback_estimates(self, ln_y: np.ndarray, X: np.ndarray, k: int) -> tuple[np.ndarray, float, float]:
         """OLS-based fallback when MLE doesn't converge."""
         beta = np.linalg.lstsq(X, ln_y, rcond=None)[0]
         resid = ln_y - X @ beta
@@ -346,8 +348,11 @@ class StochasticFrontierAnalyzer:
 
     @staticmethod
     def _log_likelihood(
-        ln_y: np.ndarray, X: np.ndarray, beta: np.ndarray,
-        sigma_v: float, sigma_u: float,
+        ln_y: np.ndarray,
+        X: np.ndarray,
+        beta: np.ndarray,
+        sigma_v: float,
+        sigma_u: float,
     ) -> float:
         """Normal/half-normal composed error log-likelihood."""
         n = len(ln_y)

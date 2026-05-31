@@ -23,6 +23,7 @@ logger = logging.getLogger(__name__)
 try:
     from scipy import stats as scipy_stats  # noqa: F401
     from scipy.optimize import curve_fit
+
     SCIPY_OK = True
 except ImportError:
     SCIPY_OK = False
@@ -32,39 +33,43 @@ except ImportError:
 # Data classes
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class SoilProfile:
     """Soil characteristics for a district."""
+
     cdk: str
-    soil_type: str               # e.g. "Alluvial", "Black Cotton", "Red Laterite"
-    texture: str | None          # "Sandy Loam", "Clay", etc.
-    organic_carbon_pct: float    # 0-5%
-    ph: float                    # soil pH
-    depth_cm: float              # effective rooting depth
-    suitability_class: str       # "Highly Suitable", "Suitable", "Marginal", "Unsuitable"
+    soil_type: str  # e.g. "Alluvial", "Black Cotton", "Red Laterite"
+    texture: str | None  # "Sandy Loam", "Clay", etc.
+    organic_carbon_pct: float  # 0-5%
+    ph: float  # soil pH
+    depth_cm: float  # effective rooting depth
+    suitability_class: str  # "Highly Suitable", "Suitable", "Marginal", "Unsuitable"
 
 
 @dataclass
 class FertilizerSnapshot:
     """N/P/K usage for a district in a given year."""
+
     cdk: str
     year: int
     nitrogen_kg_ha: float
     phosphorus_kg_ha: float
     potassium_kg_ha: float
     total_npk_kg_ha: float
-    npk_ratio: str               # e.g. "4:2:1"
+    npk_ratio: str  # e.g. "4:2:1"
 
 
 @dataclass
 class DiminishingReturnResult:
     """Result of input-yield diminishing returns analysis."""
+
     crop: str
-    current_input_level: float   # total NPK kg/ha
-    estimated_optimal: float     # NPK where marginal yield peaks
+    current_input_level: float  # total NPK kg/ha
+    estimated_optimal: float  # NPK where marginal yield peaks
     marginal_yield_at_current: float  # kg yield per additional kg NPK
     over_fertilized: bool
-    efficiency_loss_pct: float   # % yield gain lost to over-application
+    efficiency_loss_pct: float  # % yield gain lost to over-application
     model_r2: float
     interpretation: str
 
@@ -72,6 +77,7 @@ class DiminishingReturnResult:
 @dataclass
 class SoilYieldGap:
     """Gap between potential yield for soil type vs actual."""
+
     cdk: str
     crop: str
     soil_type: str
@@ -84,6 +90,7 @@ class SoilYieldGap:
 @dataclass
 class InputEfficiencyReport:
     """Complete soil-yield-input analysis for a district."""
+
     cdk: str
     soil_profile: SoilProfile | None
     fertilizer_trend: list[FertilizerSnapshot]
@@ -109,6 +116,7 @@ SOIL_YIELD_BENCHMARKS: dict[str, dict[str, float]] = {
 # ---------------------------------------------------------------------------
 # Analyzer
 # ---------------------------------------------------------------------------
+
 
 class SoilYieldAnalyzer:
     """
@@ -153,11 +161,14 @@ class SoilYieldAnalyzer:
 
         # Fit Mitscherlich: y = A * (1 - exp(-b * x)) + c
         try:
+
             def mitscherlich(x_val, a, b, c):
                 return a * (1 - np.exp(-b * x_val)) + c
 
             popt, _ = curve_fit(
-                mitscherlich, x, y,
+                mitscherlich,
+                x,
+                y,
                 p0=[np.max(y), 0.01, np.min(y)],
                 maxfev=5000,
             )
@@ -298,9 +309,7 @@ class SoilYieldAnalyzer:
                 if latest_year:
                     actual_yld = yearly_data[latest_year].get("yield", 0)
                     if actual_yld > 0:
-                        gap = self.analyze_soil_yield_gap(
-                            cdk, crop, soil_profile.soil_type, actual_yld
-                        )
+                        gap = self.analyze_soil_yield_gap(cdk, crop, soil_profile.soil_type, actual_yld)
                         if gap:
                             soil_gaps.append(gap)
         else:

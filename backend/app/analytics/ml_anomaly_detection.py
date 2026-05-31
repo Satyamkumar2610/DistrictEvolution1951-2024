@@ -27,12 +27,14 @@ logger = logging.getLogger(__name__)
 try:
     from sklearn.ensemble import IsolationForest
     from sklearn.preprocessing import StandardScaler
+
     SKLEARN_OK = True
 except ImportError:
     SKLEARN_OK = False
 
 try:
     import tensorflow as tf  # noqa: F401
+
     TF_OK = True
 except ImportError:
     TF_OK = False
@@ -43,13 +45,15 @@ except ImportError:
 # Data classes
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class MLAnomaly:
     """An anomaly detected by an ML model."""
+
     year: int
-    anomaly_score: float        # lower = more anomalous for IsoForest, higher recon error for LSTM
+    anomaly_score: float  # lower = more anomalous for IsoForest, higher recon error for LSTM
     is_anomaly: bool
-    method: str                 # "isolation_forest" | "lstm_autoencoder"
+    method: str  # "isolation_forest" | "lstm_autoencoder"
     features_used: list[str] = field(default_factory=list)
     details: str = ""
 
@@ -57,6 +61,7 @@ class MLAnomaly:
 @dataclass
 class MLAnomalyReport:
     """Combined ML anomaly scan result."""
+
     cdk: str
     isolation_forest_anomalies: list[MLAnomaly]
     lstm_anomalies: list[MLAnomaly]
@@ -66,6 +71,7 @@ class MLAnomalyReport:
 # ---------------------------------------------------------------------------
 # 1. Isolation Forest Detector
 # ---------------------------------------------------------------------------
+
 
 class IsolationForestDetector:
     """
@@ -106,18 +112,13 @@ class IsolationForestDetector:
 
         # Resolve feature names
         if feature_names is None:
-            feature_names = sorted(
-                {k for feats in yearly_features.values() for k in feats}
-            )
+            feature_names = sorted({k for feats in yearly_features.values() for k in feats})
 
         if not feature_names:
             return []
 
         # Build matrix
-        X = np.array([
-            [yearly_features[yr].get(f, 0.0) for f in feature_names]
-            for yr in years
-        ])
+        X = np.array([[yearly_features[yr].get(f, 0.0) for f in feature_names] for yr in years])
 
         # Standardize
         scaler = StandardScaler()
@@ -135,14 +136,16 @@ class IsolationForestDetector:
         anomalies: list[MLAnomaly] = []
         for i, yr in enumerate(years):
             if preds[i] == -1:  # anomaly
-                anomalies.append(MLAnomaly(
-                    year=yr,
-                    anomaly_score=round(float(scores[i]), 4),
-                    is_anomaly=True,
-                    method="isolation_forest",
-                    features_used=feature_names,
-                    details=f"Multivariate outlier detected (score={scores[i]:.3f})",
-                ))
+                anomalies.append(
+                    MLAnomaly(
+                        year=yr,
+                        anomaly_score=round(float(scores[i]), 4),
+                        is_anomaly=True,
+                        method="isolation_forest",
+                        features_used=feature_names,
+                        details=f"Multivariate outlier detected (score={scores[i]:.3f})",
+                    )
+                )
 
         return anomalies
 
@@ -150,6 +153,7 @@ class IsolationForestDetector:
 # ---------------------------------------------------------------------------
 # 2. LSTM Autoencoder Detector
 # ---------------------------------------------------------------------------
+
 
 class LSTMAutoencoderDetector:
     """
@@ -198,9 +202,7 @@ class LSTMAutoencoderDetector:
             return []
 
         if feature_names is None:
-            feature_names = sorted(
-                {k for feats in yearly_features.values() for k in feats}
-            )
+            feature_names = sorted({k for feats in yearly_features.values() for k in feats})
 
         if not feature_names:
             return []
@@ -208,10 +210,7 @@ class LSTMAutoencoderDetector:
         num_features = len(feature_names)
 
         # Build time-ordered matrix
-        data = np.array([
-            [yearly_features[yr].get(f, 0.0) for f in feature_names]
-            for yr in years
-        ])
+        data = np.array([[yearly_features[yr].get(f, 0.0) for f in feature_names] for yr in years])
 
         # Normalize
         mean = data.mean(axis=0)
@@ -242,14 +241,16 @@ class LSTMAutoencoderDetector:
         anomalies: list[MLAnomaly] = []
         for _i, (err, yr) in enumerate(zip(errors, seq_year_end, strict=False)):
             if err > threshold:
-                anomalies.append(MLAnomaly(
-                    year=yr,
-                    anomaly_score=round(float(err), 4),
-                    is_anomaly=True,
-                    method="lstm_autoencoder",
-                    features_used=feature_names,
-                    details=f"Temporal sequence deviation (recon_error={err:.3f}, threshold={threshold:.3f})",
-                ))
+                anomalies.append(
+                    MLAnomaly(
+                        year=yr,
+                        anomaly_score=round(float(err), 4),
+                        is_anomaly=True,
+                        method="lstm_autoencoder",
+                        features_used=feature_names,
+                        details=f"Temporal sequence deviation (recon_error={err:.3f}, threshold={threshold:.3f})",
+                    )
+                )
 
         return anomalies
 
@@ -274,6 +275,7 @@ class LSTMAutoencoderDetector:
 # ---------------------------------------------------------------------------
 # Combined Scanner
 # ---------------------------------------------------------------------------
+
 
 def run_ml_anomaly_scan(
     cdk: str,

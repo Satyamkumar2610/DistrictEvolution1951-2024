@@ -31,6 +31,7 @@ logger = logging.getLogger(__name__)
 try:
     from sklearn.decomposition import PCA
     from sklearn.preprocessing import StandardScaler
+
     SKLEARN_OK = True
 except ImportError:
     SKLEARN_OK = False
@@ -55,6 +56,7 @@ RESILIENCE_VARIABLES = [
 @dataclass
 class PCALoadings:
     """PCA component loadings."""
+
     component: int
     explained_variance_pct: float
     loadings: dict[str, float]  # variable -> loading weight
@@ -63,12 +65,13 @@ class PCALoadings:
 @dataclass
 class DistrictResilience:
     """PCA resilience result for a single district."""
+
     cdk: str
     name: str | None
-    resilience_score: float         # composite PCA score (0-1 rescaled)
-    resilience_grade: str           # A/B/C/D/F
-    raw_variables: dict[str, float] # the 8 input values
-    component_scores: list[float]   # PC1, PC2, PC3 raw scores
+    resilience_score: float  # composite PCA score (0-1 rescaled)
+    resilience_grade: str  # A/B/C/D/F
+    raw_variables: dict[str, float]  # the 8 input values
+    component_scores: list[float]  # PC1, PC2, PC3 raw scores
     rank: int
     interpretation: str
 
@@ -76,6 +79,7 @@ class DistrictResilience:
 @dataclass
 class PCAResilienceReport:
     """Full PCA resilience analysis for a state/region."""
+
     region: str
     n_districts: int
     n_components_used: int
@@ -90,6 +94,7 @@ class PCAResilienceReport:
 # ---------------------------------------------------------------------------
 # Analyzer
 # ---------------------------------------------------------------------------
+
 
 class PCAResilienceAnalyzer:
     """
@@ -137,10 +142,7 @@ class PCAResilienceAnalyzer:
             return None
 
         # Build matrix
-        X = np.array([
-            [d[var] for var in RESILIENCE_VARIABLES]
-            for d in valid_data
-        ])
+        X = np.array([[d[var] for var in RESILIENCE_VARIABLES] for d in valid_data])
 
         # Flip variables where HIGHER is WORSE (so PCA direction is consistent)
         # yield_cv: higher = worse → flip
@@ -182,14 +184,13 @@ class PCAResilienceAnalyzer:
         # Build loadings
         loadings_list: list[PCALoadings] = []
         for i in range(n_comp):
-            loadings_list.append(PCALoadings(
-                component=i + 1,
-                explained_variance_pct=round(float(explained_ratio[i] * 100), 2),
-                loadings={
-                    var: round(float(components[i, j]), 4)
-                    for j, var in enumerate(RESILIENCE_VARIABLES)
-                },
-            ))
+            loadings_list.append(
+                PCALoadings(
+                    component=i + 1,
+                    explained_variance_pct=round(float(explained_ratio[i] * 100), 2),
+                    loadings={var: round(float(components[i, j]), 4) for j, var in enumerate(RESILIENCE_VARIABLES)},
+                )
+            )
 
         total_var = float(np.sum(explained_ratio) * 100)
 
@@ -207,10 +208,7 @@ class PCAResilienceAnalyzer:
         # Variable contributions (mean absolute loading × variance explained)
         var_contrib: dict[str, float] = {}
         for j, var in enumerate(RESILIENCE_VARIABLES):
-            contrib = sum(
-                abs(float(components[i, j])) * float(explained_ratio[i])
-                for i in range(n_comp)
-            )
+            contrib = sum(abs(float(components[i, j])) * float(explained_ratio[i]) for i in range(n_comp))
             var_contrib[var] = round(contrib, 4)
 
         # Build per-district results
@@ -220,16 +218,18 @@ class PCAResilienceAnalyzer:
             grade = self._grade(score)
             interp = self._interpret(score, d, var_contrib)
 
-            district_results.append(DistrictResilience(
-                cdk=d["cdk"],
-                name=d["name"],
-                resilience_score=round(score, 4),
-                resilience_grade=grade,
-                raw_variables={var: d[var] for var in RESILIENCE_VARIABLES},
-                component_scores=[round(float(scores[i, c]), 4) for c in range(n_comp)],
-                rank=0,
-                interpretation=interp,
-            ))
+            district_results.append(
+                DistrictResilience(
+                    cdk=d["cdk"],
+                    name=d["name"],
+                    resilience_score=round(score, 4),
+                    resilience_grade=grade,
+                    raw_variables={var: d[var] for var in RESILIENCE_VARIABLES},
+                    component_scores=[round(float(scores[i, c]), 4) for c in range(n_comp)],
+                    rank=0,
+                    interpretation=interp,
+                )
+            )
 
         # Rank
         district_results.sort(key=lambda x: x.resilience_score, reverse=True)
@@ -273,11 +273,7 @@ class PCAResilienceAnalyzer:
         components = vt[:n_comp]
         scores = X_scaled @ components.T
 
-        eigenvalues = (
-            svals ** 2 / (X_scaled.shape[0] - 1)
-            if X_scaled.shape[0] > 1
-            else svals ** 2
-        )
+        eigenvalues = svals**2 / (X_scaled.shape[0] - 1) if X_scaled.shape[0] > 1 else svals**2
         total_variance = float(np.sum(eigenvalues))
 
         if total_variance > 1e-12:

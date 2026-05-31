@@ -22,6 +22,7 @@ try:
     from esda.getisord import G_Local
     from esda.moran import Moran
     from libpysal.weights import W
+
     PYSAL_AVAILABLE = True
 except ImportError:
     PYSAL_AVAILABLE = False
@@ -35,20 +36,23 @@ except ImportError:
 # Data classes
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class MoranResult:
     """Global Moran's I result."""
-    morans_i: float          # -1 to +1
-    expected_i: float        # under null (≈ -1/(n-1))
+
+    morans_i: float  # -1 to +1
+    expected_i: float  # under null (≈ -1/(n-1))
     z_score: float
     p_value: float
-    significant: bool        # at α = 0.05
-    interpretation: str      # "clustered", "dispersed", "random"
+    significant: bool  # at α = 0.05
+    interpretation: str  # "clustered", "dispersed", "random"
 
 
 @dataclass
 class HotspotDistrict:
     """A single district's Gi* classification."""
+
     cdk: str
     name: str | None
     gi_star_z: float
@@ -60,6 +64,7 @@ class HotspotDistrict:
 @dataclass
 class SpatialAutocorrelationReport:
     """Full spatial autocorrelation analysis."""
+
     variable: str
     year: int | None
     global_moran: MoranResult
@@ -71,6 +76,7 @@ class SpatialAutocorrelationReport:
 # ---------------------------------------------------------------------------
 # Analyzer
 # ---------------------------------------------------------------------------
+
 
 class SpatialAutocorrelationAnalyzer:
     """
@@ -126,11 +132,7 @@ class SpatialAutocorrelationAnalyzer:
         neighbors: dict[int, list[int]] = {}
         for cdk in cdks:
             idx = cdk_to_idx[cdk]
-            nbrs = [
-                cdk_to_idx[nb]
-                for nb in adjacency.get(cdk, [])
-                if nb in cdk_to_idx
-            ]
+            nbrs = [cdk_to_idx[nb] for nb in adjacency.get(cdk, []) if nb in cdk_to_idx]
             neighbors[idx] = nbrs if nbrs else [idx]  # self-loop fallback for islands
 
         w = W(neighbors)
@@ -163,14 +165,16 @@ class SpatialAutocorrelationAnalyzer:
             elif cluster_type == "cold_spot":
                 cold_count += 1
 
-            hotspots.append(HotspotDistrict(
-                cdk=cdk,
-                name=district_names.get(cdk) if district_names else None,
-                gi_star_z=round(z, 4),
-                p_value=round(p, 4),
-                cluster_type=cluster_type,
-                confidence_level=conf,
-            ))
+            hotspots.append(
+                HotspotDistrict(
+                    cdk=cdk,
+                    name=district_names.get(cdk) if district_names else None,
+                    gi_star_z=round(z, 4),
+                    p_value=round(p, 4),
+                    cluster_type=cluster_type,
+                    confidence_level=conf,
+                )
+            )
 
         # Sort hotspots by absolute z-score descending
         hotspots.sort(key=lambda h: abs(h.gi_star_z), reverse=True)

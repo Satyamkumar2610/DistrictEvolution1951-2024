@@ -11,17 +11,19 @@ try:
     import arviz as az
     import numpy as np
     import pymc as pm
+
     PYMC_AVAILABLE = True
 except ImportError:
     PYMC_AVAILABLE = False
     logging.warning("PyMC is not installed. Bayesian state-space models will fallback to linear.")
+
 
 def bayesian_short_series_forecast(
     years: list[int],
     values: list[float],
     forecast_horizon: int = 5,
     regional_mean_trend: float = 0.0,
-    regional_trend_std: float = 0.1
+    regional_trend_std: float = 0.1,
 ) -> dict[str, Any]:
     """
     Fit a Bayesian hierarchical state-space trend model using PyMC.
@@ -66,12 +68,7 @@ def bayesian_short_series_forecast(
 
             # Inference
             trace = pm.sample(
-                1000,
-                tune=1000,
-                cores=1,
-                progressbar=False,
-                return_inferencedata=True,
-                compute_convergence_checks=False
+                1000, tune=1000, cores=1, progressbar=False, return_inferencedata=True, compute_convergence_checks=False
             )
 
         # Extract posterior predictive 90% HDI for forecasts
@@ -86,26 +83,26 @@ def bayesian_short_series_forecast(
 
         forecasts = []
         for i, year in enumerate(future_years):
-            forecasts.append({
-                "year": year,
-                "projected_value": round(float(forecast_means[i]), 4),
-                "lower_bound": round(float(hdi_bounds[i][0]), 4),
-                "upper_bound": round(float(hdi_bounds[i][1]), 4)
-            })
+            forecasts.append(
+                {
+                    "year": year,
+                    "projected_value": round(float(forecast_means[i]), 4),
+                    "lower_bound": round(float(hdi_bounds[i][0]), 4),
+                    "upper_bound": round(float(hdi_bounds[i][1]), 4),
+                }
+            )
 
-        return {
-            "method": "bayesian_state_space",
-            "borrowed_regional_strength": True,
-            "forecasts": forecasts
-        }
+        return {"method": "bayesian_state_space", "borrowed_regional_strength": True, "forecasts": forecasts}
 
     except Exception as e:
         logging.error(f"Bayesian modeling failed: {e}. Falling back to linear.")
         return _linear_fallback(years, values, forecast_horizon)
 
+
 def _linear_fallback(years: list[int], values: list[float], horizon: int) -> dict[str, Any]:
     """Simple linear extrapolation fallback."""
     from app.analytics.statistics import get_analyzer
+
     stats = get_analyzer()
     trend = stats.linear_trend(values)
 
@@ -120,15 +117,13 @@ def _linear_fallback(years: list[int], values: list[float], horizon: int) -> dic
         projected = last_val + (slope * i)
 
         # Simple ±10% dummy bounds for the linear fallback
-        forecasts.append({
-            "year": future_year,
-            "projected_value": round(projected, 4),
-            "lower_bound": round(projected * 0.9, 4),
-            "upper_bound": round(projected * 1.1, 4)
-        })
+        forecasts.append(
+            {
+                "year": future_year,
+                "projected_value": round(projected, 4),
+                "lower_bound": round(projected * 0.9, 4),
+                "upper_bound": round(projected * 1.1, 4),
+            }
+        )
 
-    return {
-        "method": "linear_extrapolation",
-        "borrowed_regional_strength": False,
-        "forecasts": forecasts
-    }
+    return {"method": "linear_extrapolation", "borrowed_regional_strength": False, "forecasts": forecasts}

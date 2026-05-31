@@ -24,6 +24,7 @@ logger = logging.getLogger(__name__)
 
 try:
     from scipy import stats as scipy_stats
+
     SCIPY_OK = True
 except ImportError:
     SCIPY_OK = False
@@ -32,6 +33,7 @@ except ImportError:
 # ---------------------------------------------------------------------------
 # Data classes
 # ---------------------------------------------------------------------------
+
 
 class ShockType:
     DROUGHT = "drought"
@@ -45,35 +47,38 @@ class ShockType:
 @dataclass
 class ClimaticEvent:
     """A detected climatic event in a specific year."""
-    event_type: str          # ShockType value
+
+    event_type: str  # ShockType value
     year: int
-    severity: str            # "moderate", "severe", "extreme"
-    metric_value: float      # SPI, rainfall mm, temp °C, etc.
-    threshold: float         # the threshold that was exceeded
+    severity: str  # "moderate", "severe", "extreme"
+    metric_value: float  # SPI, rainfall mm, temp °C, etc.
+    threshold: float  # the threshold that was exceeded
     description: str
 
 
 @dataclass
 class YieldShock:
     """A detected abnormal yield deviation."""
+
     cdk: str
     year: int
     crop: str
     actual_yield: float
-    expected_yield: float    # from trend
-    deviation_pct: float     # % below expected (negative = drop)
+    expected_yield: float  # from trend
+    deviation_pct: float  # % below expected (negative = drop)
     z_score: float
 
 
 @dataclass
 class ShockAttribution:
     """Attribution linking a yield shock to a climatic event."""
+
     cdk: str
     year: int
     crop: str
     yield_shock: YieldShock
     attributed_events: list[ClimaticEvent]
-    attribution_confidence: float   # 0-1
+    attribution_confidence: float  # 0-1
     total_yield_loss_pct: float
     interpretation: str
 
@@ -81,12 +86,13 @@ class ShockAttribution:
 @dataclass
 class ClimateShockAtlasReport:
     """Complete Climate Shock Atlas for a district."""
+
     cdk: str
     name: str | None
     period: str
     total_shock_years: int
     attributions: list[ShockAttribution]
-    event_frequency: dict[str, int]    # event_type -> count
+    event_frequency: dict[str, int]  # event_type -> count
     most_damaging_event_type: str | None
     avg_loss_per_shock_pct: float
     warnings: list[str] = field(default_factory=list)
@@ -95,6 +101,7 @@ class ClimateShockAtlasReport:
 # ---------------------------------------------------------------------------
 # Analyzer
 # ---------------------------------------------------------------------------
+
 
 class ClimateShockAnalyzer:
     """
@@ -152,7 +159,9 @@ class ClimateShockAnalyzer:
         overlap_years = sorted(set(yearly_yields.keys()) & set(yearly_climate.keys()))
 
         if yearly_climate and len(overlap_years) < 5:
-            warnings_list.append(f"Only {len(overlap_years)} overlapping climate/yield years — attribution may be unreliable.")
+            warnings_list.append(
+                f"Only {len(overlap_years)} overlapping climate/yield years — attribution may be unreliable."
+            )
         if not yearly_climate:
             warnings_list.append("No climate data provided — shocks detected from yield deviations only.")
 
@@ -177,14 +186,16 @@ class ClimateShockAnalyzer:
                     event_freq[evt.event_type] = event_freq.get(evt.event_type, 0) + 1
             else:
                 confidence = 0.2  # unexplained shock
-                events_in_year = [ClimaticEvent(
-                    event_type=ShockType.UNKNOWN,
-                    year=shock.year,
-                    severity="unknown",
-                    metric_value=0,
-                    threshold=0,
-                    description="No concurrent climatic event detected — shock may be due to pest, policy, or data issues.",
-                )]
+                events_in_year = [
+                    ClimaticEvent(
+                        event_type=ShockType.UNKNOWN,
+                        year=shock.year,
+                        severity="unknown",
+                        metric_value=0,
+                        threshold=0,
+                        description="No concurrent climatic event detected — shock may be due to pest, policy, or data issues.",
+                    )
+                ]
 
             # Interpretation
             if events_in_year and events_in_year[0].event_type != ShockType.UNKNOWN:
@@ -200,16 +211,18 @@ class ClimateShockAnalyzer:
                     f"with no clear climatic trigger identified."
                 )
 
-            attributions.append(ShockAttribution(
-                cdk=cdk,
-                year=shock.year,
-                crop=crop,
-                yield_shock=shock,
-                attributed_events=events_in_year,
-                attribution_confidence=round(confidence, 2),
-                total_yield_loss_pct=round(shock.deviation_pct, 1),
-                interpretation=interp,
-            ))
+            attributions.append(
+                ShockAttribution(
+                    cdk=cdk,
+                    year=shock.year,
+                    crop=crop,
+                    yield_shock=shock,
+                    attributed_events=events_in_year,
+                    attribution_confidence=round(confidence, 2),
+                    total_yield_loss_pct=round(shock.deviation_pct, 1),
+                    interpretation=interp,
+                )
+            )
             total_loss += abs(shock.deviation_pct)
 
         # Sort by year
@@ -238,7 +251,10 @@ class ClimateShockAnalyzer:
     # Yield shock detection
     # ------------------------------------------------------------------
     def _detect_yield_shocks(
-        self, cdk: str, crop: str, yearly_yields: dict[int, float],
+        self,
+        cdk: str,
+        crop: str,
+        yearly_yields: dict[int, float],
     ) -> list[YieldShock]:
         """Detect years with abnormal yield drops relative to linear trend."""
         years = sorted(yearly_yields.keys())
@@ -267,15 +283,17 @@ class ClimateShockAnalyzer:
             z = float(residuals[i] / std)
             if z < -self.yield_shock_z:  # negative = below trend
                 deviation_pct = float((values[i] - trend[i]) / trend[i] * 100) if trend[i] > 0 else 0
-                shocks.append(YieldShock(
-                    cdk=cdk,
-                    year=yr,
-                    crop=crop,
-                    actual_yield=round(float(values[i]), 1),
-                    expected_yield=round(float(trend[i]), 1),
-                    deviation_pct=round(deviation_pct, 1),
-                    z_score=round(z, 2),
-                ))
+                shocks.append(
+                    YieldShock(
+                        cdk=cdk,
+                        year=yr,
+                        crop=crop,
+                        actual_yield=round(float(values[i]), 1),
+                        expected_yield=round(float(trend[i]), 1),
+                        deviation_pct=round(deviation_pct, 1),
+                        z_score=round(z, 2),
+                    )
+                )
 
         return shocks
 
@@ -283,16 +301,14 @@ class ClimateShockAnalyzer:
     # Climate event detection
     # ------------------------------------------------------------------
     def _detect_climate_events(
-        self, yearly_climate: dict[int, dict[str, float]],
+        self,
+        yearly_climate: dict[int, dict[str, float]],
     ) -> dict[int, list[ClimaticEvent]]:
         """Scan climate variables for extreme events per year."""
         events: dict[int, list[ClimaticEvent]] = {}
 
         # Compute rainfall percentiles for flood detection
-        all_rainfall = [
-            d.get("rainfall_mm", 0) for d in yearly_climate.values()
-            if d.get("rainfall_mm", 0) > 0
-        ]
+        all_rainfall = [d.get("rainfall_mm", 0) for d in yearly_climate.values() if d.get("rainfall_mm", 0) > 0]
         rainfall_p95 = float(np.percentile(all_rainfall, self.flood_pctl)) if all_rainfall else 9999
 
         for year, climate in yearly_climate.items():
@@ -302,55 +318,69 @@ class ClimateShockAnalyzer:
             spi = climate.get("spi")
             if spi is not None and spi < self.spi_drought:
                 severity = "extreme" if spi < -2.0 else "severe" if spi < -1.75 else "moderate"
-                year_events.append(ClimaticEvent(
-                    event_type=ShockType.DROUGHT,
-                    year=year,
-                    severity=severity,
-                    metric_value=round(spi, 2),
-                    threshold=self.spi_drought,
-                    description=f"SPI={spi:.2f} indicates {severity} drought conditions",
-                ))
+                year_events.append(
+                    ClimaticEvent(
+                        event_type=ShockType.DROUGHT,
+                        year=year,
+                        severity=severity,
+                        metric_value=round(spi, 2),
+                        threshold=self.spi_drought,
+                        description=f"SPI={spi:.2f} indicates {severity} drought conditions",
+                    )
+                )
 
             # Flood
             rainfall = climate.get("rainfall_mm", 0)
             if rainfall > rainfall_p95 and rainfall_p95 < 9999:
-                severity = "extreme" if rainfall > rainfall_p95 * 1.5 else "severe" if rainfall > rainfall_p95 * 1.2 else "moderate"
-                year_events.append(ClimaticEvent(
-                    event_type=ShockType.FLOOD,
-                    year=year,
-                    severity=severity,
-                    metric_value=round(rainfall, 1),
-                    threshold=round(rainfall_p95, 1),
-                    description=f"Rainfall {rainfall:.0f}mm exceeded P95 ({rainfall_p95:.0f}mm)",
-                ))
+                severity = (
+                    "extreme"
+                    if rainfall > rainfall_p95 * 1.5
+                    else "severe"
+                    if rainfall > rainfall_p95 * 1.2
+                    else "moderate"
+                )
+                year_events.append(
+                    ClimaticEvent(
+                        event_type=ShockType.FLOOD,
+                        year=year,
+                        severity=severity,
+                        metric_value=round(rainfall, 1),
+                        threshold=round(rainfall_p95, 1),
+                        description=f"Rainfall {rainfall:.0f}mm exceeded P95 ({rainfall_p95:.0f}mm)",
+                    )
+                )
 
             # Heat wave
             extreme_hot_days = climate.get("tmax_extreme_days", 0)
             if extreme_hot_days >= self.heat_days:
                 tmax = climate.get("tmax_mean", 0)
                 severity = "extreme" if extreme_hot_days > 15 else "severe" if extreme_hot_days > 10 else "moderate"
-                year_events.append(ClimaticEvent(
-                    event_type=ShockType.HEAT_WAVE,
-                    year=year,
-                    severity=severity,
-                    metric_value=round(tmax, 1),
-                    threshold=self.heat_temp,
-                    description=f"{int(extreme_hot_days)} days exceeded {self.heat_temp}°C",
-                ))
+                year_events.append(
+                    ClimaticEvent(
+                        event_type=ShockType.HEAT_WAVE,
+                        year=year,
+                        severity=severity,
+                        metric_value=round(tmax, 1),
+                        threshold=self.heat_temp,
+                        description=f"{int(extreme_hot_days)} days exceeded {self.heat_temp}°C",
+                    )
+                )
 
             # Cold wave
             extreme_cold_days = climate.get("tmin_extreme_days", 0)
             if extreme_cold_days >= self.cold_days:
                 tmin = climate.get("tmin_mean", 0)
                 severity = "extreme" if extreme_cold_days > 15 else "severe" if extreme_cold_days > 10 else "moderate"
-                year_events.append(ClimaticEvent(
-                    event_type=ShockType.COLD_WAVE,
-                    year=year,
-                    severity=severity,
-                    metric_value=round(tmin, 1),
-                    threshold=self.cold_temp,
-                    description=f"{int(extreme_cold_days)} days below {self.cold_temp}°C",
-                ))
+                year_events.append(
+                    ClimaticEvent(
+                        event_type=ShockType.COLD_WAVE,
+                        year=year,
+                        severity=severity,
+                        metric_value=round(tmin, 1),
+                        threshold=self.cold_temp,
+                        description=f"{int(extreme_cold_days)} days below {self.cold_temp}°C",
+                    )
+                )
 
             if year_events:
                 events[year] = year_events
