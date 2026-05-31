@@ -22,17 +22,20 @@ logger = logging.getLogger(__name__)
 # Data classes
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class ShapContribution:
     """Single SHAP feature contribution."""
+
     feature: str
-    value: float       # raw feature value
+    value: float  # raw feature value
     shap_value: float  # contribution to prediction (kg/ha)
 
 
 @dataclass
 class EnsembleForecastPoint:
     """A single prediction from the ensemble."""
+
     year: int
     predicted_yield: float
     lower_bound: float
@@ -46,6 +49,7 @@ class EnsembleForecastPoint:
 @dataclass
 class EnsembleForecastResult:
     """Complete ensemble forecast output."""
+
     cdk: str
     crop: str
     historical_years: int
@@ -65,9 +69,11 @@ class EnsembleForecastResult:
 # Availability checks
 # ---------------------------------------------------------------------------
 
+
 def _check_prophet() -> bool:
     try:
         from prophet import Prophet  # noqa: F401
+
         return True
     except Exception as e:
         logger.warning("prophet could not be loaded — ensemble forecasting disabled. Error: %s", e)
@@ -77,6 +83,7 @@ def _check_prophet() -> bool:
 def _check_xgboost() -> bool:
     try:
         import xgboost  # noqa: F401
+
         return True
     except Exception as e:
         logger.warning("xgboost could not be loaded — ensemble forecasting disabled. Error: %s", e)
@@ -86,6 +93,7 @@ def _check_xgboost() -> bool:
 def _check_shap() -> bool:
     try:
         import shap  # noqa: F401
+
         return True
     except Exception as e:
         logger.warning("shap could not be loaded — feature importance will be unavailable. Error: %s", e)
@@ -95,6 +103,7 @@ def _check_shap() -> bool:
 def _check_optuna() -> bool:
     try:
         import optuna  # noqa: F401
+
         return True
     except Exception as e:
         logger.info("optuna could not be loaded — hyperparameter tuning unavailable. Error: %s", e)
@@ -110,6 +119,7 @@ OPTUNA_OK = _check_optuna()
 # ---------------------------------------------------------------------------
 # Core Ensemble
 # ---------------------------------------------------------------------------
+
 
 class EnsembleForecaster:
     """
@@ -170,23 +180,19 @@ class EnsembleForecaster:
         # ------------------------------------------------------------------
         # Stage 1: Prophet
         # ------------------------------------------------------------------
-        prophet_preds, prophet_future, prophet_model = self._fit_prophet(
-            years, yields, horizon_years, confidence_level
-        )
+        prophet_preds, prophet_future, prophet_model = self._fit_prophet(years, yields, horizon_years, confidence_level)
         if prophet_preds is None:
             return None
 
         # ------------------------------------------------------------------
         # Stage 1.5: Feature engineering
         # ------------------------------------------------------------------
-        enriched_features = self._engineer_features(
-            years, valid, exogenous_features
-        )
+        enriched_features = self._engineer_features(years, valid, exogenous_features)
 
         # ------------------------------------------------------------------
         # Stage 2: XGBoost on residuals
         # ------------------------------------------------------------------
-        residuals = yields - prophet_preds[:len(years)]
+        residuals = yields - prophet_preds[: len(years)]
 
         xgb_model = None
         xgb_future_residuals = np.zeros(horizon_years)
@@ -197,13 +203,14 @@ class EnsembleForecaster:
         # Optionally tune XGBoost hyperparameters
         xgb_params: dict[str, Any] | None = None
         if use_tuning and self.optuna_available and enriched_features:
-            xgb_params = self._tune_xgboost_params(
-                years, residuals, enriched_features
-            )
+            xgb_params = self._tune_xgboost_params(years, residuals, enriched_features)
 
         if self.xgb_available and enriched_features:
             xgb_result = self._fit_xgboost(
-                years, residuals, enriched_features, horizon_years,
+                years,
+                residuals,
+                enriched_features,
+                horizon_years,
                 xgb_params=xgb_params,
             )
             if xgb_result is not None:
@@ -217,8 +224,12 @@ class EnsembleForecaster:
 
         # Bootstrap CIs from XGBoost residual model
         bootstrap_lower, bootstrap_upper = self._bootstrap_ci(
-            years, residuals, enriched_features, horizon_years,
-            confidence_level, xgb_params,
+            years,
+            residuals,
+            enriched_features,
+            horizon_years,
+            confidence_level,
+            xgb_params,
         )
 
         for i in range(horizon_years):
@@ -240,22 +251,21 @@ class EnsembleForecaster:
 
             conf = max(0.5, confidence_level - 0.02 * (i + 1))
 
-            forecasts.append(EnsembleForecastPoint(
-                year=last_year + i + 1,
-                predicted_yield=round(predicted, 2),
-                lower_bound=round(lower, 2),
-                upper_bound=round(upper, 2),
-                confidence=round(conf, 2),
-                prophet_component=round(prophet_val, 2),
-                xgb_residual_component=round(xgb_adj, 2),
-                shap_contributions=shap_per_point[i] if i < len(shap_per_point) else [],
-            ))
+            forecasts.append(
+                EnsembleForecastPoint(
+                    year=last_year + i + 1,
+                    predicted_yield=round(predicted, 2),
+                    lower_bound=round(lower, 2),
+                    upper_bound=round(upper, 2),
+                    confidence=round(conf, 2),
+                    prophet_component=round(prophet_val, 2),
+                    xgb_residual_component=round(xgb_adj, 2),
+                    shap_contributions=shap_per_point[i] if i < len(shap_per_point) else [],
+                )
+            )
 
         # Trend classification
-        pct_change = (
-            (forecasts[0].predicted_yield - yields[-1]) / yields[-1] * 100
-            if yields[-1] > 0 else 0
-        )
+        pct_change = (forecasts[0].predicted_yield - yields[-1]) / yields[-1] * 100 if yields[-1] > 0 else 0
         trend = self._classify_trend(pct_change)
 
         return EnsembleForecastResult(
@@ -268,7 +278,8 @@ class EnsembleForecaster:
             model_stats={
                 "prophet_data_points": float(len(years)),
                 "xgb_r2": round(self._r2(residuals, xgb_model, years, exogenous_features, feature_names), 4)
-                if xgb_model else 0.0,
+                if xgb_model
+                else 0.0,
                 "exogenous_features_used": feature_names,
             },
             feature_importance=global_importance,
@@ -341,9 +352,7 @@ class EnsembleForecaster:
 
             optuna.logging.set_verbosity(optuna.logging.WARNING)
 
-            feature_names = sorted(
-                {k for feat in exogenous.values() for k in feat}
-            )
+            feature_names = sorted({k for feat in exogenous.values() for k in feat})
             if not feature_names:
                 return None
 
@@ -379,7 +388,7 @@ class EnsembleForecaster:
                 errors = []
                 for split_idx in range(min_train, n):
                     model.fit(X[:split_idx], y[:split_idx])
-                    pred = model.predict(X[split_idx:split_idx + 1])
+                    pred = model.predict(X[split_idx : split_idx + 1])
                     errors.append(float((y[split_idx] - pred[0]) ** 2))
 
                 return float(np.mean(errors)) if errors else float("inf")
@@ -418,9 +427,7 @@ class EnsembleForecaster:
         try:
             import xgboost as xgb
 
-            feature_names = sorted(
-                {k for feat in exogenous.values() for k in feat}
-            )
+            feature_names = sorted({k for feat in exogenous.values() for k in feat})
             if not feature_names:
                 return None, None
 
@@ -438,15 +445,18 @@ class EnsembleForecaster:
 
             # Future feature vector (use last available year as proxy)
             last_features = exogenous.get(years[-1], {})
-            future_row = np.array(
-                [[last_features.get(f, 0.0) for f in feature_names]]
-            )
+            future_row = np.array([[last_features.get(f, 0.0) for f in feature_names]])
 
             # Default XGBoost params
             base_params = {
-                "n_estimators": 100, "max_depth": 3, "learning_rate": 0.1,
-                "subsample": 0.8, "reg_alpha": 0.1, "reg_lambda": 1.0,
-                "random_state": 42, "verbosity": 0,
+                "n_estimators": 100,
+                "max_depth": 3,
+                "learning_rate": 0.1,
+                "subsample": 0.8,
+                "reg_alpha": 0.1,
+                "reg_lambda": 1.0,
+                "random_state": 42,
+                "verbosity": 0,
             }
             if xgb_params:
                 base_params.update(xgb_params)
@@ -495,10 +505,12 @@ class EnsembleForecaster:
             from prophet import Prophet
 
             # Prophet requires a DataFrame with 'ds' and 'y' columns
-            df = pd.DataFrame({
-                "ds": pd.to_datetime([f"{y}-06-15" for y in years]),
-                "y": yields,
-            })
+            df = pd.DataFrame(
+                {
+                    "ds": pd.to_datetime([f"{y}-06-15" for y in years]),
+                    "y": yields,
+                }
+            )
 
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
@@ -512,17 +524,15 @@ class EnsembleForecaster:
                 model.fit(df)
 
             # Future dataframe
-            future_dates = pd.DataFrame({
-                "ds": pd.to_datetime(
-                    [f"{years[-1] + i + 1}-06-15" for i in range(horizon)]
-                )
-            })
+            future_dates = pd.DataFrame({"ds": pd.to_datetime([f"{years[-1] + i + 1}-06-15" for i in range(horizon)])})
 
             all_dates = pd.concat([df[["ds"]], future_dates], ignore_index=True)
+            if not isinstance(all_dates, pd.DataFrame):
+                raise TypeError("Expected all_dates to be a pandas DataFrame")
             forecast = model.predict(all_dates)
 
-            historical_preds = forecast["yhat"].values[:len(years)]
-            future_forecast = forecast.iloc[len(years):]
+            historical_preds = forecast["yhat"].values[: len(years)]
+            future_forecast = forecast.iloc[len(years) :]
 
             return historical_preds, future_forecast, model
 
@@ -546,9 +556,7 @@ class EnsembleForecaster:
             import xgboost as xgb
 
             # Build feature matrix for historical years
-            feature_names = sorted(
-                {k for feat in exogenous.values() for k in feat}
-            )
+            feature_names = sorted({k for feat in exogenous.values() for k in feat})
             if not feature_names:
                 return None
 
@@ -568,9 +576,14 @@ class EnsembleForecaster:
 
             # Use tuned params if available, else defaults
             params = {
-                "n_estimators": 100, "max_depth": 3, "learning_rate": 0.1,
-                "subsample": 0.8, "reg_alpha": 0.1, "reg_lambda": 1.0,
-                "random_state": 42, "verbosity": 0,
+                "n_estimators": 100,
+                "max_depth": 3,
+                "learning_rate": 0.1,
+                "subsample": 0.8,
+                "reg_alpha": 0.1,
+                "reg_lambda": 1.0,
+                "random_state": 42,
+                "verbosity": 0,
             }
             if xgb_params:
                 params.update(xgb_params)
@@ -580,12 +593,8 @@ class EnsembleForecaster:
 
             # Predict future residuals (use last available features as proxy)
             last_features = exogenous.get(years[-1], {})
-            future_row = np.array(
-                [[last_features.get(f, 0.0) for f in feature_names]]
-            )
-            future_residuals = np.array([
-                float(model.predict(future_row)[0]) for _ in range(horizon)
-            ])
+            future_row = np.array([[last_features.get(f, 0.0) for f in feature_names]])
+            future_residuals = np.array([float(model.predict(future_row)[0]) for _ in range(horizon)])
 
             # SHAP explanations
             global_importance: dict[str, float] = {}
@@ -594,16 +603,14 @@ class EnsembleForecaster:
             if self.shap_available:
                 try:
                     import shap as shap_lib
+
                     explainer = shap_lib.TreeExplainer(model)
                     shap_values_future = explainer.shap_values(future_row)
 
                     # Global importance from training data
                     shap_values_train = explainer.shap_values(X)
                     mean_abs = np.mean(np.abs(shap_values_train), axis=0)
-                    global_importance = {
-                        fn: round(float(v), 4)
-                        for fn, v in zip(feature_names, mean_abs, strict=False)
-                    }
+                    global_importance = {fn: round(float(v), 4) for fn, v in zip(feature_names, mean_abs, strict=False)}
 
                     # Per-point contributions for future forecasts
                     for _ in range(horizon):
@@ -641,13 +648,10 @@ class EnsembleForecaster:
         if model is None or not exogenous or not feature_names:
             return 0.0
         try:
-            X = np.array([
-                [exogenous.get(yr, {}).get(f, 0.0) for f in feature_names]
-                for yr in years if yr in exogenous
-            ])
-            y_true = np.array([
-                residuals[i] for i, yr in enumerate(years) if yr in exogenous
-            ])
+            X = np.array(
+                [[exogenous.get(yr, {}).get(f, 0.0) for f in feature_names] for yr in years if yr in exogenous]
+            )
+            y_true = np.array([residuals[i] for i, yr in enumerate(years) if yr in exogenous])
             y_pred = model.predict(X)
             ss_res = np.sum((y_true - y_pred) ** 2)
             ss_tot = np.sum((y_true - np.mean(y_true)) ** 2)
