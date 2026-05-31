@@ -42,7 +42,7 @@ class LLMService:
                 generation_config=genai.types.GenerationConfig(
                     max_output_tokens=256,
                     temperature=0.3,
-                )
+                ),
             )
             return response.text.strip()
         except Exception as e:
@@ -141,8 +141,12 @@ class LLMService:
             "mean_score": report.get("mean_score"),
             "total_variance_explained": report.get("total_variance_explained"),
             "variable_contributions": report.get("variable_contributions"),
-            "top_resilient": [{"name": d.get("name"), "score": d.get("resilience_score"), "grade": d.get("grade")} for d in top_3],
-            "least_resilient": [{"name": d.get("name"), "score": d.get("resilience_score"), "grade": d.get("grade")} for d in bottom_3],
+            "top_resilient": [
+                {"name": d.get("name"), "score": d.get("resilience_score"), "grade": d.get("grade")} for d in top_3
+            ],
+            "least_resilient": [
+                {"name": d.get("name"), "score": d.get("resilience_score"), "grade": d.get("grade")} for d in bottom_3
+            ],
         }
 
         return await self._generate_narrative(system_prompt, json.dumps(clean_report))

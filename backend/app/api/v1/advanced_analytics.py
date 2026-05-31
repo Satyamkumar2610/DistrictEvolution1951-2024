@@ -331,7 +331,7 @@ async def validate_yield_backcast(
     Validate the backcast model using Leave-One-Out Cross-Validation.
     """
     from app.ml.yield_backcaster import YieldBackcaster
-    
+
     parent_cdk = validate_cdk(parent_cdk)
     child_cdk = validate_cdk(child_cdk)
     split_year = validate_year(split_year)

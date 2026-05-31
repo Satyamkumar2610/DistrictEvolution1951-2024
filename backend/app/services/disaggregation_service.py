@@ -429,7 +429,12 @@ class DisaggregationService:
             "production",
             start_year,
             end_year,
-            parent_points={point.year: point for point in self._parent_series(packet["parent_cdk"], None, crop, "production", start_year, end_year).points},
+            parent_points={
+                point.year: point
+                for point in self._parent_series(
+                    packet["parent_cdk"], None, crop, "production", start_year, end_year
+                ).points
+            },
             weights=weights,
         )
         area_points = await self._child_extensive_points(
@@ -440,7 +445,10 @@ class DisaggregationService:
             "area",
             start_year,
             end_year,
-            parent_points={point.year: point for point in self._parent_series(packet["parent_cdk"], None, crop, "area", start_year, end_year).points},
+            parent_points={
+                point.year: point
+                for point in self._parent_series(packet["parent_cdk"], None, crop, "area", start_year, end_year).points
+            },
             weights=weights,
         )
         derived_points = self._derive_yield_points(prod_points, area_points)
@@ -455,7 +463,9 @@ class DisaggregationService:
             backcast_points = await self._backcast_points(packet, crop, child_cdk, start_year, end_year)
 
         passthrough_points: list[EstimatePoint] = []
-        weight_row = self._weight_for_child(weights, child_cdk, "production") or self._weight_for_child(weights, child_cdk, "area")
+        weight_row = self._weight_for_child(weights, child_cdk, "production") or self._weight_for_child(
+            weights, child_cdk, "area"
+        )
         for year in missing_pre_split:
             if any(point.year == year for point in backcast_points):
                 continue
@@ -501,7 +511,9 @@ class DisaggregationService:
     ) -> DisaggregationSeriesResponse:
         packet = await self._get_packet_dict(event_id)
         detail = await self.get_event_detail(event_id)
-        parent_series = self._parent_series(packet["parent_cdk"], packet.get("parent_name"), crop, metric, start_year, end_year)
+        parent_series = self._parent_series(
+            packet["parent_cdk"], packet.get("parent_name"), crop, metric, start_year, end_year
+        )
 
         warnings = list(detail.warnings)
         if detail.readiness_tier == "Tier C":
@@ -557,8 +569,13 @@ class DisaggregationService:
         if any(series.weight_method == "equal_split_fallback" for series in child_series):
             warnings.append("Some child estimates use equal split fallback weights.")
         if any(any(point.method == "parent_yield_passthrough" for point in series.points) for series in child_series):
-            warnings.append("Some yield points fall back to parent-yield passthrough because supporting area/production signals were missing.")
-        if any(any(point.method.startswith("Backcast") or point.method == "ratio_extrapolation" for point in series.points) for series in child_series):
+            warnings.append(
+                "Some yield points fall back to parent-yield passthrough because supporting area/production signals were missing."
+            )
+        if any(
+            any(point.method.startswith("Backcast") or point.method == "ratio_extrapolation" for point in series.points)
+            for series in child_series
+        ):
             warnings.append("Yield backcast methods were used where direct extensive reconstruction was unavailable.")
 
         return DisaggregationSeriesResponse(

@@ -20,6 +20,7 @@ logger = logging.getLogger(__name__)
 # Lazy-load ensemble to avoid hard dependency on prophet/xgboost
 try:
     from app.ml.ensemble_forecaster import EnsembleForecaster  # noqa: F401
+
     ENSEMBLE_OK = True
 except ImportError:
     ENSEMBLE_OK = False

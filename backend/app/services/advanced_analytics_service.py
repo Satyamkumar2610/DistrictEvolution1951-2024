@@ -289,9 +289,9 @@ class AdvancedAnalyticsFacade:
         result = await backcaster.backcast_all_children(
             parent_cdk=parent_cdk, child_cdks=child_cdks, split_year=split_year, crop=crop, start_year=start_year
         )
-        
+
         llm = LLMService()
         narrative = await llm.generate_backcast_narrative(result.model_dump())
         result.ai_narrative = narrative
-        
+
         return result

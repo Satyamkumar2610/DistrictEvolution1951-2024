@@ -366,7 +366,9 @@ def build_disaggregation_artifacts(
     }
 
 
-def write_disaggregation_artifacts(artifacts: dict[str, list[dict[str, Any]]], output_dir: Path = DEFAULT_ARTIFACT_DIR) -> None:
+def write_disaggregation_artifacts(
+    artifacts: dict[str, list[dict[str, Any]]], output_dir: Path = DEFAULT_ARTIFACT_DIR
+) -> None:
     """Write built artifacts to the processed dataset directory."""
     output_dir.mkdir(parents=True, exist_ok=True)
 

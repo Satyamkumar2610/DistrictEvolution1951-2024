@@ -59,9 +59,7 @@ def _get_model() -> genai.GenerativeModel | None:
     # Define Gemini-compatible tools from the existing handlers
     # We pass the handlers as tools directly; Gemini will use their docstrings/signatures
     return genai.GenerativeModel(
-        model_name="gemini-1.5-pro",
-        system_instruction=SYSTEM_PROMPT,
-        tools=list(TOOL_HANDLERS.values())
+        model_name="gemini-1.5-pro", system_instruction=SYSTEM_PROMPT, tools=list(TOOL_HANDLERS.values())
     )
 
 
@@ -114,8 +112,7 @@ async def analyst(req: AnalystRequest):
                             tool_responses.append(
                                 genai.types.Part(
                                     function_response=genai.types.FunctionResponse(
-                                        name=fc.name,
-                                        response={"error": f"Unknown tool: {fc.name}"}
+                                        name=fc.name, response={"error": f"Unknown tool: {fc.name}"}
                                     )
                                 )
                             )
@@ -135,8 +132,7 @@ async def analyst(req: AnalystRequest):
                             tool_responses.append(
                                 genai.types.Part(
                                     function_response=genai.types.FunctionResponse(
-                                        name=fc.name,
-                                        response={"result": content}
+                                        name=fc.name, response={"result": content}
                                     )
                                 )
                             )
@@ -144,8 +140,7 @@ async def analyst(req: AnalystRequest):
                             tool_responses.append(
                                 genai.types.Part(
                                     function_response=genai.types.FunctionResponse(
-                                        name=fc.name,
-                                        response={"error": f"Tool execution failed: {str(e)}"}
+                                        name=fc.name, response={"error": f"Tool execution failed: {str(e)}"}
                                     )
                                 )
                             )
