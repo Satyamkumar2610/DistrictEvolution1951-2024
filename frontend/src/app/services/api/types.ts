@@ -626,4 +626,5 @@ export interface BackcastResponse {
     method: string;
     children: Record<string, BackcastChildResult>;
     conservation_check: BackcastConservationCheck;
+    ai_narrative?: string | null;
 }

@@ -151,9 +151,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         allowed, headers = await rate_limiter.is_allowed(client_ip)
 
         if not allowed:
-            logger.warning(
-                f"Rate limit exceeded: {client_ip} | Path: {request.url.path} | Method: {request.method}"
-            )
+            logger.warning(f"Rate limit exceeded: {client_ip} | Path: {request.url.path} | Method: {request.method}")
             return JSONResponse(
                 status_code=429,
                 content={
