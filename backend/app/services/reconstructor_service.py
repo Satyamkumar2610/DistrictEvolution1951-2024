@@ -123,9 +123,9 @@ class ReconstructorService:
             pass
 
         # Strategy 3: parse CDK format STATE_NAME_YEAR  → e.g. WB_24parg_1961 → name='24parg', state='West Bengal'
-        lgd = await self._resolve_by_name_match(cdk)
-        self._cdk_to_lgd[cdk] = lgd
-        return lgd
+        lgd_result: int | None = await self._resolve_by_name_match(cdk)
+        self._cdk_to_lgd[cdk] = lgd_result
+        return lgd_result
 
     async def _resolve_by_name_match(self, cdk: str) -> int | None:
         """Parse text CDK and fuzzy-match against districts table to get lgd_code."""
@@ -647,10 +647,9 @@ class ReconstructorService:
             lgd_to_cdk_rev: dict[int, str] = {v: k for k, v in cdk_to_lgd.items() if v is not None}
             data_cdks: list[str] = [lgd_to_cdk_rev.get(lgd, str(lgd)) for lgd in data_lgds]
 
-            # Count direct vs ancestor vs missing
+            # Count direct vs ancestor
             direct_count = sum(1 for _, (_, s) in resolution_map.items() if s == "direct")
             ancestor_count = sum(1 for _, (_, s) in resolution_map.items() if s == "ancestor")
-            missing_count = sum(1 for _, (lgd, s) in resolution_map.items() if s == "missing" and lgd is None)
 
             # Fetch yield data from resolved LGD codes
             metric_by_lgd: dict[int, dict[int, dict[str, float]]] = {}

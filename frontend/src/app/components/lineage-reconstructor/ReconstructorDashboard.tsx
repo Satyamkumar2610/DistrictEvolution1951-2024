@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useMemo } from "react";
-import Map, { Source, Layer, NavigationControl, MapRef } from "react-map-gl/maplibre";
+import Map, { NavigationControl, MapRef } from "react-map-gl/maplibre";
 import { Loader2, Search, Layers, TrendingUp, TrendingDown, Minus, BarChart3, MapPin, GitBranch, Calendar, ChevronRight } from "lucide-react";
 import "maplibre-gl/dist/maplibre-gl.css";
 
