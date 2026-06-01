@@ -232,11 +232,11 @@ async def get_forecast_validation(
         model = ExponentialSmoothing(values, trend="add", seasonal=None, initialization_method="estimated")
         fit_model = model.fit()
         forecast = fit_model.forecast(horizon)
-        
+
         # Estimate standard deviation from training residuals for confidence intervals
         residuals = fit_model.resid
         std = float(np.std(residuals)) if len(residuals) > 0 else float(np.std(values))
-        
+
         results = []
         for h in range(horizon):
             pred = float(forecast.iloc[h])
