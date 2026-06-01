@@ -225,28 +225,33 @@ async def get_forecast_validation(
         raise ValidationError(detail=f"Need ≥12 years for backtesting, found {len(yields)}")
 
     import numpy as np
+    from statsmodels.tsa.holtwinters import ExponentialSmoothing
 
-    def linear_forecast(years: list[int], values: list[float], horizon: int) -> list[dict[str, float]]:
-        x = np.array(years, dtype=float)
-        y = np.array(values, dtype=float)
-        coeffs = np.polyfit(x, y, 1)
+    def advanced_forecast(years: list[int], values: list[float], horizon: int) -> list[dict[str, float]]:
+        # Holt-Winters Exponential Smoothing with additive trend
+        model = ExponentialSmoothing(values, trend="add", seasonal=None, initialization_method="estimated")
+        fit_model = model.fit()
+        forecast = fit_model.forecast(horizon)
+        
+        # Estimate standard deviation from training residuals for confidence intervals
+        residuals = fit_model.resid
+        std = float(np.std(residuals)) if len(residuals) > 0 else float(np.std(values))
+        
         results = []
-        for h in range(1, horizon + 1):
-            pred_year = years[-1] + h
-            pred = float(np.polyval(coeffs, pred_year))
-            pred = max(0, pred)
-            std = float(np.std(y - np.polyval(coeffs, x)))
+        for h in range(horizon):
+            pred = float(forecast.iloc[h])
+            pred = max(0.0, pred)
             results.append(
                 {
                     "predicted_yield": round(pred, 2),
-                    "lower_bound": round(max(0, pred - 1.96 * std), 2),
+                    "lower_bound": round(max(0.0, pred - 1.96 * std), 2),
                     "upper_bound": round(pred + 1.96 * std, 2),
                 }
             )
         return results
 
     backtester = ForecastBacktester(min_train_years=8)
-    report = backtester.backtest(cdk, crop, yields, linear_forecast, method_name="Linear Trend")
+    report = backtester.backtest(cdk, crop, yields, advanced_forecast, method_name="Holt-Winters Exponential Smoothing")
 
     if report is None:
         raise ValidationError(detail="Backtesting failed — insufficient valid steps")
