@@ -79,3 +79,8 @@ figures/
 /legacy/
 /app/
 /lib/
+
+# ── Environment variables ────────────────────────────────────
+.env
+.env.*
+!.env.example

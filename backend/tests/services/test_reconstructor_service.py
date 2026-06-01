@@ -23,14 +23,14 @@ async def test_fetch_lineage_graph(mock_db, sample_split_event):
     assert "CG_chhattisgarh_2000" in graph._forward["MP_madhyapradesh_1951"][0].target_cdks
 
 @pytest.mark.asyncio
-async def test_find_cdks_with_data(mock_db):
-    """It should return a set of cdks that have data."""
-    mock_db.fetch = AsyncMock(return_value=[{"cdk": "Delhi"}])
+async def test_find_lgds_with_data(mock_db):
+    """It should return a set of lgds that have data."""
+    mock_db.fetch = AsyncMock(return_value=[{"district_lgd": 123}])
 
     svc = ReconstructorService(mock_db)
-    cdks = await svc._find_cdks_with_data(["Delhi", "Mumbai"])
+    lgds = await svc._find_lgds_with_data([123, 456], "rice")
 
-    # Mumbai was not returned by DB mock
-    assert "Delhi" in cdks
-    assert "Mumbai" not in cdks
-    assert len(cdks) == 1
+    # 456 was not returned by DB mock
+    assert 123 in lgds
+    assert 456 not in lgds
+    assert len(lgds) == 1

@@ -166,6 +166,7 @@ async def test_reconstructor_ancestors_descendants_and_summary_routes(client):
 @pytest.mark.asyncio
 async def test_reconstructor_returns_not_found_when_no_epochs_exist(client):
     mock_db = AsyncMock()
+    mock_db.fetchval.return_value = None  # Simulate cdk not found in split_events
     service = AsyncMock()
     service.reconstruct.return_value = {
         "root_cdk": "BR_unknown_1991",

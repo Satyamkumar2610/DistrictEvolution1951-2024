@@ -22,32 +22,46 @@ class FakeDB:
         self.metrics: list[dict[str, Any]] = metrics or []
         self.splits: list[dict[str, Any]] = splits or []
         self.geom: dict[str, str] = geom or {"geojson": '{"type": "Polygon"}', "type": "POLYGON"}
-        # CDKs that exist in agri_metrics (for _find_cdks_with_data)
+        # CDKs that exist in agri_metrics (for _find_lgds_with_data)
         self.available_cdks: set[str] = available_cdks or {m["cdk"] for m in (metrics or [])}
         self.queries: list[tuple[str, tuple]] = []
+        
+        # Mappings to fake LGD codes
+        all_possible_cdks = self.available_cdks | {"A", "B", "C", "D", "ROOT", "X", "Y"}
+        self.cdk_to_lgd_map = {cdk: i+1 for i, cdk in enumerate(sorted(list(all_possible_cdks)))}
+        self.lgd_to_cdk_map = {v: k for k, v in self.cdk_to_lgd_map.items()}
 
     async def fetch(self, query: str, *args: Any) -> list[dict[str, Any]]:
         self.queries.append((query, args))
         if "split_events" in query:
             return self.splits
-        if "DISTINCT cdk" in query:
-            # _find_cdks_with_data query
-            cdk_list = args[0] if args else []
-            return [{"cdk": c} for c in cdk_list if c in self.available_cdks]
+        if "DISTINCT district_lgd" in query:
+            # _find_lgds_with_data query
+            lgd_list = args[0] if args else []
+            return [{"district_lgd": lgd} for lgd in lgd_list if self.lgd_to_cdk_map.get(lgd) in self.available_cdks]
         if "agri_metrics" in query:
-            # Filter metrics by the requested CDK list
-            cdk_list = args[0] if args else []
-            prod_var = args[1] if len(args) > 1 else ""
-            area_var = args[2] if len(args) > 2 else ""
-            return [
-                m for m in self.metrics
-                if m["cdk"] in cdk_list
-                and m["variable_name"] in (prod_var, area_var)
-            ]
+            # Filter metrics by the requested LGD list
+            lgd_list = args[0] if args else []
+            vars_list = args[1] if len(args) > 1 else []
+            
+            valid_cdks = [self.lgd_to_cdk_map[lgd] for lgd in lgd_list if lgd in self.lgd_to_cdk_map]
+            
+            results = []
+            for m in self.metrics:
+                if m["cdk"] in valid_cdks and m["variable_name"] in vars_list:
+                    row = dict(m)
+                    row["district_lgd"] = self.cdk_to_lgd_map[m["cdk"]]
+                    results.append(row)
+            return results
         return []
 
     async def fetchval(self, query: str, *args: Any) -> Any:
         self.queries.append((query, args))
+        if "district_snapshots" in query and "district_cdk" in query:
+            cdk = args[0] if args else ""
+            if cdk in self.cdk_to_lgd_map:
+                return str(self.cdk_to_lgd_map[cdk])
+            return None
         if "districts" in query and "district_name" in query:
             return None  # No name found in districts table
         if "district_snapshots" in query and "district_name" in query:
@@ -199,8 +213,8 @@ async def test_reconstructor_crop_filter():
     agri_queries = [q for q in db.queries if "agri_metrics" in q[0] and "DISTINCT" not in q[0]]
     assert len(agri_queries) > 0
     agri_query = agri_queries[0]
-    assert "wheat_production" in agri_query[1]
-    assert "wheat_area" in agri_query[1]
+    assert "wheat_production" in agri_query[1][1]
+    assert "wheat_area" in agri_query[1][1]
 
 
 @pytest.mark.asyncio

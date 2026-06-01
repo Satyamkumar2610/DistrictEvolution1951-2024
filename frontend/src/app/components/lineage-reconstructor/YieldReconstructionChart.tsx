@@ -22,7 +22,7 @@ interface ChartTrace {
     };
     fill: "tozeroy" | "none";
     fillcolor?: string;
-    hovertemplate: string[];
+    hovertemplate: string;
     connectgaps: boolean;
     showlegend: boolean;
 }
