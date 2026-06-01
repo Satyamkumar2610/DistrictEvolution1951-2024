@@ -202,13 +202,26 @@ async def reconstruct_lineage(
 ):
     """Returns full epoch array with yield aggregation for a root CDK."""
     try:
-        svc = ReconstructorService(db)
-        result = await svc.reconstruct(cdk, crop, min_year)
-        if not result["epochs"]:
+        # Verify CDK exists in the split_events graph before reconstructing
+        exists = await db.fetchval(
+            """
+            SELECT 1 FROM split_events
+            WHERE parent_cdk = $1 OR $1 = ANY(child_cdks)
+            LIMIT 1
+            """,
+            cdk,
+        )
+        if not exists:
             raise HTTPException(
                 status_code=404,
-                detail="No split events found for this CDK. It may not be a root district.",
+                detail=(
+                    f"CDK '{cdk}' was not found in the lineage graph. "
+                    "Try searching for the district to get a valid CDK."
+                ),
             )
+
+        svc = ReconstructorService(db)
+        result = await svc.reconstruct(cdk, crop, min_year)
         return result
     except HTTPException:
         raise

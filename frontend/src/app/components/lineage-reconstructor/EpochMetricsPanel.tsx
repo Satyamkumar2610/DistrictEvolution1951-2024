@@ -12,13 +12,15 @@ export default function EpochMetricsPanel({
 }) {
     if (!epoch) return null;
 
-    const latestMetric = epoch.metrics && epoch.metrics.length > 0 
-        ? epoch.metrics[epoch.metrics.length - 1] 
-        : null;
+    // Find the most recent metric that actually has yield data
+    const metricsWithData = (epoch.metrics || []).filter(m => m.collective_yield != null);
+    const latestMetric = metricsWithData.length > 0 
+        ? metricsWithData[metricsWithData.length - 1] 
+        : (epoch.metrics && epoch.metrics.length > 0 ? epoch.metrics[epoch.metrics.length - 1] : null);
 
-    // Previous epoch metric for comparison (if in metrics array)
-    const prevMetric = epoch.metrics && epoch.metrics.length > 1
-        ? epoch.metrics[epoch.metrics.length - 2]
+    // Previous metric with data (for YoY change comparison)
+    const prevMetric = metricsWithData.length > 1
+        ? metricsWithData[metricsWithData.length - 2]
         : null;
 
     const yieldVal = latestMetric?.collective_yield;

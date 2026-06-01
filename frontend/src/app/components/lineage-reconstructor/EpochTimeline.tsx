@@ -42,7 +42,7 @@ export default function EpochTimeline({
                 {epochs.map((ep, idx) => {
                     const startYear = ep.year_start;
                     const endYear = ep.year_end || maxYear;
-                    const widthPercent = ((endYear - startYear + 1) / span) * 100;
+                    const duration = Math.max(endYear - startYear, 1);
                     const isActive = idx === activeEpochIndex;
 
                     return (
@@ -54,7 +54,7 @@ export default function EpochTimeline({
                                 ${isActive 
                                     ? 'bg-gradient-to-r from-violet-500 to-indigo-500 shadow-inner' 
                                     : 'bg-slate-700/50 hover:bg-slate-600/50'}`}
-                            style={{ width: `${widthPercent}%` }}
+                            style={{ flexGrow: duration }}
                         >
                             {/* Glow effect on active */}
                             {isActive && (

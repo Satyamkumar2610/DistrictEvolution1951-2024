@@ -257,16 +257,17 @@ export default function ReconstructorDashboard() {
         runReconstruction(cdk);
     };
 
-    const runReconstruction = async (cdk: string) => {
+    const runReconstruction = async (cdk: string, cropOverride?: string) => {
         if (!cdk) return;
+        const activeCrop = cropOverride ?? crop;
         setError(""); setLoading(true);
         try {
             const res = await fetch(
-                buildPublicApiV1Url(`/reconstruct/${cdk}?crop=${encodeURIComponent(crop)}`),
+                buildPublicApiV1Url(`/reconstruct/${encodeURIComponent(cdk)}?crop=${encodeURIComponent(activeCrop)}`),
             );
             if (!res.ok) {
                 const errBody = await res.json().catch(() => null);
-                throw new Error(errBody?.detail || `Server ${res.status}`);
+                throw new Error(errBody?.detail || `Server ${res.status}: No reconstruction data found for this district.`);
             }
             const data: LineageReconstructionResponse = await res.json();
             setEpochs(data.epochs || []); setActiveEpochIndex(0);
@@ -380,7 +381,11 @@ export default function ReconstructorDashboard() {
                         {CROPS.map(c => (
                             <button
                                 key={c}
-                                onClick={() => { setCrop(c); if (selectedCdk) runReconstruction(selectedCdk); }}
+                                onClick={() => {
+                                    setCrop(c);
+                                    // Pass new crop value directly to avoid stale closure
+                                    if (selectedCdk) runReconstruction(selectedCdk, c);
+                                }}
                                 className={`px-3 py-2 rounded-lg text-xs font-medium transition-all capitalize
                                     ${crop === c 
                                         ? 'bg-violet-500/20 text-violet-300 border border-violet-500/30 shadow-sm shadow-violet-500/10' 
@@ -438,25 +443,22 @@ export default function ReconstructorDashboard() {
                                     style={{ width: "100%", height: "100%" }}
                                 >
                                     <NavigationControl position="top-right" />
-                                    
-                                    {/* Base district boundaries (always visible) */}
-                                    <Source id="all-districts" type="geojson" data="/data/districts.json">
-                                        <Layer id="district-base-fill" type="fill" paint={{ "fill-color": "#1e293b", "fill-opacity": 0.4 }} />
-                                        <Layer id="district-base-border" type="line" paint={{ "line-color": "#334155", "line-width": 0.5, "line-opacity": 0.6 }} />
-                                    </Source>
 
-                                    {/* India official boundary overlay */}
-                                    <Source id="india-boundary" type="geojson" data="/data/india_boundary.json">
-                                        <Layer id="india-boundary-line" type="line" paint={{ "line-color": "#6366f1", "line-width": 2, "line-opacity": 0.5 }} />
-                                    </Source>
-
-                                    {/* Reconstructed district geometry (if available) */}
-                                    {activeEpoch && <ReconstructedMapLayer epoch={activeEpoch} />}
+                                    {/* Reconstructed district geometry for active epoch */}
+                                    {activeEpoch && activeEpoch.reconstructed_geojson && (
+                                        <ReconstructedMapLayer key={activeEpochIndex} epoch={activeEpoch} />
+                                    )}
                                 </Map>
-                                {/* Map caption */}
-                                <div className="absolute bottom-2 left-2 px-2 py-1 bg-slate-900/80 backdrop-blur rounded text-[9px] text-slate-500">
-                                    Boundary: Survey of India (Official) • {641} Districts
-                                </div>
+                                {/* Epoch indicator overlay */}
+                                {activeEpoch && (
+                                    <div className="absolute bottom-2 left-2 px-2.5 py-1.5 bg-slate-900/90 backdrop-blur rounded-lg text-[10px] text-slate-400 border border-slate-700/50">
+                                        <span className="font-semibold text-violet-400">Epoch {activeEpoch.epoch_num}</span>
+                                        {" · "}{activeEpoch.year_start}–{activeEpoch.year_end ?? "present"}
+                                        {!activeEpoch.reconstructed_geojson && (
+                                            <span className="ml-2 text-amber-500/70">No geometry</span>
+                                        )}
+                                    </div>
+                                )}
                             </div>
 
                             {/* Right Panel: Chart + Insights — 5 cols */}

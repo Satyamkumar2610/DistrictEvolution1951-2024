@@ -98,6 +98,9 @@ export default function YieldReconstructionChart({
             });
 
             const isActive = idx === activeEpochIndex;
+            // Skip traces with no valid yield data
+            const hasAnyYield = yields.some(v => v != null);
+            if (!hasAnyYield) return;
 
             epochTraces.push({
                 x: years,
@@ -112,14 +115,13 @@ export default function YieldReconstructionChart({
                 },
                 fill: isActive ? 'tozeroy' : 'none',
                 fillcolor: isActive ? 'rgba(139, 92, 246, 0.08)' : undefined,
-                hovertemplate: years.map((y, i) => 
-                    `<b>Year: ${y}</b><br>` +
-                    `Yield: ${yields[i] != null ? `${yields[i]!.toLocaleString()} kg/ha` : 'N/A'}<br>` +
-                    `Production: ${productions[i]}<br>` +
-                    `Coverage: ${coverages[i]}<br>` +
-                    `<i>Epoch ${ep.epoch_num}</i>` +
-                    `<extra></extra>`
-                ),
+                // Plotly hovertemplate must be a single string (not an array)
+                // Use %{x} and %{y} for per-point substitution
+                hovertemplate:
+                    `<b>Year: %{x}</b><br>` +
+                    `Yield: %{y:.0f} kg/ha<br>` +
+                    `<i>Epoch ${ep.epoch_num} · ${ep.year_start}–${ep.year_end ?? 'present'}</i>` +
+                    `<extra></extra>`,
                 connectgaps: false,
                 showlegend: false,
             });
