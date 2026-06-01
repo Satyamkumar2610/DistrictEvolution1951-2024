@@ -238,8 +238,10 @@ async def get_forecast_validation(
         std = float(np.std(residuals)) if len(residuals) > 0 else float(np.std(values))
 
         results = []
+        # Convert forecast to a list or array-like for safe indexing
+        forecast_vals = list(forecast)
         for h in range(horizon):
-            pred = float(forecast.iloc[h])
+            pred = float(forecast_vals[h])
             pred = max(0.0, pred)
             results.append(
                 {
