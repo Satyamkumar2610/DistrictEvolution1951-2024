@@ -1,64 +1,81 @@
-# Environment
+# ============================================================
+# .gitignore — DistrictEvolution
+# ============================================================
+
+# ── Python virtual environments ─────────────────────────────
 .venv/
 venv/
 backend/venv/
 env/
-.env
 
-# Python
+# ── Python bytecode & build artifacts ───────────────────────
 __pycache__/
 *.py[cod]
 *$py.class
+*.pyo
 *.egg-info/
+.eggs/
+dist/
+build/
+*.so
 
-# Data & Output
-output/
-data/raw/
-data/quarantine/
-data/maps-master/
-db_export/
-raw_data/
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Node
-node_modules/
-.next/
-frontend/node_modules/
-frontend/.next/
-
-# Temp
-~$*
-
-# Logs & Debug artifacts
-*.log
-response.json
-summary.json
-
-# Legacy code
-/legacy/
-/app/
-/lib/
-
-# Private / orphan docs
-README_DATABASE.md
-INTERVIEW_GUIDE.md
-PROJECT_EVALUATION_AND_ROADMAP.md
-install_deps.sh
-
-# District Splits Data (Excel)
-data/District Splits*
-
-# Research artifacts (keep in Git history only)
-paper/
-results/
-figures/
-
-# Test & Lint Caches
+# ── Type / lint / test caches ───────────────────────────────
 .coverage
 htmlcov/
 .ruff_cache/
 .pytest_cache/
 .mypy_cache/
+.tox/
+
+# ── Data & large outputs ─────────────────────────────────────
+data/raw/
+data/quarantine/
+data/maps-master/
+data/scraped/
+data/analysis/
+data/v1/
+data/v1_5/
+data/processed/disaggregation/
+db_export/
+raw_data/
+output/
+
+# ── District Splits Data (large Excel) ──────────────────────
+"data/District Splits*"
+
+# ── OS ───────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ── Node / Next.js ───────────────────────────────────────────
+node_modules/
+frontend/node_modules/
+.next/
+frontend/.next/
+frontend/tsconfig.tsbuildinfo
+
+# ── Temporary files ──────────────────────────────────────────
+~$*
+*.tmp
+response.json
+summary.json
+
+# ── Logs ─────────────────────────────────────────────────────
+*.log
+data/logs/
+
+# ── Private / orphan docs ────────────────────────────────────
+README_DATABASE.md
+INTERVIEW_GUIDE.md
+PROJECT_EVALUATION_AND_ROADMAP.md
+install_deps.sh
+
+# ── Research artifacts ───────────────────────────────────────
+paper/
+results/
+figures/
+
+# ── Legacy directories ───────────────────────────────────────
+/legacy/
+/app/
+/lib/

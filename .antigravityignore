@@ -1,0 +1,86 @@
+# ============================================================
+# .antigravityignore — Antigravity IDE indexer exclusions
+# Protects RAM by blocking large/irrelevant directories from
+# being read and indexed by the Antigravity background worker.
+# ============================================================
+
+# ── Python virtual environments ─────────────────────────────
+venv/
+backend/venv/
+.venv/
+env/
+
+# ── Python build / cache artifacts ──────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+.eggs/
+dist/
+build/
+*.so
+
+# ── Type / lint caches ──────────────────────────────────────
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+htmlcov/
+.coverage
+.tox/
+
+# ── Node / Next.js ──────────────────────────────────────────
+node_modules/
+frontend/node_modules/
+.next/
+frontend/.next/
+frontend/tsconfig.tsbuildinfo
+package-lock.json
+frontend/package-lock.json
+
+# ── Large data files & datasets ─────────────────────────────
+data/raw/
+data/scraped/
+data/analysis/
+data/v1/
+data/v1_5/
+data/processed/disaggregation/
+backend/data/
+
+# ── Database exports (huge SQL dumps) ───────────────────────
+db_export/
+
+# ── Git internals ───────────────────────────────────────────
+.git/
+
+# ── OS junk ─────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ── Log files ───────────────────────────────────────────────
+*.log
+data/logs/
+
+# ── Compiled / binary assets ────────────────────────────────
+*.xlsx
+*.csv
+*.json.gz
+*.parquet
+*.pkl
+*.pickle
+*.h5
+*.hdf5
+*.npy
+*.npz
+
+# ── Docker layer caches ─────────────────────────────────────
+.dockerignore
+
+# ── IDE & editor state ──────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ── Temporary / scratch files ───────────────────────────────
+~$*
+*.tmp
