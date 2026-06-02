@@ -149,7 +149,7 @@ class YieldForecaster:
                                 best_order = (p, 1, q)
                         except Exception:
                             continue
-                
+
                 if best_fit is None:
                     raise ValueError("SARIMA grid search failed to find a valid model.")
 
