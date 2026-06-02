@@ -1,8 +1,18 @@
 """
 Lineage Repository: Data access for lineage events (DB-based).
+
+Performance features:
+  - Recursive CTEs for deep ancestry / descendant traversal.
+  - Redis-backed caching for frequently accessed apportionment chains.
+
 Note: lineage_events uses CDK text keys which cannot join to districts.lgd_code.
 """
 
+import contextlib
+import logging
+from typing import Any
+
+from app.cache import CacheTTL, get_cache
 from app.repositories.base import BaseRepository
 from app.schemas.lineage import (
     CoverageDistrictItem,
@@ -12,6 +22,8 @@ from app.schemas.lineage import (
     TrackingCoverage,
     TrackingDistrict,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class LineageRepository(BaseRepository):
@@ -164,3 +176,156 @@ class LineageRepository(BaseRepository):
         """
         rows = await self.fetch_all(query)
         return [dict(row) for row in rows]
+
+    # ------------------------------------------------------------------
+    # Recursive CTE-based Ancestry Resolution (v2.0)
+    # ------------------------------------------------------------------
+
+    async def get_full_ancestry(
+        self, cdk: str, max_depth: int = 10
+    ) -> list[dict[str, Any]]:
+        """
+        Walk backwards through the lineage graph using a recursive CTE
+        to find all ancestor districts and the transition events that
+        connect them.
+
+        Returns a flat list of dicts:
+            [{cdk, parent_cdk, event_year, event_type, depth}, ...]
+        sorted by depth (closest ancestors first).
+        """
+        # Check cache first
+        cache = get_cache()
+        cache_key = f"ancestry:{cdk}:{max_depth}"
+        try:
+            cached = await cache.get(cache_key)
+            if cached is not None:
+                return cached
+        except Exception:
+            pass
+
+        query = """
+            WITH RECURSIVE lineage AS (
+                -- Base case: direct parents of the target district
+                SELECT
+                    le.parent_cdk,
+                    le.child_cdk,
+                    le.event_year,
+                    le.event_type,
+                    1 AS depth
+                FROM lineage_events le
+                WHERE le.child_cdk = $1
+
+                UNION ALL
+
+                -- Recursive step: walk up to grandparents
+                SELECT
+                    le.parent_cdk,
+                    le.child_cdk,
+                    le.event_year,
+                    le.event_type,
+                    l.depth + 1 AS depth
+                FROM lineage_events le
+                INNER JOIN lineage l ON le.child_cdk = l.parent_cdk
+                WHERE l.depth < $2
+            )
+            SELECT parent_cdk, child_cdk, event_year, event_type, depth
+            FROM lineage
+            ORDER BY depth ASC, event_year DESC
+        """
+        rows = await self.fetch_all(query, cdk, max_depth)
+        result = [dict(row) for row in rows]
+
+        # Cache for 24 hours (lineage data rarely changes)
+        with contextlib.suppress(Exception):
+            await cache.set(cache_key, result, CacheTTL.LINEAGE)
+
+        return result
+
+    async def get_full_descendants(
+        self, cdk: str, max_depth: int = 10
+    ) -> list[dict[str, Any]]:
+        """
+        Walk forward through the lineage graph using a recursive CTE
+        to find all descendant districts.
+
+        Returns a flat list of dicts:
+            [{parent_cdk, child_cdk, event_year, event_type, depth}, ...]
+        sorted by depth (immediate children first).
+        """
+        cache = get_cache()
+        cache_key = f"descendants:{cdk}:{max_depth}"
+        try:
+            cached = await cache.get(cache_key)
+            if cached is not None:
+                return cached
+        except Exception:
+            pass
+
+        query = """
+            WITH RECURSIVE lineage AS (
+                -- Base case: direct children of the target district
+                SELECT
+                    le.parent_cdk,
+                    le.child_cdk,
+                    le.event_year,
+                    le.event_type,
+                    1 AS depth
+                FROM lineage_events le
+                WHERE le.parent_cdk = $1
+
+                UNION ALL
+
+                -- Recursive step: walk down to grandchildren
+                SELECT
+                    le.parent_cdk,
+                    le.child_cdk,
+                    le.event_year,
+                    le.event_type,
+                    l.depth + 1 AS depth
+                FROM lineage_events le
+                INNER JOIN lineage l ON le.parent_cdk = l.child_cdk
+                WHERE l.depth < $2
+            )
+            SELECT parent_cdk, child_cdk, event_year, event_type, depth
+            FROM lineage
+            ORDER BY depth ASC, event_year ASC
+        """
+        rows = await self.fetch_all(query, cdk, max_depth)
+        result = [dict(row) for row in rows]
+
+        with contextlib.suppress(Exception):
+            await cache.set(cache_key, result, CacheTTL.LINEAGE)
+
+        return result
+
+    async def get_apportionment_chain(
+        self, cdk: str
+    ) -> list[dict[str, Any]]:
+        """
+        Get the full apportionment chain for a district — the ordered list
+        of transition edges from the oldest ancestor down to the target.
+
+        This is the critical path used by the harmonization engine to
+        compute area-weighted historical yields.
+
+        Results are heavily cached since apportionment chains are immutable
+        once ingested.
+        """
+        cache = get_cache()
+        cache_key = f"apportionment:{cdk}"
+        try:
+            cached = await cache.get(cache_key)
+            if cached is not None:
+                return cached
+        except Exception:
+            pass
+
+        ancestors = await self.get_full_ancestry(cdk)
+
+        # The chain is the ancestor list reversed (root -> target)
+        chain = list(reversed(ancestors))
+
+        with contextlib.suppress(Exception):
+            await cache.set(cache_key, chain, CacheTTL.LINEAGE)
+
+        return chain
