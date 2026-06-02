@@ -9,6 +9,7 @@ historical yield disaggregation.
 
 import logging
 from dataclasses import dataclass, field
+from typing import Any
 
 import numpy as np
 
@@ -147,8 +148,8 @@ class YieldBackcaster:
             is_valid = relative_error < 0.3  # Tolerate up to 30% error on simple average
 
         conservation = ConservationCheck(
-            is_valid=bool(is_valid),
-            relative_error=float(relative_error),
+            is_valid=is_valid,
+            relative_error=relative_error,
             parent_total_production=parent_y_test if parent_y_test else 0.0,
             children_sum_production=parent_y_test if parent_y_test else 0.0,  # Placeholder
         )
@@ -298,7 +299,7 @@ class YieldBackcaster:
         train_preds = model.predict(X_arr)
         r2 = r2_score(y_arr, train_preds)
         rmse = root_mean_squared_error(y_train, train_preds)
-        confidence = float(min(0.95, max(0.5, r2)))
+        confidence = min(0.95, max(0.5, r2))
 
         predicted_points = []
         for y in target_years:
@@ -322,14 +323,15 @@ class YieldBackcaster:
                 )
             )
 
+        importances: Any = model.feature_importances_
         return BackcastChildResult(
             child_cdk=child_cdk,
             backcasted_yields=predicted_points,
             model_stats={"r_squared": r2, "rmse": rmse, "samples": len(overlapping_years)},
             features_used=["parent_yield", "area_ratio"],
             feature_importances={
-                "parent_yield": float(model.feature_importances_[0]),
-                "area_ratio": float(model.feature_importances_[1]),
+                "parent_yield": float(importances[0]),
+                "area_ratio": float(importances[1]),
             },
         )
 
@@ -356,7 +358,7 @@ class YieldBackcaster:
         train_preds = model.predict(X_arr)
         r2 = r2_score(y_arr, train_preds)
         rmse = root_mean_squared_error(y_train, train_preds)
-        confidence = float(min(0.7, max(0.4, r2)))
+        confidence = min(0.7, max(0.4, r2))
 
         predicted_points = []
         for y in target_years:
@@ -452,7 +454,7 @@ class YieldBackcaster:
             if t_parent_y is None:
                 continue
 
-            pred_y = float(t_parent_y)  # Yield is intensive property, remains same on area-split assuming uniformity
+            pred_y = t_parent_y  # Yield is intensive property, remains same on area-split assuming uniformity
 
             predicted_points.append(
                 BackcastYearPoint(
