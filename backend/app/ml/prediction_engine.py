@@ -170,14 +170,14 @@ class PredictionEngine:
         soil_moisture = np.array([d.get("soil_moisture", 0) for d in data], dtype=float)
         has_moisture = np.any(soil_moisture > 0)
 
-        rainfall_sq = rainfall ** 2
+        rainfall_sq = rainfall**2
 
         # Build feature matrix (only include features with actual data)
         feature_names = ["rainfall", "rainfall_squared"]
         feature_keys = ["rainfall", "rainfall_sq"]
         feature_descriptions = [
             "Annual rainfall normal (mm) — primary climate driver of crop yield",
-            "Squared rainfall — captures non-linear optimal water requirements"
+            "Squared rainfall — captures non-linear optimal water requirements",
         ]
         raw_features = [rainfall, rainfall_sq]
 

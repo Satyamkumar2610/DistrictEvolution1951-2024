@@ -181,9 +181,7 @@ class LineageRepository(BaseRepository):
     # Recursive CTE-based Ancestry Resolution (v2.0)
     # ------------------------------------------------------------------
 
-    async def get_full_ancestry(
-        self, cdk: str, max_depth: int = 10
-    ) -> list[dict[str, Any]]:
+    async def get_full_ancestry(self, cdk: str, max_depth: int = 10) -> list[dict[str, Any]]:
         """
         Walk backwards through the lineage graph using a recursive CTE
         to find all ancestor districts and the transition events that
@@ -241,9 +239,7 @@ class LineageRepository(BaseRepository):
 
         return result
 
-    async def get_full_descendants(
-        self, cdk: str, max_depth: int = 10
-    ) -> list[dict[str, Any]]:
+    async def get_full_descendants(self, cdk: str, max_depth: int = 10) -> list[dict[str, Any]]:
         """
         Walk forward through the lineage graph using a recursive CTE
         to find all descendant districts.
@@ -298,9 +294,7 @@ class LineageRepository(BaseRepository):
 
         return result
 
-    async def get_apportionment_chain(
-        self, cdk: str
-    ) -> list[dict[str, Any]]:
+    async def get_apportionment_chain(self, cdk: str) -> list[dict[str, Any]]:
         """
         Get the full apportionment chain for a district — the ordered list
         of transition edges from the oldest ancestor down to the target.

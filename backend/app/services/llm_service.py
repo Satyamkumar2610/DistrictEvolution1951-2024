@@ -278,8 +278,7 @@ class LLMService:
         if not available_tools:
             # No tools registered — fall back to plain narrative
             answer = await self._generate_narrative(
-                "You are an agricultural data analyst. Answer the user's question "
-                "using the provided context data.",
+                "You are an agricultural data analyst. Answer the user's question using the provided context data.",
                 json.dumps({"question": user_question, "context": context or {}}),
             )
             return {"answer": answer or "Unable to generate an answer.", "tool_calls": [], "error": None}
@@ -347,9 +346,7 @@ class LLMService:
                 f"Question: {user_question}\n"
                 f"Tool results: {json.dumps(tool_results_context, default=str)}"
             )
-            answer = await self._generate_narrative(
-                "You are an expert agricultural analyst.", synthesis_prompt
-            )
+            answer = await self._generate_narrative("You are an expert agricultural analyst.", synthesis_prompt)
         else:
             answer = "I was unable to gather sufficient data to answer your question."
 

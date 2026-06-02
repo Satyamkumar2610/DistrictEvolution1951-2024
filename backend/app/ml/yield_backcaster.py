@@ -41,9 +41,9 @@ class NDVIRecord:
     """NDVI vegetation index data for a single district-year."""
 
     year: int
-    mean_ndvi: float       # 0-1 scale (avg growing-season NDVI)
-    max_ndvi: float        # peak NDVI in the growing season
-    growing_days: int      # days where NDVI > 0.3
+    mean_ndvi: float  # 0-1 scale (avg growing-season NDVI)
+    max_ndvi: float  # peak NDVI in the growing season
+    growing_days: int  # days where NDVI > 0.3
 
 
 @dataclass
@@ -165,7 +165,10 @@ class YieldBackcaster:
         )
 
     def _predict_child(
-        self, child_cdk: str, target_years: range, data: BackcastTrainingData,
+        self,
+        child_cdk: str,
+        target_years: range,
+        data: BackcastTrainingData,
         ndvi: NDVIDataset | None = None,
     ) -> BackcastChildResult:
         """Core prediction logic switching based on data availability."""
@@ -187,8 +190,11 @@ class YieldBackcaster:
             return self._predict_apportioned(child_cdk, target_years, data)
 
     def _predict_ndvi_weighted(
-        self, child_cdk: str, target_years: range,
-        data: BackcastTrainingData, ndvi: NDVIDataset,
+        self,
+        child_cdk: str,
+        target_years: range,
+        data: BackcastTrainingData,
+        ndvi: NDVIDataset,
     ) -> BackcastChildResult:
         """
         NDVI-enhanced backcasting. Uses satellite vegetation index ratios

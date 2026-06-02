@@ -364,9 +364,7 @@ class ReconstructorService:
                 if lgd is not None:
                     ancestor_lgd_map[ac] = lgd
 
-            anc_lgds_with_data = await self._find_lgds_with_data(
-                list(ancestor_lgd_map.values()), "rice"
-            )
+            anc_lgds_with_data = await self._find_lgds_with_data(list(ancestor_lgd_map.values()), "rice")
 
             for cdk in missing_cdks:
                 current = cdk
@@ -547,9 +545,7 @@ class ReconstructorService:
 
         # 3. Resolve all text CDKs -> integer LGD codes
         cdk_to_lgd = await self._resolve_cdks_to_lgds(all_cdks_list)
-        logger.info(
-            f"CDK resolution for {base_cdk}: resolved {len(cdk_to_lgd)}/{len(all_cdks_list)} CDKs to LGD codes"
-        )
+        logger.info(f"CDK resolution for {base_cdk}: resolved {len(cdk_to_lgd)}/{len(all_cdks_list)} CDKs to LGD codes")
 
         # 4. Build CDK → district name map for display
         cdk_name_map: dict[str, str] = {}
@@ -673,9 +669,7 @@ class ReconstructorService:
                         lgds_with_year_data += 1
 
                 coverage: float = float(lgds_with_year_data) / float(num_active) if num_active > 0 else 0.0
-                yield_val: float | None = (
-                    round((total_prod / total_area) * 1000.0, 2) if total_area > 0 else None
-                )
+                yield_val: float | None = round((total_prod / total_area) * 1000.0, 2) if total_area > 0 else None
 
                 if lgds_with_year_data > 0:
                     data_years_count += 1

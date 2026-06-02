@@ -21,6 +21,7 @@ logger = logging.getLogger(__name__)
 
 try:
     from scipy import stats as scipy_stats
+
     SCIPY_OK = True
 except ImportError:
     SCIPY_OK = False
@@ -83,7 +84,9 @@ class CausalInferenceEngine:
 
         # Need sufficient data in both treatment and control groups
         if n < 10 or treated < 2 or control < 2:
-            logger.info(f"Insufficient data for causal inference on {shock_type}. N={n}, Treated={treated}, Control={control}")
+            logger.info(
+                f"Insufficient data for causal inference on {shock_type}. N={n}, Treated={treated}, Control={control}"
+            )
             return None
 
         Y = np.array(yields, dtype=float)
@@ -107,7 +110,7 @@ class CausalInferenceEngine:
 
             # Calculate standard errors and p-values
             residuals = Y - (X @ beta)
-            sigma_sq = np.sum(residuals ** 2) / (n - X.shape[1])
+            sigma_sq = np.sum(residuals**2) / (n - X.shape[1])
             var_beta = sigma_sq * np.diag(XtX_inv)
             se_ate = np.sqrt(var_beta[1])
 

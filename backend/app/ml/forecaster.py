@@ -76,12 +76,13 @@ class YieldForecaster:
         crop: str,
         historical_yields: dict[int, float],
         horizon_years: int = 3,
+        exog_data: dict[int, list[float]] | None = None,
         confidence_level: float = 0.95,
     ) -> ForecastResult | None:
         """
         Generate yield forecasts based on historical data.
 
-        Uses SARIMA when sufficient data is available,
+        Uses SARIMAX when sufficient data and exogenous variables are available,
         falls back to linear regression otherwise.
         """
         # Filter valid data
@@ -94,12 +95,18 @@ class YieldForecaster:
         yields = [valid_data[y] for y in years]
         n = len(years)
 
-        # Try SARIMA first
+        # Try SARIMAX first
         if self._sarima_available and n >= self.SARIMA_MIN_POINTS:
-            result = self._forecast_sarima(cdk, crop, years, yields, horizon_years, confidence_level)
+            exog_list = None
+            if exog_data:
+                exog_list = [exog_data[y] for y in years if y in exog_data]
+                if len(exog_list) != n:
+                    exog_list = None  # Require complete exog data
+
+            result = self._forecast_sarima(cdk, crop, years, yields, horizon_years, confidence_level, exog_list)
             if result is not None:
                 return result
-            logger.info(f"SARIMA failed for {cdk}/{crop}, falling back to linear")
+            logger.info(f"SARIMAX failed for {cdk}/{crop}, falling back to linear")
 
         # Fallback to linear
         return self._forecast_linear(cdk, crop, years, yields, horizon_years, confidence_level)
@@ -115,8 +122,9 @@ class YieldForecaster:
         yields: list[float],
         horizon_years: int,
         confidence_level: float,
+        exog: list[list[float]] | None = None,
     ) -> ForecastResult | None:
-        """Fit SARIMA(1,1,1) and generate forecasts."""
+        """Fit SARIMAX(1,1,1) and generate forecasts."""
         try:
             import numpy as np
             from statsmodels.tsa.statespace.sarimax import SARIMAX
@@ -136,8 +144,10 @@ class YieldForecaster:
                 for p in range(3):
                     for q in range(3):
                         try:
+                            exog_arr = np.array(exog, dtype=float) if exog else None
                             model = SARIMAX(
                                 endog,
+                                exog=exog_arr,
                                 order=(p, 1, q),
                                 enforce_stationarity=False,
                                 enforce_invertibility=False,
@@ -156,7 +166,14 @@ class YieldForecaster:
                 fit = best_fit
 
             # Generate forecasts with confidence intervals
-            forecast_obj = fit.get_forecast(steps=horizon_years)
+            future_exog = None
+            if exog is not None and len(exog) > 0:
+                # Use the mean of the last 5 years to project future exogenous variables
+                recent_exog = np.array(exog[-5:], dtype=float)
+                mean_exog = np.mean(recent_exog, axis=0)
+                future_exog = np.tile(mean_exog, (horizon_years, 1))
+
+            forecast_obj = fit.get_forecast(steps=horizon_years, exog=future_exog)
             predicted = forecast_obj.predicted_mean
             conf_int = forecast_obj.conf_int(alpha=1 - confidence_level)
 
