@@ -160,6 +160,7 @@ class YieldBackcaster:
             method=primary_method,
             children=child_results,
             conservation_check=conservation,
+            ai_narrative=None,
         )
 
     def _predict_child(
@@ -230,20 +231,20 @@ class YieldBackcaster:
 
         predicted_points: list[BackcastYearPoint] = []
         for y in target_years:
-            parent_y = data.parent_yields.get(y)
+            t_parent_y = data.parent_yields.get(y)
             parent_ndvi_rec = ndvi.parent_ndvi.get(y)
             child_ndvi_rec = ndvi.child_ndvi.get(y)
 
-            if parent_y is None:
+            if t_parent_y is None:
                 continue
 
             if parent_ndvi_rec and child_ndvi_rec and parent_ndvi_rec.mean_ndvi > 0.01:
                 ndvi_ratio = child_ndvi_rec.mean_ndvi / parent_ndvi_rec.mean_ndvi
-                pred_y = parent_y * ndvi_ratio * cal_factor
+                pred_y = t_parent_y * ndvi_ratio * cal_factor
                 method = "ndvi_weighted"
             else:
                 # Fall back to area ratio for years without NDVI
-                pred_y = parent_y * data.area_ratio
+                pred_y = t_parent_y * data.area_ratio
                 method = "area_apportionment_fallback"
 
             pred_y = max(0.0, pred_y)
