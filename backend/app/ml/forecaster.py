@@ -33,7 +33,7 @@ class ForecastResult:
     method: str
     trend_direction: str
     forecasts: list[ForecastPoint]
-    model_stats: dict[str, float]
+    model_stats: dict[str, Any]
 
     def to_dict(self) -> dict[str, Any]:
         result = asdict(self)
@@ -128,15 +128,32 @@ class YieldForecaster:
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
 
-                # SARIMA(1,1,1) — handles single-differencing trend + MA smoothing
-                # No seasonal component since agricultural yields are annual
-                model = SARIMAX(
-                    endog,
-                    order=(1, 1, 1),
-                    enforce_stationarity=False,
-                    enforce_invertibility=False,
-                )
-                fit = model.fit(disp=False, maxiter=200)
+                best_aic = float("inf")
+                best_fit = None
+                best_order = (1, 1, 1)
+
+                # Grid search for the best order based on AIC
+                for p in range(3):
+                    for q in range(3):
+                        try:
+                            model = SARIMAX(
+                                endog,
+                                order=(p, 1, q),
+                                enforce_stationarity=False,
+                                enforce_invertibility=False,
+                            )
+                            fit = model.fit(disp=False, maxiter=200)
+                            if hasattr(fit, "aic") and not np.isnan(fit.aic) and fit.aic < best_aic:
+                                best_aic = fit.aic
+                                best_fit = fit
+                                best_order = (p, 1, q)
+                        except Exception:
+                            continue
+                
+                if best_fit is None:
+                    raise ValueError("SARIMA grid search failed to find a valid model.")
+
+                fit = best_fit
 
             # Generate forecasts with confidence intervals
             forecast_obj = fit.get_forecast(steps=horizon_years)
@@ -191,7 +208,7 @@ class YieldForecaster:
                     "aic": round(aic, 2),
                     "bic": round(bic, 2),
                     "data_points": float(n),
-                    "order": "(1,1,1)",  # type: ignore[dict-item]
+                    "order": str(best_order),
                 },
             )
         except Exception as e:

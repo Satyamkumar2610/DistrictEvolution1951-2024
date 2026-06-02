@@ -170,11 +170,16 @@ class PredictionEngine:
         soil_moisture = np.array([d.get("soil_moisture", 0) for d in data], dtype=float)
         has_moisture = np.any(soil_moisture > 0)
 
+        rainfall_sq = rainfall ** 2
+
         # Build feature matrix (only include features with actual data)
-        feature_names = ["rainfall"]
-        feature_keys = ["rainfall"]
-        feature_descriptions = ["Annual rainfall normal (mm) — primary climate driver of crop yield"]
-        raw_features = [rainfall]
+        feature_names = ["rainfall", "rainfall_squared"]
+        feature_keys = ["rainfall", "rainfall_sq"]
+        feature_descriptions = [
+            "Annual rainfall normal (mm) — primary climate driver of crop yield",
+            "Squared rainfall — captures non-linear optimal water requirements"
+        ]
+        raw_features = [rainfall, rainfall_sq]
 
         if has_monsoon:
             feature_names.append("monsoon_ratio")
@@ -270,12 +275,12 @@ class PredictionEngine:
             predicted = float(y_mean)
             target_features = X_mean
 
-        predicted = max(0.0, float(predicted))
+        predicted = max(0.0, predicted)
 
         # Confidence interval (prediction interval)
         t_value = 1.96  # ~95%
         ci_half = t_value * se * math.sqrt(1 + 1 / n)
-        conf_lower = max(0.0, float(predicted - ci_half))
+        conf_lower = max(0.0, predicted - ci_half)
         conf_upper = predicted + ci_half
 
         # Factor importances & contributions

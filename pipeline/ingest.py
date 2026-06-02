@@ -17,6 +17,10 @@ import logging
 import os
 import sys
 
+# Add backend to sys.path so we can import name_resolver
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'backend')))
+from app.services.name_resolver import resolve_alias, normalize
+
 import asyncpg
 
 from pipeline.lib.admin_graph import build_graph, AdminGraph
@@ -46,7 +50,7 @@ async def ingest_metrics(source_path: str, dsn: str) -> None:
         # Build name → unit mapping for CSV lookups
         unit_by_name: dict[str, str] = {}
         for uid, unit in graph.units.items():
-            key = f"{unit.name.lower()}|{unit.state.lower()}"
+            key = f"{resolve_alias(unit.name)}|{normalize(unit.state)}"
             unit_by_name[key] = uid
 
         logger.info(f"Reading metrics from {source_path}...")
@@ -75,7 +79,7 @@ async def ingest_metrics(source_path: str, dsn: str) -> None:
                     continue
 
                 # Look up the admin unit
-                lookup_key = f"{district_name.lower()}|{state_name.lower()}"
+                lookup_key = f"{resolve_alias(district_name)}|{normalize(state_name)}"
                 unit_id = unit_by_name.get(lookup_key)
 
                 if not unit_id:
