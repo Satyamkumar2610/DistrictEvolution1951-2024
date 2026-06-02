@@ -75,8 +75,8 @@ class TestPredictionEngineMultiFactor:
     def test_feature_count(self, engine, multi_factor_data):
         result = engine.predict(multi_factor_data, "District_5")
         assert result is not None
-        # Should have 5 features when all data present
-        assert result.feature_count == 5
+        # Should have 6 features when all data present (including rainfall_squared)
+        assert result.feature_count == 6
 
     def test_prediction_non_negative(self, engine, multi_factor_data):
         result = engine.predict(multi_factor_data, "District_0")
