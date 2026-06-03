@@ -145,7 +145,7 @@ class AnalysisService:
                 parent_cdk = resolve_lgd(parent_district, state_name, lgd_lookup)
             else:
                 parent_cdk = None
-                
+
             group["parent_cdk"] = str(parent_cdk) if parent_cdk is not None else None
 
             child_name = str(row["child_district"])
@@ -156,7 +156,7 @@ class AnalysisService:
                 child_cdk = resolve_lgd(child_name, state_name, lgd_lookup)
             else:
                 child_cdk = None
-                
+
             child_cdk_str = str(child_cdk) if child_cdk is not None else None
 
             if child_name not in group["children_districts"]:

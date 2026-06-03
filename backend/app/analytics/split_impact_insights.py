@@ -160,7 +160,7 @@ class SplitImpactInsightsAnalyzer:
             plain = "The district was renamed or had a single successor — no splitting occurred."
         elif child_count == 2:
             interpretation = "Minor fragmentation - binary split"
-            plain = f"The district was split into 2 parts. This is the most common type of split."
+            plain = "The district was split into 2 parts. This is the most common type of split."
         elif child_count <= 4:
             interpretation = "Moderate fragmentation"
             plain = f"The district was broken into {child_count} parts, which is moderately complex."
