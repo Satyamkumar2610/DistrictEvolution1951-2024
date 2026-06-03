@@ -146,7 +146,7 @@ class AnalysisService:
             else:
                 parent_cdk = None
 
-            group["parent_cdk"] = str(parent_cdk) if parent_cdk is not None else None
+            group["parent_cdk"] = parent_cdk
 
             child_name = str(row["child_district"])
             child_cdk_real = row.get("child_cdk_real")
@@ -157,7 +157,7 @@ class AnalysisService:
             else:
                 child_cdk = None
 
-            child_cdk_str = str(child_cdk) if child_cdk is not None else None
+            child_cdk_str = child_cdk
 
             if child_name not in group["children_districts"]:
                 group["children_districts"].append(child_name)
