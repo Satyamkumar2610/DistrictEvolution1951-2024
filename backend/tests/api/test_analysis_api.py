@@ -109,6 +109,8 @@ async def test_get_split_impact_districts_returns_response_model_shape(client):
                 "state_name": "Bihar",
                 "parent_lgd": 101,
                 "child_lgd": 201,
+                "parent_cdk_real": "101",
+                "child_cdk_real": "201",
             },
             {
                 "parent_district": "Old District",
@@ -117,6 +119,8 @@ async def test_get_split_impact_districts_returns_response_model_shape(client):
                 "state_name": "Bihar",
                 "parent_lgd": 101,
                 "child_lgd": None,
+                "parent_cdk_real": "101",
+                "child_cdk_real": None,
             },
         ],
         [
