@@ -192,7 +192,9 @@ class MetricRepository(BaseRepository):
 
         # Split-lineage fallback: map child data to parent's polygon
         if unmapped:
+            # 1. Try LGD-based mapping
             child_lgds = [int(m.cdk) for m in unmapped if m.cdk.isdigit()]
+            parent_map_lgd = {}
             if child_lgds:
                 lineage_query = """
                     SELECT ds.child_lgd, ds.parent_lgd, pd.district_name, pd.state_name
@@ -201,20 +203,52 @@ class MetricRepository(BaseRepository):
                     WHERE ds.child_lgd = ANY($1::int[])
                 """
                 lineage_rows = await self.fetch_all(lineage_query, child_lgds)
-                parent_map = {
+                parent_map_lgd = {
                     r["child_lgd"]: (r["parent_lgd"], r["district_name"], r["state_name"]) for r in lineage_rows
                 }
 
-                for m in unmapped:
-                    child_lgd = int(m.cdk) if m.cdk.isdigit() else None
-                    if child_lgd and child_lgd in parent_map:
-                        p_lgd, p_dist, p_state = parent_map[child_lgd]
+            # 2. Try Name-based mapping (for legacy V1 CDKs like TG_bhadra_2024)
+            unmapped_names = {m.district for m in unmapped if not m.cdk.isdigit() and m.district}
+            parent_map_name = {}
+            if unmapped_names:
+                name_query = """
+                    SELECT child_district, parent_district, state_name
+                    FROM district_splits
+                    WHERE child_district = ANY($1::text[])
+                """
+                name_rows = await self.fetch_all(name_query, list(unmapped_names))
+                for r in name_rows:
+                    if r["child_district"] and r["parent_district"]:
+                        key = (r["child_district"].lower(), r["state_name"].lower())
+                        parent_map_name[key] = r["parent_district"]
+
+            # Resolve mappings
+            for m in unmapped:
+                if m.cdk.isdigit():
+                    child_lgd = int(m.cdk)
+                    if child_lgd in parent_map_lgd:
+                        p_lgd, p_dist, p_state = parent_map_lgd[child_lgd]
                         geo_key = mapping_service.resolve_geo_key(str(p_lgd), p_dist, p_state)
                         if geo_key:
                             m.feature_id = geo_key
                             m.geo_key = geo_key
                             m.method = "SplitInherited"
-                    results.append(m)
+                else:
+                    if m.district and m.state:
+                        key = (m.district.lower(), m.state.lower())
+                        parent_district = parent_map_name.get(key)
+                        if parent_district:
+                            geo_key = mapping_service.resolve_geo_key(
+                                "legacy_fallback",
+                                parent_district,
+                                m.state
+                            )
+                            if geo_key:
+                                m.feature_id = geo_key
+                                m.geo_key = geo_key
+                                m.method = "SplitInherited"
+
+                results.append(m)
 
         return results
 
