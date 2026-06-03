@@ -73,7 +73,8 @@ class MetricRepository(BaseRepository):
             WHERE m.year = $1 AND m.variable_name = $2
             AND d.district_name != 'State Average'
         """
-        rows = await self.fetch_all(query, year, variable)
+        _rows = await self.fetch_all(query, year, variable)
+        rows = [dict(r) for r in _rows]
 
         # Extract crop name for fallback logic
         base_parts = variable.split("_")
@@ -100,7 +101,7 @@ class MetricRepository(BaseRepository):
             season_rows = await self.fetch_all(query, year, seasonal_variable)
             for sr in season_rows:
                 if sr["cdk"] not in existing_cdks:
-                    rows.append(sr)
+                    rows.append(dict(sr))
                     existing_cdks.add(sr["cdk"])
 
         # Rice additive fallback: Merge other seasons for districts missing
@@ -111,7 +112,7 @@ class MetricRepository(BaseRepository):
                 s_rows = await self.fetch_all(query, year, s_var)
                 for sr in s_rows:
                     if sr["cdk"] not in existing_cdks:
-                        rows.append(sr)
+                        rows.append(dict(sr))
                         existing_cdks.add(sr["cdk"])
 
         # Yield Fallback: Compute yield if missing organically from DB

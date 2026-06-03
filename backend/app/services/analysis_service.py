@@ -126,7 +126,7 @@ class AnalysisService:
             raw_split_year = row["split_year"]
             if raw_split_year is None:
                 continue
-            split_year = raw_split_year if isinstance(raw_split_year, int) else int(str(raw_split_year))
+            split_year = raw_split_year if isinstance(raw_split_year, int) else int(raw_split_year)
             state_name = str(row["state_name"])
             key = (parent_district, split_year)
 
@@ -431,7 +431,7 @@ class AnalysisService:
                     convergence = self.insights_analyzer.calculate_convergence_trend(yearly_children_yields, split_year)
                     effect_size = self.insights_analyzer.calculate_effect_size(pre_values, post_values)
                     counterfactual = self.insights_analyzer.calculate_counterfactual(
-                        pre_values, [int(y) for y in pre_years], result.post_stats.mean, split_year + 5
+                        pre_values, pre_years, result.post_stats.mean, split_year + 5
                     )
 
                     # Analyze child performance
@@ -528,7 +528,7 @@ class AnalysisService:
         # Fetch district metadata for labels
         cdk_map = await self.district_repo.get_cdk_to_meta_map()
 
-        parent_name = cdk_map.get(str(parent_cdk), {}).get("name", f"Parent ({parent_cdk})")
+        parent_name = cdk_map.get(parent_cdk, {}).get("name", f"Parent ({parent_cdk})")
 
         # Build response
         meta = AnalysisMeta(
@@ -557,7 +557,7 @@ class AnalysisService:
             elif series.id == "parent":
                 series.label = f"{parent_name} ({parent_cdk})"
             elif series.id in children_cdks:
-                child_name = cdk_map.get(str(series.id), {}).get("name", f"Child ({series.id})")
+                child_name = cdk_map.get(series.id, {}).get("name", f"Child ({series.id})")
                 series.label = f"{child_name} ({series.id})"
 
         return SplitImpactResponse(
