@@ -160,6 +160,8 @@ class MappingService:
             logger.error(f"Failed to load bridge: {e}")
             self._bridge = {}
 
+        if self._bridge is None:
+            self._bridge = {}
         return self._bridge
 
     @lru_cache(maxsize=1)
