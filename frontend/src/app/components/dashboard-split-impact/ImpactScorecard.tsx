@@ -40,6 +40,11 @@ export function ImpactScorecard({ event, crop }: ImpactScorecardProps) {
 
     const isIdsPositive = impact.assessment === 'positive';
     const isNeutral = impact.assessment === 'neutral';
+    
+    // Extract plain english counterfactual insight if available in advanced stats
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const advancedStats = ('advanced_stats' in data ? data.advanced_stats : ('advancedStats' in data ? data.advancedStats : null)) as any;
+    const counterfactualEnglish = advancedStats?.insights?.counterfactual?.plain_english;
 
     return (
         <div className="bg-white rounded-xl border border-slate-200 p-4 mb-4 shadow-sm">
@@ -98,6 +103,15 @@ export function ImpactScorecard({ event, crop }: ImpactScorecardProps) {
                     ))}
                 </div>
             </div>
+            
+            {/* Plain English Context */}
+            {counterfactualEnglish && (
+                <div className="mt-3 pt-3 border-t border-slate-200">
+                    <p className="text-xs text-slate-600 italic">
+                        {counterfactualEnglish}
+                    </p>
+                </div>
+            )}
         </div>
     );
 }

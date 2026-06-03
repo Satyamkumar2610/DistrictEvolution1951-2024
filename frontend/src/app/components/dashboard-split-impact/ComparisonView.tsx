@@ -6,6 +6,7 @@ import { ComparisonChart } from './ComparisonChart';
 import { ComparisonTable } from './ComparisonTable';
 import { ComparisonContextBanner } from './ComparisonContextBanner';
 import { AdvancedStatsPanel } from './AdvancedStatsPanel';
+import { MaupReliabilityPanel } from './MaupReliabilityPanel';
 import { ImpactScorecard } from './ImpactScorecard';
 import { AlertCircle, Sprout, Loader2 } from 'lucide-react';
 import { useAnalysis } from '../../hooks/useSplitImpact';
@@ -72,6 +73,7 @@ export function ComparisonView({ event, crop, metric, mode }: ComparisonViewProp
                         {advancedStats && (
                             <div className="px-3 md:px-4 pt-3 md:pt-4">
                                 <AdvancedStatsPanel stats={advancedStats} metric={metric} />
+                                <MaupReliabilityPanel maup={advancedStats.insights?.maup} />
                             </div>
                         )}
 

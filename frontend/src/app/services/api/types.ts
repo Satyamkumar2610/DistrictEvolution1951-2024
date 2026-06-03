@@ -67,6 +67,7 @@ export interface AnalysisFragmentationInsight {
     index: number;
     child_count: number;
     interpretation: string;
+    plain_english?: string;
 }
 
 export interface AnalysisDivergenceInsight {
@@ -77,18 +78,21 @@ export interface AnalysisDivergenceInsight {
     worst_performer?: string | null;
     worst_yield: number;
     spread: number;
+    plain_english?: string;
 }
 
 export interface AnalysisConvergenceInsight {
     trend: string;
     rate: number;
     interpretation: string;
+    plain_english?: string;
 }
 
 export interface AnalysisEffectSizeInsight {
     cohens_d: number;
     interpretation: string;
     confidence: number;
+    plain_english?: string;
 }
 
 export interface AnalysisCounterfactualInsight {
@@ -97,6 +101,7 @@ export interface AnalysisCounterfactualInsight {
     actual_yield: number;
     attribution_pct: number;
     interpretation: string;
+    plain_english?: string;
 }
 
 export interface AnalysisChildPerformanceInsight {
@@ -107,6 +112,27 @@ export interface AnalysisChildPerformanceInsight {
     cagr: number;
     observations: number;
     rank: number;
+    plain_english?: string;
+}
+
+export interface AnalysisMaupZoningInsight {
+    divergence_score: number;
+    interpretation: string;
+    is_sensitive: boolean;
+    plain_english?: string;
+}
+
+export interface AnalysisMaupScaleInsight {
+    variance_difference: number;
+    interpretation: string;
+    is_smoothing: boolean;
+    plain_english?: string;
+}
+
+export interface AnalysisMaupInsights {
+    zoning: AnalysisMaupZoningInsight;
+    scale: AnalysisMaupScaleInsight;
+    overall_reliability: string;
 }
 
 export interface SplitInsights {
@@ -115,6 +141,7 @@ export interface SplitInsights {
     convergence: AnalysisConvergenceInsight;
     effect_size: AnalysisEffectSizeInsight;
     counterfactual: AnalysisCounterfactualInsight;
+    maup: AnalysisMaupInsights;
     children_performance: AnalysisChildPerformanceInsight[];
     warnings: string[];
 }

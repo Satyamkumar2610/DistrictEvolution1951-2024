@@ -110,6 +110,7 @@ class BoundaryHarmonizer:
         metric: Literal["area", "production", "yield"],
         coverage_ratios: dict[str, float] | None = None,
         method: Literal["area_weighted", "equal_split"] = "area_weighted",
+        min_coverage: float = 0.5,
     ) -> list[HarmonizedPoint]:
         """
         Reconstruct parent district values from children's data.
@@ -123,6 +124,8 @@ class BoundaryHarmonizer:
             metric: Which metric to reconstruct
             coverage_ratios: Optional area proportions (if known)
             method: Harmonization method
+            min_coverage: Minimum fraction of children required (0-1).
+                Points below this are still emitted but with degraded confidence.
 
         Returns:
             List of HarmonizedPoint for post-split years
@@ -177,6 +180,19 @@ class BoundaryHarmonizer:
             # Calculate coverage (how many children contributed)
             coverage = len(active_cdks) / len(child_cdks) if child_cdks else 0
 
+            # Degrade confidence for low-coverage points
+            if coverage < min_coverage:
+                confidence = coverage * 0.5  # Heavily penalised
+                logger.warning(
+                    f"Low coverage reconstruction: year={year}, "
+                    f"coverage={coverage:.0%} ({len(active_cdks)}/{len(child_cdks)} children). "
+                    f"Point included with degraded confidence={confidence:.2f}."
+                )
+            elif coverage < 1.0:
+                confidence = 0.5 + coverage * 0.5  # Partial penalty
+            else:
+                confidence = 1.0
+
             results.append(
                 HarmonizedPoint(
                     year=year,
@@ -184,6 +200,7 @@ class BoundaryHarmonizer:
                     method=used_method,
                     source_cdks=active_cdks,
                     coverage=coverage,
+                    confidence=confidence,
                 )
             )
 
@@ -194,6 +211,7 @@ class BoundaryHarmonizer:
         data_map: dict[int, dict[str, dict[str, float]]],
         parent_cdk: str,
         metric: Literal["area", "production", "yield"],
+        split_year: int | None = None,
     ) -> list[HarmonizedPoint]:
         """
         Extract parent series for pre-split years.
@@ -202,6 +220,8 @@ class BoundaryHarmonizer:
             data_map: Dict[year][cdk] -> {area, prod, yld}
             parent_cdk: Parent district CDK
             metric: Which metric to extract
+            split_year: If provided, only return data for years < split_year.
+                This prevents stale post-split parent data from leaking through.
 
         Returns:
             List of HarmonizedPoint for pre-split years
@@ -209,6 +229,10 @@ class BoundaryHarmonizer:
         results = []
 
         for year in sorted(data_map.keys()):
+            # Filter at source: skip post-split years for parent
+            if split_year is not None and year >= split_year:
+                continue
+
             year_data = data_map[year]
 
             if parent_cdk not in year_data:

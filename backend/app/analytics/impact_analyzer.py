@@ -91,7 +91,12 @@ class ImpactAnalyzer:
         )
 
     def _calculate_period_stats(self, values: list[float]) -> PeriodStats:
-        """Calculate statistics for a single period."""
+        """Calculate statistics for a single period.
+
+        CAGR uses trend-fitted endpoints instead of raw first/last values.
+        This prevents outlier years (drought/flood) at period boundaries
+        from distorting the growth rate.
+        """
         if not values:
             return PeriodStats(
                 mean=0,
@@ -101,10 +106,18 @@ class ImpactAnalyzer:
                 n_observations=0,
             )
 
-        # Calculate CAGR
+        # Calculate CAGR using trend-fitted start/end to resist outliers
         cagr: float = 0.0
-        if len(values) >= 2 and values[0] > 0 and values[-1] > 0:
-            cagr = self.stats.cagr(values[0], values[-1], len(values) - 1)
+        n = len(values)
+        if n >= 3:
+            trend = self.stats.linear_trend(values)
+            fitted_start = trend.intercept
+            fitted_end = trend.intercept + trend.slope * (n - 1)
+            if fitted_start > 0 and fitted_end > 0:
+                cagr = self.stats.cagr(fitted_start, fitted_end, n - 1)
+        elif n == 2 and values[0] > 0 and values[-1] > 0:
+            # Too few points for trend fitting; fallback to raw
+            cagr = self.stats.cagr(values[0], values[-1], 1)
 
         return PeriodStats(
             mean=self.stats.mean(values),

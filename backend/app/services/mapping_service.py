@@ -87,9 +87,18 @@ class MappingService:
     # Used as a fallback when geo_key lookup with "Telangana" fails — retry
     # with "Andhra Pradesh" (and vice versa) for these districts.
     _TELANGANA_AP_DISTRICTS: set[str] = {
-        "adilabad", "hyderabad", "karimnagar", "khammam",
-        "mahbubnagar", "mahabubnagar", "medak", "nalgonda",
-        "nizamabad", "rangareddy", "rangareddi", "warangal",
+        "adilabad",
+        "hyderabad",
+        "karimnagar",
+        "khammam",
+        "mahbubnagar",
+        "mahabubnagar",
+        "medak",
+        "nalgonda",
+        "nizamabad",
+        "rangareddy",
+        "rangareddi",
+        "warangal",
     }
 
     def __init__(self, bridge_path: str | None = None):

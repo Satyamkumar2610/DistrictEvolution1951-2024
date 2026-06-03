@@ -54,6 +54,7 @@ class FragmentationInfo(BaseModel):
     index: float = Field(..., description="1/child_count - lower means more fragmented")
     child_count: int
     interpretation: str
+    plain_english: str | None = None
 
 
 class DivergenceInfo(BaseModel):
@@ -66,6 +67,7 @@ class DivergenceInfo(BaseModel):
     worst_performer: str | None = None
     worst_yield: float = 0
     spread: float = 0
+    plain_english: str | None = None
 
 
 class ConvergenceInfo(BaseModel):
@@ -74,6 +76,7 @@ class ConvergenceInfo(BaseModel):
     trend: str = Field(..., description="converging, diverging, stable, or insufficient_data")
     rate: float = Field(..., description="Rate of convergence/divergence")
     interpretation: str
+    plain_english: str | None = None
 
 
 class EffectSizeInfo(BaseModel):
@@ -82,6 +85,7 @@ class EffectSizeInfo(BaseModel):
     cohens_d: float
     interpretation: str = Field(..., description="small, medium, large, very_large")
     confidence: float = Field(..., description="0-1 confidence level")
+    plain_english: str | None = None
 
 
 class CounterfactualInfo(BaseModel):
@@ -92,6 +96,7 @@ class CounterfactualInfo(BaseModel):
     actual_yield: float
     attribution_pct: float = Field(..., description="% of change attributable to split")
     interpretation: str
+    plain_english: str | None = None
 
 
 class ChildPerformanceInfo(BaseModel):
@@ -104,6 +109,27 @@ class ChildPerformanceInfo(BaseModel):
     cagr: float
     observations: int
     rank: int
+    plain_english: str | None = None
+
+
+class MaupZoningInfo(BaseModel):
+    divergence_score: float
+    interpretation: str
+    is_sensitive: bool
+    plain_english: str | None = None
+
+
+class MaupScaleInfo(BaseModel):
+    variance_difference: float
+    interpretation: str
+    is_smoothing: bool
+    plain_english: str | None = None
+
+
+class MaupInsightsInfo(BaseModel):
+    zoning: MaupZoningInfo
+    scale: MaupScaleInfo
+    overall_reliability: str
 
 
 class SplitInsightsInfo(BaseModel):
@@ -114,6 +140,7 @@ class SplitInsightsInfo(BaseModel):
     convergence: ConvergenceInfo
     effect_size: EffectSizeInfo
     counterfactual: CounterfactualInfo
+    maup: MaupInsightsInfo
     children_performance: list[ChildPerformanceInfo] = Field(default_factory=list)
     warnings: list[str] = Field(default_factory=list)
 

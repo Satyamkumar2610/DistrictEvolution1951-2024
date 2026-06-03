@@ -234,11 +234,7 @@ class MetricRepository(BaseRepository):
                         key = (m.district.lower(), m.state.lower())
                         parent_district = parent_map_name.get(key)
                         if parent_district:
-                            geo_key = mapping_service.resolve_geo_key(
-                                "legacy_fallback",
-                                parent_district,
-                                m.state
-                            )
+                            geo_key = mapping_service.resolve_geo_key("legacy_fallback", parent_district, m.state)
                             if geo_key:
                                 m.feature_id = geo_key
                                 m.geo_key = geo_key

@@ -40,6 +40,11 @@ export function AdvancedStatsPanel({ stats }: AdvancedStatsPanelProps) {
                 <p className="text-xs text-slate-500 mt-2 font-medium">
                     Compound Annual Growth Rate changed from <strong className="text-slate-700">{stats.pre.cagr.toFixed(2)}%</strong> pre-split.
                 </p>
+                {stats.insights?.children_performance?.[0]?.plain_english && (
+                    <div className="mt-3 text-[10px] bg-slate-50 p-2 rounded text-slate-600 border border-slate-100">
+                        {stats.insights.children_performance[0].plain_english}
+                    </div>
+                )}
             </div>
 
             {/* Stability Card */}
@@ -61,6 +66,11 @@ export function AdvancedStatsPanel({ stats }: AdvancedStatsPanelProps) {
                 <p className="text-xs text-slate-500 mt-2 font-medium">
                     Coefficient of Variation (Volatility) was <strong className="text-slate-700">{stats.pre.cv.toFixed(2)}%</strong> before the split.
                 </p>
+                {stats.insights?.divergence?.plain_english && (
+                    <div className="mt-3 text-[10px] bg-slate-50 p-2 rounded text-slate-600 border border-slate-100">
+                        {stats.insights.divergence.plain_english}
+                    </div>
+                )}
             </div>
 
             {/* Impact Summary */}
@@ -104,6 +114,11 @@ export function AdvancedStatsPanel({ stats }: AdvancedStatsPanelProps) {
                 <p className="text-xs text-slate-500 mt-2 font-medium">
                     Analysis compares average performance levels between the two administrative eras.
                 </p>
+                {stats.insights?.effect_size?.plain_english && (
+                    <div className="mt-3 text-[10px] bg-slate-50 p-2 rounded text-slate-600 border border-slate-100">
+                        {stats.insights.effect_size.plain_english}
+                    </div>
+                )}
             </div>
         </div>
     );

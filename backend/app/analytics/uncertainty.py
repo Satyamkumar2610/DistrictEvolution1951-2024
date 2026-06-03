@@ -41,13 +41,16 @@ def calculate_bootstrap_ci(
             confidence=confidence,
         )
 
+    # Seed RNG deterministically for reproducible results
+    rng = random.Random(hash(tuple(round(v, 6) for v in values)))
+
     # Generate bootstrap samples
     bootstrap_stats = []
     n = len(values)
 
     for _ in range(n_iterations):
         # Sample with replacement
-        sample = [random.choice(values) for _ in range(n)]
+        sample = [rng.choice(values) for _ in range(n)]
 
         if statistic == "mean":
             stat = sum(sample) / len(sample)
@@ -110,13 +113,17 @@ def calculate_impact_uncertainty(
             confidence=confidence,
         )
 
+    # Seed RNG deterministically for reproducible results
+    seed_data = tuple(round(v, 6) for v in pre_values) + tuple(round(v, 6) for v in post_values)
+    rng = random.Random(hash(seed_data))
+
     # Bootstrap the difference
     differences = []
 
     for _ in range(n_iterations):
         # Resample both periods
-        pre_sample = [random.choice(pre_values) for _ in range(len(pre_values))]
-        post_sample = [random.choice(post_values) for _ in range(len(post_values))]
+        pre_sample = [rng.choice(pre_values) for _ in range(len(pre_values))]
+        post_sample = [rng.choice(post_values) for _ in range(len(post_values))]
 
         pre_mean = sum(pre_sample) / len(pre_sample)
         post_mean = sum(post_sample) / len(post_sample)
