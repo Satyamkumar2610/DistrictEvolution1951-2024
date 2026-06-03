@@ -149,7 +149,7 @@ class AnalysisService:
             if child_name not in group["children_districts"]:
                 group["children_districts"].append(child_name)
                 group["children_cdks"].append(child_cdk)
-                
+
                 # Check against agri_lgds
                 has_agri = False
                 if child_cdk is not None:
@@ -163,7 +163,7 @@ class AnalysisService:
             parent_has_agri = False
             if parent_cdk is not None:
                 parent_has_agri = parent_cdk in agri_lgds or (parent_cdk.isdigit() and int(parent_cdk) in agri_lgds)
-                
+
             children_cdks = group["children_cdks"]
             results.append(
                 SplitImpactDistrictSummary(

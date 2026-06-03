@@ -64,7 +64,7 @@ class SplitRepository(BaseRepository):
         """Return the subset of CDKs that have agricultural metrics."""
         if not cdks:
             return set()
-            
+
         str_cdks = [str(c) for c in cdks]
 
         rows = await self.fetch_all(
