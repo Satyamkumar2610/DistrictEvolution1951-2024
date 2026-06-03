@@ -124,8 +124,8 @@ class LineageService:
         self,
         district_name: str,
         state_name: str,
-        lgd_lookup: dict[tuple[str, str], int],
-    ) -> int | None:
+        lgd_lookup: dict[tuple[str, str], str],
+    ) -> str | None:
         """Resolve a district/state pair against known LGD mappings."""
         normalized_name = resolve_district_name(district_name, state_name)
         normalized_state = state_name.lower().strip()

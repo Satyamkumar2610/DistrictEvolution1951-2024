@@ -138,6 +138,7 @@ class AnalysisService:
             group["split_year"] = split_year
             group["state"] = state_name
 
+            parent_cdk: str | None = None
             parent_cdk_real = row.get("parent_cdk_real")
             if parent_cdk_real:
                 parent_cdk = str(parent_cdk_real)
@@ -148,6 +149,7 @@ class AnalysisService:
 
             group["parent_cdk"] = parent_cdk
 
+            child_cdk: str | None = None
             child_name = str(row["child_district"])
             child_cdk_real = row.get("child_cdk_real")
             if child_cdk_real:
