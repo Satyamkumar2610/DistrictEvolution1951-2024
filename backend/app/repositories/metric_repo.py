@@ -34,24 +34,19 @@ class MetricRepository(BaseRepository):
 
     async def get_by_cdks_and_variables(self, cdks: list[str], variables: list[str]) -> list[MetricPoint]:
         """Get metrics for multiple districts and variables."""
-        # Convert text CDKs to int array for efficient query
-        int_cdks = []
-        for c in cdks:
-            try:
-                int_cdks.append(int(c))
-            except (ValueError, TypeError):
-                continue
-
-        if not int_cdks:
+        if not cdks:
             return []
+
+        # Use text array for CDKs to natively support string-based schemas via db_compat.py
+        str_cdks = [str(c) for c in cdks]
 
         query = """
             SELECT district_lgd::text as cdk, year, variable_name, value
             FROM agri_metrics
-            WHERE district_lgd = ANY($1::int[]) AND variable_name = ANY($2)
+            WHERE district_lgd::text = ANY($1::text[]) AND variable_name = ANY($2)
             ORDER BY year ASC
         """
-        rows = await self.fetch_all(query, int_cdks, variables)
+        rows = await self.fetch_all(query, str_cdks, variables)
 
         return [
             MetricPoint(

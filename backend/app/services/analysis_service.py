@@ -99,16 +99,16 @@ class AnalysisService:
         has_nulls = any(row["parent_lgd"] is None or row["child_lgd"] is None for row in rows)
         lgd_lookup = await self.district_repo.get_lgd_lookup() if has_nulls else {}
 
-        lgd_set: set[int] = set()
+        cdk_set: set[int | str] = set()
         for row in rows:
-            parent_lgd = row["parent_lgd"]
-            child_lgd = row["child_lgd"]
-            if isinstance(parent_lgd, int):
-                lgd_set.add(parent_lgd)
-            if isinstance(child_lgd, int):
-                lgd_set.add(child_lgd)
+            p_cdk = row.get("parent_cdk_real") or row.get("parent_lgd")
+            c_cdk = row.get("child_cdk_real") or row.get("child_lgd")
+            if p_cdk is not None:
+                cdk_set.add(p_cdk)
+            if c_cdk is not None:
+                cdk_set.add(c_cdk)
 
-        agri_lgds = await self.split_repo.get_agri_lgds(list(lgd_set))
+        agri_lgds = await self.split_repo.get_agri_lgds(list(cdk_set))
         groups: dict[tuple[str, int], dict[str, Any]] = defaultdict(
             lambda: {
                 "parent_district": "",
@@ -135,13 +135,13 @@ class AnalysisService:
             group["split_year"] = split_year
             group["state"] = state_name
 
-            parent_lgd = row["parent_lgd"]
+            parent_lgd = row.get("parent_cdk_real") or row.get("parent_lgd")
             if parent_lgd is None and lgd_lookup:
                 parent_lgd = resolve_lgd(parent_district, state_name, lgd_lookup)
             group["parent_cdk"] = str(parent_lgd) if parent_lgd is not None else None
 
             child_name = str(row["child_district"])
-            child_lgd = row["child_lgd"]
+            child_lgd = row.get("child_cdk_real") or row.get("child_lgd")
             if child_lgd is None and lgd_lookup:
                 child_lgd = resolve_lgd(child_name, state_name, lgd_lookup)
             child_cdk = str(child_lgd) if child_lgd is not None else None
@@ -149,11 +149,21 @@ class AnalysisService:
             if child_name not in group["children_districts"]:
                 group["children_districts"].append(child_name)
                 group["children_cdks"].append(child_cdk)
-                group["children_has_agri"].append(child_lgd in agri_lgds if child_lgd is not None else False)
+                
+                # Check against agri_lgds
+                has_agri = False
+                if child_cdk is not None:
+                    # agri_lgds may contain strings or ints depending on schema
+                    has_agri = child_cdk in agri_lgds or (child_cdk.isdigit() and int(child_cdk) in agri_lgds)
+                group["children_has_agri"].append(has_agri)
 
         results: list[SplitImpactDistrictSummary] = []
         for (parent, year), group in sorted(groups.items(), key=lambda item: -item[0][1]):
-            parent_lgd_int = int(group["parent_cdk"]) if group["parent_cdk"] else None
+            parent_cdk = group["parent_cdk"]
+            parent_has_agri = False
+            if parent_cdk is not None:
+                parent_has_agri = parent_cdk in agri_lgds or (parent_cdk.isdigit() and int(parent_cdk) in agri_lgds)
+                
             children_cdks = group["children_cdks"]
             results.append(
                 SplitImpactDistrictSummary(
@@ -168,7 +178,7 @@ class AnalysisService:
                     state=group["state"],
                     resolved_count=sum(1 for child in children_cdks if child is not None),
                     total_count=len(children_cdks),
-                    parent_has_agri=parent_lgd_int in agri_lgds if parent_lgd_int else False,
+                    parent_has_agri=parent_has_agri,
                     children_has_agri=group["children_has_agri"],
                 )
             )

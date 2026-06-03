@@ -47,8 +47,12 @@ class SplitRepository(BaseRepository):
                 ds.split_year,
                 ds.state_name,
                 ds.parent_lgd,
-                ds.child_lgd
+                ds.child_lgd,
+                pd.cdk as parent_cdk_real,
+                cd.cdk as child_cdk_real
             FROM district_splits ds
+            LEFT JOIN districts pd ON pd.district_name = ds.parent_district AND pd.state_name = ds.state_name
+            LEFT JOIN districts cd ON cd.district_name = ds.child_district AND cd.state_name = ds.state_name
             WHERE UPPER(ds.state_name) = UPPER($1)
             ORDER BY ds.split_year, ds.parent_district
             """,
@@ -56,26 +60,29 @@ class SplitRepository(BaseRepository):
         )
         return [dict(row) for row in rows]
 
-    async def get_agri_lgds(self, lgds: list[int]) -> set[int]:
-        """Return the subset of LGDs that have agricultural metrics."""
-        if not lgds:
+    async def get_agri_lgds(self, cdks: list[int | str]) -> set[int | str]:
+        """Return the subset of CDKs that have agricultural metrics."""
+        if not cdks:
             return set()
+            
+        str_cdks = [str(c) for c in cdks]
 
         rows = await self.fetch_all(
             """
             SELECT DISTINCT district_lgd
             FROM agri_metrics
-            WHERE district_lgd = ANY($1::int[])
+            WHERE district_lgd::text = ANY($1::text[])
             """,
-            lgds,
+            str_cdks,
         )
 
-        resolved: set[int] = set()
+        resolved: set[int | str] = set()
         for row in rows:
             value = row["district_lgd"] if "district_lgd" in row else row["cdk"]
             if value is None:
                 continue
             value_str = str(value)
+            resolved.add(value_str)
             if value_str.isdigit():
                 resolved.add(int(value_str))
 
