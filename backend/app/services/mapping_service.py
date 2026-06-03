@@ -71,6 +71,8 @@ class MappingService:
         "SK": "Sikkim",
         "TA": "Tamil Nadu",
         "TN": "Tamil Nadu",
+        "TG": "Telangana",
+        "TS": "Telangana",
         "TR": "Tripura",
         "UK": "Uttarakhand",
         "UP": "Uttar Pradesh",
@@ -79,6 +81,15 @@ class MappingService:
         "WE": "West Bengal",
         "BI": "Bihar",
         "DA": "Dadra & Nagar Haveli",
+    }
+
+    # Districts that were part of undivided AP but now belong to Telangana.
+    # Used as a fallback when geo_key lookup with "Telangana" fails — retry
+    # with "Andhra Pradesh" (and vice versa) for these districts.
+    _TELANGANA_AP_DISTRICTS: set[str] = {
+        "adilabad", "hyderabad", "karimnagar", "khammam",
+        "mahbubnagar", "mahabubnagar", "medak", "nalgonda",
+        "nizamabad", "rangareddy", "rangareddi", "warangal",
     }
 
     def __init__(self, bridge_path: str | None = None):
@@ -225,6 +236,27 @@ class MappingService:
         state_code = cdk.split("_")[0]
         return self.STATE_CODES.get(state_code)
 
+    def _alternate_states(self, district: str | None, state: str | None) -> list[str]:
+        """
+        Return alternate state names to try when the primary state doesn't match.
+
+        Handles Telangana ↔ Andhra Pradesh: the GeoJSON may label a polygon
+        under one state while the database uses the other.
+        """
+        if not district or not state:
+            return []
+
+        norm_district = self.normalize_name(district)
+        norm_state = self.normalize_name(state)
+
+        if norm_district in self._TELANGANA_AP_DISTRICTS:
+            if "telangana" in norm_state:
+                return ["Andhra Pradesh"]
+            if "andhra" in norm_state:
+                return ["Telangana"]
+
+        return []
+
     def resolve_geo_key(self, cdk: str, district: str | None = None, state: str | None = None) -> str | None:
         """
         Resolve the GeoJSON key for a CDK with multiple fallback strategies.
@@ -233,7 +265,9 @@ class MappingService:
         1. Exact reverse bridge lookup (CDK -> GeoKey)
         2. Direct name construction (district|state)
         3. Normalized name matching
-        4. Fuzzy matching (expensive, only if others fail)
+        4. Telangana ↔ AP state remapping
+        5. State inference from CDK prefix
+        6. Fuzzy matching (expensive, only if others fail)
 
         Args:
             cdk: The canonical district key from database
@@ -263,7 +297,18 @@ class MappingService:
             if norm_key in normalized_lookup:
                 return normalized_lookup[norm_key]
 
-        # Strategy 4: State inference from CDK + district name
+        # Strategy 4: Telangana ↔ AP state remapping
+        if district and state:
+            for alt_state in self._alternate_states(district, state):
+                alt_key = f"{district}|{alt_state}"
+                if alt_key in bridge:
+                    return alt_key
+                alt_norm = f"{self.normalize_name(district)}|{self.normalize_name(alt_state)}"
+                normalized_lookup = self._build_normalized_geo_keys()
+                if alt_norm in normalized_lookup:
+                    return normalized_lookup[alt_norm]
+
+        # Strategy 5: State inference from CDK + district name
         if district and not state:
             inferred_state = self.get_state_from_cdk(cdk)
             if inferred_state:
@@ -277,7 +322,7 @@ class MappingService:
                 if norm_key in normalized_lookup:
                     return normalized_lookup[norm_key]
 
-        # Strategy 5: Fuzzy matching (expensive)
+        # Strategy 6: Fuzzy matching (expensive)
         if district:
             fuzzy_result = self.fuzzy_match_geo_key(district, state)
             if fuzzy_result:
