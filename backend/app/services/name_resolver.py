@@ -78,6 +78,7 @@ _ALIASES: dict[str, str] = {
     "raj nandgaon": "rajnandgaon",
     "dakshina kannad": "dakshina kannada",
     "darjiling": "darjeeling",
+    "rangareddy": "rangareddi",
     # Common Historical / City Aliases (moved from MappingService)
     "bombay": "mumbai",
     "madras": "chennai",
@@ -172,8 +173,8 @@ def resolve_alias(name: str) -> str:
 def resolve_lgd(
     district_name: str,
     state_name: str,
-    lgd_lookup: dict[tuple, int],
-) -> int | None:
+    lgd_lookup: dict[tuple, str],
+) -> str | None:
     """
     Multi-strategy LGD resolution.
 

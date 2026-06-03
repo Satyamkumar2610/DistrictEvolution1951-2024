@@ -29,6 +29,9 @@ from app.schemas.analysis import (
     DivergenceInfo,
     EffectSizeInfo,
     FragmentationInfo,
+    MaupInsightsInfo,
+    MaupScaleInfo,
+    MaupZoningInfo,
     SeriesMeta,
     SplitImpactDistrictSummary,
     SplitImpactResponse,
@@ -135,26 +138,35 @@ class AnalysisService:
             group["split_year"] = split_year
             group["state"] = state_name
 
-            parent_lgd = row.get("parent_cdk_real") or row.get("parent_lgd")
-            if parent_lgd is None and lgd_lookup:
-                parent_lgd = resolve_lgd(parent_district, state_name, lgd_lookup)
-            group["parent_cdk"] = str(parent_lgd) if parent_lgd is not None else None
+            parent_cdk_real = row.get("parent_cdk_real")
+            if parent_cdk_real:
+                parent_cdk = str(parent_cdk_real)
+            elif lgd_lookup:
+                parent_cdk = resolve_lgd(parent_district, state_name, lgd_lookup)
+            else:
+                parent_cdk = None
+                
+            group["parent_cdk"] = str(parent_cdk) if parent_cdk is not None else None
 
             child_name = str(row["child_district"])
-            child_lgd = row.get("child_cdk_real") or row.get("child_lgd")
-            if child_lgd is None and lgd_lookup:
-                child_lgd = resolve_lgd(child_name, state_name, lgd_lookup)
-            child_cdk = str(child_lgd) if child_lgd is not None else None
+            child_cdk_real = row.get("child_cdk_real")
+            if child_cdk_real:
+                child_cdk = str(child_cdk_real)
+            elif lgd_lookup:
+                child_cdk = resolve_lgd(child_name, state_name, lgd_lookup)
+            else:
+                child_cdk = None
+                
+            child_cdk_str = str(child_cdk) if child_cdk is not None else None
 
             if child_name not in group["children_districts"]:
                 group["children_districts"].append(child_name)
-                group["children_cdks"].append(child_cdk)
+                group["children_cdks"].append(child_cdk_str)
 
                 # Check against agri_lgds
                 has_agri = False
-                if child_cdk is not None:
-                    # agri_lgds may contain strings or ints depending on schema
-                    has_agri = child_cdk in agri_lgds or (child_cdk.isdigit() and int(child_cdk) in agri_lgds)
+                if child_cdk_str is not None:
+                    has_agri = child_cdk_str in agri_lgds or (child_cdk_str.isdigit() and int(child_cdk_str) in agri_lgds)
                 group["children_has_agri"].append(has_agri)
 
         results: list[SplitImpactDistrictSummary] = []
@@ -360,12 +372,13 @@ class AnalysisService:
             years = sorted(data_map.keys())
 
             # Use BoundaryHarmonizer for reconstruction
-            # 1. Get pre-split parent data
+            # 1. Get pre-split parent data (filtered by split_year at source)
             metric_literal = metric_type if metric_type in ("area", "production", "yield") else "yield"
             parent_series = self.harmonizer.get_parent_series(
                 data_map,
                 parent_cdk,
                 metric_literal,  # type: ignore[arg-type]
+                split_year=split_year,
             )
 
             # 2. Reconstruct post-split data from children
@@ -377,7 +390,17 @@ class AnalysisService:
                 post_split_data,
                 children_cdks,
                 metric_literal,  # type: ignore[arg-type]
+                method="area_weighted",
             )
+
+            # MAUP: Compute equal split for zoning sensitivity
+            equal_reconstructed_series = self.harmonizer.reconstruct_parent_from_children(
+                post_split_data,
+                children_cdks,
+                metric_literal,  # type: ignore[arg-type]
+                method="equal_split",
+            )
+            equal_split_values = [p.value for p in equal_reconstructed_series]
 
             # 3. Merge into single timeline
             harmonized_points = self.harmonizer.merge_series(parent_series, reconstructed_series, split_year)
@@ -398,7 +421,7 @@ class AnalysisService:
                     result.impact.uncertainty = uncertainty
 
                     # ============================================================
-                    # NEW: Compute Split Impact Insights
+                    # Compute Split Impact Insights (single pass via full_insights)
                     # ============================================================
 
                     # Get pre/post years for counterfactual projection
@@ -425,50 +448,90 @@ class AnalysisService:
                         cdk: sum(vals) / len(vals) if vals else 0 for cdk, vals in children_mean_yields.items()
                     }
 
-                    # Compute insights
-                    fragmentation = self.insights_analyzer.calculate_fragmentation(len(children_cdks))
-                    divergence = self.insights_analyzer.calculate_divergence(children_means)
-                    convergence = self.insights_analyzer.calculate_convergence_trend(yearly_children_yields, split_year)
-                    effect_size = self.insights_analyzer.calculate_effect_size(pre_values, post_values)
-                    counterfactual = self.insights_analyzer.calculate_counterfactual(
-                        pre_values, pre_years, result.post_stats.mean, split_year + 5  # type: ignore[arg-type]
-                    )
+                    # MAUP: Extract variances
+                    pre_variance = result.pre_stats.variance
 
-                    # Analyze child performance
+                    children_pooled_variance = 0.0
+                    # Pre-compute child performance for pooled variance (used by MAUP)
                     children_performance = self.insights_analyzer.analyze_child_performance(
                         data_map, children_cdks, None, split_year
                     )
+                    if children_performance:
+                        total_obs = sum(c.observations for c in children_performance)
+                        if total_obs > 0:
+                            sum_var = sum(
+                                ((c.cv * c.mean_yield) / 100) ** 2 * c.observations for c in children_performance
+                            )
+                            children_pooled_variance = sum_var / total_obs
 
-                    # Build insights schema objects
+                    # Single call to compute_full_insights — no duplicate computation
+                    full_insights = self.insights_analyzer.compute_full_insights(
+                        pre_values=pre_values,
+                        pre_years=pre_years,  # type: ignore[arg-type]
+                        post_values=post_values,
+                        split_year=split_year,
+                        child_cdks=children_cdks,
+                        yearly_children_data=yearly_children_yields,
+                        children_mean_yields=children_means,
+                        child_names=None,
+                        yearly_data=data_map,
+                        equal_split_values=equal_split_values,
+                        pre_variance=pre_variance,
+                        children_pooled_variance=children_pooled_variance,
+                    )
+
+                    # Build insights schema objects from full_insights only
                     insights = SplitInsightsInfo(
                         fragmentation=FragmentationInfo(
-                            index=fragmentation.index,
-                            child_count=fragmentation.child_count,
-                            interpretation=fragmentation.interpretation,
+                            index=full_insights.fragmentation.index,
+                            child_count=full_insights.fragmentation.child_count,
+                            interpretation=full_insights.fragmentation.interpretation,
+                            plain_english=full_insights.fragmentation.plain_english,
                         ),
                         divergence=DivergenceInfo(
-                            score=divergence.score,
-                            interpretation=divergence.interpretation,
-                            best_performer=divergence.best_performer,
-                            best_yield=divergence.best_yield,
-                            worst_performer=divergence.worst_performer,
-                            worst_yield=divergence.worst_yield,
-                            spread=divergence.spread,
+                            score=full_insights.divergence.score,
+                            interpretation=full_insights.divergence.interpretation,
+                            best_performer=full_insights.divergence.best_performer,
+                            best_yield=full_insights.divergence.best_yield,
+                            worst_performer=full_insights.divergence.worst_performer,
+                            worst_yield=full_insights.divergence.worst_yield,
+                            spread=full_insights.divergence.spread,
+                            plain_english=full_insights.divergence.plain_english,
                         ),
                         convergence=ConvergenceInfo(
-                            trend=convergence.trend, rate=convergence.rate, interpretation=convergence.interpretation
+                            trend=full_insights.convergence.trend,
+                            rate=full_insights.convergence.rate,
+                            interpretation=full_insights.convergence.interpretation,
+                            plain_english=full_insights.convergence.plain_english,
                         ),
                         effect_size=EffectSizeInfo(
-                            cohens_d=effect_size.cohens_d,
-                            interpretation=effect_size.interpretation,
-                            confidence=effect_size.confidence,
+                            cohens_d=full_insights.effect_size.cohens_d,
+                            interpretation=full_insights.effect_size.interpretation,
+                            confidence=full_insights.effect_size.confidence,
+                            plain_english=full_insights.effect_size.plain_english,
                         ),
                         counterfactual=CounterfactualInfo(
-                            projected_yield=counterfactual.projected_yield,
-                            method=counterfactual.method,
-                            actual_yield=counterfactual.actual_yield,
-                            attribution_pct=counterfactual.attribution_pct,
-                            interpretation=counterfactual.interpretation,
+                            projected_yield=full_insights.counterfactual.projected_yield,
+                            method=full_insights.counterfactual.method,
+                            actual_yield=full_insights.counterfactual.actual_yield,
+                            attribution_pct=full_insights.counterfactual.attribution_pct,
+                            interpretation=full_insights.counterfactual.interpretation,
+                            plain_english=full_insights.counterfactual.plain_english,
+                        ),
+                        maup=MaupInsightsInfo(
+                            zoning=MaupZoningInfo(
+                                divergence_score=full_insights.maup.zoning.divergence_score,
+                                interpretation=full_insights.maup.zoning.interpretation,
+                                is_sensitive=full_insights.maup.zoning.is_sensitive,
+                                plain_english=full_insights.maup.zoning.plain_english,
+                            ),
+                            scale=MaupScaleInfo(
+                                variance_difference=full_insights.maup.scale.variance_difference,
+                                interpretation=full_insights.maup.scale.interpretation,
+                                is_smoothing=full_insights.maup.scale.is_smoothing,
+                                plain_english=full_insights.maup.scale.plain_english,
+                            ),
+                            overall_reliability=full_insights.maup.overall_reliability,
                         ),
                         children_performance=[
                             ChildPerformanceInfo(
@@ -479,10 +542,11 @@ class AnalysisService:
                                 cagr=cp.cagr,
                                 observations=cp.observations,
                                 rank=cp.rank,
+                                plain_english=cp.plain_english,
                             )
-                            for cp in children_performance
+                            for cp in full_insights.children_performance
                         ],
-                        warnings=[],
+                        warnings=full_insights.warnings,
                     )
 
                     advanced_stats = AdvancedStats(

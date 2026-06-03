@@ -16,7 +16,7 @@ class DistrictRepository(BaseRepository):
         """Get all districts, optionally filtered by state."""
         if state:
             query = """
-                SELECT lgd_code::text as cdk, district_name as name, state_name as state
+                SELECT cdk, district_name as name, state_name as state
                 FROM districts
                 WHERE state_name = $1
                 ORDER BY district_name
@@ -24,7 +24,7 @@ class DistrictRepository(BaseRepository):
             rows = await self.fetch_all(query, state)
         else:
             query = """
-                SELECT lgd_code::text as cdk, district_name as name, state_name as state
+                SELECT cdk, district_name as name, state_name as state
                 FROM districts
                 ORDER BY state_name, district_name
             """
@@ -33,11 +33,11 @@ class DistrictRepository(BaseRepository):
         return [District(cdk=r["cdk"], name=r["name"], state=r["state"]) for r in rows]
 
     async def get_by_cdk(self, cdk: str) -> District | None:
-        """Get single district by LGD code (passed as text string)."""
+        """Get single district by CDK."""
         query = """
-            SELECT lgd_code::text as cdk, district_name as name, state_name as state
+            SELECT cdk, district_name as name, state_name as state
             FROM districts
-            WHERE lgd_code::text = $1
+            WHERE cdk = $1
         """
         row = await self.fetch_one(query, cdk)
         if row:
@@ -48,7 +48,7 @@ class DistrictRepository(BaseRepository):
         """Search districts by name."""
         if state:
             query = """
-                SELECT lgd_code::text as cdk, district_name as name, state_name as state
+                SELECT cdk, district_name as name, state_name as state
                 FROM districts
                 WHERE district_name ILIKE $1 AND state_name ILIKE $2
                 ORDER BY district_name
@@ -57,7 +57,7 @@ class DistrictRepository(BaseRepository):
             rows = await self.fetch_all(query, f"%{query_text}%", state)
         else:
             query = """
-                SELECT lgd_code::text as cdk, district_name as name, state_name as state
+                SELECT cdk, district_name as name, state_name as state
                 FROM districts
                 WHERE district_name ILIKE $1
                 ORDER BY district_name
@@ -68,25 +68,24 @@ class DistrictRepository(BaseRepository):
         return [District(cdk=r["cdk"], name=r["name"], state=r["state"]) for r in rows]
 
     async def get_cdk_to_meta_map(self) -> dict[str, dict[str, str]]:
-        """Get mapping of lgd_code (as text) to {name, state} for all districts."""
-        query = "SELECT lgd_code::text as cdk, district_name, state_name FROM districts"
+        """Get mapping of cdk to {name, state} for all districts."""
+        query = "SELECT cdk, district_name, state_name FROM districts"
         rows = await self.fetch_all(query)
         return {r["cdk"]: {"name": r["district_name"], "state": r["state_name"]} for r in rows}
 
-    async def get_lgd_lookup(self) -> dict[tuple[str, str], int]:
-        """Get normalized district/state to LGD mapping for name resolution fallbacks."""
+    async def get_lgd_lookup(self) -> dict[tuple[str, str], str]:
+        """Get normalized district/state to CDK mapping for name resolution fallbacks."""
         rows = await self.fetch_all(
             """
-            SELECT lgd_code::text as cdk, LOWER(district_name) as dn, LOWER(state_name) as sn
+            SELECT cdk, LOWER(district_name) as dn, LOWER(state_name) as sn
             FROM districts
             """
         )
 
-        lookup: dict[tuple[str, str], int] = {}
+        lookup: dict[tuple[str, str], str] = {}
         for row in rows:
             cdk = str(row["cdk"])
-            if cdk.isdigit():
-                lookup[(row["dn"], row["sn"])] = int(cdk)
+            lookup[(row["dn"], row["sn"])] = cdk
 
         return lookup
 
