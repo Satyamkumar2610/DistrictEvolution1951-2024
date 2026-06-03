@@ -52,8 +52,9 @@ class TestToolRegistry:
             execute=dummy_tool,
         )
         registry.register(tool)
-        assert registry.get("get_test") is not None
-        assert registry.get("get_test").name == "get_test"
+        retrieved_tool = registry.get("get_test")
+        assert retrieved_tool is not None
+        assert retrieved_tool.name == "get_test"
 
     def test_get_missing_tool_returns_none(self):
         registry = ToolRegistry()
