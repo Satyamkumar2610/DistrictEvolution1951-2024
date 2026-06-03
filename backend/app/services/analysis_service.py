@@ -431,7 +431,7 @@ class AnalysisService:
                     convergence = self.insights_analyzer.calculate_convergence_trend(yearly_children_yields, split_year)
                     effect_size = self.insights_analyzer.calculate_effect_size(pre_values, post_values)
                     counterfactual = self.insights_analyzer.calculate_counterfactual(
-                        pre_values, pre_years, result.post_stats.mean, split_year + 5
+                        pre_values, [int(y) for y in pre_years], result.post_stats.mean, split_year + 5
                     )
 
                     # Analyze child performance
