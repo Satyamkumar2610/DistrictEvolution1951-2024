@@ -61,7 +61,7 @@ def _get_model() -> Any:
     # Define Gemini-compatible tools from the existing handlers
     # We pass the handlers as tools directly; Gemini will use their docstrings/signatures
     return genai.GenerativeModel(
-        model_name="gemini-1.5-pro", system_instruction=SYSTEM_PROMPT, tools=list(TOOL_HANDLERS.values())
+        model_name="gemini-2.5-flash", system_instruction=SYSTEM_PROMPT, tools=list(TOOL_HANDLERS.values())
     )
 
 
@@ -125,11 +125,12 @@ async def analyst(req: AnalystRequest):
                             handler = TOOL_HANDLERS.get(fc.name)
                             if handler is None:
                                 tool_responses.append(
-                                    genai.types.Part(
-                                        function_response=genai.types.FunctionResponse(
-                                            name=fc.name, response={"error": f"Unknown tool: {fc.name}"}
-                                        )
-                                    )
+                                    {
+                                        "function_response": {
+                                            "name": fc.name,
+                                            "response": {"error": f"Unknown tool: {fc.name}"}
+                                        }
+                                    }
                                 )
                                 continue
 
@@ -145,19 +146,21 @@ async def analyst(req: AnalystRequest):
                                     content = result.model_dump()
 
                                 tool_responses.append(
-                                    genai.types.Part(
-                                        function_response=genai.types.FunctionResponse(
-                                            name=fc.name, response={"result": content}
-                                        )
-                                    )
+                                    {
+                                        "function_response": {
+                                            "name": fc.name,
+                                            "response": {"result": content}
+                                        }
+                                    }
                                 )
                             except Exception as e:
                                 tool_responses.append(
-                                    genai.types.Part(
-                                        function_response=genai.types.FunctionResponse(
-                                            name=fc.name, response={"error": f"Tool execution failed: {str(e)}"}
-                                        )
-                                    )
+                                    {
+                                        "function_response": {
+                                            "name": fc.name,
+                                            "response": {"error": f"Tool execution failed: {str(e)}"}
+                                        }
+                                    }
                                 )
 
                     # Feed the tool results back into the chat as the next 'user' message
