@@ -59,6 +59,9 @@ class Settings(BaseSettings):
     # Deprecated
     api_key: str | None = None
 
+    # API Keys
+    gemini_api_key: str | None = None
+
     # CORS (Parsed from comma-separated env var or list)
     cors_origins: list[str] = [
         "https://i-ascap.onrender.com",

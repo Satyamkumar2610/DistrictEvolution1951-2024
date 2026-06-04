@@ -79,7 +79,8 @@ class LLMService:
     """Service to generate natural language narratives from structured analytics data."""
 
     def __init__(self) -> None:
-        self.api_key = os.environ.get("GEMINI_API_KEY")
+        from app.config import get_settings
+        self.api_key = get_settings().gemini_api_key or os.environ.get("GEMINI_API_KEY")
         self.model: Any = None
         if genai and self.api_key:
             genai.configure(api_key=self.api_key)

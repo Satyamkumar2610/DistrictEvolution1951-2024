@@ -11,7 +11,6 @@ from __future__ import annotations
 import json
 import os
 
-import asyncpg
 from fastapi import APIRouter
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
@@ -22,13 +21,12 @@ except ImportError:  # pragma: no cover - optional dependency in tests
     genai = None  # type: ignore[assignment]
 
 from app.ai.system_prompt import SYSTEM_PROMPT
+from app.config import get_settings
 from app.tools.compare import compare_metrics
 from app.tools.lineage import get_lineage
 from app.tools.metrics import query_metric
 
 router = APIRouter()
-
-DATABASE_URL = os.environ.get("DATABASE_URL", "postgresql://user:password@localhost:5432/i_ascap")
 
 TOOL_HANDLERS = {
     "query_metric": query_metric,
@@ -50,7 +48,8 @@ def _get_model() -> genai.GenerativeModel | None:
     """Create a Gemini model instance if the API key is available."""
     if genai is None:
         return None
-    api_key = os.environ.get("GEMINI_API_KEY")
+    settings = get_settings()
+    api_key = settings.gemini_api_key or os.environ.get("GEMINI_API_KEY")
     if not api_key:
         return None
 
@@ -104,8 +103,8 @@ async def analyst(req: AnalystRequest):
 
                 # Process tool calls
                 tool_responses = []
-                conn = await asyncpg.connect(DATABASE_URL)
-                try:
+                from app.database import get_connection
+                async with get_connection() as conn:
                     for fc in tool_calls:
                         handler = TOOL_HANDLERS.get(fc.name)
                         if handler is None:
@@ -144,8 +143,6 @@ async def analyst(req: AnalystRequest):
                                     )
                                 )
                             )
-                finally:
-                    await conn.close()
 
                 # Feed the tool results back into the chat as the next 'user' message
                 user_query = tool_responses
