@@ -318,29 +318,29 @@ class MappingService:
         """
         best_match = None
         best_score = 0.0
-        
+
         norm_dist = self.normalize_name(district)
         if not norm_dist:
             return None
-            
+
         norm_state = self.normalize_name(state) if state else None
-        
+
         bridge = self._load_bridge()
-        for geo_key in bridge.keys():
+        for geo_key in bridge:
             parts = geo_key.split("|")
             if len(parts) != 2:
                 continue
-                
+
             b_dist, b_state = parts
-            
+
             if norm_state and self.normalize_name(b_state) != norm_state:
                 continue
-                
+
             score = self._similarity_ratio(norm_dist, self.normalize_name(b_dist))
             if score > best_score and score >= threshold:
                 best_score = score
                 best_match = geo_key
-                
+
         return best_match
 
     def _similarity_ratio(self, a: str, b: str) -> float:
