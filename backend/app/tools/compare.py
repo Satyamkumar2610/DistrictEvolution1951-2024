@@ -7,7 +7,8 @@ with harmonization disclosure for each data point.
 
 from __future__ import annotations
 
-import asyncpg
+from typing import Any
+
 from pydantic import BaseModel
 
 
@@ -23,7 +24,7 @@ class ComparisonRow(BaseModel):
 
 
 async def compare_metrics(
-    conn: asyncpg.Connection,
+    conn: Any,
     unit_ids: list[str],
     metric: str,
     years: list[int],

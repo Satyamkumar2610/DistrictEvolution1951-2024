@@ -7,12 +7,13 @@ from the district_metrics table, including harmonization metadata.
 
 from __future__ import annotations
 
-import asyncpg
+from typing import Any
+
 from pydantic import BaseModel
 
 
 class MetricRow(BaseModel):
-    """A single metric data point with harmonization disclosure."""
+    """A single comparison data point."""
 
     year: int
     value: float
@@ -22,7 +23,7 @@ class MetricRow(BaseModel):
 
 
 async def query_metric(
-    conn: asyncpg.Connection,
+    conn: Any,
     unit_id: str,
     metric: str,
     year_start: int,

@@ -8,10 +8,12 @@ area weights, and confidence scores.
 
 from __future__ import annotations
 
-import asyncpg
+from typing import Any
+
 from pydantic import BaseModel
 
 
+# ... (rest of TransitionEvent and LineageTree are unchanged)
 class TransitionEvent(BaseModel):
     """A single boundary change event."""
 
@@ -35,7 +37,7 @@ class LineageTree(BaseModel):
     descendants: list[TransitionEvent]
 
 
-async def get_lineage(conn: asyncpg.Connection, unit_id: str) -> LineageTree:
+async def get_lineage(conn: Any, unit_id: str) -> LineageTree:
     """
     Get the full administrative ancestry and descendants of a district.
 
