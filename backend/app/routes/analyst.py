@@ -11,6 +11,7 @@ from __future__ import annotations
 import json
 import os
 
+import asyncpg  # noqa: F401
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel
