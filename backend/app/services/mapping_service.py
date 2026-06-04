@@ -325,7 +325,7 @@ class MappingService:
             
         norm_state = self.normalize_name(state) if state else None
         
-        bridge = self._bridge
+        bridge = self._load_bridge()
         for geo_key in bridge.keys():
             parts = geo_key.split("|")
             if len(parts) != 2:
