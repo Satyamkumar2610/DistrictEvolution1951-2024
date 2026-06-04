@@ -26,6 +26,7 @@ function DistrictEvolutionApp() {
   const crop = searchParams.get('crop') || 'wheat';
   const metric = searchParams.get('metric') || 'yield';
   const selectedDistrict = searchParams.get('district');
+  const selectedState = searchParams.get('state');
   const showRainfall = searchParams.get('rainfall') === 'true';
 
   // Helper to update URL
@@ -53,9 +54,10 @@ function DistrictEvolutionApp() {
       {/* Sidebar Controls */}
       <Dashboard
         selectedDistrict={selectedDistrict}
+        selectedState={selectedState}
         currentYear={year}
-        onClose={() => updateUrl({ district: null })}
-        onDistrictSelect={(d) => updateUrl({ district: d })}
+        onClose={() => updateUrl({ district: null, state: null })}
+        onDistrictSelect={(selection) => updateUrl({ district: selection.district, state: selection.state })}
         currentCrop={crop}
         onCropChange={(c) => updateUrl({ crop: c })}
         currentMetric={metric}
@@ -74,7 +76,7 @@ function DistrictEvolutionApp() {
             crop={crop}
             metric={metric}
             selectedDistrict={selectedDistrict}
-            onDistrictSelect={(d) => updateUrl({ district: d })}
+            onDistrictSelect={(selection) => updateUrl({ district: selection.district, state: selection.state })}
             showRainfallLayer={showRainfall}
           />
         </div>

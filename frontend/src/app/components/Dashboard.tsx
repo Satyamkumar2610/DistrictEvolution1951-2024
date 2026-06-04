@@ -12,9 +12,10 @@ import BookmarkPanel from './BookmarkPanel';
 
 interface DashboardProps {
     selectedDistrict: string | null;
+    selectedState?: string | null;
     currentYear: number;
     onClose: () => void;
-    onDistrictSelect: (district: string) => void;
+    onDistrictSelect: (selection: { district: string, state: string }) => void;
     // New Props for Data Control
     currentCrop: string;
     onCropChange: (c: string) => void;
@@ -49,6 +50,7 @@ const CROPS = [
 
 const Dashboard: React.FC<DashboardProps> = ({
     selectedDistrict,
+    selectedState,
     // ...
     currentYear,
     onClose,
@@ -63,7 +65,7 @@ const Dashboard: React.FC<DashboardProps> = ({
     onContextChange,
 }) => {
     const [searchTerm, setSearchTerm] = useState('');
-    const [searchResults, setSearchResults] = useState<string[]>([]);
+    const [searchResults, setSearchResults] = useState<{district: string, state: string}[]>([]);
     const [isMobileOpen, setIsMobileOpen] = useState(false);
 
 
@@ -73,8 +75,13 @@ const Dashboard: React.FC<DashboardProps> = ({
     // Load available districts from Import
     const availableDistricts = React.useMemo(() => {
         const raw = bridgeData as Record<string, string>;
-        const dists = Object.keys(raw).map(k => k.split('|')[0]);
-        return Array.from(new Set(dists)).sort();
+        const dists = Object.keys(raw).map(k => {
+            const parts = k.split('|');
+            return { district: parts[0], state: parts[1] };
+        });
+        const unique = new Map<string, {district: string, state: string}>();
+        dists.forEach(d => unique.set(`${d.district}|${d.state}`, d));
+        return Array.from(unique.values()).sort((a, b) => a.district.localeCompare(b.district));
     }, []);
 
     // History State
@@ -83,13 +90,13 @@ const Dashboard: React.FC<DashboardProps> = ({
     // 1. Resolve State Name first (needed for both History and Rainfall)
     const stateName = React.useMemo(() => {
         if (!selectedDistrict) return '';
+        if (selectedState) return selectedState;
+        
+        // Fallback to bridgeData if not provided
         const raw = bridgeData as Record<string, string>;
-        // Try exact match first
-        // Try finding key starting with district
-        // Try finding key starting with district
         const stateKey = Object.keys(raw).find(k => k.startsWith(selectedDistrict + '|'));
         return stateKey ? stateKey.split('|')[1] : '';
-    }, [selectedDistrict]);
+    }, [selectedDistrict, selectedState]);
 
     // 2. History Query
     const { data: history = [] } = useQuery({
@@ -110,7 +117,8 @@ const Dashboard: React.FC<DashboardProps> = ({
         const timer = setTimeout(() => {
             if (searchTerm.length > 2) {
                 const filtered = availableDistricts.filter(d =>
-                    d.toLowerCase().includes(searchTerm.toLowerCase())
+                    d.district.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    d.state.toLowerCase().includes(searchTerm.toLowerCase())
                 ).slice(0, 10);
                 setSearchResults(filtered);
             } else {
@@ -180,18 +188,20 @@ const Dashboard: React.FC<DashboardProps> = ({
                     {searchResults.length > 0 && (
                         <ul className="absolute top-full left-4 right-4 mt-2 bg-slate-900 border border-slate-700 rounded-lg shadow-xl max-h-48 overflow-y-auto z-30 list-none p-0" role="listbox" aria-label="Search Results">
                             {searchResults.map((result, idx) => (
-                                <li key={idx} role="option" aria-selected={false}>
-                                    <button
-                                        className="w-full text-left p-2.5 hover:bg-slate-800 text-slate-300 cursor-pointer flex items-center gap-2 text-sm border-b border-slate-800 last:border-0"
-                                        onClick={() => {
-                                            onDistrictSelect(result);
-                                            setSearchTerm('');
-                                            setSearchResults([]);
-                                        }}
-                                    >
-                                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                                        {result}
-                                    </button>
+                                <li
+                                    key={`${result.district}|${result.state}`}
+                                    className="w-full text-left p-2.5 hover:bg-slate-800 text-slate-300 cursor-pointer flex flex-col gap-0.5 text-sm border-b border-slate-800 last:border-0"
+                                    onClick={() => {
+                                        onDistrictSelect(result);
+                                        setSearchTerm('');
+                                        setSearchResults([]);
+                                    }}
+                                >
+                                    <div className="flex items-center gap-2">
+                                        <MapPin size={14} className="text-emerald-500" />
+                                        <span className="font-medium text-white">{result.district}</span>
+                                    </div>
+                                    <span className="text-[10px] text-slate-500 ml-6 uppercase">{result.state}</span>
                                 </li>
                             ))}
                         </ul>
@@ -211,7 +221,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                                     crop: b.crop
                                 });
                             } else {
-                                onDistrictSelect(b.district);
+                                onDistrictSelect({ district: b.district, state: b.state });
                                 onCropChange(b.crop);
                             }
                         }}

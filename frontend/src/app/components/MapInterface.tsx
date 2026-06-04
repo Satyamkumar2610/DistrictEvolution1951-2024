@@ -14,7 +14,7 @@ interface MapInterfaceProps {
     crop?: string;
     metric?: string;
     selectedDistrict?: string | null;
-    onDistrictSelect: (id: string) => void;
+    onDistrictSelect: (selection: { district: string, state: string }) => void;
     showRainfallLayer?: boolean;
 }
 
@@ -164,7 +164,10 @@ export default function MapInterface({ year, crop = 'wheat', metric = 'yield', s
     const onClick = React.useCallback((event: MapLayerMouseEvent) => {
         const feature = event.features && event.features[0];
         if (feature) {
-            onDistrictSelect(getFeatureDistrict(feature));
+            onDistrictSelect({
+                district: getFeatureDistrict(feature),
+                state: getFeatureState(feature)
+            });
         }
     }, [onDistrictSelect]);
 
