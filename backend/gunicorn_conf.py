@@ -7,9 +7,8 @@ port = os.getenv("PORT", "8000")
 bind = f"0.0.0.0:{port}"
 
 # Worker configuration
-# For CPU-bound tasks, use (2 * cpu) + 1 workers
 # For I/O-bound (like this API), we can use more, or use Uvicorn workers
-workers = 2  # Start conservative for free tier
+workers = 1  # Reduced to 1 to prevent OOM on Render free tier (512MB RAM)
 worker_class = "uvicorn.workers.UvicornWorker"
 
 # Timeouts
