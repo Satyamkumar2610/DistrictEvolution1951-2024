@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import json
 import os
+from typing import Any
 
 import asyncpg  # noqa: F401
 from fastapi import APIRouter
@@ -45,10 +46,11 @@ class AnalystRequest(BaseModel):
     context: dict = {}
 
 
-def _get_model() -> genai.GenerativeModel | None:
+def _get_model() -> Any:
     """Create a Gemini model instance if the API key is available."""
     if genai is None:
         return None
+    assert genai is not None
     settings = get_settings()
     api_key = settings.gemini_api_key or os.environ.get("GEMINI_API_KEY")
     if not api_key:
@@ -91,6 +93,7 @@ async def analyst(req: AnalystRequest):
 
     async def stream():
         try:
+            assert genai is not None
             # Initialize a chat session
             chat = model.start_chat()
             user_query = req.query
