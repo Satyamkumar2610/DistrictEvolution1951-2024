@@ -21,6 +21,8 @@ interface DashboardProps {
     onCropChange: (c: string) => void;
     currentMetric: string;
     onMetricChange: (m: string) => void;
+    currentMode: string;
+    onModeChange: (md: string) => void;
     districtData?: { value: number };
     // Rainfall Layer
     showRainfallLayer?: boolean;
@@ -59,6 +61,8 @@ const Dashboard: React.FC<DashboardProps> = ({
     onCropChange,
     currentMetric,
     onMetricChange,
+    currentMode,
+    onModeChange,
     districtData,
     showRainfallLayer,
     onRainfallLayerToggle,
@@ -258,6 +262,19 @@ const Dashboard: React.FC<DashboardProps> = ({
                                     <option value="yield">Yield (kg/ha)</option>
                                     <option value="production">Production (Tons)</option>
                                     <option value="area">Area (1000 ha)</option>
+                                </select>
+                            </div>
+                            
+                            <div className="flex flex-col">
+                                <label htmlFor="mode-select" className="text-[10px] text-slate-500 uppercase font-bold block mb-1">Map Mode</label>
+                                <select
+                                    id="mode-select"
+                                    value={currentMode}
+                                    onChange={(e) => onModeChange(e.target.value)}
+                                    className="bg-slate-900 border border-slate-700 text-white text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full p-2 appearance-none cursor-pointer"
+                                >
+                                    <option value="historical">Historical System (1966)</option>
+                                    <option value="modern">Modern System (Current)</option>
                                 </select>
                             </div>
                         </div>

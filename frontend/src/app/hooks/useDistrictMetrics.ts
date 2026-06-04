@@ -3,11 +3,11 @@ import { useQuery } from '@tanstack/react-query';
 import { api } from '../services/api';
 import type { DistrictMetric } from '../services/api/types';
 
-export const useDistrictMetrics = (year: number, crop: string, metric: string) => {
+export const useDistrictMetrics = (year: number, crop: string, metric: string, mode: string = 'historical') => {
     // React Query handles loading, data, and errors
     const { data: rawData = [], isLoading: loading } = useQuery({
-        queryKey: ['districtMetrics', year, crop, metric],
-        queryFn: () => api.getDistrictMetrics(year, crop, metric),
+        queryKey: ['districtMetrics', year, crop, metric, mode],
+        queryFn: () => api.getDistrictMetrics(year, crop, metric, mode),
         staleTime: 1000 * 60 * 10, // Cache for 10 minutes
     });
 

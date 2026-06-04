@@ -59,13 +59,16 @@ class MetricRepository(BaseRepository):
             for r in rows
         ]
 
+
     @cached(ttl=CacheTTL.METRICS, prefix="metrics:year_v2")
-    async def get_by_year_and_variable(self, year: int, variable: str) -> list[AggregatedMetric]:
+    async def get_by_year_and_variable(self, year: int, variable: str, mode: str = "historical") -> list[AggregatedMetric]:
         """Get all district values for a given year and variable.
 
-        Includes split-lineage fallback: if a child district has data but
-        no GeoJSON polygon, its value is mapped to the parent's polygon.
+        Modes:
+        - historical: Returns data mapped to 1966 boundary system (bottom-up aggregation of modern data).
+        - modern: Returns data for the current district system.
         """
+        # 1. First fetch raw data
         query = """
             SELECT m.district_lgd::text as cdk, d.state_name, d.district_name, m.value
             FROM agri_metrics m
@@ -76,7 +79,6 @@ class MetricRepository(BaseRepository):
         _rows = await self.fetch_all(query, year, variable)
         rows = [dict(r) for r in _rows]
 
-        # Extract crop name for fallback logic
         base_parts = variable.split("_")
         crop_name = base_parts[0] if len(base_parts) >= 2 else ""
 
@@ -84,18 +86,11 @@ class MetricRepository(BaseRepository):
 
         # Fallback: check seasonal crop for missing districts
         season_map = {
-            "rice": "kharif",
-            "wheat": "rabi",
-            "maize": "kharif",
-            "soyabean": "kharif",
-            "groundnut": "kharif",
-            "cotton": "kharif",
-            "pearl_millet": "kharif",
-            "sorghum": "kharif",
-            "chickpea": "rabi",
+            "rice": "kharif", "wheat": "rabi", "maize": "kharif", "soyabean": "kharif",
+            "groundnut": "kharif", "cotton": "kharif", "pearl_millet": "kharif",
+            "sorghum": "kharif", "chickpea": "rabi",
         }
         season = season_map.get(crop_name)
-
         if season:
             seasonal_variable = f"{variable}_{season}"
             season_rows = await self.fetch_all(query, year, seasonal_variable)
@@ -104,7 +99,7 @@ class MetricRepository(BaseRepository):
                     rows.append(dict(sr))
                     existing_cdks.add(sr["cdk"])
 
-        # Rice additive fallback: Merge other seasons for districts missing
+        # Rice additive fallback
         if crop_name == "rice":
             additional_seasons = ["winter", "autumn", "summer"]
             for s in additional_seasons:
@@ -115,60 +110,74 @@ class MetricRepository(BaseRepository):
                         rows.append(dict(sr))
                         existing_cdks.add(sr["cdk"])
 
+        # Bottom-Up Aggregation for Historical Mode
+        if mode == "historical" and year >= 1990:
+            # We must roll up modern children to their parents.
+            # We fetch all lineage to build a child -> parent map
+            lineage_query = """
+                SELECT ds.child_lgd::text as child, pd.lgd_code::text as parent, pd.district_name, pd.state_name
+                FROM district_splits ds
+                JOIN districts pd ON pd.lgd_code = ds.parent_lgd
+            """
+            l_rows = await self.fetch_all(lineage_query)
+            child_to_parent = {r["child"]: {"cdk": r["parent"], "name": r["district_name"], "state": r["state_name"]} for r in l_rows}
+            
+            # If variable is yield, we can't just sum it. But wait, we haven't done Yield Fallback yet!
+            # So if it's yield, it's missing organically from DB, and will be handled by the next block!
+            # If it IS organically in DB (unlikely, but possible), we shouldn't sum it.
+            if "_yield" not in variable:
+                agg_map = {}
+                for r in rows:
+                    c = r["cdk"]
+                    if c in child_to_parent:
+                        p = child_to_parent[c]
+                        p_cdk = p["cdk"]
+                        if p_cdk not in agg_map:
+                            agg_map[p_cdk] = {"cdk": p_cdk, "district_name": p["name"], "state_name": p["state"], "value": 0.0}
+                        agg_map[p_cdk]["value"] += (float(r["value"]) if r["value"] is not None else 0.0)
+                    else:
+                        agg_map[c] = r
+                rows = list(agg_map.values())
+                existing_cdks = {r["cdk"] for r in rows}
+
         # Yield Fallback: Compute yield if missing organically from DB
         if "_yield" in variable:
             area_var = variable.replace("_yield", "_area")
             prod_var = variable.replace("_yield", "_production")
-            ap_query = """
-                SELECT m.district_lgd::text as cdk, d.state_name, d.district_name, m.variable_name, m.value
-                FROM agri_metrics m
-                JOIN districts d ON m.district_lgd = d.lgd_code
-                WHERE m.year = $1 AND m.variable_name = ANY($2)
-                AND d.district_name != 'State Average'
-            """
-            ap_rows = await self.fetch_all(ap_query, year, [area_var, prod_var])
+            
+            # Re-use get_by_year_and_variable recursively to get aggregated area and production!
+            ap_rows_area = await self.get_by_year_and_variable(year, area_var, mode)
+            ap_rows_prod = await self.get_by_year_and_variable(year, prod_var, mode)
+            
+            # Combine them
+            cdk_map = {}
+            for r in ap_rows_area:
+                cdk_map[r.cdk] = {"state_name": r.state, "district_name": r.district, "area": r.value, "prod": 0.0}
+            for r in ap_rows_prod:
+                if r.cdk in cdk_map:
+                    cdk_map[r.cdk]["prod"] = r.value
+                else:
+                    cdk_map[r.cdk] = {"state_name": r.state, "district_name": r.district, "area": 0.0, "prod": r.value}
 
-            if ap_rows:
-                cdk_map = {}
-                for r in ap_rows:
-                    cdk = r["cdk"]
-                    if cdk in existing_cdks:
-                        continue
-
-                    if cdk not in cdk_map:
-                        cdk_map[cdk] = {
-                            "state_name": r["state_name"],
-                            "district_name": r["district_name"],
-                            "area": 0.0,
-                            "prod": 0.0,
+            for cdk, data in cdk_map.items():
+                if data["area"] > 0:
+                    yield_val = round((data["prod"] / data["area"]) * 1000, 2)
+                    rows.append(
+                        {
+                            "cdk": cdk,
+                            "state_name": data["state_name"],
+                            "district_name": data["district_name"],
+                            "value": yield_val,
                         }
-                    if r["variable_name"] == area_var and r["value"] is not None:
-                        cdk_map[cdk]["area"] = float(r["value"])
-                    elif r["variable_name"] == prod_var and r["value"] is not None:
-                        cdk_map[cdk]["prod"] = float(r["value"])
-
-                for cdk, data in cdk_map.items():
-                    if data["area"] > 0:
-                        yield_val = round((data["prod"] / data["area"]) * 1000, 2)
-                        rows.append(
-                            {
-                                "cdk": cdk,
-                                "state_name": data["state_name"],
-                                "district_name": data["district_name"],
-                                "value": yield_val,
-                            }
-                        )
-                        existing_cdks.add(cdk)
+                    )
+                    existing_cdks.add(cdk)
 
         # Resolve geo_keys using MappingService
         from app.services.mapping_service import get_mapping_service
-
         mapping_service = get_mapping_service()
 
-        # Build results with geo_key resolution
         results = []
-        unmapped = []  # Track items needing split-lineage fallback
-
+        unmapped = []
         for r in rows:
             geo_key = mapping_service.resolve_geo_key(r["cdk"], r["district_name"], r["state_name"])
             metric = AggregatedMetric(
@@ -186,14 +195,11 @@ class MetricRepository(BaseRepository):
             else:
                 unmapped.append(metric)
 
-        # Split-lineage fallback has been removed to prevent child district
-        # overwrites on the map. Unmapped child districts will simply remain unmapped
-        # until the Bottom-Up Aggregation layer handles them explicitly.
-        if unmapped:
-            # We preserve the unmapped items in the results for now without faking their geo_key.
-            results.extend(unmapped)
+        # We preserve the unmapped items in the results for now without faking their geo_key.
+        results.extend(unmapped)
 
         return results
+
 
     @cached(ttl=CacheTTL.METRICS, prefix="metrics:ts")
     async def get_time_series_pivoted(self, cdk: str, crop: str) -> list[dict]:

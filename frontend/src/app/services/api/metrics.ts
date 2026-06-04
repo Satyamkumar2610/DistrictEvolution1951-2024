@@ -3,8 +3,8 @@ import { DistrictMetric, HistoryItem, DistrictRanking, StateOverview } from './t
 import { EfficiencyData, RiskData } from '../../../types/analysis';
 
 export const metricsApi = {
-    getDistrictMetrics: (year: number, crop: string, metric: string) =>
-        fetcher<DistrictMetric[]>(`metrics?year=${year}&crop=${crop}&metric=${metric}`),
+    getDistrictMetrics: (year: number, crop: string, metric: string, mode: string = 'historical') =>
+        fetcher<DistrictMetric[]>(`metrics?year=${year}&crop=${crop}&metric=${metric}&mode=${mode}`),
 
     getHistory: (district: string, crop: string, state?: string) =>
         fetcher<HistoryItem[]>(`metrics/history?district=${encodeURIComponent(district)}&crop=${crop}${state ? `&state=${encodeURIComponent(state)}` : ''}`),

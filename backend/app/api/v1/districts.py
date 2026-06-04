@@ -56,3 +56,32 @@ async def get_district(
         raise NotFoundError("District", cdk)
 
     return district
+
+
+@router.get("/{cdk}/lineage")
+async def get_district_lineage(
+    cdk: str,
+    db: asyncpg.Connection = Depends(get_db),
+):
+    """Get the lineage (parents and children) of a district."""
+    # Find children
+    children_query = """
+        SELECT child_lgd::text as child_cdk, child_district as district_name, state_name
+        FROM district_splits
+        WHERE parent_lgd = $1 OR parent_district = (SELECT district_name FROM districts WHERE cdk = $1 LIMIT 1)
+    """
+    children = await db.fetch(children_query, cdk)
+    
+    # Find parents
+    parents_query = """
+        SELECT parent_lgd::text as parent_cdk, parent_district as district_name, state_name
+        FROM district_splits
+        WHERE child_lgd = $1 OR child_district = (SELECT district_name FROM districts WHERE cdk = $1 LIMIT 1)
+    """
+    parents = await db.fetch(parents_query, cdk)
+
+    return {
+        "cdk": cdk,
+        "parents": [dict(p) for p in parents],
+        "children": [dict(c) for c in children]
+    }

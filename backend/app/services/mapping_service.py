@@ -308,90 +308,13 @@ class MappingService:
             if norm_key in normalized_lookup:
                 return normalized_lookup[norm_key]
 
-        # Strategy 4: Telangana ↔ AP state remapping
-        if district and state:
-            for alt_state in self._alternate_states(district, state):
-                alt_key = f"{district}|{alt_state}"
-                if alt_key in bridge:
-                    return alt_key
-                alt_norm = f"{self.normalize_name(district)}|{self.normalize_name(alt_state)}"
-                normalized_lookup = self._build_normalized_geo_keys()
-                if alt_norm in normalized_lookup:
-                    return normalized_lookup[alt_norm]
-
-        # Strategy 5: State inference from CDK + district name
-        if district and not state:
-            inferred_state = self.get_state_from_cdk(cdk)
-            if inferred_state:
-                direct_key = f"{district}|{inferred_state}"
-                if direct_key in bridge:
-                    return direct_key
-
-                # Try normalized
-                norm_key = f"{self.normalize_name(district)}|{self.normalize_name(inferred_state)}"
-                normalized_lookup = self._build_normalized_geo_keys()
-                if norm_key in normalized_lookup:
-                    return normalized_lookup[norm_key]
-
-        # Strategy 6: Fuzzy matching (expensive)
-        if district:
-            fuzzy_result = self.fuzzy_match_geo_key(district, state)
-            if fuzzy_result:
-                return fuzzy_result
-
-        # No match found
+        # No match found - strict mapping enforces no aggressive fuzzing
         logger.debug(f"No geo_key mapping found for CDK={cdk}, district={district}, state={state}")
         return None
 
     def fuzzy_match_geo_key(self, district: str, state: str | None = None, threshold: float = 0.8) -> str | None:
         """
         Fuzzy match a district name against known GeoJSON keys.
-
-        Uses simple ratio matching. For production, consider using
-        rapidfuzz or fuzzywuzzy for better performance.
-
-        Args:
-            district: District name to match
-            state: Optional state to narrow search
-            threshold: Minimum similarity ratio (0-1)
-
-        Returns:
-            Best matching GeoJSON key or None
-        """
-        bridge = self._load_bridge()
-        if not bridge or not district:
-            return None
-
-        norm_district = self.normalize_name(district)
-        norm_state = self.normalize_name(state) if state else None
-
-        best_match = None
-        best_score = 0.0
-
-        for geo_key in bridge:
-            parts = geo_key.split("|", 1)
-            key_district = parts[0]
-            key_state = parts[1] if len(parts) > 1 else None
-
-            norm_key_district = self.normalize_name(key_district)
-
-            # If state provided, require it to match (loosely)
-            if norm_state and key_state:
-                norm_key_state = self.normalize_name(key_state)
-                if norm_state not in norm_key_state and norm_key_state not in norm_state:
-                    continue
-
-            # Simple character-based similarity
-            score = self._similarity_ratio(norm_district, norm_key_district)
-
-            if score > best_score and score >= threshold:
-                best_score = score
-                best_match = geo_key
-
-        if best_match:
-            logger.debug(f"Fuzzy matched '{district}' -> '{best_match}' (score={best_score:.2f})")
-
-        return best_match
 
     def _similarity_ratio(self, a: str, b: str) -> float:
         """

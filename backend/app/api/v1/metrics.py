@@ -21,6 +21,7 @@ async def get_metrics(
     year: int = Query(2020, description="Year to fetch"),
     crop: str = Query("wheat", description="Crop name"),
     metric: str = Query("yield", description="Metric type: yield, area, production"),
+    mode: str = Query("historical", description="Map mode: historical, modern"),
     db: asyncpg.Connection = Depends(get_db),
 ):
     """
@@ -30,7 +31,7 @@ async def get_metrics(
     """
     repo = MetricRepository(db)
     variable = f"{crop.lower()}_{metric.lower()}"
-    return await repo.get_by_year_and_variable(year, variable)
+    return await repo.get_by_year_and_variable(year, variable, mode)
 
 
 @router.get("/history", response_model=list[MetricHistoryPoint])

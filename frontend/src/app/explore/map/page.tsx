@@ -28,6 +28,7 @@ function DistrictEvolutionApp() {
   const selectedDistrict = searchParams.get('district');
   const selectedState = searchParams.get('state');
   const showRainfall = searchParams.get('rainfall') === 'true';
+  const mode = searchParams.get('mode') || 'historical';
 
   // Helper to update URL
   const updateUrl = useCallback((updates: Record<string, string | number | null | boolean>) => {
@@ -40,7 +41,7 @@ function DistrictEvolutionApp() {
   }, [searchParams, router]);
 
   // Data Fetching Hook
-  const { joinedData } = useDistrictMetrics(year, crop, metric);
+  const { joinedData } = useDistrictMetrics(year, crop, metric, mode);
 
   // Selected Data Logic
   const selectedData = selectedDistrict ? (() => {
@@ -62,6 +63,8 @@ function DistrictEvolutionApp() {
         onCropChange={(c) => updateUrl({ crop: c })}
         currentMetric={metric}
         onMetricChange={(m) => updateUrl({ metric: m })}
+        currentMode={mode}
+        onModeChange={(md) => updateUrl({ mode: md })}
         districtData={selectedData || undefined}
         showRainfallLayer={showRainfall}
         onRainfallLayerToggle={() => updateUrl({ rainfall: !showRainfall })}
