@@ -625,5 +625,19 @@
   "Nicobar|Andaman & Nicobar Island": "AN_nicoba_1981",
   "South Andaman|Andaman & Nicobar Island": "AN_southa_2011",
   "North & Middle Andaman|Andaman & Nicobar Island": "AN_northm_2011",
-  "Lakshadweep|Lakshadweep": "LD_laksha_1951"
+  "Lakshadweep|Lakshadweep": "LD_laksha_1951",
+  "Chikkaballapura|Karnataka": "KA_kolar_2001",
+  "Chitradurga|Karnataka": "KA_chitra_1951",
+  "Jalgaon|Maharashtra": "MH_jalgao_1951",
+  "Kamrup Metropolitan|Assam": "AS_kamrup_1981",
+  "Kanpur Dehat|Uttar Pradesh": "UP_kanpur_1951",
+  "Kolkata|West Bengal": "WB_kolkat_1951",
+  "Kollam|Kerala": "KL_kollam_1951",
+  "Mumbai Suburban|Maharashtra": "MH_greate_1991",
+  "Pune|Maharashtra": "MH_pune_1951",
+  "Satara|Maharashtra": "MH_satara_1951",
+  "Thanjavur|Tamil Nadu": "TN_thanja_1951",
+  "Thiruvananthapuram|Kerala": "KL_thiruv_1951",
+  "Thrissur|Kerala": "KL_thriss_1951",
+  "Tiruvannamalai|Tamil Nadu": "TN_tiruva_1991"
 }

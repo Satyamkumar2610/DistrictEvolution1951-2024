@@ -70,9 +70,9 @@ class MetricRepository(BaseRepository):
         """
         # 1. First fetch raw data
         query = """
-            SELECT m.district_lgd::text as cdk, d.state_name, d.district_name, m.value
+            SELECT m.cdk as cdk, d.state_name, d.district_name, m.value
             FROM agri_metrics m
-            JOIN districts d ON m.district_lgd = d.lgd_code
+            JOIN districts d ON m.cdk = d.cdk
             WHERE m.year = $1 AND m.variable_name = $2
             AND d.district_name != 'State Average'
         """
@@ -115,9 +115,10 @@ class MetricRepository(BaseRepository):
             # We must roll up modern children to their parents.
             # We fetch all lineage to build a child -> parent map
             lineage_query = """
-                SELECT ds.child_lgd::text as child, pd.lgd_code::text as parent, pd.district_name, pd.state_name
+                SELECT c.cdk as child, p.cdk as parent, p.district_name, p.state_name
                 FROM district_splits ds
-                JOIN districts pd ON pd.lgd_code = ds.parent_lgd
+                JOIN districts c ON LOWER(c.district_name) = LOWER(ds.child_district) AND LOWER(c.state_name) = LOWER(ds.state_name)
+                JOIN districts p ON LOWER(p.district_name) = LOWER(ds.parent_district) AND LOWER(p.state_name) = LOWER(ds.state_name)
             """
             l_rows = await self.fetch_all(lineage_query)
             child_to_parent = {r["child"]: {"cdk": r["parent"], "name": r["district_name"], "state": r["state_name"]} for r in l_rows}

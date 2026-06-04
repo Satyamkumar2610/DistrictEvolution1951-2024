@@ -341,3 +341,17 @@ async def validate_yield_backcast(
     return await backcaster.validate_backcast(
         parent_cdk=parent_cdk, child_cdk=child_cdk, split_year=split_year, crop=crop
     )
+
+
+@router.get("/lineage-metrics")
+async def get_lineage_metrics(db: asyncpg.Connection = Depends(get_db)):
+    """Get advanced Research Metrics for Lineage Architecture"""
+    from app.analytics.lineage_metrics import LineageMetricsEngine
+    engine = LineageMetricsEngine(db)
+    
+    return {
+        "stability_index": await engine.compute_district_stability_index(),
+        "volatility_index": await engine.compute_boundary_volatility_index(),
+        "fragmentation_index": await engine.compute_fragmentation_index(),
+        "depth_score": await engine.compute_lineage_depth_score()
+    }

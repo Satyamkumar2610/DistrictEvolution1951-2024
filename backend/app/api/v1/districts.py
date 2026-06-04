@@ -66,17 +66,21 @@ async def get_district_lineage(
     """Get the lineage (parents and children) of a district."""
     # Find children
     children_query = """
-        SELECT child_lgd::text as child_cdk, child_district as district_name, state_name
-        FROM district_splits
-        WHERE parent_lgd = $1 OR parent_district = (SELECT district_name FROM districts WHERE cdk = $1 LIMIT 1)
+        SELECT ds.child_district as district_name, ds.state_name, c.cdk as child_cdk
+        FROM district_splits ds
+        LEFT JOIN districts c ON LOWER(c.district_name) = LOWER(ds.child_district) AND LOWER(c.state_name) = LOWER(ds.state_name)
+        JOIN districts p ON LOWER(p.district_name) = LOWER(ds.parent_district) AND LOWER(p.state_name) = LOWER(ds.state_name)
+        WHERE p.cdk = $1
     """
     children = await db.fetch(children_query, cdk)
     
     # Find parents
     parents_query = """
-        SELECT parent_lgd::text as parent_cdk, parent_district as district_name, state_name
-        FROM district_splits
-        WHERE child_lgd = $1 OR child_district = (SELECT district_name FROM districts WHERE cdk = $1 LIMIT 1)
+        SELECT ds.parent_district as district_name, ds.state_name, p.cdk as parent_cdk
+        FROM district_splits ds
+        LEFT JOIN districts p ON LOWER(p.district_name) = LOWER(ds.parent_district) AND LOWER(p.state_name) = LOWER(ds.state_name)
+        JOIN districts c ON LOWER(c.district_name) = LOWER(ds.child_district) AND LOWER(c.state_name) = LOWER(ds.state_name)
+        WHERE c.cdk = $1
     """
     parents = await db.fetch(parents_query, cdk)
 
