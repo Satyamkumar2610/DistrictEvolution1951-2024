@@ -35,7 +35,7 @@ async def test_get_metrics(client):
             assert data[0]["cdk"] == "D1"
             assert data[0]["feature_id"] == "Dist1|Bihar"
             assert data[0]["geo_key"] == "Dist1|Bihar"
-            mock_repo.get_by_year_and_variable.assert_called_once_with(2020, "wheat_yield")
+            mock_repo.get_by_year_and_variable.assert_called_once_with(2020, "wheat_yield", "historical")
     finally:
         del client._transport.app.dependency_overrides[get_db]
 
