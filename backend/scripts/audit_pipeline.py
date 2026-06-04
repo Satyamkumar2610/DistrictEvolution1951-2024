@@ -6,7 +6,13 @@ import sys
 
 # Connect to database
 async def main():
-    conn = await asyncpg.connect("postgresql://neondb_owner:npg_7AtbCMWo3ksv@ep-purple-butterfly-a18tkuor-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require")
+    import os
+    from dotenv import load_dotenv
+    load_dotenv()
+    db_url = os.environ.get("DATABASE_URL")
+    if not db_url:
+        raise ValueError("DATABASE_URL is not set")
+    conn = await asyncpg.connect(db_url)
     
     # 1. Get GeoJSON features
     with open("../frontend/public/data/districts.json", "r") as f:
