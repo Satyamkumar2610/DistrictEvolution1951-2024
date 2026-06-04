@@ -122,7 +122,7 @@ class MetricRepository(BaseRepository):
             """
             l_rows = await self.fetch_all(lineage_query)
             child_to_parent = {r["child"]: {"cdk": r["parent"], "name": r["district_name"], "state": r["state_name"]} for r in l_rows}
-            
+
             # If variable is yield, we can't just sum it. But wait, we haven't done Yield Fallback yet!
             # So if it's yield, it's missing organically from DB, and will be handled by the next block!
             # If it IS organically in DB (unlikely, but possible), we shouldn't sum it.
@@ -145,11 +145,11 @@ class MetricRepository(BaseRepository):
         if "_yield" in variable:
             area_var = variable.replace("_yield", "_area")
             prod_var = variable.replace("_yield", "_production")
-            
+
             # Re-use get_by_year_and_variable recursively to get aggregated area and production!
             ap_rows_area = await self.get_by_year_and_variable(year, area_var, mode)
             ap_rows_prod = await self.get_by_year_and_variable(year, prod_var, mode)
-            
+
             # Combine them
             cdk_map = {}
             for r in ap_rows_area:

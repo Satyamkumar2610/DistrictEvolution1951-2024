@@ -348,7 +348,7 @@ async def get_lineage_metrics(db: asyncpg.Connection = Depends(get_db)):
     """Get advanced Research Metrics for Lineage Architecture"""
     from app.analytics.lineage_metrics import LineageMetricsEngine
     engine = LineageMetricsEngine(db)
-    
+
     return {
         "stability_index": await engine.compute_district_stability_index(),
         "volatility_index": await engine.compute_boundary_volatility_index(),

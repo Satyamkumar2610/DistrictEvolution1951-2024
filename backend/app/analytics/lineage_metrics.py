@@ -3,25 +3,27 @@ Lineage Metrics Analytics Module
 Computes Research Metrics: District Stability Index, Boundary Volatility Index, Administrative Fragmentation Index, and Lineage Depth Score.
 """
 
-from typing import Dict, Any, List
+from typing import Any
+
 import asyncpg
+
 
 class LineageMetricsEngine:
     def __init__(self, db: asyncpg.Connection):
         self.db = db
 
-    async def compute_district_stability_index(self) -> List[Dict[str, Any]]:
+    async def compute_district_stability_index(self) -> list[dict[str, Any]]:
         """
         District Stability Index = (Years without split) / (Total Years Active).
         Since we don't have exact year-by-year splits for all, we use:
         1 - (Number of Splits / (End Year - Start Year))
         """
         query = """
-            SELECT d.cdk, d.district_name, d.state_name, 
+            SELECT d.cdk, d.district_name, d.state_name,
                    d.start_year, d.end_year,
                    COUNT(ds.id) as split_count
             FROM districts d
-            LEFT JOIN district_splits ds ON ds.parent_district = d.district_name 
+            LEFT JOIN district_splits ds ON ds.parent_district = d.district_name
                                         AND ds.state_name = d.state_name
             WHERE d.start_year IS NOT NULL
             GROUP BY d.cdk, d.district_name, d.state_name, d.start_year, d.end_year
@@ -43,7 +45,7 @@ class LineageMetricsEngine:
             })
         return results
 
-    async def compute_boundary_volatility_index(self) -> List[Dict[str, Any]]:
+    async def compute_boundary_volatility_index(self) -> list[dict[str, Any]]:
         """
         Boundary Volatility Index = Frequency of splits per state per decade.
         """
@@ -56,7 +58,7 @@ class LineageMetricsEngine:
         rows = await self.db.fetch(query)
         return [dict(r) for r in rows]
 
-    async def compute_fragmentation_index(self) -> List[Dict[str, Any]]:
+    async def compute_fragmentation_index(self) -> list[dict[str, Any]]:
         """
         Administrative Fragmentation Index = Total modern children / 1 historical parent.
         """
@@ -70,7 +72,7 @@ class LineageMetricsEngine:
         rows = await self.db.fetch(query)
         return [dict(r) for r in rows]
 
-    async def compute_lineage_depth_score(self) -> List[Dict[str, Any]]:
+    async def compute_lineage_depth_score(self) -> list[dict[str, Any]]:
         """
         Lineage Depth Score = Maximum depth of the DAG.
         We approximate this by checking multi-level splits (e.g. A->B->C).
@@ -79,9 +81,9 @@ class LineageMetricsEngine:
             WITH RECURSIVE lineage_tree AS (
                 SELECT ds.parent_district, ds.child_district, ds.state_name, 1 as depth
                 FROM district_splits ds
-                
+
                 UNION ALL
-                
+
                 SELECT lt.parent_district, ds.child_district, ds.state_name, lt.depth + 1
                 FROM district_splits ds
                 JOIN lineage_tree lt ON ds.parent_district = lt.child_district AND ds.state_name = lt.state_name

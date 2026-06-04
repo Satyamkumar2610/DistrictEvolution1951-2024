@@ -315,6 +315,8 @@ class MappingService:
     def fuzzy_match_geo_key(self, district: str, state: str | None = None, threshold: float = 0.8) -> str | None:
         """
         Fuzzy match a district name against known GeoJSON keys.
+        """
+        pass
 
     def _similarity_ratio(self, a: str, b: str) -> float:
         """

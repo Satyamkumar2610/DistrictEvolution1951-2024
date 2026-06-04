@@ -73,7 +73,7 @@ async def get_district_lineage(
         WHERE p.cdk = $1
     """
     children = await db.fetch(children_query, cdk)
-    
+
     # Find parents
     parents_query = """
         SELECT ds.parent_district as district_name, ds.state_name, p.cdk as parent_cdk
