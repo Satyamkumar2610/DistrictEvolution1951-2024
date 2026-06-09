@@ -30,7 +30,7 @@ class StateRepository(BaseRepository):
             """
             SELECT MIN(m.year) as min_year, MAX(m.year) as max_year
             FROM agri_metrics m
-            JOIN districts d ON m.district_lgd = d.lgd_code
+            JOIN districts d ON m.cdk = d.cdk
             WHERE d.state_name = $1
             """,
             state_name,
@@ -46,7 +46,7 @@ class StateRepository(BaseRepository):
             """
             SELECT ROUND(AVG(m.value)::numeric, 2)
             FROM agri_metrics m
-            JOIN districts d ON m.district_lgd = d.lgd_code
+            JOIN districts d ON m.cdk = d.cdk
             WHERE d.state_name = $1 AND m.variable_name = $2 AND m.year = $3 AND m.value > 0
             """,
             state_name,
@@ -67,9 +67,9 @@ class StateRepository(BaseRepository):
         ordering = "DESC" if descending else "ASC"
         rows = await self.fetch_all(
             f"""
-            SELECT d.district_name, d.lgd_code::text as cdk, ROUND(m.value::numeric, 2) as yield_value
+            SELECT d.district_name, d.cdk::text as cdk, ROUND(m.value::numeric, 2) as yield_value
             FROM agri_metrics m
-            JOIN districts d ON m.district_lgd = d.lgd_code
+            JOIN districts d ON m.cdk = d.cdk
             WHERE d.state_name = $1 AND m.variable_name = $2 AND m.year = $3 AND m.value > 0
             ORDER BY m.value {ordering}
             LIMIT 5
@@ -94,7 +94,7 @@ class StateRepository(BaseRepository):
                 ROUND(SUM(CASE WHEN m.variable_name = $2 THEN m.value END)::numeric, 2) as total_area,
                 ROUND(SUM(CASE WHEN m.variable_name = $3 THEN m.value END)::numeric, 2) as total_production
             FROM agri_metrics m
-            JOIN districts d ON m.district_lgd = d.lgd_code
+            JOIN districts d ON m.cdk = d.cdk
             WHERE d.state_name = $1 AND m.year = $4 AND m.value > 0
             """,
             state_name,
@@ -111,9 +111,9 @@ class StateRepository(BaseRepository):
         """Return number of districts with non-zero yield data for the state/crop/year."""
         count = await self.fetch_val(
             """
-            SELECT COUNT(DISTINCT d.lgd_code)
+            SELECT COUNT(DISTINCT d.cdk)
             FROM agri_metrics m
-            JOIN districts d ON m.district_lgd = d.lgd_code
+            JOIN districts d ON m.cdk = d.cdk
             WHERE d.state_name = $1 AND m.variable_name = $2 AND m.year = $3 AND m.value > 0
             """,
             state_name,
@@ -128,7 +128,7 @@ class StateRepository(BaseRepository):
             """
             SELECT DISTINCT REPLACE(m.variable_name, '_yield', '') as crop_name
             FROM agri_metrics m
-            JOIN districts d ON m.district_lgd = d.lgd_code
+            JOIN districts d ON m.cdk = d.cdk
             WHERE d.state_name = $1 AND m.variable_name LIKE '%_yield' AND m.value > 0
             ORDER BY crop_name
             """,

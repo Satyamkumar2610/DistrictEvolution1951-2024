@@ -144,14 +144,14 @@ async def run_bootstrapper():
                 parts = parent_cdk.split("_")
                 if len(parts) >= 3:
                     name_prefix = parts[1]
-                    lgd_code_int = await conn.fetchval(
+                    cdk_int = await conn.fetchval(
                         "SELECT cdk FROM districts WHERE district_name ILIKE $1 LIMIT 1", f"{name_prefix}%"
                     )
                 else:
-                    lgd_code_int = None
+                    cdk_int = None
 
             geom_found = False
-            if lgd_code_int:
+            if cdk_int:
                 async with pool.acquire() as conn:
                     try:
                         geom = await conn.fetchval(
@@ -160,7 +160,7 @@ async def run_bootstrapper():
                             FROM shrug_villages v
                             WHERE v.district_code = $1 AND v.census_year = 2011
                         """,
-                            int(lgd_code_int) if lgd_code_int.isdigit() else 0,
+                            int(cdk_int) if cdk_int.isdigit() else 0,
                         )
 
                         if geom:

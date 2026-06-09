@@ -79,9 +79,9 @@ class GeometryResolver:
 
         if name_search:
             # Try exact then multiple fuzzy variants
-            lgd_code_str = await self.db.fetchval(
+            cdk_str = await self.db.fetchval(
                 """
-                SELECT lgd_code::text FROM districts
+                SELECT cdk::text FROM districts
                 WHERE district_name ILIKE $1
                    OR district_name ILIKE $2
                    OR district_name ILIKE $3
@@ -93,11 +93,11 @@ class GeometryResolver:
             )
 
             # If still not found and we have a 3rd part (e.g. TG_kumura_asif_2024)
-            if not lgd_code_str and len(parts) >= 3:
+            if not cdk_str and len(parts) >= 3:
                 name_search_2 = parts[2]
-                lgd_code_str = await self.db.fetchval(
+                cdk_str = await self.db.fetchval(
                     """
-                    SELECT lgd_code::text FROM districts
+                    SELECT cdk::text FROM districts
                     WHERE district_name ILIKE $1 OR district_name ILIKE $2
                     ORDER BY start_year DESC LIMIT 1
                 """,
@@ -105,7 +105,7 @@ class GeometryResolver:
                     f"%{name_search_2}%",
                 )
 
-            if lgd_code_str:
+            if cdk_str:
                 mapped_row = await self.db.fetchrow(
                     """
                     SELECT geometry_source::text, geometry_confidence, area_sqkm,
@@ -115,7 +115,7 @@ class GeometryResolver:
                     ORDER BY ABS(snapshot_year - $2) ASC
                     LIMIT 1
                 """,
-                    lgd_code_str,
+                    cdk_str,
                     year,
                 )
 
@@ -271,7 +271,7 @@ class GeometryResolver:
             if len(parts) >= 2:
                 name_part = parts[1]
                 lgd_str = await db.fetchval(
-                    "SELECT lgd_code::text FROM districts WHERE district_name ILIKE $1 LIMIT 1", f"{name_part}%"
+                    "SELECT cdk::text FROM districts WHERE district_name ILIKE $1 LIMIT 1", f"{name_part}%"
                 )
                 if lgd_str:
                     row = await db.fetchrow(

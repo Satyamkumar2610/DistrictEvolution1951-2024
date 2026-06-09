@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 # Constants
 # Assuming script is run from project root
-CSV_PATH = Path("data/raw/ICRISAT-District Level Data.csv")
+CSV_PATH = Path("data/raw/ICRISAT-District Level Data Unapportioned.csv")
 UNMAPPED_REPORT_PATH = Path("data/quarantine/icrisat_unmapped.csv")
 
 # Crop name mapping (CSV header substring -> standard variable name)
@@ -49,15 +49,15 @@ CROP_MAP = {
     "FODDER": "fodder",
 }
 
-async def fetch_lgd_lookup() -> dict[tuple[str, str], int]:
-    """Fetch all districts from DB and build a lookup table {(district_lower, state_lower): lgd_code}."""
+async def fetch_lgd_lookup() -> dict[tuple[str, str], str]:
+    """Fetch all districts from DB and build a lookup table {(district_lower, state_lower): cdk}."""
     lookup = {}
     async with get_connection() as db:
-        rows = await db.fetch("SELECT lgd_code, district_name, state_name FROM districts")
+        rows = await db.fetch("SELECT cdk, district_name, state_name FROM districts")
         for row in rows:
             d_name = row["district_name"].lower().strip()
             s_name = row["state_name"].lower().strip()
-            lookup[(d_name, s_name)] = row["lgd_code"]
+            lookup[(d_name, s_name)] = row["cdk"]
     return lookup
 
 def parse_value(val: str, is_yield: bool = False) -> float | None:
@@ -136,7 +136,7 @@ async def import_data(dry_run: bool = False):
 
         # Pre-process headers
         header_map = {} # CSV Header -> (db_variable, metric_type)
-        for h in reader.fieldnames:
+        for h in (reader.fieldnames or []):
              var, mtype = normalize_header(h)
              if var:
                  header_map[h] = (var, mtype)
@@ -147,11 +147,14 @@ async def import_data(dry_run: bool = False):
             # District Mapping
             dist_name = row.get("Dist Name", "").strip()
             state_name = row.get("State Name", "").strip()
-            year = int(row.get("Year"))
+            year_str = row.get("Year")
+            if not year_str:
+                continue
+            year = int(year_str)
 
-            lgd_code = resolve_lgd(dist_name, state_name, lgd_lookup)
+            cdk = resolve_lgd(dist_name, state_name, lgd_lookup)
 
-            if not lgd_code:
+            if not cdk:
                 unmapped.add((dist_name, state_name))
                 skipped_count += 1
                 continue
@@ -170,7 +173,7 @@ async def import_data(dry_run: bool = False):
 
                 if val is not None:
                      metrics_to_insert.append({
-                        "district_lgd": lgd_code,
+                        "cdk": cdk,
                         "year": year,
                         "variable_name": variable,
                         "value": val,
@@ -198,11 +201,11 @@ async def import_data(dry_run: bool = False):
              for i in range(0, len(metrics_to_insert), batch_size):
                 batch = metrics_to_insert[i:i+batch_size]
                 await db.executemany("""
-                    INSERT INTO agri_metrics (district_lgd, year, variable_name, value)
+                    INSERT INTO agri_metrics (cdk, year, variable_name, value)
                     VALUES ($1, $2, $3, $4)
-                    ON CONFLICT (district_lgd, year, variable_name)
+                    ON CONFLICT (cdk, year, variable_name)
                     DO UPDATE SET value = EXCLUDED.value
-                """, [(m["district_lgd"], m["year"], m["variable_name"], m["value"]) for m in batch])
+                """, [(m["cdk"], m["year"], m["variable_name"], m["value"]) for m in batch])
                 logger.info(f"Inserted batch {i // batch_size + 1}/{(len(metrics_to_insert) - 1) // batch_size + 1}")
         logger.info("Import complete.")
     elif dry_run:

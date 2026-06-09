@@ -185,7 +185,7 @@ def resolve_lgd(
       4. Telangana cross-lookup (AP parent → Telangana child)
       5. Prefix match  (first 5 chars)
 
-    ``lgd_lookup`` must be  {(district_lower, state_lower): lgd_code}
+    ``lgd_lookup`` must be  {(district_lower, state_lower): cdk}
     """
     dn = normalize(district_name)
     sn = normalize(state_name)

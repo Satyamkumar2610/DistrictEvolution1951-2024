@@ -69,16 +69,16 @@ class SplitRepository(BaseRepository):
 
         rows = await self.fetch_all(
             """
-            SELECT DISTINCT district_lgd
+            SELECT DISTINCT cdk
             FROM agri_metrics
-            WHERE district_lgd::text = ANY($1::text[])
+            WHERE cdk::text = ANY($1::text[])
             """,
             str_cdks,
         )
 
         resolved: set[int | str] = set()
         for row in rows:
-            value = row["district_lgd"] if "district_lgd" in row else row["cdk"]
+            value = row["cdk"] if "cdk" in row else row["cdk"]
             if value is None:
                 continue
             value_str = str(value)

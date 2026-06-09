@@ -22,9 +22,9 @@ class SpatialAnalyticsService(BaseAnalyticsService):
         crop_data = {}
         for crop in crops:
             query = """
-                SELECT m.district_lgd::text as cdk, m.value
+                SELECT m.cdk::text as cdk, m.value
                 FROM agri_metrics m
-                JOIN districts d ON m.district_lgd = d.lgd_code
+                JOIN districts d ON m.cdk = d.cdk
                 WHERE UPPER(d.state_name) = UPPER($1)
                   AND m.year = $2
                   AND m.value > 0
@@ -67,9 +67,9 @@ class SpatialAnalyticsService(BaseAnalyticsService):
     ) -> list[dict[str, Any]]:
         """Rank districts by crop performance."""
         query = """
-            SELECT m.district_lgd::text as cdk, d.district_name, m.value
+            SELECT m.cdk::text as cdk, d.district_name, m.value
             FROM agri_metrics m
-            JOIN districts d ON m.district_lgd = d.lgd_code
+            JOIN districts d ON m.cdk = d.cdk
             WHERE UPPER(d.state_name) = UPPER($1)
               AND m.year = $2
               AND m.value > 0
@@ -89,7 +89,7 @@ class SpatialAnalyticsService(BaseAnalyticsService):
         kharif = await self._fetchrow(
             """
             SELECT value FROM agri_metrics
-            WHERE district_lgd::text = $1 AND year = $2 AND variable_name LIKE $3
+            WHERE cdk::text = $1 AND year = $2 AND variable_name LIKE $3
         """,
             cdk,
             year,
@@ -99,7 +99,7 @@ class SpatialAnalyticsService(BaseAnalyticsService):
         rabi = await self._fetchrow(
             """
             SELECT value FROM agri_metrics
-            WHERE district_lgd::text = $1 AND year = $2 AND variable_name LIKE $3
+            WHERE cdk::text = $1 AND year = $2 AND variable_name LIKE $3
         """,
             cdk,
             year,
@@ -129,14 +129,14 @@ class SpatialAnalyticsService(BaseAnalyticsService):
         if year_range is None:
             year_range = [1990, 2020]
         query = """
-            SELECT d.district_name, m.district_lgd::text as cdk, m.year, m.value
+            SELECT d.district_name, m.cdk::text as cdk, m.year, m.value
             FROM agri_metrics m
-            JOIN districts d ON m.district_lgd = d.lgd_code
+            JOIN districts d ON m.cdk = d.cdk
             WHERE UPPER(d.state_name) = UPPER($1)
               AND m.value > 0
               AND m.year BETWEEN $2 AND $3
               AND m.variable_name = $4
-            ORDER BY m.district_lgd, m.year
+            ORDER BY m.cdk, m.year
         """
         rows = await self._fetch_with_fallback(query, crop, "yield", state, year_range[0], year_range[1])
 

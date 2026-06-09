@@ -73,8 +73,11 @@ async function fetchOnce<T>(url: string, options: RequestInit = {}): Promise<T> 
             message = errorText || null;
         }
 
-        console.error(`[API] Error ${response.status}: ${errorText}`);
-
+        if (response.status >= 500) {
+            console.error(`[API] Error ${response.status}: ${errorText}`);
+        } else {
+            console.warn(`[API] Warning ${response.status}: ${errorText}`);
+        }
         if (response.status === 404) {
             throw new ApiError(404, message || 'Resource not found');
         }

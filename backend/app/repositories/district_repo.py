@@ -1,6 +1,6 @@
 """
 District Repository: Data access for district entities.
-Uses lgd_code (int) as primary key, cast to text for API compatibility.
+Uses cdk (int) as primary key, cast to text for API compatibility.
 """
 
 from app.cache import CacheTTL, cached

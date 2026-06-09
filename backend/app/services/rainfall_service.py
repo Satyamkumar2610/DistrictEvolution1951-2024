@@ -180,15 +180,15 @@ async def get_water_stress_index(db: asyncpg.Connection, state: str, year: int) 
     query = """
         SELECT
             d.district_name,
-            d.lgd_code,
+            d.cdk,
             SUM(CASE WHEN m.variable_name LIKE 'rice_area%' AND m.variable_name NOT LIKE '%_kharif%' AND m.variable_name NOT LIKE '%_rabi%' THEN m.value ELSE 0 END) as rice_area,
             SUM(CASE WHEN m.variable_name LIKE 'sugarcane_area%' AND m.variable_name NOT LIKE '%_kharif%' AND m.variable_name NOT LIKE '%_rabi%' THEN m.value ELSE 0 END) as sugarcane_area,
             SUM(CASE WHEN m.variable_name LIKE 'cotton_area%' AND m.variable_name NOT LIKE '%_kharif%' AND m.variable_name NOT LIKE '%_rabi%' THEN m.value ELSE 0 END) as cotton_area,
             SUM(CASE WHEN m.variable_name LIKE '%_area%' AND m.variable_name NOT LIKE '%_kharif%' AND m.variable_name NOT LIKE '%_rabi%' THEN m.value ELSE 0 END) as total_area
         FROM districts d
-        JOIN agri_metrics m ON d.lgd_code = m.district_lgd
+        JOIN agri_metrics m ON d.cdk = m.cdk
         WHERE d.state_name = $1 AND m.year = $2
-        GROUP BY d.district_name, d.lgd_code
+        GROUP BY d.district_name, d.cdk
     """
     rows = await db.fetch(query, state, year)
 
@@ -237,7 +237,7 @@ async def get_water_stress_index(db: asyncpg.Connection, state: str, year: int) 
         results.append(
             {
                 "district_name": district_name,
-                "cdk": str(row["lgd_code"]),
+                "cdk": str(row["cdk"]),
                 "total_area": round(total_area, 2),  # type: ignore
                 "water_intensive_area": round(water_intensive_area, 2),  # type: ignore
                 "water_intensive_share": round(water_intensive_share * 100, 1),  # type: ignore

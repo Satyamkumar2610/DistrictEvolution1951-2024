@@ -46,7 +46,7 @@ class CropDiversityService(BaseAnalyticsService):
                 SPLIT_PART(variable_name, '_', 1) as crop,
                 value as area
             FROM agri_metrics
-            WHERE district_lgd::text = $1
+            WHERE cdk::text = $1
               AND year = $2
               AND variable_name LIKE '%_area%'
               AND variable_name NOT LIKE '%_kharif%'
@@ -93,7 +93,7 @@ class CropDiversityService(BaseAnalyticsService):
             SELECT
                 SPLIT_PART(variable_name, '_', 1) as crop
             FROM agri_metrics
-            WHERE district_lgd::text = $1
+            WHERE cdk::text = $1
               AND year = $2
               AND variable_name LIKE '%_area%'
               AND variable_name NOT LIKE '%_kharif%'
@@ -123,7 +123,7 @@ class CropDiversityService(BaseAnalyticsService):
                 SPLIT_PART(variable_name, '_', 1) as crop,
                 value as area
             FROM agri_metrics
-            WHERE district_lgd::text = $1
+            WHERE cdk::text = $1
               AND variable_name LIKE '%_area%'
               AND variable_name NOT LIKE '%_kharif%'
               AND variable_name NOT LIKE '%_rabi%'
@@ -215,7 +215,7 @@ class CropDiversityService(BaseAnalyticsService):
                 SELECT {", ".join(case_statements)},
                        SUM(CASE WHEN variable_name LIKE '%_area' AND variable_name NOT LIKE '%_kharif%' AND variable_name NOT LIKE '%_rabi%' THEN value ELSE 0 END) as total_area
                 FROM agri_metrics
-                WHERE district_lgd = ANY($1::float[])
+                WHERE cdk = ANY($1::float[])
                   AND year BETWEEN $2 AND $3
             """
             row = await self._fetchrow(query, cdk_ints, start_yr, end_yr)
@@ -238,12 +238,12 @@ class CropDiversityService(BaseAnalyticsService):
             if not cdk:
                 continue
             mix = await get_crop_mix([cdk], post_start, post_end)
-            name_row = await self._fetchrow("SELECT district_name FROM districts WHERE lgd_code::text = $1", str(cdk))
+            name_row = await self._fetchrow("SELECT district_name FROM districts WHERE cdk::text = $1", str(cdk))
             name = name_row["district_name"] if name_row else str(cdk)
             children_post_mix[name] = {"cdk": str(cdk), "mix": mix}
 
         p_name_row = await self._fetchrow(
-            "SELECT district_name FROM districts WHERE lgd_code::text = $1", str(parent_cdk)
+            "SELECT district_name FROM districts WHERE cdk::text = $1", str(parent_cdk)
         )
         parent_name = p_name_row["district_name"] if p_name_row else str(parent_cdk)
 

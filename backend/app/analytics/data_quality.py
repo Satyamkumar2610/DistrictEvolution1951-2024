@@ -120,7 +120,7 @@ class DataQualityScorer:
             """
             SELECT COUNT(DISTINCT year)
             FROM agri_metrics
-            WHERE district_lgd::text = $1 AND year >= $2 AND year <= $3
+            WHERE cdk::text = $1 AND year >= $2 AND year <= $3
         """,
             cdk,
             self.min_year,
@@ -141,7 +141,7 @@ class DataQualityScorer:
             """
             SELECT year, variable_name, value
             FROM agri_metrics
-            WHERE district_lgd::text = $1
+            WHERE cdk::text = $1
             AND variable_name IN ('rice_area', 'rice_production', 'rice_yield')
             ORDER BY year, variable_name
         """,
@@ -185,7 +185,7 @@ class DataQualityScorer:
             """
             SELECT MAX(year)
             FROM agri_metrics
-            WHERE district_lgd::text = $1
+            WHERE cdk::text = $1
         """,
             cdk,
         )
@@ -207,7 +207,7 @@ class DataQualityScorer:
             """
             SELECT value
             FROM agri_metrics
-            WHERE district_lgd::text = $1 AND variable_name LIKE '%_yield' AND value > 0
+            WHERE cdk::text = $1 AND variable_name LIKE '%_yield' AND value > 0
         """,
             cdk,
         )
@@ -237,7 +237,7 @@ async def get_state_quality_summary(db: asyncpg.Connection, state: str) -> dict[
     cdks = await fetch(
         db,
         """
-        SELECT lgd_code::text as cdk FROM districts WHERE state_name = $1
+        SELECT cdk::text as cdk FROM districts WHERE state_name = $1
     """,
         state,
     )

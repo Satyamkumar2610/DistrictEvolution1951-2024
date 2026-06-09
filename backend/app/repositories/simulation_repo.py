@@ -21,7 +21,7 @@ class SimulationRepository(BaseRepository):
             """
             SELECT d.district_name, m.value as yield
             FROM agri_metrics m
-            JOIN districts d ON m.district_lgd = d.lgd_code
+            JOIN districts d ON m.cdk = d.cdk
             WHERE UPPER(d.state_name) = UPPER($1)
             AND m.variable_name = $2
             AND m.year = $3
@@ -64,7 +64,7 @@ class SimulationRepository(BaseRepository):
             """
             SELECT d.district_name, m.year, m.value
             FROM agri_metrics m
-            JOIN districts d ON m.district_lgd = d.lgd_code
+            JOIN districts d ON m.cdk = d.cdk
             WHERE UPPER(d.state_name) = UPPER($1)
             AND m.variable_name = $2
             AND m.value IS NOT NULL AND m.value > 0
@@ -86,7 +86,7 @@ class SimulationRepository(BaseRepository):
             """
             SELECT d.district_name, m.value as area
             FROM agri_metrics m
-            JOIN districts d ON m.district_lgd = d.lgd_code
+            JOIN districts d ON m.cdk = d.cdk
             WHERE UPPER(d.state_name) = UPPER($1)
             AND m.variable_name = $2
             AND m.year = $3

@@ -5,7 +5,7 @@ Performance features:
   - Recursive CTEs for deep ancestry / descendant traversal.
   - Redis-backed caching for frequently accessed apportionment chains.
 
-Note: lineage_events uses CDK text keys which cannot join to districts.lgd_code.
+Note: lineage_events uses CDK text keys which cannot join to districts.cdk.
 """
 
 import contextlib
@@ -59,7 +59,7 @@ class LineageRepository(BaseRepository):
         """Filter events where parent belongs to given state using Python filtering.
 
         Cannot use SQL JOIN because lineage_events.parent_cdk (text like AR_balipa_1951)
-        has no relationship to districts.lgd_code (int). We filter in Python instead.
+        has no relationship to districts.cdk (int). We filter in Python instead.
         """
         all_events = await self.get_all_events()
 
@@ -116,9 +116,9 @@ class LineageRepository(BaseRepository):
     async def get_tracking_district(self, cdk: str) -> TrackingDistrict | None:
         """Get district metadata for provenance tracking."""
         query = """
-            SELECT lgd_code::text as cdk, district_name, state_name, NULL::int as start_year, NULL::int as end_year
+            SELECT cdk::text as cdk, district_name, state_name, NULL::int as start_year, NULL::int as end_year
             FROM districts
-            WHERE lgd_code::text = $1
+            WHERE cdk::text = $1
         """
         row = await self.fetch_one(query, cdk)
         if row is None:
@@ -135,7 +135,7 @@ class LineageRepository(BaseRepository):
                 COUNT(DISTINCT variable_name) as variables,
                 COUNT(*) as total_records
             FROM agri_metrics
-            WHERE district_lgd::text = $1
+            WHERE cdk::text = $1
         """
         row = await self.fetch_one(query, cdk)
         if row is None:
@@ -152,7 +152,7 @@ class LineageRepository(BaseRepository):
         """Get district coverage summary for a state."""
         query = """
             SELECT
-                d.lgd_code::text as cdk,
+                d.cdk::text as cdk,
                 d.district_name,
                 NULL::int as start_year,
                 NULL::int as end_year,
@@ -160,9 +160,9 @@ class LineageRepository(BaseRepository):
                 COUNT(am.year) as record_count,
                 'original' as lineage_status
             FROM districts d
-            LEFT JOIN agri_metrics am ON d.lgd_code = am.district_lgd
+            LEFT JOIN agri_metrics am ON d.cdk = am.cdk
             WHERE d.state_name = $1
-            GROUP BY d.lgd_code, d.district_name
+            GROUP BY d.cdk, d.district_name
             ORDER BY d.district_name
         """
         rows = await self.fetch_all(query, state)

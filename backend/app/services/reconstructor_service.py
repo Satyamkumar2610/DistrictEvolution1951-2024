@@ -4,7 +4,7 @@ Bridges split_events (text CDKs) with district_snapshots (geometries)
 and agri_metrics (yields via LGD integer codes).
 
 v5: Fixed CDK→LGD resolution — text CDKs from split_events must be
-    resolved to integer district_lgd before querying agri_metrics.
+    resolved to integer cdk before querying agri_metrics.
 """
 
 import json
@@ -78,7 +78,7 @@ class ReconstructorService:
         self._lineage_graph: LineageGraph | None = None
         self._graph_cache: dict[str, list[tuple[list[str], int]]] | None = None
         self.apportioner = DataApportioner()
-        # Cache: text_cdk -> int lgd_code (or None if unresolvable)
+        # Cache: text_cdk -> int cdk (or None if unresolvable)
         self._cdk_to_lgd: dict[str, int | None] = {}
 
     # ------------------------------------------------------------------
@@ -91,7 +91,7 @@ class ReconstructorService:
 
         Strategy:
         1. If CDK is already a pure integer string, return it directly.
-        2. Check district_snapshots.district_cdk exact match → extract lgd_code if numeric.
+        2. Check district_snapshots.district_cdk exact match → extract cdk if numeric.
         3. Parse state+name from CDK pattern (STATE_NAME_YEAR) and fuzzy-match in districts.
         4. Return None if unresolvable.
         """
@@ -128,7 +128,7 @@ class ReconstructorService:
         return lgd_result
 
     async def _resolve_by_name_match(self, cdk: str) -> int | None:
-        """Parse text CDK and fuzzy-match against districts table to get lgd_code."""
+        """Parse text CDK and fuzzy-match against districts table to get cdk."""
         parts = cdk.split("_")
         if len(parts) < 2:
             return None
@@ -145,10 +145,10 @@ class ReconstructorService:
                 # Exact state + name fragment
                 lgd = await self.db.fetchval(
                     """
-                    SELECT lgd_code FROM districts
+                    SELECT cdk FROM districts
                     WHERE state_name ILIKE $1
                       AND district_name ILIKE $2
-                    ORDER BY lgd_code ASC
+                    ORDER BY cdk ASC
                     LIMIT 1
                     """,
                     f"%{state_name}%",
@@ -160,9 +160,9 @@ class ReconstructorService:
             # Broader name match without state filter
             lgd = await self.db.fetchval(
                 """
-                SELECT lgd_code FROM districts
+                SELECT cdk FROM districts
                 WHERE district_name ILIKE $1
-                ORDER BY lgd_code ASC
+                ORDER BY cdk ASC
                 LIMIT 1
                 """,
                 f"%{name_fragment}%",
@@ -258,7 +258,7 @@ class ReconstructorService:
         if lgd is not None:
             try:
                 name = await self.db.fetchval(
-                    "SELECT district_name FROM districts WHERE lgd_code = $1 LIMIT 1",
+                    "SELECT district_name FROM districts WHERE cdk = $1 LIMIT 1",
                     lgd,
                 )
                 if name:
@@ -277,9 +277,9 @@ class ReconstructorService:
     # Data availability using LGD codes
     # ------------------------------------------------------------------
 
-    async def _find_lgds_with_data(self, lgd_codes: list[int], crop: str) -> set[int]:
+    async def _find_lgds_with_data(self, cdks: list[int], crop: str) -> set[int]:
         """Check which LGD codes have rows in agri_metrics for this crop."""
-        if not lgd_codes:
+        if not cdks:
             return set()
 
         # Build candidate variable names including seasonal variants
@@ -293,15 +293,15 @@ class ReconstructorService:
         try:
             rows = await self.db.fetch(
                 """
-                SELECT DISTINCT district_lgd
+                SELECT DISTINCT cdk
                 FROM agri_metrics
-                WHERE district_lgd = ANY($1::int[])
+                WHERE cdk = ANY($1::int[])
                   AND variable_name = ANY($2)
                 """,
-                lgd_codes,
+                cdks,
                 all_vars,
             )
-            return {int(r["district_lgd"]) for r in rows}
+            return {int(r["cdk"]) for r in rows}
         except Exception as e:
             logger.warning(f"LGD data check failed: {e}")
             return set()
@@ -329,7 +329,7 @@ class ReconstructorService:
         Resolve each active CDK to a data LGD code with status annotation.
 
         Returns:
-            {active_cdk: (lgd_code, status)}
+            {active_cdk: (cdk, status)}
             - status='direct': CDK's own LGD has data
             - status='ancestor': using nearest ancestor's LGD
             - status='missing': no data found anywhere in lineage
@@ -406,7 +406,7 @@ class ReconstructorService:
 
     async def _fetch_metrics_for_lgds(
         self,
-        lgd_codes: list[int],
+        cdks: list[int],
         crop: str,
         year_start: int,
         year_end: int,
@@ -414,11 +414,11 @@ class ReconstructorService:
         """
         Fetch production + area for given LGD codes and year range.
 
-        Returns: {lgd_code: {year: {variable_name: value}}}
+        Returns: {cdk: {year: {variable_name: value}}}
 
         Tries base variable names first, then seasonal fallbacks.
         """
-        if not lgd_codes:
+        if not cdks:
             return {}
 
         metric_dict: dict[int, dict[int, dict[str, float]]] = {}
@@ -436,20 +436,20 @@ class ReconstructorService:
         try:
             rows = await self.db.fetch(
                 """
-                SELECT district_lgd, year, variable_name, value
+                SELECT cdk, year, variable_name, value
                 FROM agri_metrics
-                WHERE district_lgd = ANY($1::int[])
+                WHERE cdk = ANY($1::int[])
                   AND variable_name = ANY($2)
                   AND year >= $3 AND year <= $4
                 """,
-                lgd_codes,
+                cdks,
                 all_vars,
                 year_start,
                 year_end,
             )
 
             for row in rows:
-                lgd_key: int = int(row["district_lgd"])
+                lgd_key: int = int(row["cdk"])
                 yr: int = int(row["year"])
                 var: str = str(row["variable_name"])
                 val: float = float(row["value"]) if row["value"] is not None else 0.0
@@ -461,7 +461,7 @@ class ReconstructorService:
                 metric_dict[lgd_key][yr][var] = val
 
         except Exception as e:
-            logger.warning(f"Metrics fetch failed for LGDs {lgd_codes}: {e}")
+            logger.warning(f"Metrics fetch failed for LGDs {cdks}: {e}")
 
         return metric_dict
 

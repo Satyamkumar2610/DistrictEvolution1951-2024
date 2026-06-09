@@ -12,9 +12,9 @@ class ReportRepository(BaseRepository):
         """Get district name and state by LGD code."""
         row = await self.fetch_one(
             """
-            SELECT lgd_code::text as cdk, district_name, state_name
+            SELECT cdk::text as cdk, district_name, state_name
             FROM districts
-            WHERE lgd_code::text = $1
+            WHERE cdk::text = $1
             """,
             cdk,
         )
@@ -29,7 +29,7 @@ class ReportRepository(BaseRepository):
             """
             SELECT year, variable_name, value
             FROM agri_metrics
-            WHERE district_lgd::text = $1
+            WHERE cdk::text = $1
             AND variable_name IN ($2, $3, $4)
             AND value > 0
             ORDER BY year
@@ -47,7 +47,7 @@ class ReportRepository(BaseRepository):
             """
             SELECT ROUND(AVG(m.value)::numeric, 2)
             FROM agri_metrics m
-            JOIN districts d ON m.district_lgd = d.lgd_code
+            JOIN districts d ON m.cdk = d.cdk
             WHERE d.state_name = $1 AND m.variable_name = $2 AND m.value > 0
             """,
             state_name,

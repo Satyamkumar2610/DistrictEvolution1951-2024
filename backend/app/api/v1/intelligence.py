@@ -49,7 +49,7 @@ async def _fetch_yield_series(conn: asyncpg.Connection, cdk: str, crop: str, min
     """Fetch {year: yield} dict for a district-crop pair (schema-safe)."""
     query = """
         SELECT year, value FROM agri_metrics
-        WHERE district_lgd::text = $1
+        WHERE cdk::text = $1
           AND variable_name = $2
           AND value > 0
           AND year >= $3
@@ -73,9 +73,9 @@ async def _fetch_state_yields(
     """Fetch all district yields in a state (schema-safe)."""
     if year:
         query = """
-            SELECT d.district_name, m.district_lgd::text as cdk, m.value
+            SELECT d.district_name, m.cdk::text as cdk, m.value
             FROM agri_metrics m
-            JOIN districts d ON m.district_lgd = d.lgd_code
+            JOIN districts d ON m.cdk = d.cdk
             WHERE UPPER(d.state_name) = UPPER($1)
               AND m.year = $2
               AND m.value > 0
@@ -89,14 +89,14 @@ async def _fetch_state_yields(
                 rows = await fetch(conn, query, state, year, f"{crop}_yield_{season}")
     else:
         query = """
-            SELECT d.district_name, m.district_lgd::text as cdk, m.year, m.value
+            SELECT d.district_name, m.cdk::text as cdk, m.year, m.value
             FROM agri_metrics m
-            JOIN districts d ON m.district_lgd = d.lgd_code
+            JOIN districts d ON m.cdk = d.cdk
             WHERE UPPER(d.state_name) = UPPER($1)
               AND m.value > 0
               AND m.year >= 2000
               AND m.variable_name = $2
-            ORDER BY m.district_lgd, m.year
+            ORDER BY m.cdk, m.year
         """
         rows = await fetch(conn, query, state, f"{crop}_yield")
         if not rows:
@@ -126,7 +126,7 @@ async def get_climate_shocks(
     # District metadata
     district_row = await fetchrow(
         db,
-        "SELECT district_name, state_name FROM districts WHERE lgd_code::text = $1",
+        "SELECT district_name, state_name FROM districts WHERE cdk::text = $1",
         cdk,
     )
     name = district_row["district_name"] if district_row else cdk
@@ -350,13 +350,13 @@ async def get_yield_frontier(
     hist_efficiency_map: dict[str, float] = {}
     try:
         hist_query = """
-            SELECT m.district_lgd::text as cdk, AVG(m.value) as mean_10yr
+            SELECT m.cdk::text as cdk, AVG(m.value) as mean_10yr
             FROM agri_metrics m
-            WHERE m.district_lgd::text = ANY($1::text[])
+            WHERE m.cdk::text = ANY($1::text[])
               AND m.variable_name = $2
               AND m.value > 0
               AND m.year >= $3 AND m.year < $4
-            GROUP BY m.district_lgd
+            GROUP BY m.cdk
         """
         all_cdks = [d.cdk for d in report.district_results]
         hist_rows = await fetch(db, hist_query, all_cdks, f"{crop}_yield", year - 10, year)
@@ -447,13 +447,13 @@ async def get_resilience_composite(
     irrigation_map: dict[str, float] = {}
     try:
         irr_query = """
-            SELECT m.district_lgd::text as cdk,
+            SELECT m.cdk::text as cdk,
                    MAX(CASE WHEN m.variable_name = 'net_irrigated_area' THEN m.value END) as irr_area,
                    MAX(CASE WHEN m.variable_name = 'gross_cropped_area' THEN m.value END) as gca
             FROM agri_metrics m
-            WHERE m.district_lgd::text = ANY($1::text[])
+            WHERE m.cdk::text = ANY($1::text[])
               AND m.year >= 2010
-            GROUP BY m.district_lgd
+            GROUP BY m.cdk
         """
         irr_rows = await fetch(db, irr_query, all_cdks)
         for ir in irr_rows:
@@ -468,15 +468,15 @@ async def get_resilience_composite(
     cdi_map: dict[str, float] = {}
     try:
         cdi_query = (
-            "SELECT m.district_lgd::text as cdk, m.variable_name, SUM(m.value) as total_area"
+            "SELECT m.cdk::text as cdk, m.variable_name, SUM(m.value) as total_area"
             " FROM agri_metrics m"
-            " WHERE m.district_lgd::text = ANY($1::text[])"
+            " WHERE m.cdk::text = ANY($1::text[])"
             r" AND m.variable_name LIKE '%\_area'"
             r" AND m.variable_name NOT LIKE '%\_kharif'"
             r" AND m.variable_name NOT LIKE '%\_rabi'"
             " AND m.value > 0"
             " AND m.year >= 2010"
-            " GROUP BY m.district_lgd, m.variable_name"
+            " GROUP BY m.cdk, m.variable_name"
         )
         cdi_rows = await fetch(db, cdi_query, all_cdks)
         # Group by cdk and compute Shannon diversity
@@ -616,7 +616,7 @@ async def get_anomaly_scan(
     # District metadata
     district_row = await fetchrow(
         db,
-        "SELECT district_name, state_name FROM districts WHERE lgd_code::text = $1",
+        "SELECT district_name, state_name FROM districts WHERE cdk::text = $1",
         cdk,
     )
     name = district_row["district_name"] if district_row else cdk
@@ -625,7 +625,7 @@ async def get_anomaly_scan(
     # Fetch area and production if available
     area_query = """
         SELECT year, value FROM agri_metrics
-        WHERE district_lgd::text = $1 AND variable_name = $2 AND value > 0 AND year >= 1980
+        WHERE cdk::text = $1 AND variable_name = $2 AND value > 0 AND year >= 1980
         ORDER BY year
     """
     area_rows = await fetch(db, area_query, cdk, f"{crop}_area")

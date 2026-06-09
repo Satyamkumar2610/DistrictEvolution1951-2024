@@ -14,7 +14,7 @@ class SearchRepository(BaseRepository):
         rows = await self.fetch_all(
             """
             SELECT
-                lgd_code::text as cdk,
+                cdk::text as cdk,
                 district_name as name,
                 state_name as state,
                 NULL::int as start_year,
@@ -22,7 +22,7 @@ class SearchRepository(BaseRepository):
                 'district' as result_type,
                 CASE WHEN district_name ILIKE $2 THEN 0 ELSE 1 END as sort_order
             FROM districts
-            WHERE district_name ILIKE $1 OR lgd_code::text ILIKE $1
+            WHERE district_name ILIKE $1 OR cdk::text ILIKE $1
             ORDER BY sort_order, district_name
             LIMIT $3
             """,

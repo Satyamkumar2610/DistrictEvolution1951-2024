@@ -136,8 +136,8 @@ async def test_get_split_impact_districts_returns_response_model_shape(client):
             },
         ],
         [
-            {"district_lgd": 101},
-            {"district_lgd": 201},
+            {"cdk": 101},
+            {"cdk": 201},
         ],
     ]
 

@@ -23,7 +23,7 @@ async def get_district_quality(cdk: str, db: asyncpg.Connection = Depends(get_db
     Returns completeness, consistency, timeliness, and accuracy scores.
     """
     # Verify district exists
-    exists = await fetchval(db, "SELECT 1 FROM districts WHERE lgd_code::text = $1", cdk)
+    exists = await fetchval(db, "SELECT 1 FROM districts WHERE cdk::text = $1", cdk)
     if not exists:
         raise NotFoundError("District", cdk)
 

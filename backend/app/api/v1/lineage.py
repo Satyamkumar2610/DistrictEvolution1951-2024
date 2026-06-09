@@ -1,7 +1,7 @@
 """
 Lineage API: Endpoints for lineage graph and split events.
-Updated to use lgd_code/district_lgd schema where applicable.
-Note: lineage_events uses CDK text keys that cannot join to districts.lgd_code.
+Updated to use cdk/cdk schema where applicable.
+Note: lineage_events uses CDK text keys that cannot join to districts.cdk.
 """
 
 import asyncpg

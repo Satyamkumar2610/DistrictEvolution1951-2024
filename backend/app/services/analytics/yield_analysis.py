@@ -55,7 +55,7 @@ class YieldAnalysisService(BaseAnalyticsService):
         query = """
             SELECT year, value
             FROM agri_metrics
-            WHERE district_lgd::text = $1
+            WHERE cdk::text = $1
               AND year BETWEEN $2 AND $3
               AND value > 0
               AND variable_name = $4
@@ -109,7 +109,7 @@ class YieldAnalysisService(BaseAnalyticsService):
         query = """
             SELECT year, value
             FROM agri_metrics
-            WHERE district_lgd::text = $1
+            WHERE cdk::text = $1
               AND year BETWEEN $2 AND $3
               AND value > 0
               AND variable_name = $4
@@ -135,7 +135,7 @@ class YieldAnalysisService(BaseAnalyticsService):
         """Produce a yield forecast using SARIMA or Simple Linear fallback."""
         query = """
             SELECT year, value FROM agri_metrics
-            WHERE district_lgd::text = $1
+            WHERE cdk::text = $1
               AND year >= 2000
               AND value > 0
               AND variable_name = $2
@@ -219,9 +219,9 @@ class YieldAnalysisService(BaseAnalyticsService):
     ) -> dict[str, Any]:
         """Quantifies the yield gap for each district against the state's 90th percentile 'frontier'."""
         query = """
-             SELECT d.district_name, m.district_lgd::text as cdk, m.year, m.value
+             SELECT d.district_name, m.cdk::text as cdk, m.year, m.value
              FROM agri_metrics m
-             JOIN districts d ON m.district_lgd = d.lgd_code
+             JOIN districts d ON m.cdk = d.cdk
              WHERE UPPER(d.state_name) = UPPER($1)
                AND m.value > 0
                AND m.year BETWEEN $2 AND $3

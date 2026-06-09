@@ -15,7 +15,7 @@ class SpatialRepository(BaseRepository):
     async def district_exists(self, cdk: str) -> bool:
         """Check whether a district exists by LGD code."""
         exists = await self.fetch_val(
-            "SELECT lgd_code FROM districts WHERE lgd_code::text = $1",
+            "SELECT cdk FROM districts WHERE cdk::text = $1",
             cdk,
         )
         return bool(exists)
@@ -26,7 +26,7 @@ class SpatialRepository(BaseRepository):
             """
             SELECT district_name, state_name
             FROM districts
-            WHERE lgd_code::text = $1
+            WHERE cdk::text = $1
             """,
             cdk,
         )
@@ -36,17 +36,17 @@ class SpatialRepository(BaseRepository):
         """Find spatially adjacent neighboring districts using PostGIS."""
         query = """
             WITH target AS (
-                SELECT geometry, lgd_code, "DISTRICT" as district_name, "ST_NM" as state_name
+                SELECT geometry, cdk, "DISTRICT" as district_name, "ST_NM" as state_name
                 FROM districts_geo
-                WHERE lgd_code::text = $1
+                WHERE cdk::text = $1
             )
             SELECT
-                n.lgd_code::text as neighbor_cdk,
+                n.cdk::text as neighbor_cdk,
                 n."DISTRICT" as neighbor_name,
                 n."ST_NM" as neighbor_state
             FROM districts_geo n
             JOIN target t ON ST_Touches(t.geometry, n.geometry)
-            WHERE n.lgd_code::text != $1
+            WHERE n.cdk::text != $1
             ORDER BY n."DISTRICT"
         """
 
@@ -86,7 +86,7 @@ class SpatialRepository(BaseRepository):
             """
             SELECT year, value
             FROM agri_metrics
-            WHERE district_lgd::text = $1
+            WHERE cdk::text = $1
               AND variable_name = $2
               AND year BETWEEN $3 AND $4
               AND value > 0
@@ -118,7 +118,7 @@ class SpatialRepository(BaseRepository):
     async def get_district_name(self, district_id: str) -> str | None:
         """Get district name for a district LGD code."""
         name = await self.fetch_val(
-            "SELECT district_name FROM districts WHERE lgd_code::text = $1 LIMIT 1",
+            "SELECT district_name FROM districts WHERE cdk::text = $1 LIMIT 1",
             district_id,
         )
         return str(name) if name else None

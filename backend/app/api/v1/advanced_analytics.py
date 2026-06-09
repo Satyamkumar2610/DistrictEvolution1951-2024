@@ -8,7 +8,7 @@ Provides data science-driven insights including:
 - Crop Correlations
 - District Rankings
 
-Updated to use lgd_code/district_lgd schema.
+Updated to use cdk/cdk schema.
 """
 
 import asyncpg

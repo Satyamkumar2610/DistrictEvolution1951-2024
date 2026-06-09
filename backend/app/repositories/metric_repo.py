@@ -1,6 +1,6 @@
 """
 Metric Repository: Data access for agricultural/domain metrics.
-Uses district_lgd (int FK) joined to districts.lgd_code (int PK).
+Uses cdk (int FK) joined to districts.cdk (int PK).
 """
 
 from app.cache import CacheTTL, cached
@@ -14,9 +14,9 @@ class MetricRepository(BaseRepository):
     async def get_by_cdk_and_variables(self, cdk: str, variables: list[str]) -> list[MetricPoint]:
         """Get time series for a district and set of variables."""
         query = """
-            SELECT district_lgd::text as cdk, year, variable_name, value
+            SELECT cdk::text as cdk, year, variable_name, value
             FROM agri_metrics
-            WHERE district_lgd::text = $1 AND variable_name = ANY($2)
+            WHERE cdk::text = $1 AND variable_name = ANY($2)
             ORDER BY year ASC
         """
         rows = await self.fetch_all(query, cdk, variables)
@@ -41,9 +41,9 @@ class MetricRepository(BaseRepository):
         str_cdks = [str(c) for c in cdks]
 
         query = """
-            SELECT district_lgd::text as cdk, year, variable_name, value
+            SELECT cdk::text as cdk, year, variable_name, value
             FROM agri_metrics
-            WHERE district_lgd::text = ANY($1::text[]) AND variable_name = ANY($2)
+            WHERE cdk::text = ANY($1::text[]) AND variable_name = ANY($2)
             ORDER BY year ASC
         """
         rows = await self.fetch_all(query, str_cdks, variables)
@@ -209,7 +209,7 @@ class MetricRepository(BaseRepository):
         query = """
             SELECT year, variable_name, value
             FROM agri_metrics
-            WHERE district_lgd::text = $1 AND variable_name = ANY($2)
+            WHERE cdk::text = $1 AND variable_name = ANY($2)
             ORDER BY year ASC
         """
         rows = await self.fetch_all(query, cdk, variables)
@@ -309,7 +309,7 @@ class MetricRepository(BaseRepository):
         query = """
             SELECT m.year, m.variable_name, SUM(m.value) as value
             FROM agri_metrics m
-            JOIN districts d ON m.district_lgd = d.lgd_code
+            JOIN districts d ON m.cdk = d.cdk
             WHERE d.state_name ILIKE $1
             AND m.variable_name = ANY($2)
             AND d.district_name != 'State Average'

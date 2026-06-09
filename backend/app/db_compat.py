@@ -2,7 +2,7 @@
 Database query compatibility helpers.
 
 These helpers let the API run against either:
-- the newer LGD-based schema (`districts.lgd_code`, `agri_metrics.district_lgd`)
+- the newer LGD-based schema (`districts.cdk`, `agri_metrics.cdk`)
 - the older text-CDK schema (`districts.cdk`, `agri_metrics.cdk`)
 """
 
@@ -18,18 +18,18 @@ import asyncpg
 logger = logging.getLogger(__name__)
 
 _JOIN_REPLACEMENTS = (
-    ("m.district_lgd = d.lgd_code", "m.cdk = d.cdk"),
-    ("am.district_lgd = d.lgd_code", "am.cdk = d.cdk"),
-    ("ds.child_lgd = d.lgd_code", "ds.child_cdk = d.cdk"),
-    ("ds.parent_lgd = d.lgd_code", "ds.parent_cdk = d.cdk"),
-    ("pd.lgd_code = ds.parent_lgd", "pd.cdk = ds.parent_cdk"),
+    ("m.cdk = d.cdk", "m.cdk = d.cdk"),
+    ("am.cdk = d.cdk", "am.cdk = d.cdk"),
+    ("ds.child_lgd = d.cdk", "ds.child_cdk = d.cdk"),
+    ("ds.parent_lgd = d.cdk", "ds.parent_cdk = d.cdk"),
+    ("pd.cdk = ds.parent_lgd", "pd.cdk = ds.parent_cdk"),
 )
 
 _COLUMN_REPLACEMENTS = (
-    ("district_lgd::text", "cdk"),
-    ("lgd_code::text", "cdk"),
-    ("district_lgd", "cdk"),
-    ("lgd_code", "cdk"),
+    ("cdk::text", "cdk"),
+    ("cdk::text", "cdk"),
+    ("cdk", "cdk"),
+    ("cdk", "cdk"),
 )
 
 _ARRAY_CAST_PATTERN = re.compile(
@@ -37,18 +37,18 @@ _ARRAY_CAST_PATTERN = re.compile(
     re.IGNORECASE,
 )
 _SCALAR_CDK_PATTERN = re.compile(
-    r"(?:\w+\.)?(?:lgd_code(?:::text)?|district_lgd(?:::text)?)\s*=\s*\$(\d+)",
+    r"(?:\w+\.)?(?:cdk(?:::text)?|cdk(?:::text)?)\s*=\s*\$(\d+)",
     re.IGNORECASE,
 )
 _ARRAY_CDK_PATTERN = re.compile(
-    r"(?:\w+\.)?(?:lgd_code|district_lgd)\s*=\s*ANY\(\$(\d+)::(?:int|float)\[\]\)",
+    r"(?:\w+\.)?(?:cdk|cdk)\s*=\s*ANY\(\$(\d+)::(?:int|float)\[\]\)",
     re.IGNORECASE,
 )
 
 
 def uses_lgd_schema(query: str) -> bool:
     """Return whether the SQL references the newer LGD-based columns."""
-    return "lgd_code" in query or "district_lgd" in query
+    return "cdk" in query or "cdk" in query
 
 
 def to_legacy_query(query: str) -> str:

@@ -13,9 +13,9 @@ class ForecastRepository(BaseRepository):
     async def get_district_context(self, cdk: str) -> asyncpg.Record | None:
         """Get district name and state for a district LGD code."""
         query = """
-            SELECT lgd_code::text as cdk, state_name, district_name
+            SELECT cdk::text as cdk, state_name, district_name
             FROM districts
-            WHERE lgd_code::text = $1
+            WHERE cdk::text = $1
         """
         return await self.fetch_one(query, cdk)
 
@@ -30,11 +30,11 @@ class ForecastRepository(BaseRepository):
                 MAX(CASE WHEN variable_name = $2 THEN value END) as yield,
                 MAX(CASE WHEN variable_name = $3 THEN value END) as area
             FROM agri_metrics
-            WHERE district_lgd::text = $1
+            WHERE cdk::text = $1
             AND year = (
                 SELECT MAX(year)
                 FROM agri_metrics
-                WHERE district_lgd::text = $1
+                WHERE cdk::text = $1
                 AND variable_name = $2
                 AND value > 0
             )
@@ -46,7 +46,7 @@ class ForecastRepository(BaseRepository):
         query = """
             SELECT AVG(value)
             FROM agri_metrics m
-            JOIN districts d ON m.district_lgd = d.lgd_code
+            JOIN districts d ON m.cdk = d.cdk
             WHERE d.state_name = $1
             AND m.variable_name = $2
             AND m.value > 0
@@ -60,7 +60,7 @@ class ForecastRepository(BaseRepository):
         query = """
             SELECT year, value
             FROM agri_metrics
-            WHERE district_lgd::text = $1 AND variable_name = $2 AND value > 0
+            WHERE cdk::text = $1 AND variable_name = $2 AND value > 0
             ORDER BY year
         """
         rows = await self.fetch_all(query, cdk, f"{crop}_yield")
@@ -76,7 +76,7 @@ class ForecastRepository(BaseRepository):
         query = """
             SELECT year, value
             FROM agri_metrics
-            WHERE district_lgd::text = $1 AND variable_name = $2 AND value > 0
+            WHERE cdk::text = $1 AND variable_name = $2 AND value > 0
             ORDER BY year DESC
             LIMIT $3
         """

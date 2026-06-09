@@ -25,7 +25,7 @@ async def test_fetch_lineage_graph(mock_db, sample_split_event):
 @pytest.mark.asyncio
 async def test_find_lgds_with_data(mock_db):
     """It should return a set of lgds that have data."""
-    mock_db.fetch = AsyncMock(return_value=[{"district_lgd": 123}])
+    mock_db.fetch = AsyncMock(return_value=[{"cdk": 123}])
 
     svc = ReconstructorService(mock_db)
     lgds = await svc._find_lgds_with_data([123, 456], "rice")

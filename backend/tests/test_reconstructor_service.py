@@ -35,10 +35,10 @@ class FakeDB:
         self.queries.append((query, args))
         if "split_events" in query:
             return self.splits
-        if "DISTINCT district_lgd" in query:
+        if "DISTINCT cdk" in query:
             # _find_lgds_with_data query
             lgd_list = args[0] if args else []
-            return [{"district_lgd": lgd} for lgd in lgd_list if self.lgd_to_cdk_map.get(lgd) in self.available_cdks]
+            return [{"cdk": lgd} for lgd in lgd_list if self.lgd_to_cdk_map.get(lgd) in self.available_cdks]
         if "agri_metrics" in query:
             # Filter metrics by the requested LGD list
             lgd_list = args[0] if args else []
@@ -50,7 +50,7 @@ class FakeDB:
             for m in self.metrics:
                 if m["cdk"] in valid_cdks and m["variable_name"] in vars_list:
                     row = dict(m)
-                    row["district_lgd"] = self.cdk_to_lgd_map[m["cdk"]]
+                    row["cdk"] = self.cdk_to_lgd_map[m["cdk"]]
                     results.append(row)
             return results
         return []

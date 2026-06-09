@@ -1,6 +1,6 @@
 """
 Analysis API: Split impact and advanced analytics endpoints.
-Updated to use lgd_code/district_lgd schema.
+Updated to use cdk/cdk schema.
 """
 
 import hashlib
@@ -146,7 +146,7 @@ async def get_crop_diversification(
     query = """
         SELECT variable_name, value
         FROM agri_metrics m
-        JOIN districts d ON m.district_lgd = d.lgd_code
+        JOIN districts d ON m.cdk = d.cdk
         WHERE d.state_name = $1
           AND m.year = $2
           AND (m.variable_name LIKE '%_area' OR m.variable_name LIKE '%_area_%')
@@ -196,7 +196,7 @@ async def get_yield_efficiency(
     variable = f"{crop}_yield"
 
     # Check if base variable exists for this district/year
-    check_query = "SELECT 1 FROM agri_metrics WHERE district_lgd::text=$1 AND variable_name=$2 AND year=$3"
+    check_query = "SELECT 1 FROM agri_metrics WHERE cdk::text=$1 AND variable_name=$2 AND year=$3"
     exists = await fetchval(db, check_query, cdk, variable, year)
 
     if not exists:
@@ -220,8 +220,8 @@ async def get_yield_efficiency(
     district_query = """
         SELECT d.state_name, m.value as yield_val
         FROM agri_metrics m
-        JOIN districts d ON m.district_lgd = d.lgd_code
-        WHERE m.district_lgd::text = $1 AND m.variable_name = $2 AND m.year = $3
+        JOIN districts d ON m.cdk = d.cdk
+        WHERE m.cdk::text = $1 AND m.variable_name = $2 AND m.year = $3
     """
     district_row = await fetchrow(db, district_query, cdk, variable, year)
 
@@ -235,7 +235,7 @@ async def get_yield_efficiency(
     state_query = """
         SELECT m.value as yield_val
         FROM agri_metrics m
-        JOIN districts d ON m.district_lgd = d.lgd_code
+        JOIN districts d ON m.cdk = d.cdk
         WHERE d.state_name = $1 AND m.variable_name = $2 AND m.year = $3
         AND m.value IS NOT NULL AND m.value > 0
     """
@@ -246,7 +246,7 @@ async def get_yield_efficiency(
     history_query = """
         SELECT year, value as yield_val
         FROM agri_metrics
-        WHERE district_lgd::text = $1 AND variable_name = $2
+        WHERE cdk::text = $1 AND variable_name = $2
         AND year < $3 AND year >= $3 - 10
         AND value IS NOT NULL AND value > 0
         ORDER BY year
@@ -299,7 +299,7 @@ async def get_risk_profile(
     variable = f"{crop}_{metric}"
 
     # Check if base variable exists
-    check_query = "SELECT 1 FROM agri_metrics WHERE district_lgd::text=$1 AND variable_name=$2 LIMIT 1"
+    check_query = "SELECT 1 FROM agri_metrics WHERE cdk::text=$1 AND variable_name=$2 LIMIT 1"
     exists = await fetchval(db, check_query, cdk, variable)
 
     if not exists:
@@ -321,7 +321,7 @@ async def get_risk_profile(
     query = """
         SELECT year, value
         FROM agri_metrics
-        WHERE district_lgd::text = $1 AND variable_name = $2
+        WHERE cdk::text = $1 AND variable_name = $2
         AND value IS NOT NULL AND value > 0
         ORDER BY year
     """

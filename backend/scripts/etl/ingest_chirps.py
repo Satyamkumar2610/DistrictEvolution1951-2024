@@ -89,9 +89,9 @@ async def upload_to_db(records: list[dict], db_url: str):
     logger.info(f"Uploading {len(records)} CHIRPS records to DB...")
     # conn = await asyncpg.connect(db_url)
     # query = \"\"\"
-    #     INSERT INTO agri_metrics (district_lgd, year, variable_name, value, unit)
+    #     INSERT INTO agri_metrics (cdk, year, variable_name, value, unit)
     #     VALUES ($1, $2, 'rainfall_mm', $3, 'mm')
-    #     ON CONFLICT (district_lgd, year, variable_name)
+    #     ON CONFLICT (cdk, year, variable_name)
     #     DO UPDATE SET value = EXCLUDED.value
     # \"\"\"
     # await conn.executemany(query, [(r['cdk'], r['year'], r['rainfall_mm']) for r in records])

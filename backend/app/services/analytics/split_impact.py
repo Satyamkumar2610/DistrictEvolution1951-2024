@@ -28,7 +28,7 @@ class SplitImpactService(BaseAnalyticsService):
         query_template = """
             SELECT year, value
             FROM agri_metrics
-            WHERE district_lgd::text = $1
+            WHERE cdk::text = $1
               AND year BETWEEN $2 AND $3
               AND value > 0
               AND variable_name = $4
@@ -100,7 +100,7 @@ class SplitImpactService(BaseAnalyticsService):
                 """
                 SELECT AVG(value) as avg_val
                 FROM agri_metrics
-                WHERE district_lgd::text = $1
+                WHERE cdk::text = $1
                   AND year BETWEEN $2 AND $3
                   AND value > 0
                   AND variable_name = $4
@@ -127,7 +127,7 @@ class SplitImpactService(BaseAnalyticsService):
                     """
                     SELECT AVG(value) as avg_val
                     FROM agri_metrics
-                    WHERE district_lgd::text = $1
+                    WHERE cdk::text = $1
                       AND year BETWEEN $2 AND $3
                       AND value > 0
                       AND variable_name = $4
@@ -164,7 +164,7 @@ class SplitImpactService(BaseAnalyticsService):
 
         # Get parent name
         name_row = await self._fetchrow(
-            "SELECT name FROM districts WHERE district_lgd::text = $1 OR cdk = $1",
+            "SELECT name FROM districts WHERE cdk::text = $1 OR cdk = $1",
             parent_cdk,
         )
         parent_name = name_row["name"] if name_row else parent_cdk

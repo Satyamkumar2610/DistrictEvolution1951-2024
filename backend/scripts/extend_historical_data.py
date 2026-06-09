@@ -22,7 +22,7 @@ RAW_DIR = os.path.join(DATA_DIR, "raw")
 PROCESSED_DIR = os.path.join(DATA_DIR, "processed")
 V1_5_DIR = os.path.join(DATA_DIR, "v1_5")
 
-DATASET_A = os.path.join(RAW_DIR, "ICRISAT-District Level Data.csv")
+DATASET_A = os.path.join(RAW_DIR, "ICRISAT-District Level Data Unapportioned.csv")
 EXISTING_PANEL = os.path.join(V1_5_DIR, "district_year_panel_v1_5.csv")
 CROSSWALK = os.path.join(PROCESSED_DIR, "icrisat_crosswalk.csv")
 OUTPUT = os.path.join(V1_5_DIR, "historical_extension_1966_1989.csv")

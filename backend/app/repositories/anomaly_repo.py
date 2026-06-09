@@ -11,7 +11,7 @@ class AnomalyRepository(BaseRepository):
     async def district_exists(self, cdk: str) -> bool:
         """Check whether a district exists by LGD code."""
         exists = await self.fetch_val(
-            "SELECT 1 FROM districts WHERE lgd_code::text = $1",
+            "SELECT 1 FROM districts WHERE cdk::text = $1",
             cdk,
         )
         return bool(exists)
@@ -19,7 +19,7 @@ class AnomalyRepository(BaseRepository):
     async def get_active_district_sample(self, limit: int) -> list[dict[str, str]]:
         """Get a random sample of active districts for cross-state risk scanning."""
         query = """
-            SELECT lgd_code::text as cdk, state_name, district_name
+            SELECT cdk::text as cdk, state_name, district_name
             FROM districts
             ORDER BY RANDOM()
             LIMIT $1

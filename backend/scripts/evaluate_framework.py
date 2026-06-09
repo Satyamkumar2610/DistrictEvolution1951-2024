@@ -14,8 +14,8 @@ async def main():
     # Orphans: districts not in child_lgd or parent_lgd of district_splits
     orphans = await conn.fetchval("""
         SELECT count(*) FROM districts d
-        WHERE d.lgd_code NOT IN (SELECT parent_lgd FROM district_splits)
-        AND d.lgd_code NOT IN (SELECT child_lgd FROM district_splits)
+        WHERE d.cdk NOT IN (SELECT parent_lgd FROM district_splits)
+        AND d.cdk NOT IN (SELECT child_lgd FROM district_splits)
     """)
     
     # Missing Temporal Validity (start_year / end_year)
@@ -33,7 +33,7 @@ async def main():
     rows = await conn.fetch("""
         SELECT d.district_name, count(m.id) as metric_count
         FROM agri_metrics m
-        JOIN districts d ON d.lgd_code = m.district_lgd
+        JOIN districts d ON d.cdk = m.cdk
         WHERE m.year = 2017 AND d.state_name ILIKE '%Telangana%'
         GROUP BY d.district_name
     """)
