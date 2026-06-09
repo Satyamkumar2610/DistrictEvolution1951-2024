@@ -12,7 +12,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("geometry_bootstrapper")
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent.parent
-GEOJSON_PATH = PROJECT_ROOT / "data/raw/INDIA_DISTRICTS.geojson"
+GEOJSON_PATH = PROJECT_ROOT / "data/raw/bhuvan_districts.geojsonl"
 LINEAGE_CSV = PROJECT_ROOT / "data/v1/district_lineage_cleaned.csv"
 LOGS_DIR = PROJECT_ROOT / "data/logs"
 LOGS_DIR.mkdir(parents=True, exist_ok=True)
@@ -43,78 +43,77 @@ async def run_bootstrapper():
         unmatched_records = []
 
         with open(GEOJSON_PATH) as f:
-            geojson = json.load(f)
+            for line in f:
+                feature = json.loads(line)
+                props = feature.get("properties", {})
+                dist_name = props.get("d_name", "")
 
-        for feature in geojson.get("features", []):
-            props = feature.get("properties", {})
-            dist_name = props.get("district", "")
-
-            if not dist_name:
-                continue
-
-            async with pool.acquire() as conn:
-                # Match to district record
-                cdk = await conn.fetchval(
-                    """
-                    SELECT lgd_code::text FROM districts WHERE district_name ILIKE $1 ORDER BY start_year DESC LIMIT 1
-                """,
-                    dist_name,
-                )
-
-                if not cdk:
-                    # Broader search: try matching individual words or handling known spellings
-                    search_name = dist_name.upper().replace("KOMARRAM", "KUMURAM")
-                    cdk = await conn.fetchval(
-                        """
-                        SELECT lgd_code::text FROM districts
-                        WHERE district_name ILIKE $1
-                           OR district_name ILIKE $2
-                        ORDER BY start_year DESC LIMIT 1
-                    """,
-                        f"%{search_name}%",
-                        f"%{dist_name}%",
-                    )
-
-                if not cdk:
-                    unmatched_records.append({"district": dist_name})
+                if not dist_name:
                     continue
 
-                snapshot_year = child_to_year.get(cdk, 2024)
-
-                # Insert into district_snapshots
-                geom_json = json.dumps(feature.get("geometry"))
-
-                try:
-                    await conn.execute(
+                async with pool.acquire() as conn:
+                    # Match to district record
+                    cdk = await conn.fetchval(
                         """
-                        INSERT INTO district_snapshots
-                            (district_cdk, snapshot_year, district_name, geometry_source, geometry_confidence, geometry)
-                        VALUES
-                            ($1, $2, $3, 'manual_upload', 0.7, ST_GeomFromGeoJSON($4))
-                        ON CONFLICT (district_cdk, snapshot_year) DO UPDATE SET
-                            geometry = EXCLUDED.geometry,
-                            geometry_source = EXCLUDED.geometry_source,
-                            geometry_confidence = EXCLUDED.geometry_confidence
+                        SELECT cdk FROM districts WHERE district_name ILIKE $1 ORDER BY start_year DESC LIMIT 1
                     """,
-                        cdk,
-                        snapshot_year,
                         dist_name,
-                        geom_json,
                     )
 
-                    # calculate area_sqkm
-                    await conn.execute(
-                        """
-                        UPDATE district_snapshots
-                        SET area_sqkm = ST_Area(geometry::geography) / 1000000.0
-                        WHERE district_cdk = $1 AND snapshot_year = $2
-                    """,
-                        cdk,
-                        snapshot_year,
-                    )
+                    if not cdk:
+                        # Broader search: try matching individual words or handling known spellings
+                        search_name = dist_name.upper().replace("KOMARRAM", "KUMURAM")
+                        cdk = await conn.fetchval(
+                            """
+                            SELECT cdk FROM districts
+                            WHERE district_name ILIKE $1
+                               OR district_name ILIKE $2
+                            ORDER BY start_year DESC LIMIT 1
+                        """,
+                            f"%{search_name}%",
+                            f"%{dist_name}%",
+                        )
 
-                except Exception as e:
-                    logger.error(f"Error inserting modern geom for {dist_name}: {e}")
+                    if not cdk:
+                        unmatched_records.append({"district": dist_name})
+                        continue
+
+                    snapshot_year = child_to_year.get(cdk, 2024)
+
+                    # Insert into district_snapshots
+                    geom_json = json.dumps(feature.get("geometry"))
+
+                    try:
+                        await conn.execute(
+                            """
+                            INSERT INTO district_snapshots
+                                (district_cdk, snapshot_year, district_name, geometry_source, geometry_confidence, geometry)
+                            VALUES
+                                ($1, $2, $3, 'manual_upload', 0.7, ST_GeomFromGeoJSON($4))
+                            ON CONFLICT (district_cdk, snapshot_year) DO UPDATE SET
+                                geometry = EXCLUDED.geometry,
+                                geometry_source = EXCLUDED.geometry_source,
+                                geometry_confidence = EXCLUDED.geometry_confidence
+                        """,
+                            cdk,
+                            snapshot_year,
+                            dist_name,
+                            geom_json,
+                        )
+
+                        # calculate area_sqkm
+                        await conn.execute(
+                            """
+                            UPDATE district_snapshots
+                            SET area_sqkm = ST_Area(geometry::geography) / 1000000.0
+                            WHERE district_cdk = $1 AND snapshot_year = $2
+                        """,
+                            cdk,
+                            snapshot_year,
+                        )
+
+                    except Exception as e:
+                        logger.error(f"Error inserting modern geom for {dist_name}: {e}")
 
         # Log unmatched
         with open(UNMATCHED_CSV, "w") as f:
@@ -132,7 +131,7 @@ async def run_bootstrapper():
             parents_needing_geom = await conn.fetch("""
                 SELECT e.parent_cdk, e.split_year, d.district_name
                 FROM split_events e
-                JOIN districts d ON e.parent_cdk = d.lgd_code::text
+                JOIN districts d ON e.parent_cdk = d.cdk
                 WHERE e.split_year >= 2001
             """)
 
@@ -146,7 +145,7 @@ async def run_bootstrapper():
                 if len(parts) >= 3:
                     name_prefix = parts[1]
                     lgd_code_int = await conn.fetchval(
-                        "SELECT lgd_code FROM districts WHERE district_name ILIKE $1 LIMIT 1", f"{name_prefix}%"
+                        "SELECT cdk FROM districts WHERE district_name ILIKE $1 LIMIT 1", f"{name_prefix}%"
                     )
                 else:
                     lgd_code_int = None
@@ -161,7 +160,7 @@ async def run_bootstrapper():
                             FROM shrug_villages v
                             WHERE v.district_code = $1 AND v.census_year = 2011
                         """,
-                            int(lgd_code_int),
+                            int(lgd_code_int) if lgd_code_int.isdigit() else 0,
                         )
 
                         if geom:
