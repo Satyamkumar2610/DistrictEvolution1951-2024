@@ -12,10 +12,9 @@ logger = logging.getLogger(__name__)
 
 # Paths
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-RAW_DIR = os.path.join(BASE_DIR, 'data', 'raw', 'district split')
-PROLIF_PATH = os.path.join(RAW_DIR, 'district_proliferation_1951_2024.xlsx')
-NEW_DIST_PATH = os.path.join(RAW_DIR, 'New Districts Created between 1951-2024.xlsx')
-NAME_CHANGES_PATH = os.path.join(RAW_DIR, 'Name Changes_Districts_Indian States_1951-2021.xlsx')
+RAW_DIR = os.path.join(BASE_DIR, 'data', 'raw')
+EVOLUTION_MASTER_PATH = os.path.join(RAW_DIR, 'district_evolution_master.csv')
+NAME_CHANGES_PATH = os.path.join(BASE_DIR, 'data', 'raw', 'district split', 'Name Changes_Districts_Indian States_1951-2021.xlsx')
 SQL_PATH = os.path.join(BASE_DIR, 'db_export', 'district_splits.sql')
 
 # Load env
@@ -33,34 +32,11 @@ class DistrictSplitLoader:
     def __init__(self, engine):
         self.engine = engine
         self.resolver = NameResolver(NAME_CHANGES_PATH)
-        self.split_years_map = self._load_split_years()
-
-    def _load_split_years(self):
-        """Load exact split years from 'New Districts' file."""
-        if not os.path.exists(NEW_DIST_PATH):
-            logger.warning("New Districts file not found, will default to decade end.")
-            return {}
-        
-        try:
-            df = pd.read_excel(NEW_DIST_PATH)
-            # Map (State, New District) -> Year
-            year_map = {}
-            for _, row in df.iterrows():
-                state = self.resolver._normalize(row['State/UT'])
-                dist = self.resolver._normalize(row['New District'])
-                year = row['Year']
-                if pd.notna(year):
-                    year_map[(state, dist)] = int(year)
-            logger.info(f"Loaded {len(year_map)} exact split years.")
-            return year_map
-        except Exception as e:
-            logger.error(f"Error loading split years: {e}")
-            return {}
 
     def get_lgd_map(self):
         """Get map of dataset name -> lgd_code from districts table"""
         with self.engine.connect() as conn:
-            result = conn.execute(text("SELECT lgd_code, district_name, state_name FROM districts"))
+            result = conn.execute(text("SELECT cdk, district_name, state_name FROM districts"))
             districts = result.fetchall()
         
         lookup = {}
@@ -130,14 +106,14 @@ class DistrictSplitLoader:
         return None
 
     def process_splits(self):
-        if not os.path.exists(PROLIF_PATH):
-            logger.error("Proliferation file not found.")
+        if not os.path.exists(EVOLUTION_MASTER_PATH):
+            logger.error(f"Master evolution file not found at {EVOLUTION_MASTER_PATH}")
             return
 
         try:
-            df = pd.read_excel(PROLIF_PATH)
+            df = pd.read_csv(EVOLUTION_MASTER_PATH)
         except Exception as e:
-            logger.error(f"Error reading proliferation file: {e}")
+            logger.error(f"Error reading evolution master file: {e}")
             return
 
         lookup, all_districts = self.get_lgd_map()
@@ -146,40 +122,52 @@ class DistrictSplitLoader:
         records = []
         seen_splits = set()
         
-        grouped = df.groupby(['filter_state', 'source_year', 'dest_year', 'source_district'])
+        new_dists = df[df['event_type'] == 'NEW_DISTRICT']
         
-        for (state, s_year, d_year, s_dist), group in grouped:
-            dest_dists = group['dest_district'].unique()
+        for _, row in new_dists.iterrows():
+            state = row['state']
+            child_dist = row['child_district']
+            parents_raw = row['parent_district']
+            year = row['effective_year']
+            source = row['source']
             
-            if len(dest_dists) > 1:
-                for output_dist in dest_dists:
-                    if output_dist == s_dist:
-                         continue 
+            if pd.isna(parents_raw):
+                continue
+                
+            parents_str = str(parents_raw).strip()
+            if parents_str.endswith('.'):
+                parents_str = parents_str[:-1]
+                
+            parent_list = [p.strip() for p in parents_str.split(',')]
+            
+            for p_dist in parent_list:
+                if not p_dist:
+                    continue
                     
-                    norm_s = self.resolver._normalize(state)
-                    norm_d = self.resolver._normalize(output_dist)
+                parent_lgd = self.find_lgd(p_dist, state, lookup, all_districts)
+                child_lgd = self.find_lgd(child_dist, state, lookup, all_districts)
+                
+                # Synthetic decade mapping
+                try:
+                    y = int(year)
+                    decade = f"{y - (y % 10)}-{y - (y % 10) + 10}"
+                except:
+                    decade = None
                     
-                    year = self.split_years_map.get((norm_s, norm_d))
-                    if not year:
-                         year = d_year 
-                    
-                    parent_lgd = self.find_lgd(s_dist, state, lookup, all_districts)
-                    child_lgd = self.find_lgd(output_dist, state, lookup, all_districts)
-                    
-                    key = (state, year, s_dist, output_dist)
-                    if key in seen_splits: continue
-                    seen_splits.add(key)
-                    
-                    records.append({
-                        'state_name': state,
-                        'decade': f"{s_year}-{d_year}",
-                        'split_year': int(year),
-                        'parent_district': s_dist,
-                        'child_district': output_dist,
-                        'parent_lgd': parent_lgd,
-                        'child_lgd': child_lgd,
-                        'source': 'prolif_v2'
-                    })
+                key = (state, year, p_dist, child_dist)
+                if key in seen_splits: continue
+                seen_splits.add(key)
+                
+                records.append({
+                    'state_name': state,
+                    'decade': decade,
+                    'split_year': int(year) if pd.notna(year) else None,
+                    'parent_district': p_dist,
+                    'child_district': child_dist,
+                    'parent_lgd': None,
+                    'child_lgd': None,
+                    'source': source
+                })
             
         return records
 
